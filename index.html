@@ -1066,17 +1066,45 @@ async function pushProgress(leaving){
 setInterval(()=>{if(!document.hidden)pushProgress(false)},60000);
 document.addEventListener("visibilitychange",()=>{if(document.hidden)pushProgress(true)});
 function rerenderAll(){refreshSummary();show(tab)}
+/* 브라우저는 "버튼을 누른 그 순간"에 연 팝업만 허용한다 (아이폰 Safari는 특히 엄격).
+   그래서 로그인 라이브러리를 버튼이 보일 때 미리 받아 두고, 누르면 기다리는 일 없이 바로 팝업을 연다 */
+let authLib=null,authLibP=null;
+function preloadAuth(){
+  if(IN_CLAUDE||authLibP)return authLibP;
+  authLibP=Promise.all([import(AUTH_SDK+"firebase-app.js"),import(AUTH_SDK+"firebase-auth.js")]).then(([appMod,au])=>{
+    const app=appMod.getApps().length?appMod.getApps()[0]:appMod.initializeApp(FB_CONFIG);
+    authLib={au,auth:au.getAuth(app)};return authLib;
+  }).catch(e=>{authLibP=null;throw e});
+  return authLibP;
+}
+const idle=f=>("requestIdleCallback" in window?requestIdleCallback(f,{timeout:3000}):setTimeout(f,1500));
+// 로그인 버튼이 화면에 그려지면 미리 받기 시작한다 (누르기 직전 손가락이 닿을 때도)
+function armLoginBtn(btn,fn){
+  if(!btn)return;
+  idle(()=>preloadAuth()?.catch(()=>{}));
+  btn.addEventListener("pointerdown",()=>preloadAuth()?.catch(()=>{}),{once:true});
+  btn.onclick=fn;
+}
+// 팝업 열기: 라이브러리가 준비돼 있으면 곧바로(기다림 없이) 연다
+function openGooglePopup(){
+  if(authLib)return authLib.au.signInWithPopup(authLib.auth,new authLib.au.GoogleAuthProvider()).then(r=>({...authLib,user:r.user}));
+  const e=new Error("not-ready");e.code="harukana/not-ready";
+  return preloadAuth().then(()=>{throw e});
+}
+const loginErrText=(c,e,what)=>c==="harukana/not-ready"?"Google 확인 준비가 끝났어요. 버튼을 한 번 더 눌러 주세요."
+  :c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request"||c==="auth/user-cancelled"?(what==="삭제"?"삭제를":"로그인을")+" 취소했어요."
+  :c==="auth/popup-blocked"?"팝업이 막혔어요. 버튼을 한 번 더 누르거나, 브라우저에서 이 사이트의 팝업을 허용해 주세요."
+  :c==="auth/network-request-failed"?"인터넷 연결이 불안정해요. 잠시 뒤 다시 눌러 주세요."
+  :c==="auth/operation-not-supported-in-this-environment"||c==="auth/web-storage-unsupported"?"이 브라우저에서는 Google 로그인을 쓸 수 없어요. Chrome이나 Safari로 열어 주세요."
+  :what+"하지 못했어요 ("+(c||e.message)+")";
 async function googleLogin(){
   if(IN_CLAUDE)return;
   if(IN_APP_BROWSER){notifyText("이 앱 안 브라우저에서는 Google 로그인이 막혀 있어요. 메뉴에서 'Chrome으로 열기' 후 로그인해 주세요.");return}
+  // 지금 쓰던 익명 ID(로그인 전 랭킹 기록)를 기억해 둔다. 팝업보다 먼저 기다리면 팝업이 막히므로 값만 복사한다
+  const old=rk.fb&&!S.account&&rk.auth?{...rk.auth}:null;
+  const popup=openGooglePopup(); // 반드시 await 없이 가장 먼저
   try{
-    // 지금 쓰던 익명 ID(로그인 전 랭킹 기록)를 기억해 둔다
-    let old=null;if(rk.fb&&!S.account){try{await authHeader();old={...rk.auth}}catch(e){}}
-    const [appMod,au]=await Promise.all([import(AUTH_SDK+"firebase-app.js"),import(AUTH_SDK+"firebase-auth.js")]);
-    const app=appMod.getApps().length?appMod.getApps()[0]:appMod.initializeApp(FB_CONFIG);
-    const auth=au.getAuth(app);
-    const res=await au.signInWithPopup(auth,new au.GoogleAuthProvider());
-    const u=res.user;
+    const {au,auth,user:u}=await popup;
     rk.auth={uid:u.uid,refreshToken:u.refreshToken,idToken:await u.getIdToken(),exp:Date.now()+50*60e3};
     try{localStorage.setItem(AUTH_KEY,JSON.stringify({uid:u.uid,refreshToken:u.refreshToken}))}catch(e){}
     rk.me=u.uid;S.account={name:u.displayName||"",email:u.email||""};
@@ -1085,7 +1113,11 @@ async function googleLogin(){
     // 로그인 전 익명 ID의 랭킹 기록은 지운다 (같은 사람이 두 줄로 나오지 않게, 새 계정으로 다시 올라감)
     if(old&&old.uid!==u.uid){
       for(const p of [`scores/${old.uid}`,`weeks/${weekId()}/players/${old.uid}`]){
-        try{await fetch(`${REST_BASE}/${p}`,{method:"DELETE",headers:{Authorization:"Bearer "+old.idToken}})}catch(e){}
+        try{
+          // 익명 ID의 토큰이 만료됐으면 그 ID의 갱신 토큰으로 새로 받는다
+          if(!old.idToken||Date.now()>old.exp){const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(old.refreshToken)});old.idToken=(await r.json()).id_token;old.exp=Date.now()+50*60e3}
+          await fetch(`${REST_BASE}/${p}`,{method:"DELETE",headers:{Authorization:"Bearer "+old.idToken}});
+        }catch(e){}
       }
     }
     S.rankOff=S.rankOff||0;save();rk.last="";rk.blocked=false;rk.syncErr=null;rk.myRank={all:null,week:null,last:null};
@@ -1093,10 +1125,8 @@ async function googleLogin(){
     notifyText(merged?"로그인했어요. 계정에 있던 기록과 이 기기 기록을 합쳤어요.":"로그인했어요. 이제 기록이 Google 계정에 저장돼요.");
     rerenderAll();
   }catch(e){
-    const c=e&&e.code||"";
-    notifyText(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request"?"로그인을 취소했어요."
-      :c==="auth/popup-blocked"?"팝업이 막혔어요. 브라우저에서 팝업을 허용한 뒤 다시 눌러 주세요."
-      :"로그인하지 못했어요 ("+(c||e.message)+")");
+    console.warn("Google 로그인 실패",e);
+    notifyText(loginErrText(e&&e.code||"",e,"로그인"));
   }
 }
 // 로그아웃: 계정에 마지막으로 저장하고, 이 기기의 기록은 지운다 (계정에는 그대로 남음)
@@ -1108,11 +1138,9 @@ async function googleLogout(){
 // 계정 기록 삭제: Google로 한 번 더 확인한 뒤 서버의 진도·랭킹 기록과 로그인 계정, 이 기기의 기록을 모두 지운다
 async function deleteAccount(){
   if(IN_CLAUDE||!S.account||!rk.me)return;
+  const popup=openGooglePopup(); // 반드시 await 없이 가장 먼저
   try{
-    const [appMod,au]=await Promise.all([import(AUTH_SDK+"firebase-app.js"),import(AUTH_SDK+"firebase-auth.js")]);
-    const app=appMod.getApps().length?appMod.getApps()[0]:appMod.initializeApp(FB_CONFIG);
-    const auth=au.getAuth(app);
-    const u=(await au.signInWithPopup(auth,new au.GoogleAuthProvider())).user;
+    const {au,auth,user:u}=await popup;
     if(u.uid!==rk.me){await au.signOut(auth);notifyText("지금 로그인한 계정과 다른 Google 계정이에요. 같은 계정으로 다시 확인해 주세요.");return}
     // 지우는 동안 기록이 다시 올라가지 않게 막는다
     clearTimeout(rk.timer);rk.blocked=true;S.account=null;
@@ -1129,9 +1157,7 @@ async function deleteAccount(){
     const c=e&&e.code||"";
     if(!S.account)S.account=JSON.parse(localStorage.getItem("kana-v1")||"{}").account||null;
     rk.blocked=false;
-    notifyText(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request"?"삭제를 취소했어요."
-      :c==="auth/popup-blocked"?"팝업이 막혔어요. 브라우저에서 팝업을 허용한 뒤 다시 눌러 주세요."
-      :"삭제하지 못했어요 ("+(c||e.message)+")");
+    notifyText(loginErrText(c,e,"삭제"));
   }
 }
 const PRIVACY_URL="privacy.html";
@@ -1344,11 +1370,11 @@ function renderRank(){
   document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{rk.mode=b.dataset.rm;renderRank();loadBoard(rk.mode)});
   renderGrass();
   if($("rk-join"))$("rk-join").onclick=()=>setRankHidden(false);
-  if($("glogin-pf"))$("glogin-pf").onclick=googleLogin;
+  armLoginBtn($("glogin-pf"),googleLogin);
   // 로그아웃은 두 번 눌러야 한다 (이 기기의 기록은 지워지고 계정에는 남음)
   if($("glogout"))$("glogout").onclick=()=>{if(rk.logoutArmed){googleLogout()}else{rk.logoutArmed=true;notifyText("로그아웃하면 이 기기의 기록은 지워지고, 다시 로그인하면 계정에서 불러와요.");renderRank();setTimeout(()=>{rk.logoutArmed=false;scheduleRank()},5000)}};
   // 계정 기록 삭제도 두 번 눌러야 한다 (되돌릴 수 없음)
-  if($("gdelete"))$("gdelete").onclick=()=>{if(rk.deleteArmed){rk.deleteArmed=false;deleteAccount()}else{rk.deleteArmed=true;notifyText("계정과 이 기기의 학습 기록이 모두 지워지고 되돌릴 수 없어요.");renderRank();setTimeout(()=>{rk.deleteArmed=false;scheduleRank()},6000)}};
+  if($("gdelete"))$("gdelete").onclick=()=>{if(rk.deleteArmed){rk.deleteArmed=false;deleteAccount()}else{rk.deleteArmed=true;preloadAuth()?.catch(()=>{});notifyText("계정과 이 기기의 학습 기록이 모두 지워지고 되돌릴 수 없어요.");renderRank();setTimeout(()=>{rk.deleteArmed=false;scheduleRank()},6000)}};
   if($("nick-edit"))$("nick-edit").onclick=()=>{editingNick=true;renderRank();$("nick-in").focus()};
   // 닉네임을 비우면 지금 이름(가명 포함)을 그대로 둔다
   if($("nick-save")){const done=()=>{const v=$("nick-in").value.trim().slice(0,12);if(v)S.nick=v;editingNick=false;save();rk.last="";syncScore();renderRank()};
@@ -1456,7 +1482,7 @@ function renderHome(){
   $("continue").title=lastPlace();
   // 로그인하지 않은 사람에게: 기록이 이 브라우저에만 있다는 안내 + Google 로그인
   $("login-banner").innerHTML=!IN_CLAUDE&&!S.account?`<div class="login-banner"><div><b>기록을 안전하게 지키세요</b><small>지금은 이 브라우저에만 저장돼요. Google로 로그인하면 브라우저를 지우거나 기기를 바꿔도 그대로 이어서 할 수 있어요.<br>서버에는 학습 기록만 저장하고 이름·이메일은 저장하지 않아요. <a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></small></div>${loginBtn("glogin-home")}</div>`:"";
-  if($("glogin-home"))$("glogin-home").onclick=googleLogin;
+  armLoginBtn($("glogin-home"),googleLogin);
   const labels=['첫 글자, 설레는 시작','소리에 작은 변화','조금 더 풍부한 발음'];
   const descriptions=[(pathScript==='h'?'あ・い・う・え・お':'ア・イ・ウ・エ・オ')+'부터 차근차근','탁음과 반탁음의 차이를 익혀요','촉음 · 요음 · 장음으로 한 단계 더'];
   const marks=pathScript==='h'?['あ','が','きゃ']:['ア','ガ','キャ'];
