@@ -907,62 +907,78 @@ async function authHeader(){
   return{"Authorization":"Bearer "+rk.auth.idToken};
 }
 // 로그인이 필요한 쓰기/지우기 (토큰이 만료됐으면 한 번 새로 받아서 다시 시도)
-async function restWrite(method,path,body){
+async function restWrite(method,path,body,keepalive){
   for(let i=0;i<2;i++){
-    const r=await fetch(`${REST_BASE}/${path}`,{method,headers:{...await authHeader(),"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
+    const r=await fetch(`${REST_BASE}/${path}`,{method,keepalive:!!keepalive,headers:{...await authHeader(),"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
     if(r.status===401&&i===0){rk.auth=null;continue}
     if(!r.ok){const e=new Error("REST "+r.status);e.status=r.status;throw e}
     return r;
   }
 }
 
-// 지난번에 받은 랭킹을 이 기기에 저장해 두고, 다음에 열 때 먼저 보여준다 (새 랭킹이 오면 바로 바뀜)
+/* 무료 요금제 읽기 한도(하루 5만 건)를 아끼는 규칙
+   - 랭킹은 프로필 탭을 열었을 때, 보고 있는 종류(이번 주·지난주·전체)만 받아 온다. 공부하는 동안엔 읽지 않는다
+   - 같은 랭킹은 20초 안에 다시 받지 않는다. 프로필 탭을 보고 있으면 60초마다 새로 받는다
+   - 지난주 리그는 바뀌지 않으니 한 주에 한 번만 받는다
+   - 내 순위·지난주 보상은 50명을 받지 않고 "나보다 높은 사람 수"만 센다 (1건) */
 const RANK_CACHE="harukana-rank-cache";
+const BOARD_SRC={all:["","scores","xp","rows"],week:[null,"players","weekXp","weekRows"],last:[null,"players","weekXp","lastRows"]};
+const boardParent=m=>m==="all"?"":`/weeks/${m==="week"?rk.wn:rk.wn-1}`;
 function loadRankCache(){
   try{const c=JSON.parse(localStorage.getItem(RANK_CACHE));
-    if(c&&c.wn===weekNum()){rk.rows=c.rows||null;rk.weekRows=c.weekRows||null;rk.lastRows=c.lastRows||null;rk.me=rk.me||c.me||null;rk.state="ready";rk.cached=true}
+    if(c&&c.wn===weekNum()){rk.rows=c.rows||null;rk.weekRows=c.weekRows||null;rk.lastRows=c.lastRows||null;rk.me=rk.me||c.me||null;rk.state="ready";rk.cached=true;if(c.lastRows)rk.lastFresh=true}
   }catch(e){}
 }
 function saveRankCache(){
   try{localStorage.setItem(RANK_CACHE,JSON.stringify({wn:rk.wn,me:rk.me,rows:rk.rows,weekRows:rk.weekRows,lastRows:rk.lastRows}))}catch(e){}
 }
-// 랭킹 세 가지(전체·이번 주·지난주)를 받아 오고 내 순위를 계산한다
-async function refreshBoards(){
-  const wn=rk.wn;
+// 화면 다시 그리기는 한 프레임에 한 번만
+let rankFrame=0;
+function scheduleRank(){if(tab!==5||rankFrame)return;rankFrame=requestAnimationFrame(()=>{rankFrame=0;renderRank()})}
+rk.fetchedAt={all:0,week:0,last:0};
+async function loadBoard(mode,force){
+  if(!rk.fb)return;
+  mode=mode||"week";
+  if(mode==="last"&&rk.lastFresh&&rk.lastRows)return;
+  if(!force&&Date.now()-rk.fetchedAt[mode]<20000)return;
+  rk.fetchedAt[mode]=Date.now();
+  const [,col,field,key]=BOARD_SRC[mode];
   try{
-    const [all,week,last]=await Promise.all([restTop("","scores","xp"),restTop(`/weeks/${wn}`,"players","weekXp"),rk.lastRows&&!rk.cached?Promise.resolve(rk.lastRows):restTop(`/weeks/${wn-1}`,"players","weekXp")]);
-    rk.rows=all;rk.weekRows=week;rk.lastRows=last;rk.cached=false;rk.state="ready";saveRankCache();
-  }catch(e){if(!rk.rows)rk.state="offline"}
-  if(tab===5)renderRank();
-  await refreshMine();
+    rk[key]=await restTop(boardParent(mode),col,field);
+    if(mode==="last")rk.lastFresh=true;
+    rk.cached=false;rk.state="ready";saveRankCache();
+  }catch(e){if(!rk[key])rk.state="offline"}
+  scheduleRank();
+  await refreshMine(mode);
 }
-const rankIn=async(rows,parent,col,field,v)=>{const i=rows.findIndex(r=>r.id===rk.me);return i>=0?i+1:(await restCountAbove(parent,col,field,v))+1};
-async function refreshMine(){
-  if(!rk.me||!rk.rows)return;
+const rankIn=async(rows,parent,col,field,v)=>{const i=(rows||[]).findIndex(r=>r.id===rk.me);return i>=0?i+1:(await restCountAbove(parent,col,field,v))+1};
+async function refreshMine(mode){
+  if(!rk.me)return;
+  const on=S.rank&&!S.rankOff;
   try{
-    const on=S.rank&&!S.rankOff;
-    rk.myRank.all=on&&S.xp>0?await rankIn(rk.rows,"","scores","xp",S.xp):null;
-    rk.myRank.week=on&&rk.weekRows&&weekXp()>0?await rankIn(rk.weekRows,`/weeks/${rk.wn}`,"players","weekXp",weekXp()):null;
+    if(mode==="all"&&rk.rows)rk.myRank.all=on&&S.xp>0?await rankIn(rk.rows,"","scores","xp",S.xp):null;
+    if(mode==="week"&&rk.weekRows)rk.myRank.week=on&&weekXp()>0?await rankIn(rk.weekRows,boardParent("week"),"players","weekXp",weekXp()):null;
   }catch(e){}
-  if(tab===5)renderRank();
+  scheduleRank();
 }
 async function initFirebase(){
   const wn=weekNum();rk.wn=wn;rk.lastWn=wn-1;rk.fb={rest:true};
-  loadRankCache();if(tab===5)renderRank();
-  const boards=refreshBoards();
-  // 랭킹 탭을 보고 있는 동안 30초마다 새로 받아 온다
-  setInterval(()=>{if(tab===5&&!document.hidden)refreshBoards()},30000);
+  loadRankCache();
+  if(tab===5)loadBoard(rk.mode);
+  // 프로필 탭을 보고 있는 동안에만 60초마다 새로 받아 온다
+  setInterval(()=>{if(tab===5&&!document.hidden)loadBoard(rk.mode,true)},60000);
   try{rk.auth=await restAuth();rk.me=rk.auth.uid;rk.canWrite=true}catch(e){console.warn("익명 로그인 실패",e)}
-  if(!rk.me){if(tab===5)renderRank();return}
+  if(!rk.me){scheduleRank();return}
   syncScore();
-  await boards;await refreshMine();
+  if(tab===5)refreshMine(rk.mode||"week");
+  // 지난주 보상: 내 지난주 기록 1건 + 나보다 높은 사람 수 1건만 읽는다
   try{
     const mine=await restGet(`weeks/${wn-1}/players/${rk.me}`);
-    if(mine){rk.myLast=mine;rk.myRank.last=await rankIn(rk.lastRows||[],`/weeks/${wn-1}`,"players","weekXp",mine.weekXp)}
+    if(mine){rk.myLast=mine;rk.myRank.last=(await restCountAbove(boardParent("last"),"players","weekXp",mine.weekXp))+1}
   }catch(e){}
   claimWeekReward();
   cleanupOldWeeks();
-  if(tab===5)renderRank();
+  scheduleRank();
 }
 // 2주가 지난 주간 리그 기록 지우기: 무료 요금제엔 서버 예약 작업이 없어서, 앱을 연 사람이 하루 한 번 대신 지운다
 // (보안 규칙이 "이번 주·지난주가 아닌 기록"만 아무나 지울 수 있게 허용)
@@ -982,7 +998,7 @@ async function setRankHidden(hide){
       else if(rk.db)await rk.db.doc("scores/"+rk.me).delete();
     }catch(e){}
     rk.myRank.all=rk.myRank.week=null;
-    if(rk.fb)refreshBoards();
+    if(rk.fb)loadBoard(rk.mode,true);
   }else syncScore();
   notifyText(hide?"랭킹에서 내 기록을 숨겼어요.":"랭킹에 다시 참가했어요.");
   renderRank();
@@ -1004,31 +1020,41 @@ async function initRank(){
   if(!IN_CLAUDE){initFirebase();return}
   rk.state="elsewhere";if(tab===5)renderRank();
 }
+// 내 기록 올리기: 무료 쓰기 한도를 아끼려고 30초에 한 번까지만 올리고, 페이지를 떠날 때 마지막으로 한 번 더 올린다
+const SYNC_GAP=30000;
+function scoreData(){
+  return{xp:S.xp,level:lvOf(S.xp),streak:streak(),chars:[...ALL,...ALL_K].filter(c=>cd(c.k)).length,words:WORDS.filter(w=>wd(w.id)).length,badges:Object.keys(S.badges).length,nick:(S.nick||"").slice(0,12),title:mainTitle(),avatar:avatarOf(S.avatar).id,week:weekId(),weekXp:weekXp()};
+}
 function syncScore(){
   // 문제를 한 번이라도 맞힌 사람(XP가 있는 사람)만 랭킹에 올린다
-  if(!(rk.db||rk.fb)||!rk.me||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
-  const data={xp:S.xp,level:lvOf(S.xp),streak:streak(),chars:[...ALL,...ALL_K].filter(c=>cd(c.k)).length,words:WORDS.filter(w=>wd(w.id)).length,badges:Object.keys(S.badges).length,nick:(S.nick||"").slice(0,12),title:mainTitle(),avatar:avatarOf(S.avatar).id,week:weekId(),weekXp:weekXp()};
-  const sig=JSON.stringify(data);if(sig===rk.last)return;
+  if(!rk.fb||!rk.me||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
+  if(JSON.stringify(scoreData())===rk.last)return;
   clearTimeout(rk.timer);
-  rk.timer=setTimeout(async()=>{
-    if(rk.busy){syncScore();return}
-    rk.busy=true;
-    try{
-      const t=Date.now();
-      if(rk.fb){
-        await restWrite("PATCH",`scores/${rk.me}`,toFields({...data,t}));
-        if(data.weekXp>0)await restWrite("PATCH",`weeks/${data.week}/players/${rk.me}`,toFields({nick:data.nick,title:data.title,avatar:data.avatar,level:data.level,weekXp:data.weekXp,t}));
-        rk.last=sig;rk.syncErr=null;
-        refreshBoards();
-      }else{await rk.db.doc("scores/"+rk.me).set({...data,t});rk.last=sig}
-    }catch(e){
-      rk.syncErr=String(e&&(e.status||e.code||e.message));
-      if(e&&(e.status===403||e.code==="invalid_argument"||e.code==="permission-denied")){rk.blocked=true;if(tab===5)renderRank()}
-      else setTimeout(syncScore,15000); // 통신 오류면 잠시 뒤 다시 시도
-    }
-    rk.busy=false;
-  },1200);
+  const wait=Math.max(1200,SYNC_GAP-(Date.now()-(rk.wroteAt||0)));
+  rk.timer=setTimeout(()=>pushScore(false),wait);
 }
+async function pushScore(leaving){
+  if(!rk.fb||!rk.me||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
+  const data=scoreData(),sig=JSON.stringify(data);
+  if(sig===rk.last)return;
+  if(rk.busy&&!leaving){rk.timer=setTimeout(()=>pushScore(false),3000);return}
+  clearTimeout(rk.timer);rk.busy=true;rk.wroteAt=Date.now();
+  try{
+    const t=Date.now();
+    await restWrite("PATCH",`scores/${rk.me}`,toFields({...data,t}),leaving);
+    if(data.weekXp>0)await restWrite("PATCH",`weeks/${data.week}/players/${rk.me}`,toFields({nick:data.nick,title:data.title,avatar:data.avatar,level:data.level,weekXp:data.weekXp,t}),leaving);
+    rk.last=sig;rk.syncErr=null;
+    if(tab===5&&!leaving)loadBoard(rk.mode);
+  }catch(e){
+    rk.syncErr=String(e&&(e.status||e.message));
+    if(e&&e.status===403){rk.blocked=true;scheduleRank()}
+    else if(!leaving)rk.timer=setTimeout(()=>pushScore(false),15000); // 통신 오류면 잠시 뒤 다시 시도
+  }
+  rk.busy=false;
+}
+// 탭을 닫거나 다른 앱으로 넘어갈 때 아직 안 올린 기록을 올린다
+document.addEventListener("visibilitychange",()=>{if(document.hidden)pushScore(true)});
+window.addEventListener("pagehide",()=>pushScore(true));
 /* ---------- 프로필: 닉네임, 대표 칭호, 분야별 칭호와 따로따로 초기화 ---------- */
 // 분야마다 진도에 따라 칭호 3단계: 1개 이상 → 1단계, 절반 이상 → 2단계, 전부 → 3단계
 const wordIdsOf=s=>WORDS.filter(w=>(catOf(w.category)||{}).script===s).map(w=>w.id);
@@ -1180,7 +1206,7 @@ function renderRank(){
   $("board").innerHTML=`<h3 class="rk-h">랭킹</h3>
     <div class="seg rk-seg" role="group" aria-label="랭킹 종류">${[["week","이번 주 리그"],["last","지난주 리그"],["all","전체 랭킹"]].map(([k,t])=>`<button data-rm="${k}" class="${m===k?"on":""}">${t}</button>`).join("")}</div>
     <p class="rk-sub">${subs[m]}${rk.cached?' <span class="rk-live">· 최신 순위로 바꾸는 중…</span>':""}</p>${body}`;
-  document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{rk.mode=b.dataset.rm;renderRank()});
+  document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{rk.mode=b.dataset.rm;renderRank();loadBoard(rk.mode)});
   renderGrass();
   if($("rk-join"))$("rk-join").onclick=()=>setRankHidden(false);
   if($("nick-edit"))$("nick-edit").onclick=()=>{editingNick=true;renderRank();$("nick-in").focus()};
@@ -1280,7 +1306,7 @@ function show(n){
   if(n===1)setLast({t:"table",kata:kataMode});
   if(n===3&&(wv.view==="list"||wv.view==="cat"))renderWords();
   if(n===4&&!nq)renderNote();
-  if(n===5)renderRank();
+  if(n===5){renderRank();loadBoard(rk.mode)}
   window.scrollTo({top:0,behavior:'instant'});
 }
 TABS.forEach(i=>{$("t"+i).onclick=()=>show(i);$("t"+i).onkeydown=e=>{const N=TABS.length;let next;if(['ArrowDown','ArrowRight'].includes(e.key))next=(i+1)%N;else if(['ArrowUp','ArrowLeft'].includes(e.key))next=(i+N-1)%N;else if(e.key==='Home')next=0;else if(e.key==='End')next=N-1;else return;e.preventDefault();show(next);$("t"+next).focus()}});
