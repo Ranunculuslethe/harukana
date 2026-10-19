@@ -47,12 +47,14 @@ const {initializeApp}=await import(SDK+"firebase-app.js");
 const au=await import(SDK+"firebase-auth.js");
 const auth=au.getAuth(initializeApp(FB_CONFIG));
 const $=id=>document.getElementById(id);
+// 매번 계정 선택 창을 띄운다
+const googleProvider=()=>{const p=new au.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});return p};
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let rows=[],sortKey="last",sortDir=-1,filter="";
 
-$("login").onclick=()=>au.signInWithPopup(auth,new au.GoogleAuthProvider()).catch(e=>show(`로그인하지 못했어요 (${esc(e.code||e.message)})`));
+$("login").onclick=()=>au.signInWithPopup(auth,googleProvider()).catch(e=>show(`로그인하지 못했어요 (${esc(e.code||e.message)})`));
 au.onAuthStateChanged(auth,u=>{
-  if(!u){$("bar").innerHTML='<button class="main" id="login">Google로 로그인</button>';$("login").onclick=()=>au.signInWithPopup(auth,new au.GoogleAuthProvider()).catch(e=>show(`로그인하지 못했어요 (${esc(e.code||e.message)})`));show("");return}
+  if(!u){$("bar").innerHTML='<button class="main" id="login">Google로 로그인</button>';$("login").onclick=()=>au.signInWithPopup(auth,googleProvider()).catch(e=>show(`로그인하지 못했어요 (${esc(e.code||e.message)})`));show("");return}
   $("bar").innerHTML=`<span>${esc(u.email)}</span><button id="reload">새로고침</button><button id="logout">로그아웃</button><input id="q" placeholder="닉네임·계정 번호 검색">`;
   $("logout").onclick=()=>au.signOut(auth);
   $("reload").onclick=load;

@@ -1087,7 +1087,11 @@ function armLoginBtn(btn,fn){
 }
 // 팝업 열기: 라이브러리가 준비돼 있으면 곧바로(기다림 없이) 연다
 function openGooglePopup(){
-  if(authLib)return authLib.au.signInWithPopup(authLib.auth,new authLib.au.GoogleAuthProvider()).then(r=>({...authLib,user:r.user}));
+  if(authLib){
+    // 매번 계정 선택 창을 띄운다 (같은 컴퓨터를 여럿이 쓰거나 계정이 여러 개일 때)
+    const p=new authLib.au.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
+    return authLib.au.signInWithPopup(authLib.auth,p).then(r=>({...authLib,user:r.user}));
+  }
   const e=new Error("not-ready");e.code="harukana/not-ready";
   return preloadAuth().then(()=>{throw e});
 }
