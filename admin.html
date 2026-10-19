@@ -36,7 +36,12 @@ td.num,th.num{text-align:right}
 <p class="sub">Google로 로그인한 학습자의 학습 현황이에요. 이름·이메일은 저장하지 않아서 닉네임과 계정 번호로만 보여요. 관리자 계정으로 로그인해야 보여요. (읽기 전용)</p>
 <div class="bar" id="bar"><button class="main" id="login">Google로 로그인</button></div>
 <div id="out"></div>
+<div id="clean"></div>
 </main>
+<script>
+// 내 컴퓨터의 파일(file://)로 열면 Google 로그인이 동작하지 않으므로 사이트 주소로 옮긴다
+if(location.protocol==="file:")location.replace("https://ranunculuslethe.github.io/harukana/admin.html");
+</script>
 <script type="module">
 // 관리자 페이지: 관리자 Google 계정으로 로그인하면 users/<uid> (로그인한 학습자의 진도)를 읽어 표로 보여 준다
 // 누가 볼 수 있는지는 Firestore 보안 규칙이 정한다 (이 파일에는 관리자 정보가 없음)
@@ -54,7 +59,7 @@ let rows=[],sortKey="last",sortDir=-1,filter="";
 
 $("login").onclick=()=>au.signInWithPopup(auth,googleProvider()).catch(e=>show(`로그인하지 못했어요 (${esc(e.code||e.message)})`));
 au.onAuthStateChanged(auth,u=>{
-  if(!u){$("bar").innerHTML='<button class="main" id="login">Google로 로그인</button>';$("login").onclick=()=>au.signInWithPopup(auth,googleProvider()).catch(e=>show(`로그인하지 못했어요 (${esc(e.code||e.message)})`));show("");return}
+  if(!u){$("bar").innerHTML='<button class="main" id="login">Google로 로그인</button>';$("login").onclick=()=>au.signInWithPopup(auth,googleProvider()).catch(e=>show(`로그인하지 못했어요 (${esc(e.code||e.message)})`));show("");$("clean").innerHTML="";orphans=null;return}
   $("bar").innerHTML=`<span>${esc(u.email)}</span><button id="reload">새로고침</button><button id="logout">로그아웃</button><input id="q" placeholder="닉네임·계정 번호 검색">`;
   $("logout").onclick=()=>au.signOut(auth);
   $("reload").onclick=load;
@@ -91,8 +96,58 @@ async function load(){
       for(const d of j.documents||[])all.push(summarize(d.name.split("/").pop(),d));
       page=j.nextPageToken||"";
     }while(page);
-    rows=all;render();
+    rows=all;render();renderClean();
   }catch(e){show("불러오지 못했어요 ("+esc(e.message)+")")}
+}
+
+/* 랭킹 정리: Google로 로그인하지 않은(익명) 사람의 랭킹 기록을 찾아 지운다
+   - 로그인한 사람 = users 컬렉션에 진도가 있는 사람
+   - 대상: 전체 랭킹(scores)과 최근 3주 주간 리그(weeks/<주>/players). 그보다 오래된 주는 앱이 자동으로 지운다 */
+const weekNum=(ms=Date.now())=>Math.floor(((ms+9*3600e3)/86400000+3)/7);
+let orphans=null,cleanArmed=false,cleaning=false;
+async function listAll(path,token){
+  const out=[];let page="";
+  do{
+    const r=await fetch(`${BASE}/${path}?pageSize=300${page?"&pageToken="+encodeURIComponent(page):""}`,{headers:{Authorization:"Bearer "+token}});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const j=await r.json();
+    for(const d of j.documents||[])out.push({path:d.name.split("/documents/")[1],id:d.name.split("/").pop(),nick:d.fields?.nick?.stringValue||"",xp:Number(d.fields?.xp?.integerValue??d.fields?.weekXp?.integerValue)||0});
+    page=j.nextPageToken||"";
+  }while(page);
+  return out;
+}
+async function findOrphans(){
+  $("clean").innerHTML=box("로그인하지 않은 사람의 랭킹 기록을 찾는 중…");
+  try{
+    const token=await auth.currentUser.getIdToken(),wn=weekNum(),known=new Set(rows.map(r=>r.id));
+    const lists=await Promise.all(["scores",...[0,1,2].map(i=>`weeks/${wn-i}/players`)].map(p=>listAll(p,token)));
+    orphans=lists.flat().filter(d=>!known.has(d.id));
+  }catch(e){$("clean").innerHTML=box("찾지 못했어요 ("+esc(e.message)+")");return}
+  renderClean();
+}
+const box=html=>`<h2 style="font-size:17px;margin:28px 0 8px">랭킹 정리</h2><div class="wrap"><div class="msg">${html}</div></div>`;
+function renderClean(){
+  if(!orphans){$("clean").innerHTML=box(`Google로 로그인하지 않은 사람의 랭킹 기록(전체 랭킹·주간 리그)을 찾아서 지울 수 있어요.<br><br><button id="find">기록 찾기</button>`);$("find").onclick=findOrphans;return}
+  if(!orphans.length){$("clean").innerHTML=box(`로그인하지 않은 사람의 랭킹 기록이 없어요.<br><br><button id="find">다시 찾기</button>`);$("find").onclick=findOrphans;return}
+  const people=new Set(orphans.map(o=>o.id)).size,scores=orphans.filter(o=>o.path.startsWith("scores/")).length;
+  const names=[...new Map(orphans.map(o=>[o.id,o.nick||"(이름 없음)"])).values()];
+  $("clean").innerHTML=box(`로그인하지 않은 <b>${people}명</b>의 기록 <b>${orphans.length}건</b>이 있어요 (전체 랭킹 ${scores}건, 주간 리그 ${orphans.length-scores}건).<br>
+    <span style="font-size:12px">${names.map(esc).join(", ")}</span><br><br>
+    <button id="del" class="main">${cleaning?"지우는 중…":cleanArmed?"한 번 더 누르면 삭제 (되돌릴 수 없어요)":`${orphans.length}건 삭제`}</button> <button id="find">다시 찾기</button>`);
+  $("find").onclick=findOrphans;
+  $("del").onclick=()=>{if(cleaning)return;if(!cleanArmed){cleanArmed=true;renderClean();setTimeout(()=>{cleanArmed=false;if(!cleaning)renderClean()},6000);return}cleanOrphans()};
+}
+async function cleanOrphans(){
+  cleaning=true;cleanArmed=false;renderClean();
+  let ok=0,fail=0;
+  const token=await auth.currentUser.getIdToken();
+  for(const o of orphans){
+    const r=await fetch(`${BASE}/${o.path}`,{method:"DELETE",headers:{Authorization:"Bearer "+token}}).catch(()=>null);
+    r&&r.ok?ok++:fail++;
+  }
+  cleaning=false;orphans=null;
+  $("clean").innerHTML=box(`${ok}건을 지웠어요.${fail?` ${fail}건은 지우지 못했어요 (권한이 없으면 보안 규칙을 확인해 주세요).`:""}<br><br><button id="find">다시 찾기</button>`);
+  $("find").onclick=findOrphans;
 }
 const fmt=ms=>ms?new Date(ms).toLocaleString("ko-KR",{year:"2-digit",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}):"-";
 const COLS=[["nick","닉네임"],["uid","계정 번호"],["level","레벨",1],["xp","XP",1],["chars","익힌 글자",1],["words","익힌 단어",1],["solved","푼 문제",1],["days","학습일",1],["streak","연속",1],["rank","랭킹"],["created","가입"],["last","최근 활동"]];
