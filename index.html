@@ -907,10 +907,23 @@ async function restAuth(){
   if(a&&a.refreshToken){
     const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(a.refreshToken)});
     if(r.ok){const j=await r.json();return keep({uid:j.user_id,refreshToken:j.refresh_token,idToken:j.id_token,exp:Date.now()+(Number(j.expires_in)-120)*1000})}
+    // Google로 로그인한 사람의 로그인이 풀렸다(계정 삭제·만료 등). 익명 ID를 새로 만들면 기록이 엉뚱한 곳에 저장되므로 로그아웃 상태로 돌린다
+    if(S.account){if(r.status>=400&&r.status<500)sessionLost();throw new Error("로그인 갱신 실패 "+r.status)}
   }
+  if(S.account){sessionLost();throw new Error("로그인 정보가 없어요")}
   const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({returnSecureToken:true})});
   if(!r.ok)throw new Error("익명 로그인 실패 "+r.status);
   const j=await r.json();return keep({uid:j.localId,refreshToken:j.refreshToken,idToken:j.idToken,exp:Date.now()+(Number(j.expiresIn)-120)*1000});
+}
+// 로그인이 풀렸을 때: 이 기기의 기록은 그대로 두고 로그아웃 상태로 돌려 다시 로그인하게 한다
+function sessionLost(){
+  if(!S.account)return;
+  S.account=null;save();
+  try{localStorage.removeItem(AUTH_KEY);localStorage.removeItem(RANK_CACHE)}catch(e){}
+  clearTimeout(rk.timer);rk.auth=null;rk.me=null;rk.pulled=false;rk.progSig=null;
+  rk.state="guest";rk.rows=rk.weekRows=rk.lastRows=null;rk.myLast=null;rk.myRank={all:null,week:null,last:null};
+  notifyText("Google 로그인이 풀렸어요. 기록은 이 기기에 남아 있으니 다시 로그인해 주세요.");
+  rerenderAll();
 }
 async function authHeader(){
   if(!rk.auth||Date.now()>rk.auth.exp){rk.auth=await restAuth();rk.me=rk.auth.uid}
@@ -1065,27 +1078,90 @@ function mergeState(L,C){
   if(!R.avatar&&C.avatar)R.avatar=C.avatar;if(!R.title&&C.title)R.title=C.title;
   return R;
 }
+/* 세 갈래 합치기: 이 기기가 마지막으로 서버와 맞춘 기록(base)을 기억해 두고,
+   base에서 "이 기기만 바꾼 것"과 "다른 기기만 바꾼 것"을 각각 살린다.
+   그래서 한쪽에서 지운 것(초기화·오답노트에서 뺀 것)은 지운 채로 남고, 두 기기에서 따로 번 XP는 더해진다 */
+const SYNC_KEY="harukana-sync";
+const SYNC_MAPS=new Set(["c","w","cr","wr","n","sr","daily","badges","flags","claimed","titles","co"]);
+const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const isObj=x=>x&&typeof x==="object"&&!Array.isArray(x);
+function pick3(path,b,l,c){
+  if(same(l,b))return c;if(same(c,b))return l;if(same(l,c))return l;
+  // 여기부터는 두 기기에서 모두 바뀐 경우
+  if(l===undefined)return c;if(c===undefined)return l;
+  if(typeof l==="number"&&typeof c==="number")
+    return path==="xp"||path.startsWith("daily.")?l+c-(Number(b)||0):Math.max(l,c); // XP·하루 푼 수는 늘어난 만큼 더한다
+  if(path==="wk"&&isObj(l)&&isObj(c))
+    return l.id===c.id?{id:l.id,xp:(l.xp||0)+(c.xp||0)-(isObj(b)&&b.id===l.id?b.xp||0:0)}:(Number(c.id)>Number(l.id)?c:l);
+  if(path==="day"&&isObj(l)&&isObj(c))return c.id>l.id||(c.id===l.id&&(c.solved||0)>(l.solved||0))?c:l;
+  if(SYNC_MAPS.has(path)&&isObj(l)&&isObj(c)){
+    const o={},bb=isObj(b)?b:{};
+    for(const k of new Set([...Object.keys(bb),...Object.keys(l),...Object.keys(c)])){const v=pick3(path+"."+k,bb[k],l[k],c[k]);if(v!==undefined)o[k]=v}
+    return o;
+  }
+  if(/^(c|w|cr|wr)\./.test(path)&&isObj(l)&&isObj(c))return{...c,...l,r:Math.max(l.r||0,c.r||0),w:Math.max(l.w||0,c.w||0)};
+  return l; // 닉네임 같은 나머지는 이 기기 쪽
+}
+function merge3(B,L,C){
+  const R={};
+  for(const k of new Set([...Object.keys(B),...Object.keys(L),...Object.keys(C)])){const v=pick3(k,B[k],L[k],C[k]);if(v!==undefined)R[k]=v}
+  return R;
+}
+const cloudCopy=()=>{const {account,...rest}=S;return rest}; // 이름·이메일(S.account)은 이 기기에만 둔다
+function getSync(){try{const m=JSON.parse(localStorage.getItem(SYNC_KEY));return m&&m.uid===rk.me?m:null}catch(e){return null}}
+function setSync(ut,base){try{localStorage.setItem(SYNC_KEY,JSON.stringify({uid:rk.me,ut,base}))}catch(e){}}
+// 계정의 진도를 받아 이 기기 기록과 합친다. 이 기기 기록이 바뀌었으면 true
 async function pullProgress(){
   if(!S.account||!rk.me)return false;
   try{
     const r=await fetch(`${REST_BASE}/users/${rk.me}`,{headers:await authHeader()});
+    if(r.status===404){setSync(null,null);rk.pulled=true;rk.progSig=null;return false} // 계정에 아직 기록이 없다
     if(!r.ok)return false;
-    const cloud=JSON.parse(docOf(await r.json()).s||"null");
-    if(cloud){const acct=S.account;S=mergeState(S,cloud);S.account=acct;save();return true}
+    const d=await r.json(),cloudStr=d.fields?.s?.stringValue||"null",cloud=JSON.parse(cloudStr),m=getSync();
+    let changed=false;
+    // 지난번에 맞춘 뒤로 다른 기기가 올린 게 없으면 합칠 것도 없다
+    if(cloud&&!(m&&m.ut===d.updateTime)){
+      const acct=S.account,before=JSON.stringify(S);
+      S=m&&m.base?merge3(JSON.parse(m.base),cloudCopy(),cloud):mergeState(cloudCopy(),cloud); // 이 기기에서 처음 로그인하면 둘 다 살린다
+      S.account=acct;changed=JSON.stringify(S)!==before;save();
+    }
+    setSync(d.updateTime,cloudStr);rk.pulled=true;rk.progSig=cloudStr;
+    return changed;
   }catch(e){console.warn("진도 불러오기 실패",e)}
   return false;
 }
-// 진도 올리기: 바뀐 게 있을 때만, 1분에 한 번 + 페이지를 떠날 때
-async function pushProgress(leaving){
+// 진도 올리기: 바뀐 게 있을 때만, 1분에 한 번 + 페이지를 떠날 때.
+// 서버 기록이 내가 마지막으로 본 것과 같을 때만 덮어쓴다 (그 사이 다른 기기가 올렸으면 받아 합친 뒤 다시 올림)
+async function pushProgress(leaving,retried){
   if(!S.account||!rk.me)return;
-  // 이름·이메일(S.account)은 이 기기에만 두고 서버에는 올리지 않는다
-  const {account,...rest}=S;
-  const s=JSON.stringify(rest);if(s===rk.progSig)return;
-  try{await restWrite("PATCH",`users/${rk.me}`,toFields({s,t:Date.now()}),leaving&&s.length<60000);rk.progSig=s}
-  catch(e){console.warn("진도 저장 실패",e)}
+  if(!rk.pulled){if(leaving)return;await pullProgress();if(!rk.pulled)return}
+  const s=JSON.stringify(cloudCopy());if(s===rk.progSig)return;
+  const m=getSync()||{},body=toFields({s,t:Date.now()});
+  const pre=m.ut?"currentDocument.updateTime="+encodeURIComponent(m.ut):"currentDocument.exists=false";
+  try{
+    const r=await restWrite("PATCH",`users/${rk.me}?${pre}`,body,leaving&&JSON.stringify(body).length<60000);
+    rk.progSig=s;
+    try{setSync((await r.json()).updateTime,s)}catch(e){}
+  }catch(e){
+    if((e.status===400||e.status===409)&&!leaving&&!retried){ // 다른 기기가 먼저 올렸다
+      rk.pulled=false;
+      if(await pullProgress())rerenderAll();
+      return pushProgress(false,true);
+    }
+    console.warn("진도 저장 실패",e);
+  }
 }
-setInterval(()=>{if(!document.hidden)pushProgress(false)},60000);
-document.addEventListener("visibilitychange",()=>{if(document.hidden)pushProgress(true)});
+// 1분마다: 로그인 토큰이 곧 만료되면 미리 새로 받고(페이지를 떠날 때 기다리지 않도록), 바뀐 진도를 올린다
+setInterval(async()=>{
+  if(document.hidden||!S.account)return;
+  if(rk.auth&&Date.now()>rk.auth.exp-5*60e3){try{rk.auth=await restAuth();rk.me=rk.auth.uid}catch(e){}}
+  pushProgress(false);
+},60000);
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){pushProgress(true);return}
+  // 오래 쉬다 돌아오면 토큰이 만료돼 있다. 다음에 떠날 때 기다리지 않도록 미리 받아 둔다
+  if(S.account&&rk.auth&&Date.now()>rk.auth.exp-5*60e3)restAuth().then(a=>{rk.auth=a;rk.me=a.uid}).catch(()=>{});
+});
 function rerenderAll(){refreshSummary();show(tab)}
 /* 브라우저는 "버튼을 누른 그 순간"에 연 팝업만 허용한다 (아이폰 Safari는 특히 엄격).
    그래서 로그인 라이브러리를 버튼이 보일 때 미리 받아 두고, 누르면 기다리는 일 없이 바로 팝업을 연다 */
@@ -1160,7 +1236,7 @@ async function googleLogin(){
 // 로그아웃: 계정에 마지막으로 저장하고, 이 기기의 기록은 지운다 (계정에는 그대로 남음)
 async function googleLogout(){
   await pushProgress(false);
-  try{["kana-v1",AUTH_KEY,"harukana-rank-cache"].forEach(k=>localStorage.removeItem(k))}catch(e){}
+  try{["kana-v1",AUTH_KEY,"harukana-rank-cache",SYNC_KEY].forEach(k=>localStorage.removeItem(k))}catch(e){}
   location.reload();
 }
 // 계정 기록 삭제: Google로 한 번 더 확인한 뒤 서버의 진도·랭킹 기록과 로그인 계정, 이 기기의 기록을 모두 지운다
@@ -1178,7 +1254,7 @@ async function deleteAccount(){
       if(!r.ok)throw new Error("기록 삭제 "+r.status);
     }
     await au.deleteUser(u);
-    try{["kana-v1",AUTH_KEY,"harukana-rank-cache"].forEach(k=>localStorage.removeItem(k))}catch(e){}
+    try{["kana-v1",AUTH_KEY,"harukana-rank-cache",SYNC_KEY].forEach(k=>localStorage.removeItem(k))}catch(e){}
     notifyText("계정과 학습 기록을 모두 지웠어요.");
     setTimeout(()=>location.reload(),1500);
   }catch(e){
