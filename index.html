@@ -7,9 +7,8 @@
 <meta name="theme-color" content="#FAF9F5">
 <title>하루카나</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
-<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js">
-<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js">
-<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js">
+<link rel="preconnect" href="https://securetoken.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
 <body>
@@ -848,8 +847,75 @@ const TOP_N=50;
 const WEEK_REWARDS=[3000,2500,2000,1600,1300,1000,800,600,400,200]; // 주간 리그 1~10등 보상 XP
 const rk={db:null,fb:null,user:null,me:null,canWrite:null,blocked:false,state:"loading",rows:null,weekRows:null,lastRows:null,myLast:null,myRank:{all:null,week:null,last:null},names:{},timer:0,last:"",busy:false};
 const FB_CONFIG={apiKey:"AIzaSyDxJXq2AXCmTzJ-czbHEO5fKhrvn9NjKmg",authDomain:"harukana-74b43.firebaseapp.com",projectId:"harukana-74b43",storageBucket:"harukana-74b43.firebasestorage.app",messagingSenderId:"235663999566",appId:"1:235663999566:web:18e65cb4ee65b2c37c391f"};
-const FB_SDK="https://www.gstatic.com/firebasejs/10.12.2/";
-const docsOf=s=>s.docs.map(d=>({id:d.id,...d.data()}));
+// GitHub 사이트에서는 Firebase 라이브러리 없이 일반 웹 요청(REST)만 쓴다.
+// 모바일 통신망·브라우저에 따라 라이브러리의 연결/로그인이 멈추는 일이 있어서, 읽기·로그인·쓰기를 모두 REST로 한다
+const REST_BASE=`https://firestore.googleapis.com/v1/projects/${FB_CONFIG.projectId}/databases/(default)/documents`;
+const restVal=v=>v.stringValue??(v.integerValue!=null?Number(v.integerValue):v.doubleValue??v.booleanValue??null);
+const toFields=o=>{const f={};for(const k in o){const v=o[k];f[k]=typeof v==="number"?{integerValue:String(Math.round(v))}:{stringValue:String(v)}}return{fields:f}};
+const docOf=d=>{const o={id:d.name.split("/").pop()};for(const k in d.fields||{})o[k]=restVal(d.fields[k]);return o};
+async function restTop(parent,collectionId,field){
+  const r=await fetch(`${REST_BASE}${parent}:runQuery?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({structuredQuery:{from:[{collectionId}],orderBy:[{field:{fieldPath:field},direction:"DESCENDING"}],limit:TOP_N}})});
+  if(!r.ok)throw new Error("REST "+r.status);
+  return (await r.json()).filter(x=>x.document).map(x=>docOf(x.document));
+}
+// 나보다 점수가 높은 사람 수 (상위 50명 밖일 때 내 순위 계산용)
+async function restCountAbove(parent,collectionId,field,v){
+  const r=await fetch(`${REST_BASE}${parent}:runAggregationQuery?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({structuredAggregationQuery:{structuredQuery:{from:[{collectionId}],where:{fieldFilter:{field:{fieldPath:field},op:"GREATER_THAN",value:{integerValue:String(v)}}}},aggregations:[{alias:"n",count:{}}]}})});
+  if(!r.ok)throw new Error("REST "+r.status);
+  const j=await r.json();return Number(((j[0]||{}).result||{}).aggregateFields?.n?.integerValue||0);
+}
+async function restGet(path){
+  const r=await fetch(`${REST_BASE}/${path}?key=${FB_CONFIG.apiKey}`);
+  if(r.status===404)return null;if(!r.ok)throw new Error("REST "+r.status);
+  return docOf(await r.json());
+}
+
+/* 익명 로그인 (REST). 기기마다 익명 ID 하나: 갱신 토큰을 이 기기에 저장해 두고 다시 쓴다.
+   예전 버전(Firebase 라이브러리)이 만든 ID가 있으면 그대로 이어 쓴다 → 기존 랭킹 기록이 두 개로 갈라지지 않는다 */
+const AUTH_KEY="harukana-auth";
+function sdkStoredUser(){
+  return new Promise(res=>{
+    try{
+      const req=indexedDB.open("firebaseLocalStorageDb");
+      req.onerror=()=>res(null);
+      req.onupgradeneeded=()=>{req.transaction.abort();res(null)};
+      req.onsuccess=()=>{
+        try{const db=req.result,g=db.transaction("firebaseLocalStorage","readonly").objectStore("firebaseLocalStorage").get(`firebase:authUser:${FB_CONFIG.apiKey}:[DEFAULT]`);
+          g.onsuccess=()=>{const v=g.result&&g.result.value;res(v&&v.stsTokenManager?{uid:v.uid,refreshToken:v.stsTokenManager.refreshToken}:null)};
+          g.onerror=()=>res(null);
+        }catch(e){res(null)}
+      };
+    }catch(e){res(null)}
+  });
+}
+async function restAuth(){
+  let a=null;try{a=JSON.parse(localStorage.getItem(AUTH_KEY))}catch(e){}
+  if(!a)a=await sdkStoredUser();
+  const keep=x=>{try{localStorage.setItem(AUTH_KEY,JSON.stringify({uid:x.uid,refreshToken:x.refreshToken}))}catch(e){}return x};
+  if(a&&a.refreshToken){
+    const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(a.refreshToken)});
+    if(r.ok){const j=await r.json();return keep({uid:j.user_id,refreshToken:j.refresh_token,idToken:j.id_token,exp:Date.now()+(Number(j.expires_in)-120)*1000})}
+  }
+  const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({returnSecureToken:true})});
+  if(!r.ok)throw new Error("익명 로그인 실패 "+r.status);
+  const j=await r.json();return keep({uid:j.localId,refreshToken:j.refreshToken,idToken:j.idToken,exp:Date.now()+(Number(j.expiresIn)-120)*1000});
+}
+async function authHeader(){
+  if(!rk.auth||Date.now()>rk.auth.exp){rk.auth=await restAuth();rk.me=rk.auth.uid}
+  return{"Authorization":"Bearer "+rk.auth.idToken};
+}
+// 로그인이 필요한 쓰기/지우기 (토큰이 만료됐으면 한 번 새로 받아서 다시 시도)
+async function restWrite(method,path,body){
+  for(let i=0;i<2;i++){
+    const r=await fetch(`${REST_BASE}/${path}`,{method,headers:{...await authHeader(),"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
+    if(r.status===401&&i===0){rk.auth=null;continue}
+    if(!r.ok){const e=new Error("REST "+r.status);e.status=r.status;throw e}
+    return r;
+  }
+}
+
 // 지난번에 받은 랭킹을 이 기기에 저장해 두고, 다음에 열 때 먼저 보여준다 (새 랭킹이 오면 바로 바뀜)
 const RANK_CACHE="harukana-rank-cache";
 function loadRankCache(){
@@ -860,70 +926,51 @@ function loadRankCache(){
 function saveRankCache(){
   try{localStorage.setItem(RANK_CACHE,JSON.stringify({wn:rk.wn,me:rk.me,rows:rk.rows,weekRows:rk.weekRows,lastRows:rk.lastRows}))}catch(e){}
 }
-// 랭킹을 일반 웹 요청(REST)으로 먼저 받아 온다: Firebase 라이브러리·로그인 없이 되고, 실시간 연결이 막힌
-// 모바일 통신망이나 앱 안 브라우저(카카오톡 등)에서도 동작한다. 실시간 연결이 되면 그쪽 결과로 바뀐다
-const REST_BASE=`https://firestore.googleapis.com/v1/projects/${FB_CONFIG.projectId}/databases/(default)/documents`;
-const restVal=v=>v.stringValue??(v.integerValue!=null?Number(v.integerValue):v.doubleValue??v.booleanValue??null);
-async function restTop(parent,collectionId,field){
-  const r=await fetch(`${REST_BASE}${parent}:runQuery?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({structuredQuery:{from:[{collectionId}],orderBy:[{field:{fieldPath:field},direction:"DESCENDING"}],limit:TOP_N}})});
-  if(!r.ok)throw new Error("REST "+r.status);
-  return (await r.json()).filter(x=>x.document).map(x=>{const o={id:x.document.name.split("/").pop()};for(const k in x.document.fields)o[k]=restVal(x.document.fields[k]);return o});
+// 랭킹 세 가지(전체·이번 주·지난주)를 받아 오고 내 순위를 계산한다
+async function refreshBoards(){
+  const wn=rk.wn;
+  try{
+    const [all,week,last]=await Promise.all([restTop("","scores","xp"),restTop(`/weeks/${wn}`,"players","weekXp"),rk.lastRows&&!rk.cached?Promise.resolve(rk.lastRows):restTop(`/weeks/${wn-1}`,"players","weekXp")]);
+    rk.rows=all;rk.weekRows=week;rk.lastRows=last;rk.cached=false;rk.state="ready";saveRankCache();
+  }catch(e){if(!rk.rows)rk.state="offline"}
+  if(tab===5)renderRank();
+  await refreshMine();
 }
-function restRank(){
-  const wn=weekNum();rk.wn=rk.wn||wn;rk.lastWn=rk.lastWn||wn-1;
-  const done=()=>{rk.state="ready";saveRankCache();if(tab===5)renderRank()};
-  restTop("","scores","xp").then(rows=>{if(!rk.live.rows){rk.rows=rows;rk.cached=false;done()}}).catch(()=>{});
-  restTop(`/weeks/${wn}`,"players","weekXp").then(rows=>{if(!rk.live.week){rk.weekRows=rows;done()}}).catch(()=>{});
-  restTop(`/weeks/${wn-1}`,"players","weekXp").then(rows=>{if(!rk.lastRows||rk.cached){rk.lastRows=rows;done()}}).catch(()=>{});
+const rankIn=async(rows,parent,col,field,v)=>{const i=rows.findIndex(r=>r.id===rk.me);return i>=0?i+1:(await restCountAbove(parent,col,field,v))+1};
+async function refreshMine(){
+  if(!rk.me||!rk.rows)return;
+  try{
+    const on=S.rank&&!S.rankOff;
+    rk.myRank.all=on&&S.xp>0?await rankIn(rk.rows,"","scores","xp",S.xp):null;
+    rk.myRank.week=on&&rk.weekRows&&weekXp()>0?await rankIn(rk.weekRows,`/weeks/${rk.wn}`,"players","weekXp",weekXp()):null;
+  }catch(e){}
+  if(tab===5)renderRank();
 }
 async function initFirebase(){
-  loadRankCache();rk.live={};restRank();if(tab===5)renderRank();
+  const wn=weekNum();rk.wn=wn;rk.lastWn=wn-1;rk.fb={rest:true};
+  loadRankCache();if(tab===5)renderRank();
+  const boards=refreshBoards();
+  // 랭킹 탭을 보고 있는 동안 30초마다 새로 받아 온다
+  setInterval(()=>{if(tab===5&&!document.hidden)refreshBoards()},30000);
+  try{rk.auth=await restAuth();rk.me=rk.auth.uid;rk.canWrite=true}catch(e){console.warn("익명 로그인 실패",e)}
+  if(!rk.me){if(tab===5)renderRank();return}
+  syncScore();
+  await boards;await refreshMine();
   try{
-    const [{initializeApp},au,fs]=await Promise.all([import(FB_SDK+"firebase-app.js"),import(FB_SDK+"firebase-auth.js"),import(FB_SDK+"firebase-firestore.js")]);
-    // 긴 연결(WebChannel 스트리밍) 대신 롱 폴링: 모바일 통신망·앱 안 브라우저에서 더 잘 된다
-    const app=initializeApp(FB_CONFIG),auth=au.getAuth(app),db=fs.initializeFirestore(app,{experimentalForceLongPolling:true});
-    const wn=weekNum();
-    rk.fb={fs,db};rk.state="ready";rk.wn=wn;rk.lastWn=wn-1;
-    const scores=fs.collection(db,"scores"),thisWeek=fs.collection(db,"weeks",String(wn),"players"),lastWeek=fs.collection(db,"weeks",String(wn-1),"players");
-    const fail=()=>{if(!rk.rows){rk.state="error"}if(tab===5)renderRank()};
-    // 상위 50명에 없으면 "나보다 점수가 높은 사람 수 + 1"로 내 순위를 센다
-    const countAbove=async(col,field,v)=>(await fs.getCountFromServer(fs.query(col,fs.where(field,">",v)))).data().count;
-    const rankIn=async(rows,col,field,v)=>{const i=rows.findIndex(r=>r.id===rk.me);return i>=0?i+1:(await countAbove(col,field,v))+1};
-    rk.refreshMine=async()=>{
-      if(!rk.me)return;
-      try{
-        rk.myRank.all=S.rank&&!S.rankOff&&S.xp>0&&rk.rows?await rankIn(rk.rows,scores,"xp",S.xp):null;
-        rk.myRank.week=S.rank&&!S.rankOff&&rk.weekRows&&weekXp()>0?await rankIn(rk.weekRows,thisWeek,"weekXp",weekXp()):null;
-      }catch(e){}
-      if(tab===5)renderRank();
-    };
-    // 랭킹 읽기는 누구나 가능해서 로그인을 기다리지 않고 바로 시작한다
-    fs.onSnapshot(fs.query(scores,fs.orderBy("xp","desc"),fs.limit(TOP_N)),s=>{rk.rows=docsOf(s);rk.live.rows=true;rk.cached=false;saveRankCache();if(tab===5)renderRank();rk.refreshMine()},fail);
-    fs.onSnapshot(fs.query(thisWeek,fs.orderBy("weekXp","desc"),fs.limit(TOP_N)),s=>{rk.weekRows=docsOf(s);rk.live.week=true;saveRankCache();if(tab===5)renderRank();rk.refreshMine()},fail);
-    // 지난주 리그: 이미 마감돼서 바뀌지 않으니 한 번만 읽는다
-    const lastP=fs.getDocs(fs.query(lastWeek,fs.orderBy("weekXp","desc"),fs.limit(TOP_N))).then(s=>{rk.lastRows=docsOf(s);saveRankCache();if(tab===5)renderRank()});
-    // 가입 없이 기기마다 익명 ID를 받는다 (다시 열어도 같은 ID)
-    await auth.authStateReady();
-    const user=auth.currentUser||(await au.signInAnonymously(auth)).user;
-    rk.me=user.uid;rk.canWrite=true;
-    syncScore();rk.refreshMine();
-    await lastP;
-    const mine=await fs.getDoc(fs.doc(lastWeek,rk.me));
-    if(mine.exists()){rk.myLast={id:rk.me,...mine.data()};rk.myRank.last=await rankIn(rk.lastRows,lastWeek,"weekXp",rk.myLast.weekXp)}
-    claimWeekReward();
-    cleanupOldWeeks();
-  }catch(e){console.warn("랭킹 서버 연결 실패",e);if(!rk.rows)rk.state="offline"}
+    const mine=await restGet(`weeks/${wn-1}/players/${rk.me}`);
+    if(mine){rk.myLast=mine;rk.myRank.last=await rankIn(rk.lastRows||[],`/weeks/${wn-1}`,"players","weekXp",mine.weekXp)}
+  }catch(e){}
+  claimWeekReward();
+  cleanupOldWeeks();
   if(tab===5)renderRank();
 }
 // 2주가 지난 주간 리그 기록 지우기: 무료 요금제엔 서버 예약 작업이 없어서, 앱을 연 사람이 하루 한 번 대신 지운다
 // (보안 규칙이 "이번 주·지난주가 아닌 기록"만 아무나 지울 수 있게 허용)
 async function cleanupOldWeeks(){
   try{const k="harukana-cleanup",d=String(Math.floor(Date.now()/DAYMS));if(localStorage.getItem(k)===d)return;localStorage.setItem(k,d)}catch(e){return}
-  const {fs,db}=rk.fb;
   for(let w=rk.wn-2;w>=rk.wn-10;w--){
-    try{const s=await fs.getDocs(fs.query(fs.collection(db,"weeks",String(w),"players"),fs.limit(200)));
-      for(const d of s.docs){try{await fs.deleteDoc(d.ref)}catch(e){}}}catch(e){}
+    try{const rows=await restTop(`/weeks/${w}`,"players","weekXp");
+      for(const d of rows){try{await restWrite("DELETE",`weeks/${w}/players/${d.id}`)}catch(e){}}}catch(e){}
   }
 }
 // 랭킹에서 숨기기 / 다시 참가하기
@@ -931,10 +978,11 @@ async function setRankHidden(hide){
   S.rankOff=hide?1:0;S.rank=hide?0:1;save();rk.last="";
   if(hide&&rk.me){
     try{
-      if(rk.fb){const{fs,db}=rk.fb;await fs.deleteDoc(fs.doc(db,"scores",rk.me));await fs.deleteDoc(fs.doc(db,"weeks",weekId(),"players",rk.me))}
+      if(rk.fb){await restWrite("DELETE",`scores/${rk.me}`);await restWrite("DELETE",`weeks/${weekId()}/players/${rk.me}`)}
       else if(rk.db)await rk.db.doc("scores/"+rk.me).delete();
     }catch(e){}
     rk.myRank.all=rk.myRank.week=null;
+    if(rk.fb)refreshBoards();
   }else syncScore();
   notifyText(hide?"랭킹에서 내 기록을 숨겼어요.":"랭킹에 다시 참가했어요.");
   renderRank();
@@ -981,15 +1029,18 @@ function syncScore(){
     try{
       const t=Date.now();
       if(rk.fb){
-        const{fs,db}=rk.fb;
-        await fs.setDoc(fs.doc(db,"scores",rk.me),{...data,t});
-        if(data.weekXp>0)await fs.setDoc(fs.doc(db,"weeks",data.week,"players",rk.me),{nick:data.nick,title:data.title,avatar:data.avatar,level:data.level,weekXp:data.weekXp,t});
-      }else await rk.db.doc("scores/"+rk.me).set({...data,t});
-      rk.last=sig;
-      if(rk.refreshMine)rk.refreshMine();
-    }catch(e){if(e&&(e.code==="invalid_argument"||e.code==="permission-denied")){rk.blocked=true;if(tab===5)renderRank()}}
+        await restWrite("PATCH",`scores/${rk.me}`,toFields({...data,t}));
+        if(data.weekXp>0)await restWrite("PATCH",`weeks/${data.week}/players/${rk.me}`,toFields({nick:data.nick,title:data.title,avatar:data.avatar,level:data.level,weekXp:data.weekXp,t}));
+        rk.last=sig;rk.syncErr=null;
+        refreshBoards();
+      }else{await rk.db.doc("scores/"+rk.me).set({...data,t});rk.last=sig}
+    }catch(e){
+      rk.syncErr=String(e&&(e.status||e.code||e.message));
+      if(e&&(e.status===403||e.code==="invalid_argument"||e.code==="permission-denied")){rk.blocked=true;if(tab===5)renderRank()}
+      else setTimeout(syncScore,15000); // 통신 오류면 잠시 뒤 다시 시도
+    }
     rk.busy=false;
-  },1500);
+  },1200);
 }
 /* ---------- 프로필: 닉네임, 대표 칭호, 분야별 칭호와 따로따로 초기화 ---------- */
 // 분야마다 진도에 따라 칭호 3단계: 1개 이상 → 1단계, 절반 이상 → 2단계, 전부 → 3단계
@@ -1111,7 +1162,8 @@ function renderRank(){
     const join=!rk.me?(window.claude&&typeof claude.use==="function"&&!rk.fb?`<p class="rk-note">claude.ai에 로그인하면 랭킹에 참가할 수 있어요.</p>`:"")
       :S.rankOff?`<div class="rk-join"><p>지금은 랭킹에서 내 기록이 숨겨져 있어요.</p><button class="next" id="rk-join">다시 참가하기</button></div>`
       :S.xp<=0?`<p class="rk-note">문제를 하나 맞히면 「${esc(S.nick)}」 이름으로 랭킹에 올라가요. 닉네임은 위 프로필에서 바꿀 수 있어요.</p>`
-      :(rk.blocked||rk.canWrite===false)?`<p class="rk-note">${rk.fb?"내 기록을 랭킹에 올리지 못했어요. 잠시 뒤 다시 시도해 주세요.":"순위는 볼 수 있지만, 내 기록을 올리려면 이 페이지의 편집 권한이 필요해요."}</p>`:"";
+      :(rk.blocked||rk.canWrite===false)?`<p class="rk-note">${rk.fb?`내 기록을 랭킹에 올리지 못했어요 (오류 ${esc(rk.syncErr||"")}). 잠시 뒤 다시 시도해 주세요.`:"순위는 볼 수 있지만, 내 기록을 올리려면 이 페이지의 편집 권한이 필요해요."}</p>`
+      :rk.syncErr?`<p class="rk-note">내 기록을 올리는 중 연결 문제가 있었어요 (오류 ${esc(rk.syncErr)}). 15초 뒤 자동으로 다시 시도해요.</p>`:"";
     // 상위 50명 + (50위 밖이면) 맨 아래에 내 순위 한 줄
     const mode=rk.mode||"week",league=mode!=="all";
     const meRow={id:rk.me,nick:S.nick,title:mainTitle(),avatar:S.avatar,level:lvOf(S.xp),xp:S.xp,weekXp:weekXp(),streak:streak()};
