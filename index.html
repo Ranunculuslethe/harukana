@@ -1004,27 +1004,6 @@ async function initRank(){
   if(!IN_CLAUDE){initFirebase();return}
   rk.state="elsewhere";if(tab===5)renderRank();
 }
-// (예전 claude.ai 전용 랭킹 — 더 이상 쓰지 않음)
-async function initClaudeRank(){
-  try{
-    const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
-    rk.db=db;rk.user=user;
-    if(!db){rk.state="local";if(tab===5)renderRank();return}
-    if(user){rk.me=await user.id();rk.canWrite=await user.can("data.write");try{rk.myName=(await user.me()).name||""}catch(e){}}
-    rk.state="ready";
-    const names=async rows=>{if(rk.user&&rows.length){try{const ps=await rk.user.profiles(rows.map(r=>r.id));for(const id in ps)rk.names[id]=ps[id].name||""}catch(e){}}};
-    const fail=()=>{rk.state="error";if(tab===5)renderRank()};
-    const mineIn=rows=>{const i=rows.findIndex(r=>r.id===rk.me);return i>=0?i+1:null};
-    db.collection("scores").orderBy("xp","desc").limit(TOP_N).onSnapshot(async s=>{
-      rk.rows=s.docs.map(d=>({id:d.id,...d.data()}));rk.myRank.all=mineIn(rk.rows);await names(rk.rows);if(tab===5)renderRank();
-    },fail);
-    db.collection("scores").where("week","==",weekId()).orderBy("weekXp","desc").limit(TOP_N).onSnapshot(async s=>{
-      rk.weekRows=s.docs.map(d=>({id:d.id,...d.data()}));rk.myRank.week=mineIn(rk.weekRows);await names(rk.weekRows);if(tab===5)renderRank();
-    },fail);
-    syncScore();
-  }catch(e){rk.state="local"}
-  if(tab===5)renderRank();
-}
 function syncScore(){
   // 문제를 한 번이라도 맞힌 사람(XP가 있는 사람)만 랭킹에 올린다
   if(!(rk.db||rk.fb)||!rk.me||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
