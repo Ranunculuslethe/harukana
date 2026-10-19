@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>하루카나 관리</title>
+<style>
+:root{color-scheme:light;--bg:#faf9f5;--card:#fffefa;--ink:#283b50;--sub:#7c8389;--line:#e9e7df;--accent:#c9635d;--accent-soft:#f9e9e3;--onaccent:#fff}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#19232d;--card:#222f3c;--ink:#eee9df;--sub:#b1b8be;--line:#3a4753;--accent:#eda193;--accent-soft:#493a3b;--onaccent:#2a2528}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 system-ui,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:var(--sub);font-size:13px;margin:0 0 20px}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px;cursor:pointer}
+button.main{background:var(--accent);border-color:var(--accent);color:var(--onaccent);font-weight:600}
+input{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 12px;min-width:0;flex:1 1 200px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stat b{display:block;font-size:22px}.stat span{color:var(--sub);font-size:12px}
+.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{font-size:12px;color:var(--sub);font-weight:600;cursor:pointer;user-select:none}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right}
+.msg{padding:18px;color:var(--sub)}
+.tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:99px;background:var(--accent-soft)}
+</style>
+</head>
+<body>
+<main>
+<h1>하루카나 관리</h1>
+<p class="sub">Google로 로그인한 학습자 목록이에요. 관리자 계정으로 로그인해야 보여요. (읽기 전용)</p>
+<div class="bar" id="bar"><button class="main" id="login">Google로 로그인</button></div>
+<div id="out"></div>
+</main>
+<script type="module">
+// 관리자 페이지: 관리자 Google 계정으로 로그인하면 users/<uid> (로그인한 학습자의 진도)를 읽어 표로 보여 준다
+// 누가 볼 수 있는지는 Firestore 보안 규칙이 정한다 (이 파일에는 관리자 정보가 없음)
+const SDK="https://www.gstatic.com/firebasejs/10.12.2/";
+const FB_CONFIG={apiKey:"AIzaSyDxJXq2AXCmTzJ-czbHEO5fKhrvn9NjKmg",authDomain:"harukana-74b43.firebaseapp.com",projectId:"harukana-74b43",appId:"1:235663999566:web:18e65cb4ee65b2c37c391f"};
+const BASE=`https://firestore.googleapis.com/v1/projects/${FB_CONFIG.projectId}/databases/(default)/documents`;
+const {initializeApp}=await import(SDK+"firebase-app.js");
+const au=await import(SDK+"firebase-auth.js");
+const auth=au.getAuth(initializeApp(FB_CONFIG));
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let rows=[],sortKey="last",sortDir=-1,filter="";
+
+$("login").onclick=()=>au.signInWithPopup(auth,new au.GoogleAuthProvider()).catch(e=>show(`로그인하지 못했어요 (${esc(e.code||e.message)})`));
+au.onAuthStateChanged(auth,u=>{
+  if(!u){$("bar").innerHTML='<button class="main" id="login">Google로 로그인</button>';$("login").onclick=()=>au.signInWithPopup(auth,new au.GoogleAuthProvider()).catch(e=>show(`로그인하지 못했어요 (${esc(e.code||e.message)})`));show("");return}
+  $("bar").innerHTML=`<span>${esc(u.email)}</span><button id="reload">새로고침</button><button id="logout">로그아웃</button><input id="q" placeholder="이름·이메일·닉네임 검색">`;
+  $("logout").onclick=()=>au.signOut(auth);
+  $("reload").onclick=load;
+  $("q").oninput=e=>{filter=e.target.value.trim().toLowerCase();render()};
+  load();
+});
+function show(html){$("out").innerHTML=html?`<div class="wrap"><div class="msg">${html}</div></div>`:""}
+
+const dayKeyOf=d=>d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+const parseDay=k=>{const [y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)};
+function streakOf(daily){let n=0;const d=new Date();if(!daily[dayKeyOf(d)])d.setDate(d.getDate()-1);while(daily[dayKeyOf(d)]){n++;d.setDate(d.getDate()-1)}return n}
+function summarize(id,doc){
+  let s={};try{s=JSON.parse(doc.fields?.s?.stringValue||"{}")}catch(e){}
+  const daily=s.daily||{},days=Object.keys(daily).filter(k=>daily[k]>0);
+  const lastDay=days.map(parseDay).sort((a,b)=>b-a)[0]||null;
+  const saved=Number(doc.fields?.t?.integerValue)||0;
+  return{id,name:s.account?.name||"",email:s.account?.email||"",nick:s.nick||"",
+    xp:Number(s.xp)||0,level:Math.floor((Number(s.xp)||0)/100)+1,
+    chars:Object.values(s.c||{}).filter(v=>v&&v.d).length,words:Object.values(s.w||{}).filter(v=>v&&v.d).length,
+    days:days.length,streak:streakOf(daily),solved:days.reduce((a,k)=>a+daily[k],0),
+    rank:s.rankOff?"숨김":"참가",last:Math.max(saved,lastDay?+lastDay:0),
+    created:Date.parse(doc.createTime)||0};
+}
+async function load(){
+  show("불러오는 중…");
+  try{
+    const token=await auth.currentUser.getIdToken();
+    const all=[];let page="";
+    do{
+      const r=await fetch(`${BASE}/users?pageSize=300${page?"&pageToken="+encodeURIComponent(page):""}`,{headers:{Authorization:"Bearer "+token}});
+      if(r.status===403){show("이 계정은 관리자 권한이 없어요.");return}
+      if(!r.ok)throw new Error("HTTP "+r.status);
+      const j=await r.json();
+      for(const d of j.documents||[])all.push(summarize(d.name.split("/").pop(),d));
+      page=j.nextPageToken||"";
+    }while(page);
+    rows=all;render();
+  }catch(e){show("불러오지 못했어요 ("+esc(e.message)+")")}
+}
+const fmt=ms=>ms?new Date(ms).toLocaleString("ko-KR",{year:"2-digit",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}):"-";
+const COLS=[["name","이름"],["email","이메일"],["nick","닉네임"],["level","레벨",1],["xp","XP",1],["chars","익힌 글자",1],["words","익힌 단어",1],["solved","푼 문제",1],["days","학습일",1],["streak","연속",1],["rank","랭킹"],["created","가입"],["last","최근 활동"]];
+function render(){
+  const now=Date.now(),D=86400000;
+  const list=rows.filter(r=>!filter||[r.name,r.email,r.nick].some(v=>v.toLowerCase().includes(filter)))
+    .sort((a,b)=>(a[sortKey]>b[sortKey]?1:a[sortKey]<b[sortKey]?-1:0)*sortDir);
+  const stat=(n,l)=>`<div class="stat"><b>${n}</b><span>${l}</span></div>`;
+  $("out").innerHTML=`<div class="stats">${stat(rows.length,"로그인한 학습자")}${stat(rows.filter(r=>now-r.last<D).length,"최근 24시간 활동")}${stat(rows.filter(r=>now-r.last<7*D).length,"최근 7일 활동")}${stat(rows.filter(r=>now-r.created<7*D).length,"최근 7일 가입")}</div>
+  <div class="wrap">${list.length?`<table><thead><tr>${COLS.map(([k,l,n])=>`<th class="${n?"num":""}" data-k="${k}">${l}${sortKey===k?(sortDir<0?" ▼":" ▲"):""}</th>`).join("")}</tr></thead><tbody>
+  ${list.map(r=>`<tr>${COLS.map(([k,,n])=>`<td class="${n?"num":""}">${k==="last"||k==="created"?fmt(r[k]):k==="rank"?`<span class="tag">${r.rank}</span>`:esc(r[k])}</td>`).join("")}</tr>`).join("")}
+  </tbody></table>`:`<div class="msg">${rows.length?"검색 결과가 없어요.":"아직 로그인한 학습자가 없어요."}</div>`}</div>`;
+  document.querySelectorAll("th[data-k]").forEach(th=>th.onclick=()=>{const k=th.dataset.k;sortDir=sortKey===k?-sortDir:-1;sortKey=k;render()});
+}
+</script>
+</body>
+</html>
