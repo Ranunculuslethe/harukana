@@ -141,6 +141,14 @@
 .cal-day.future{opacity:.45}
 .cal-day.today{box-shadow:0 0 0 2px var(--ink)}
 @media(max-width:420px){.cal{padding:12px}.cal-week,.cal-grid{gap:4px}.cal-day{padding:4px 5px;border-radius:8px}.cal-day b{font-size:13px}}
+/* Google 로그인 */
+.gbtn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-bottom-width:3px;background:var(--card);color:var(--ink);border-radius:12px;padding:9px 14px;font-size:13px;font-weight:700;white-space:nowrap}
+.gbtn:hover{border-color:var(--accent)}
+.g{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#fff;border:1px solid #dadce0;color:#4285F4;font:800 13px/1 Arial,sans-serif;flex:0 0 auto}
+.login-banner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:22px;padding:16px 18px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:16px;background:var(--accent-soft)}
+.login-banner>div{flex:1 1 220px;min-width:0}.login-banner b{display:block;font-size:14px}.login-banner small{display:block;font-size:12px;color:var(--sub);margin-top:3px;line-height:1.6}
+.pf-acct{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 2px;font-size:12px;color:var(--sub)}
+.pf-acct span:not(.g){min-width:0;overflow-wrap:anywhere}.pf-acct .link{margin:0;font-size:12px}
 #words .seg{width:100%}#words .seg button{flex:1;padding:8px 6px;white-space:nowrap}
 </style><a class="skip-link" href="#content">학습 내용으로 이동</a><svg xmlns="http://www.w3.org/2000/svg" class="svg-library" aria-hidden="true"><defs>
 <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></symbol>
@@ -186,6 +194,7 @@
 <path d="M247 36h28m-42 6h32M18 58h36m-21 7h35" stroke="#FFFBF3" stroke-width="7" stroke-linecap="round"/>
 <use href="#fox" x="130" y="79" width="175" height="185"/>
 </svg><span class="scene-caption">はじめまして！</span></div>
+<div id="login-banner"></div>
 <div id="review"></div>
 <div class="journey-heading"><div><span class="section-kicker">LEARNING PATH</span><h2>나의 학습 길</h2></div><span class="journey-badge">입문 · 첫 번째 여정</span></div>
 <div class="path-tabs" role="group" aria-label="학습 길 문자 종류"><button id="path-h" class="on" aria-pressed="true">ひ <span>히라가나</span></button><button id="path-k" aria-pressed="false">カ <span>가타카나</span></button></div>
@@ -969,6 +978,8 @@ async function initFirebase(){
   setInterval(()=>{if(tab===5&&!document.hidden)loadBoard(rk.mode,true)},60000);
   try{rk.auth=await restAuth();rk.me=rk.auth.uid;rk.canWrite=true}catch(e){console.warn("익명 로그인 실패",e)}
   if(!rk.me){scheduleRank();return}
+  // 로그인한 사람: 계정에 저장된 진도(다른 기기에서 한 것 포함)를 불러와 합친다
+  if(S.account&&await pullProgress())rerenderAll();
   syncScore();
   if(tab===5)refreshMine(rk.mode||"week");
   // 지난주 보상: 내 지난주 기록 1건 + 나보다 높은 사람 수 1건만 읽는다
@@ -1003,6 +1014,96 @@ async function setRankHidden(hide){
   notifyText(hide?"랭킹에서 내 기록을 숨겼어요.":"랭킹에 다시 참가했어요.");
   renderRank();
 }
+/* ---------- Google 로그인과 진도 저장 ----------
+   로그인하지 않아도 쓸 수 있지만, 기록은 이 브라우저에만 남는다(브라우저 데이터를 지우면 사라짐).
+   Google로 로그인하면 진도 전체(S)를 users/<uid> 에 저장하고, 다른 기기·브라우저에서 로그인하면 불러와 합친다.
+   Firebase 로그인 라이브러리는 로그인 버튼을 누를 때만 불러온다(평소에는 REST만 써서 가볍게) */
+const AUTH_SDK="https://www.gstatic.com/firebasejs/10.12.2/";
+const IN_APP_BROWSER=/KAKAOTALK|NAVER\(|Instagram|FBAN|FBAV|Line\/|DaumApps/i.test(navigator.userAgent);
+// 두 기기의 진도 합치기: 한쪽에서라도 맞힌 것은 맞힘, 숫자는 큰 쪽, 오답·배지·칭호는 합친다
+function mergeState(L,C){
+  const R=JSON.parse(JSON.stringify(L||{}));C=C||{};
+  const max=(a,b)=>Math.max(Number(a)||0,Number(b)||0);
+  for(const k of ["c","w","cr","wr"]){R[k]=R[k]||{};
+    for(const id in C[k]||{}){const a=R[k][id],b=C[k][id];
+      R[k][id]=!a?b:{...a,...b,r:max(a.r,b.r),w:max(a.w,b.w),d:(a.d||b.d)?1:0,v:(a.v||b.v)?1:0}}}
+  R.n={...(C.n||{}),...(R.n||{})};
+  R.sr=R.sr||{};for(const k in C.sr||{}){const a=R.sr[k],b=C.sr[k];if(!a||(b.lv||0)>(a.lv||0))R.sr[k]=b}
+  R.daily=R.daily||{};for(const d in C.daily||{})R.daily[d]=max(R.daily[d],C.daily[d]);
+  R.xp=max(R.xp,C.xp);
+  R.badges={...(C.badges||{}),...(R.badges||{})};R.flags={...(C.flags||{}),...(R.flags||{})};
+  R.claimed={...(C.claimed||{}),...(R.claimed||{})};
+  R.titles=R.titles||{};for(const k in C.titles||{})R.titles[k]=Math.max(R.titles[k]??-1,C.titles[k]??-1);
+  R.co=R.co||{};for(const k in C.co||{})R.co[k]=max(R.co[k],C.co[k]);
+  R.mix=(R.mix||C.mix)?1:0;
+  const wk=x=>Number((x||{}).id)||0;
+  if(C.wk){if(wk(C.wk)>wk(R.wk))R.wk=C.wk;else if(wk(C.wk)===wk(R.wk))R.wk={id:R.wk.id,xp:max(R.wk.xp,C.wk.xp)}}
+  if(C.day&&(!R.day||C.day.id>R.day.id||(C.day.id===R.day.id&&(C.day.solved||0)>(R.day.solved||0))))R.day=C.day;
+  // 프로필: 이 기기 닉네임이 자동 가명("학습자1234")이면 계정 쪽 닉네임을 쓴다
+  if(C.nick&&(!R.nick||/^학습자\d{4}$/.test(R.nick)))R.nick=C.nick;
+  if(!R.avatar&&C.avatar)R.avatar=C.avatar;if(!R.title&&C.title)R.title=C.title;
+  return R;
+}
+async function pullProgress(){
+  if(!S.account||!rk.me)return false;
+  try{
+    const r=await fetch(`${REST_BASE}/users/${rk.me}`,{headers:await authHeader()});
+    if(!r.ok)return false;
+    const cloud=JSON.parse(docOf(await r.json()).s||"null");
+    if(cloud){const acct=S.account;S=mergeState(S,cloud);S.account=acct;save();return true}
+  }catch(e){console.warn("진도 불러오기 실패",e)}
+  return false;
+}
+// 진도 올리기: 바뀐 게 있을 때만, 1분에 한 번 + 페이지를 떠날 때
+async function pushProgress(leaving){
+  if(!S.account||!rk.me)return;
+  const s=JSON.stringify(S);if(s===rk.progSig)return;
+  try{await restWrite("PATCH",`users/${rk.me}`,toFields({s,t:Date.now()}),leaving&&s.length<60000);rk.progSig=s}
+  catch(e){console.warn("진도 저장 실패",e)}
+}
+setInterval(()=>{if(!document.hidden)pushProgress(false)},60000);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)pushProgress(true)});
+function rerenderAll(){refreshSummary();show(tab)}
+async function googleLogin(){
+  if(IN_CLAUDE)return;
+  if(IN_APP_BROWSER){notifyText("이 앱 안 브라우저에서는 Google 로그인이 막혀 있어요. 메뉴에서 'Chrome으로 열기' 후 로그인해 주세요.");return}
+  try{
+    // 지금 쓰던 익명 ID(로그인 전 랭킹 기록)를 기억해 둔다
+    let old=null;if(rk.fb&&!S.account){try{await authHeader();old={...rk.auth}}catch(e){}}
+    const [appMod,au]=await Promise.all([import(AUTH_SDK+"firebase-app.js"),import(AUTH_SDK+"firebase-auth.js")]);
+    const app=appMod.getApps().length?appMod.getApps()[0]:appMod.initializeApp(FB_CONFIG);
+    const auth=au.getAuth(app);
+    const res=await au.signInWithPopup(auth,new au.GoogleAuthProvider());
+    const u=res.user;
+    rk.auth={uid:u.uid,refreshToken:u.refreshToken,idToken:await u.getIdToken(),exp:Date.now()+50*60e3};
+    try{localStorage.setItem(AUTH_KEY,JSON.stringify({uid:u.uid,refreshToken:u.refreshToken}))}catch(e){}
+    rk.me=u.uid;S.account={name:u.displayName||"",email:u.email||""};
+    au.signOut(auth).catch(()=>{}); // 이후는 REST로 이어 간다(라이브러리 세션은 필요 없음)
+    const merged=await pullProgress();
+    // 로그인 전 익명 ID의 랭킹 기록은 지운다 (같은 사람이 두 줄로 나오지 않게, 새 계정으로 다시 올라감)
+    if(old&&old.uid!==u.uid){
+      for(const p of [`scores/${old.uid}`,`weeks/${weekId()}/players/${old.uid}`]){
+        try{await fetch(`${REST_BASE}/${p}`,{method:"DELETE",headers:{Authorization:"Bearer "+old.idToken}})}catch(e){}
+      }
+    }
+    S.rankOff=S.rankOff||0;save();rk.last="";rk.blocked=false;rk.syncErr=null;rk.myRank={all:null,week:null,last:null};
+    await pushProgress(false);syncScore();
+    notifyText(merged?"로그인했어요. 계정에 있던 기록과 이 기기 기록을 합쳤어요.":"로그인했어요. 이제 기록이 Google 계정에 저장돼요.");
+    rerenderAll();
+  }catch(e){
+    const c=e&&e.code||"";
+    notifyText(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request"?"로그인을 취소했어요."
+      :c==="auth/popup-blocked"?"팝업이 막혔어요. 브라우저에서 팝업을 허용한 뒤 다시 눌러 주세요."
+      :"로그인하지 못했어요 ("+(c||e.message)+")");
+  }
+}
+// 로그아웃: 계정에 마지막으로 저장하고, 이 기기의 기록은 지운다 (계정에는 그대로 남음)
+async function googleLogout(){
+  await pushProgress(false);
+  try{["kana-v1",AUTH_KEY,"harukana-rank-cache"].forEach(k=>localStorage.removeItem(k))}catch(e){}
+  location.reload();
+}
+const loginBtn=(id,label)=>`<button class="gbtn" id="${id}"><span class="g">G</span>${label||"Google로 로그인"}</button>`;
 // 지난주 리그 1~10등이면 보상 XP를 한 번만 받는다 (전체 XP에만 더하고 이번 주 리그 XP에는 넣지 않는다)
 function claimWeekReward(){
   const r=rk.myRank.last,key=String(rk.lastWn);
@@ -1112,7 +1213,7 @@ function resetRecord(id){
   // XP·배지 초기화: 이번 주 리그 XP는 남긴다 (리그 중간에 순위가 사라지지 않게)
   else if(id==="reward"){S.xp=0;S.badges={};S.flags={};label="XP·배지"}
   // 모두 초기화: 학습 기록만 지우고, 내가 쌓은 XP·배지·연속 학습일과 프로필은 남긴다
-  else if(id==="all"){const keep={xp:S.xp,badges:S.badges,flags:S.flags,daily:S.daily,nick:S.nick,avatar:S.avatar,rank:S.rank,titles:S.titles,title:S.title,wk:S.wk,day:S.day,claimed:S.claimed};S=fresh();Object.assign(S,keep);qScript="h";qStage=1;cq=null;wv={view:"list"};nq=null;label="학습"}
+  else if(id==="all"){const keep={xp:S.xp,badges:S.badges,flags:S.flags,daily:S.daily,nick:S.nick,avatar:S.avatar,rank:S.rank,titles:S.titles,title:S.title,wk:S.wk,day:S.day,claimed:S.claimed,account:S.account};S=fresh();Object.assign(S,keep);qScript="h";qStage=1;cq=null;wv={view:"list"};nq=null;label="학습"}
   save();refreshSummary();rk.last="";syncScore();
   if(tab===0)renderHome();
   if(tab===2){$("quiz").innerHTML="";startStage(qStage);renderStageBar();renderCharQuiz()}
@@ -1143,6 +1244,8 @@ function renderRank(){
       ${editingNick
         ?`<div class="pf-edit"><input id="nick-in" maxlength="12" value="${esc(S.nick||"")}" placeholder="${esc(rk.myName||"학습자")}" aria-label="닉네임"><button class="next" id="nick-save">저장</button></div>`
         :`<div class="pf-name"><b id="pf-nick"></b><button class="link" id="nick-edit">닉네임 바꾸기</button></div>`}
+      ${IN_CLAUDE?"":S.account?`<div class="pf-acct"><span class="g">G</span><span>${esc(S.account.email||S.account.name||"Google 계정")} · 기록이 계정에 저장돼요</span><button class="link" id="glogout">${rk.logoutArmed?"한 번 더 누르면 로그아웃":"로그아웃"}</button></div>`
+        :`<div class="pf-acct off"><span>지금은 이 브라우저에만 저장돼요.</span>${loginBtn("glogin-pf")}</div>`}
       <div class="pf-title">${main?`<span class="title-chip">${esc(main)}</span>`:`<span class="title-none">아직 칭호가 없어요. 문제를 맞히면 첫 칭호를 받아요.</span>`}
         ${titles.length>1?`<label class="pf-pick">대표 칭호 <select id="title-pick">${titles.map(t=>`<option value="${t.id}"${t.title===main?" selected":""}>${esc(t.title)}</option>`).join("")}</select></label>`:""}</div>
       <div class="me-line"><b>${xp} XP</b><span>다음 레벨까지 ${XP_PER_LEVEL-inLv} XP</span></div><div class="bar"><i style="width:${inLv}%"></i></div>
@@ -1209,6 +1312,9 @@ function renderRank(){
   document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{rk.mode=b.dataset.rm;renderRank();loadBoard(rk.mode)});
   renderGrass();
   if($("rk-join"))$("rk-join").onclick=()=>setRankHidden(false);
+  if($("glogin-pf"))$("glogin-pf").onclick=googleLogin;
+  // 로그아웃은 두 번 눌러야 한다 (이 기기의 기록은 지워지고 계정에는 남음)
+  if($("glogout"))$("glogout").onclick=()=>{if(rk.logoutArmed){googleLogout()}else{rk.logoutArmed=true;notifyText("로그아웃하면 이 기기의 기록은 지워지고, 다시 로그인하면 계정에서 불러와요.");renderRank();setTimeout(()=>{rk.logoutArmed=false;scheduleRank()},5000)}};
   if($("nick-edit"))$("nick-edit").onclick=()=>{editingNick=true;renderRank();$("nick-in").focus()};
   // 닉네임을 비우면 지금 이름(가명 포함)을 그대로 둔다
   if($("nick-save")){const done=()=>{const v=$("nick-in").value.trim().slice(0,12);if(v)S.nick=v;editingNick=false;save();rk.last="";syncScore();renderRank()};
@@ -1314,6 +1420,9 @@ function openLesson(stage,script){qScript=script;startStage(stage);renderStageBa
 function renderHome(){
   if(!rv)renderReview();
   $("continue").title=lastPlace();
+  // 로그인하지 않은 사람에게: 기록이 이 브라우저에만 있다는 안내 + Google 로그인
+  $("login-banner").innerHTML=!IN_CLAUDE&&!S.account?`<div class="login-banner"><div><b>기록을 안전하게 지키세요</b><small>지금은 이 브라우저에만 저장돼요. Google로 로그인하면 브라우저를 지우거나 기기를 바꿔도 그대로 이어서 할 수 있어요.</small></div>${loginBtn("glogin-home")}</div>`:"";
+  if($("glogin-home"))$("glogin-home").onclick=googleLogin;
   const labels=['첫 글자, 설레는 시작','소리에 작은 변화','조금 더 풍부한 발음'];
   const descriptions=[(pathScript==='h'?'あ・い・う・え・お':'ア・イ・ウ・エ・オ')+'부터 차근차근','탁음과 반탁음의 차이를 익혀요','촉음 · 요음 · 장음으로 한 단계 더'];
   const marks=pathScript==='h'?['あ','が','きゃ']:['ア','ガ','キャ'];
