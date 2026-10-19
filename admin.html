@@ -33,7 +33,7 @@ td.num,th.num{text-align:right}
 <body>
 <main>
 <h1>하루카나 관리</h1>
-<p class="sub">Google로 로그인한 학습자 목록이에요. 관리자 계정으로 로그인해야 보여요. (읽기 전용)</p>
+<p class="sub">Google로 로그인한 학습자의 학습 현황이에요. 이름·이메일은 저장하지 않아서 닉네임과 계정 번호로만 보여요. 관리자 계정으로 로그인해야 보여요. (읽기 전용)</p>
 <div class="bar" id="bar"><button class="main" id="login">Google로 로그인</button></div>
 <div id="out"></div>
 </main>
@@ -53,7 +53,7 @@ let rows=[],sortKey="last",sortDir=-1,filter="";
 $("login").onclick=()=>au.signInWithPopup(auth,new au.GoogleAuthProvider()).catch(e=>show(`로그인하지 못했어요 (${esc(e.code||e.message)})`));
 au.onAuthStateChanged(auth,u=>{
   if(!u){$("bar").innerHTML='<button class="main" id="login">Google로 로그인</button>';$("login").onclick=()=>au.signInWithPopup(auth,new au.GoogleAuthProvider()).catch(e=>show(`로그인하지 못했어요 (${esc(e.code||e.message)})`));show("");return}
-  $("bar").innerHTML=`<span>${esc(u.email)}</span><button id="reload">새로고침</button><button id="logout">로그아웃</button><input id="q" placeholder="이름·이메일·닉네임 검색">`;
+  $("bar").innerHTML=`<span>${esc(u.email)}</span><button id="reload">새로고침</button><button id="logout">로그아웃</button><input id="q" placeholder="닉네임·계정 번호 검색">`;
   $("logout").onclick=()=>au.signOut(auth);
   $("reload").onclick=load;
   $("q").oninput=e=>{filter=e.target.value.trim().toLowerCase();render()};
@@ -69,7 +69,7 @@ function summarize(id,doc){
   const daily=s.daily||{},days=Object.keys(daily).filter(k=>daily[k]>0);
   const lastDay=days.map(parseDay).sort((a,b)=>b-a)[0]||null;
   const saved=Number(doc.fields?.t?.integerValue)||0;
-  return{id,name:s.account?.name||"",email:s.account?.email||"",nick:s.nick||"",
+  return{id,uid:id.slice(0,8),nick:s.nick||"",
     xp:Number(s.xp)||0,level:Math.floor((Number(s.xp)||0)/100)+1,
     chars:Object.values(s.c||{}).filter(v=>v&&v.d).length,words:Object.values(s.w||{}).filter(v=>v&&v.d).length,
     days:days.length,streak:streakOf(daily),solved:days.reduce((a,k)=>a+daily[k],0),
@@ -93,10 +93,10 @@ async function load(){
   }catch(e){show("불러오지 못했어요 ("+esc(e.message)+")")}
 }
 const fmt=ms=>ms?new Date(ms).toLocaleString("ko-KR",{year:"2-digit",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}):"-";
-const COLS=[["name","이름"],["email","이메일"],["nick","닉네임"],["level","레벨",1],["xp","XP",1],["chars","익힌 글자",1],["words","익힌 단어",1],["solved","푼 문제",1],["days","학습일",1],["streak","연속",1],["rank","랭킹"],["created","가입"],["last","최근 활동"]];
+const COLS=[["nick","닉네임"],["uid","계정 번호"],["level","레벨",1],["xp","XP",1],["chars","익힌 글자",1],["words","익힌 단어",1],["solved","푼 문제",1],["days","학습일",1],["streak","연속",1],["rank","랭킹"],["created","가입"],["last","최근 활동"]];
 function render(){
   const now=Date.now(),D=86400000;
-  const list=rows.filter(r=>!filter||[r.name,r.email,r.nick].some(v=>v.toLowerCase().includes(filter)))
+  const list=rows.filter(r=>!filter||[r.nick,r.id].some(v=>v.toLowerCase().includes(filter)))
     .sort((a,b)=>(a[sortKey]>b[sortKey]?1:a[sortKey]<b[sortKey]?-1:0)*sortDir);
   const stat=(n,l)=>`<div class="stat"><b>${n}</b><span>${l}</span></div>`;
   $("out").innerHTML=`<div class="stats">${stat(rows.length,"로그인한 학습자")}${stat(rows.filter(r=>now-r.last<D).length,"최근 24시간 활동")}${stat(rows.filter(r=>now-r.last<7*D).length,"최근 7일 활동")}${stat(rows.filter(r=>now-r.created<7*D).length,"최근 7일 가입")}</div>
