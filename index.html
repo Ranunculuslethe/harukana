@@ -148,6 +148,7 @@
 .login-banner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:22px;padding:16px 18px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:16px;background:var(--accent-soft)}
 .login-banner>div{flex:1 1 220px;min-width:0}.login-banner b{display:block;font-size:14px}.login-banner small{display:block;font-size:12px;color:var(--sub);margin-top:3px;line-height:1.6}
 .pf-acct{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 2px;font-size:12px;color:var(--sub)}
+.rk-guest{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);margin-top:0;gap:8px 20px}.rk-guest b{font-size:18px;margin-right:2px}
 .pf-acct span:not(.g){min-width:0;overflow-wrap:anywhere}.pf-acct .link{margin:0;font-size:12px}
 #words .seg{width:100%}#words .seg button{flex:1;padding:8px 6px;white-space:nowrap}
 </style><a class="skip-link" href="#content">학습 내용으로 이동</a><svg xmlns="http://www.w3.org/2000/svg" class="svg-library" aria-hidden="true"><defs>
@@ -863,20 +864,20 @@ const restVal=v=>v.stringValue??(v.integerValue!=null?Number(v.integerValue):v.d
 const toFields=o=>{const f={};for(const k in o){const v=o[k];f[k]=typeof v==="number"?{integerValue:String(Math.round(v))}:{stringValue:String(v)}}return{fields:f}};
 const docOf=d=>{const o={id:d.name.split("/").pop()};for(const k in d.fields||{})o[k]=restVal(d.fields[k]);return o};
 async function restTop(parent,collectionId,field){
-  const r=await fetch(`${REST_BASE}${parent}:runQuery?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
+  const r=await fetch(`${REST_BASE}${parent}:runQuery?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{...await authHeader(),"Content-Type":"application/json"},
     body:JSON.stringify({structuredQuery:{from:[{collectionId}],orderBy:[{field:{fieldPath:field},direction:"DESCENDING"}],limit:TOP_N}})});
   if(!r.ok)throw new Error("REST "+r.status);
   return (await r.json()).filter(x=>x.document).map(x=>docOf(x.document));
 }
 // 나보다 점수가 높은 사람 수 (상위 50명 밖일 때 내 순위 계산용)
 async function restCountAbove(parent,collectionId,field,v){
-  const r=await fetch(`${REST_BASE}${parent}:runAggregationQuery?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
+  const r=await fetch(`${REST_BASE}${parent}:runAggregationQuery?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{...await authHeader(),"Content-Type":"application/json"},
     body:JSON.stringify({structuredAggregationQuery:{structuredQuery:{from:[{collectionId}],where:{fieldFilter:{field:{fieldPath:field},op:"GREATER_THAN",value:{integerValue:String(v)}}}},aggregations:[{alias:"n",count:{}}]}})});
   if(!r.ok)throw new Error("REST "+r.status);
   const j=await r.json();return Number(((j[0]||{}).result||{}).aggregateFields?.n?.integerValue||0);
 }
 async function restGet(path){
-  const r=await fetch(`${REST_BASE}/${path}?key=${FB_CONFIG.apiKey}`);
+  const r=await fetch(`${REST_BASE}/${path}?key=${FB_CONFIG.apiKey}`,{headers:await authHeader()});
   if(r.status===404)return null;if(!r.ok)throw new Error("REST "+r.status);
   return docOf(await r.json());
 }
@@ -946,7 +947,7 @@ let rankFrame=0;
 function scheduleRank(){if(tab!==5||rankFrame)return;rankFrame=requestAnimationFrame(()=>{rankFrame=0;renderRank()})}
 rk.fetchedAt={all:0,week:0,last:0};
 async function loadBoard(mode,force){
-  if(!rk.fb)return;
+  if(!rk.fb||!S.account)return; // 랭킹은 Google로 로그인한 사람만 본다
   mode=mode||"week";
   if(mode==="last"&&rk.lastFresh&&rk.lastRows)return;
   if(!force&&Date.now()-rk.fetchedAt[mode]<20000)return;
@@ -976,10 +977,30 @@ async function initFirebase(){
   if(tab===5)loadBoard(rk.mode);
   // 프로필 탭을 보고 있는 동안에만 60초마다 새로 받아 온다
   setInterval(()=>{if(tab===5&&!document.hidden)loadBoard(rk.mode,true)},60000);
-  try{rk.auth=await restAuth();rk.me=rk.auth.uid;rk.canWrite=true}catch(e){console.warn("익명 로그인 실패",e)}
+  // 로그인하지 않은 사람: 랭킹에 참가하지 않고 내 기록만 본다 (예전에 올라간 익명 기록은 지운다)
+  if(!S.account){rk.state="guest";rk.rows=rk.weekRows=rk.lastRows=null;try{localStorage.removeItem(RANK_CACHE)}catch(e){}dropGuestRecords();scheduleRank();return}
+  try{rk.auth=await restAuth();rk.me=rk.auth.uid;rk.canWrite=true}catch(e){console.warn("로그인 갱신 실패",e)}
   if(!rk.me){scheduleRank();return}
   // 로그인한 사람: 계정에 저장된 진도(다른 기기에서 한 것 포함)를 불러와 합친다
-  if(S.account&&await pullProgress())rerenderAll();
+  if(await pullProgress())rerenderAll();
+  memberInit();
+}
+// 로그인 전 익명으로 랭킹에 올라가 있던 내 기록을 지우고, 익명 ID는 더 쓰지 않는다
+async function dropGuestRecords(){
+  let a=null;try{a=JSON.parse(localStorage.getItem(AUTH_KEY))}catch(e){}
+  if(!a||!a.refreshToken)return;
+  try{
+    // rk.auth는 건드리지 않는다 (그 사이 로그인할 수 있으므로). 새 익명 ID도 만들지 않는다
+    const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(a.refreshToken)});
+    if(!r.ok){if(!S.account)localStorage.removeItem(AUTH_KEY);return}
+    const j=await r.json(),g={uid:j.user_id,idToken:j.id_token},h={Authorization:"Bearer "+g.idToken};
+    for(const p of [`scores/${g.uid}`,`weeks/${rk.wn}/players/${g.uid}`,`weeks/${rk.wn-1}/players/${g.uid}`])await fetch(`${REST_BASE}/${p}`,{method:"DELETE",headers:h}).catch(()=>{});
+    if(!S.account)localStorage.removeItem(AUTH_KEY);
+  }catch(e){}
+}
+// 로그인한 사람의 랭킹 준비: 내 기록 올리기, 지난주 보상, 오래된 리그 정리
+async function memberInit(){
+  const wn=rk.wn;
   syncScore();
   if(tab===5)refreshMine(rk.mode||"week");
   // 지난주 보상: 내 지난주 기록 1건 + 나보다 높은 사람 수 1건만 읽는다
@@ -1125,7 +1146,10 @@ async function googleLogin(){
       }
     }
     S.rankOff=S.rankOff||0;save();rk.last="";rk.blocked=false;rk.syncErr=null;rk.myRank={all:null,week:null,last:null};
-    await pushProgress(false);syncScore();
+    await pushProgress(false);
+    // 이제 랭킹에 참가한다
+    if(rk.state==="guest")rk.state="loading";
+    memberInit();if(tab===5)loadBoard(rk.mode,true);
     notifyText(merged?"로그인했어요. 계정에 있던 기록과 이 기기 기록을 합쳤어요.":"로그인했어요. 이제 기록이 Google 계정에 저장돼요.");
     rerenderAll();
   }catch(e){
@@ -1190,14 +1214,14 @@ function scoreData(){
 }
 function syncScore(){
   // 문제를 한 번이라도 맞힌 사람(XP가 있는 사람)만 랭킹에 올린다
-  if(!rk.fb||!rk.me||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
+  if(!rk.fb||!rk.me||!S.account||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
   if(JSON.stringify(scoreData())===rk.last)return;
   clearTimeout(rk.timer);
   const wait=Math.max(1200,SYNC_GAP-(Date.now()-(rk.wroteAt||0)));
   rk.timer=setTimeout(()=>pushScore(false),wait);
 }
 async function pushScore(leaving){
-  if(!rk.fb||!rk.me||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
+  if(!rk.fb||!rk.me||!S.account||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
   const data=scoreData(),sig=JSON.stringify(data);
   if(sig===rk.last)return;
   if(rk.busy&&!leaving){rk.timer=setTimeout(()=>pushScore(false),3000);return}
@@ -1325,9 +1349,9 @@ function renderRank(){
     <div class="rec-etc">
       <div><b>XP · 배지</b><small>${xp} XP · 배지 ${nb}개를 0으로 되돌려요</small>${resetBtn("reward","XP·배지 초기화")}</div>
       <div><b>모든 학습 기록</b><small>글자·단어·오답노트를 처음부터 다시 해요. 쌓은 XP·배지·연속 학습일·프로필은 남아요.</small>${resetBtn("all","모두 초기화")}</div>
-      <div><b>랭킹 참가</b><small>${S.rankOff?"지금은 랭킹에서 숨겨져 있어요.":"문제를 맞히면 닉네임·레벨·XP가 랭킹에 보여요."}</small><button class="rec-reset" id="rk-hide">${S.rankOff?"다시 참가하기":"랭킹에서 숨기기"}</button></div>
+      ${IN_CLAUDE||S.account?`<div><b>랭킹 참가</b><small>${S.rankOff?"지금은 랭킹에서 숨겨져 있어요.":"문제를 맞히면 닉네임·레벨·XP가 랭킹에 보여요."}</small><button class="rec-reset" id="rk-hide">${S.rankOff?"다시 참가하기":"랭킹에서 숨기기"}</button></div>`:""}
     </div>`;
-  $("rk-hide").onclick=()=>setRankHidden(!S.rankOff);
+  if($("rk-hide"))$("rk-hide").onclick=()=>setRankHidden(!S.rankOff);
   $("badges").innerHTML=`<h3 class="rk-h">배지</h3><div class="badge-grid">${BADGES.map(([id,name,desc,icon])=>{const on=!!S.badges[id];
     return `<div class="bdg${on?" on":""}" title="${esc(desc)}"><span class="bi">${on?icon:"?"}</span><b>${name}</b><small>${on?desc:"아직 못 받았어요 · "+desc}</small></div>`}).join("")}</div>`;
   let body;
@@ -1368,6 +1392,15 @@ function renderRank(){
     last:`지난주(${md(weekStart(wn-1))}~${md(weekStart(wn)-DAYMS)}) 최종 순위예요.${claimed?` 나는 <b>${claimed.rank}등</b>, 보상 <b>+${claimed.xp} XP</b>를 받았어요.`:""}`,
     all:"지금까지 모은 전체 XP 순이에요 · 상위 50명과 내 순위가 보여요."};
   const m=rk.mode||"week";
+  // 로그인하지 않은 사람: 다른 사람 순위 없이 내 기록만 보여 주고 로그인을 안내한다
+  if(!IN_CLAUDE&&rk.fb&&!S.account){
+    const stat=(n,l)=>`<span><b>${n}</b>${l}</span>`;
+    $("board").innerHTML=`<h3 class="rk-h">랭킹</h3>
+      <div class="rk-join"><p><b>랭킹은 Google로 로그인한 사람끼리 겨뤄요.</b><br>로그인하면 이번 주 리그·전체 랭킹에 참가하고, 다른 사람의 순위도 볼 수 있어요. 1~10등은 매주 보상 XP를 받아요.</p>${loginBtn("glogin-rk")}</div>
+      <h3 class="rk-h" style="margin-top:14px">내 기록</h3>
+      <div class="me-stats rk-guest">${stat(weekXp()," 이번 주 XP")}${stat(S.xp," 전체 XP")}${stat("Lv."+lvOf(S.xp),"")}${stat(streak(),"일 연속")}</div>`;
+    armLoginBtn($("glogin-rk"),googleLogin);
+  }else
   $("board").innerHTML=`<h3 class="rk-h">랭킹</h3>
     <div class="seg rk-seg" role="group" aria-label="랭킹 종류">${[["week","이번 주 리그"],["last","지난주 리그"],["all","전체 랭킹"]].map(([k,t])=>`<button data-rm="${k}" class="${m===k?"on":""}">${t}</button>`).join("")}</div>
     <p class="rk-sub">${subs[m]}${rk.cached?' <span class="rk-live">· 최신 순위로 바꾸는 중…</span>':""}</p>${body}`;
@@ -1485,7 +1518,7 @@ function renderHome(){
   if(!rv)renderReview();
   $("continue").title=lastPlace();
   // 로그인하지 않은 사람에게: 기록이 이 브라우저에만 있다는 안내 + Google 로그인
-  $("login-banner").innerHTML=!IN_CLAUDE&&!S.account?`<div class="login-banner"><div><b>기록을 안전하게 지키세요</b><small>지금은 이 브라우저에만 저장돼요. Google로 로그인하면 브라우저를 지우거나 기기를 바꿔도 그대로 이어서 할 수 있어요.<br>서버에는 학습 기록만 저장하고 이름·이메일은 저장하지 않아요. <a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></small></div>${loginBtn("glogin-home")}</div>`:"";
+  $("login-banner").innerHTML=!IN_CLAUDE&&!S.account?`<div class="login-banner"><div><b>기록을 안전하게 지키세요</b><small>지금은 이 브라우저에만 저장돼요. Google로 로그인하면 브라우저를 지우거나 기기를 바꿔도 그대로 이어서 할 수 있고, 랭킹에도 참가해요.<br>서버에는 학습 기록만 저장하고 이름·이메일은 저장하지 않아요. <a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></small></div>${loginBtn("glogin-home")}</div>`:"";
   armLoginBtn($("glogin-home"),googleLogin);
   const labels=['첫 글자, 설레는 시작','소리에 작은 변화','조금 더 풍부한 발음'];
   const descriptions=[(pathScript==='h'?'あ・い・う・え・お':'ア・イ・ウ・エ・オ')+'부터 차근차근','탁음과 반탁음의 차이를 익혀요','촉음 · 요음 · 장음으로 한 단계 더'];
