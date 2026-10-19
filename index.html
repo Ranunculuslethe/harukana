@@ -6,6 +6,10 @@
 <meta name="description" content="하루카나 - 일본어를 처음 시작하는 한국인을 위한 히라가나·가타카나·기초 단어 학습 웹">
 <meta name="theme-color" content="#FAF9F5">
 <title>하루카나</title>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js">
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js">
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
 <body>
@@ -46,6 +50,7 @@
 .rk-n.r1{background:#E9B949;color:#fff}.rk-n.r2{background:#A9B2BA;color:#fff}.rk-n.r3{background:#C98B5B;color:#fff}
 .rk-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}.rk-name em{font-style:normal;font-size:12px;color:var(--accent);margin-left:4px}
 .rk-lv,.rk-st{color:var(--sub);font-size:12px;white-space:nowrap}.rk-xp{font-weight:800;white-space:nowrap}
+.rk-live{color:var(--sub);font-size:12px}
 .rk-rw{font-size:12px;font-weight:800;color:var(--mid);background:var(--midbg);border-radius:8px;padding:2px 7px;white-space:nowrap}
 .rk-list li.rk-gap{justify-content:center;border:0;background:none;padding:0;color:var(--sub);font-size:16px;letter-spacing:4px}
 @media(max-width:760px){.tab span[data-s]{font-size:0}.tab span[data-s]:after{content:attr(data-s);font-size:12px}.me-card{padding:16px;gap:12px}.lv{flex-basis:60px;height:60px}.rk-st{display:none}}
@@ -402,12 +407,15 @@ function autoHangul(kana){
 const KEY="kana-v1";
 // co: 글자 종류별로 열린 단어 카테고리 수 (h 히라가나, k 가타카나, m 섞어 쓰기), mix: 섞어 쓰기가 열렸는지
 // xp: 경험치, badges: 받은 배지 {id: 받은 시각}, flags: 배지 조건용 기록, rank: 랭킹에 참가했는지
-const fresh=()=>({c:{},w:{},n:{},co:{h:1,k:1,m:1},mix:0,daily:{},xp:0,badges:{},flags:{},rank:0,titles:{},sr:{},wk:{id:"",xp:0},cr:{},wr:{},claimed:{}});
+const fresh=()=>({c:{},w:{},n:{},co:{h:1,k:1,m:1},mix:0,daily:{},xp:0,badges:{},flags:{},rank:1,titles:{},sr:{},wk:{id:"",xp:0},cr:{},wr:{},claimed:{}});
 let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||typeof S!=="object")S=fresh();
 S.c=S.c||{};S.w=S.w||{};S.n=S.n||{};S.daily=S.daily||{};delete S.u;
 if(!S.co){S.co={h:S.cu||1,k:1,m:1}}delete S.cu; // 예전 저장분: 히라가나 카테고리 진도 옮기기
-S.mix=S.mix||0;S.xp=S.xp||0;S.badges=S.badges||{};S.flags=S.flags||{};S.rank=S.rank||0;S.titles=S.titles||{};delete S.ro;S.sr=S.sr||{};S.wk=S.wk||{id:"",xp:0};S.cr=S.cr||{};S.wr=S.wr||{};S.claimed=S.claimed||{}; // claimed: 주간 리그 보상을 받은 주 {주 번호:{rank,xp}} // cr/wr: 발음→글자, 뜻→일본어 문제의 진도 // sr: 복습 일정 {키:{lv,due}}, wk: 이번 주 리그 XP // titles: 분야별로 받은 칭호의 최고 단계
+S.mix=S.mix||0;S.xp=S.xp||0;S.badges=S.badges||{};S.flags=S.flags||{};// 랭킹은 기본으로 참가한다 (프로필에서 "랭킹에서 숨기기"를 누른 사람만 rankOff). 닉네임이 없으면 "학습자1234" 같은 가명을 한 번 만든다
+if(!S.rankOff)S.rank=1;
+if(!S.nick)S.nick="학습자"+String(Math.floor(1000+Math.random()*9000));
+S.titles=S.titles||{};delete S.ro;S.sr=S.sr||{};S.wk=S.wk||{id:"",xp:0};S.cr=S.cr||{};S.wr=S.wr||{};S.claimed=S.claimed||{}; // claimed: 주간 리그 보상을 받은 주 {주 번호:{rank,xp}} // cr/wr: 발음→글자, 뜻→일본어 문제의 진도 // sr: 복습 일정 {키:{lv,due}}, wk: 이번 주 리그 XP // titles: 분야별로 받은 칭호의 최고 단계
 // 예전 저장분 옮기기: 마지막에 맞힌 상태였으면 맞힘으로
 for(const k in S.c)if(S.c[k].d===undefined)S.c[k].d=S.c[k].s>=1?1:0;
 for(const k in S.w)if(S.w[k].d===undefined)S.w[k].d=S.w[k].s>=1?1:0;
@@ -842,36 +850,76 @@ const rk={db:null,fb:null,user:null,me:null,canWrite:null,blocked:false,state:"l
 const FB_CONFIG={apiKey:"AIzaSyDxJXq2AXCmTzJ-czbHEO5fKhrvn9NjKmg",authDomain:"harukana-74b43.firebaseapp.com",projectId:"harukana-74b43",storageBucket:"harukana-74b43.firebasestorage.app",messagingSenderId:"235663999566",appId:"1:235663999566:web:18e65cb4ee65b2c37c391f"};
 const FB_SDK="https://www.gstatic.com/firebasejs/10.12.2/";
 const docsOf=s=>s.docs.map(d=>({id:d.id,...d.data()}));
+// 지난번에 받은 랭킹을 이 기기에 저장해 두고, 다음에 열 때 먼저 보여준다 (새 랭킹이 오면 바로 바뀜)
+const RANK_CACHE="harukana-rank-cache";
+function loadRankCache(){
+  try{const c=JSON.parse(localStorage.getItem(RANK_CACHE));
+    if(c&&c.wn===weekNum()){rk.rows=c.rows||null;rk.weekRows=c.weekRows||null;rk.lastRows=c.lastRows||null;rk.me=rk.me||c.me||null;rk.state="ready";rk.cached=true}
+  }catch(e){}
+}
+function saveRankCache(){
+  try{localStorage.setItem(RANK_CACHE,JSON.stringify({wn:rk.wn,me:rk.me,rows:rk.rows,weekRows:rk.weekRows,lastRows:rk.lastRows}))}catch(e){}
+}
 async function initFirebase(){
+  loadRankCache();if(tab===5)renderRank();
   try{
     const [{initializeApp},au,fs]=await Promise.all([import(FB_SDK+"firebase-app.js"),import(FB_SDK+"firebase-auth.js"),import(FB_SDK+"firebase-firestore.js")]);
     const app=initializeApp(FB_CONFIG),auth=au.getAuth(app),db=fs.getFirestore(app);
-    // 가입 없이 기기마다 익명 ID를 받는다 (다시 열어도 같은 ID)
-    const user=auth.currentUser||(await au.signInAnonymously(auth)).user;
     const wn=weekNum();
-    rk.fb={fs,db};rk.me=user.uid;rk.canWrite=true;rk.state="ready";rk.wn=wn;rk.lastWn=wn-1;
+    rk.fb={fs,db};rk.state="ready";rk.wn=wn;rk.lastWn=wn-1;
     const scores=fs.collection(db,"scores"),thisWeek=fs.collection(db,"weeks",String(wn),"players"),lastWeek=fs.collection(db,"weeks",String(wn-1),"players");
-    const fail=()=>{rk.state="error";if(tab===5)renderRank()};
+    const fail=()=>{if(!rk.rows){rk.state="error"}if(tab===5)renderRank()};
     // 상위 50명에 없으면 "나보다 점수가 높은 사람 수 + 1"로 내 순위를 센다
     const countAbove=async(col,field,v)=>(await fs.getCountFromServer(fs.query(col,fs.where(field,">",v)))).data().count;
     const rankIn=async(rows,col,field,v)=>{const i=rows.findIndex(r=>r.id===rk.me);return i>=0?i+1:(await countAbove(col,field,v))+1};
     rk.refreshMine=async()=>{
+      if(!rk.me)return;
       try{
-        rk.myRank.all=S.rank&&rk.rows?await rankIn(rk.rows,scores,"xp",S.xp):null;
-        rk.myRank.week=S.rank&&rk.weekRows&&weekXp()>0?await rankIn(rk.weekRows,thisWeek,"weekXp",weekXp()):null;
+        rk.myRank.all=S.rank&&!S.rankOff&&S.xp>0&&rk.rows?await rankIn(rk.rows,scores,"xp",S.xp):null;
+        rk.myRank.week=S.rank&&!S.rankOff&&rk.weekRows&&weekXp()>0?await rankIn(rk.weekRows,thisWeek,"weekXp",weekXp()):null;
       }catch(e){}
       if(tab===5)renderRank();
     };
-    fs.onSnapshot(fs.query(scores,fs.orderBy("xp","desc"),fs.limit(TOP_N)),s=>{rk.rows=docsOf(s);rk.refreshMine()},fail);
-    fs.onSnapshot(fs.query(thisWeek,fs.orderBy("weekXp","desc"),fs.limit(TOP_N)),s=>{rk.weekRows=docsOf(s);rk.refreshMine()},fail);
+    // 랭킹 읽기는 누구나 가능해서 로그인을 기다리지 않고 바로 시작한다
+    fs.onSnapshot(fs.query(scores,fs.orderBy("xp","desc"),fs.limit(TOP_N)),s=>{rk.rows=docsOf(s);rk.cached=false;saveRankCache();if(tab===5)renderRank();rk.refreshMine()},fail);
+    fs.onSnapshot(fs.query(thisWeek,fs.orderBy("weekXp","desc"),fs.limit(TOP_N)),s=>{rk.weekRows=docsOf(s);saveRankCache();if(tab===5)renderRank();rk.refreshMine()},fail);
     // 지난주 리그: 이미 마감돼서 바뀌지 않으니 한 번만 읽는다
-    rk.lastRows=docsOf(await fs.getDocs(fs.query(lastWeek,fs.orderBy("weekXp","desc"),fs.limit(TOP_N))));
+    const lastP=fs.getDocs(fs.query(lastWeek,fs.orderBy("weekXp","desc"),fs.limit(TOP_N))).then(s=>{rk.lastRows=docsOf(s);saveRankCache();if(tab===5)renderRank()});
+    // 가입 없이 기기마다 익명 ID를 받는다 (다시 열어도 같은 ID)
+    await auth.authStateReady();
+    const user=auth.currentUser||(await au.signInAnonymously(auth)).user;
+    rk.me=user.uid;rk.canWrite=true;
+    syncScore();rk.refreshMine();
+    await lastP;
     const mine=await fs.getDoc(fs.doc(lastWeek,rk.me));
     if(mine.exists()){rk.myLast={id:rk.me,...mine.data()};rk.myRank.last=await rankIn(rk.lastRows,lastWeek,"weekXp",rk.myLast.weekXp)}
     claimWeekReward();
-    syncScore();
-  }catch(e){console.warn("랭킹 서버 연결 실패",e);if(rk.state!=="ready")rk.state="offline"}
+    cleanupOldWeeks();
+  }catch(e){console.warn("랭킹 서버 연결 실패",e);if(!rk.rows)rk.state="offline"}
   if(tab===5)renderRank();
+}
+// 2주가 지난 주간 리그 기록 지우기: 무료 요금제엔 서버 예약 작업이 없어서, 앱을 연 사람이 하루 한 번 대신 지운다
+// (보안 규칙이 "이번 주·지난주가 아닌 기록"만 아무나 지울 수 있게 허용)
+async function cleanupOldWeeks(){
+  try{const k="harukana-cleanup",d=String(Math.floor(Date.now()/DAYMS));if(localStorage.getItem(k)===d)return;localStorage.setItem(k,d)}catch(e){return}
+  const {fs,db}=rk.fb;
+  for(let w=rk.wn-2;w>=rk.wn-10;w--){
+    try{const s=await fs.getDocs(fs.query(fs.collection(db,"weeks",String(w),"players"),fs.limit(200)));
+      for(const d of s.docs){try{await fs.deleteDoc(d.ref)}catch(e){}}}catch(e){}
+  }
+}
+// 랭킹에서 숨기기 / 다시 참가하기
+async function setRankHidden(hide){
+  S.rankOff=hide?1:0;S.rank=hide?0:1;save();rk.last="";
+  if(hide&&rk.me){
+    try{
+      if(rk.fb){const{fs,db}=rk.fb;await fs.deleteDoc(fs.doc(db,"scores",rk.me));await fs.deleteDoc(fs.doc(db,"weeks",weekId(),"players",rk.me))}
+      else if(rk.db)await rk.db.doc("scores/"+rk.me).delete();
+    }catch(e){}
+    rk.myRank.all=rk.myRank.week=null;
+  }else syncScore();
+  notifyText(hide?"랭킹에서 내 기록을 숨겼어요.":"랭킹에 다시 참가했어요.");
+  renderRank();
 }
 // 지난주 리그 1~10등이면 보상 XP를 한 번만 받는다 (전체 XP에만 더하고 이번 주 리그 XP에는 넣지 않는다)
 function claimWeekReward(){
@@ -904,7 +952,8 @@ async function initRank(){
   if(tab===5)renderRank();
 }
 function syncScore(){
-  if(!(rk.db||rk.fb)||!rk.me||!S.rank||rk.blocked)return;
+  // 문제를 한 번이라도 맞힌 사람(XP가 있는 사람)만 랭킹에 올린다
+  if(!(rk.db||rk.fb)||!rk.me||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
   const data={xp:S.xp,level:lvOf(S.xp),streak:streak(),chars:[...ALL,...ALL_K].filter(c=>cd(c.k)).length,words:WORDS.filter(w=>wd(w.id)).length,badges:Object.keys(S.badges).length,nick:(S.nick||"").slice(0,12),title:mainTitle(),avatar:avatarOf(S.avatar).id,week:weekId(),weekXp:weekXp()};
   const sig=JSON.stringify(data);if(sig===rk.last)return;
   clearTimeout(rk.timer);
@@ -1029,7 +1078,9 @@ function renderRank(){
     <div class="rec-etc">
       <div><b>XP · 배지</b><small>${xp} XP · 배지 ${nb}개를 0으로 되돌려요</small>${resetBtn("reward","XP·배지 초기화")}</div>
       <div><b>모든 학습 기록</b><small>글자·단어·오답노트를 처음부터 다시 해요. 쌓은 XP·배지·연속 학습일·프로필은 남아요.</small>${resetBtn("all","모두 초기화")}</div>
+      <div><b>랭킹 참가</b><small>${S.rankOff?"지금은 랭킹에서 숨겨져 있어요.":"문제를 맞히면 닉네임·레벨·XP가 랭킹에 보여요."}</small><button class="rec-reset" id="rk-hide">${S.rankOff?"다시 참가하기":"랭킹에서 숨기기"}</button></div>
     </div>`;
+  $("rk-hide").onclick=()=>setRankHidden(!S.rankOff);
   $("badges").innerHTML=`<h3 class="rk-h">배지</h3><div class="badge-grid">${BADGES.map(([id,name,desc,icon])=>{const on=!!S.badges[id];
     return `<div class="bdg${on?" on":""}" title="${esc(desc)}"><span class="bi">${on?icon:"?"}</span><b>${name}</b><small>${on?desc:"아직 못 받았어요 · "+desc}</small></div>`}).join("")}</div>`;
   let body;
@@ -1039,7 +1090,8 @@ function renderRank(){
   else if(rk.state==="error")body=`<p class="rk-note">랭킹을 불러오지 못했어요. 페이지를 새로 고쳐 보세요.</p>`;
   else{
     const join=!rk.me?`<p class="rk-note">로그인하면 랭킹에 참가할 수 있어요.</p>`
-      :!S.rank?`<div class="rk-join"><p>참가하면 이 페이지를 볼 수 있는 사람들에게 내 닉네임, 대표 칭호, 레벨, XP가 보여요.</p><button class="next" id="rk-join">랭킹 참가하기</button></div>`
+      :S.rankOff?`<div class="rk-join"><p>지금은 랭킹에서 내 기록이 숨겨져 있어요.</p><button class="next" id="rk-join">다시 참가하기</button></div>`
+      :S.xp<=0?`<p class="rk-note">문제를 하나 맞히면 「${esc(S.nick)}」 이름으로 랭킹에 올라가요. 닉네임은 위 프로필에서 바꿀 수 있어요.</p>`
       :(rk.blocked||rk.canWrite===false)?`<p class="rk-note">${rk.fb?"내 기록을 랭킹에 올리지 못했어요. 잠시 뒤 다시 시도해 주세요.":"순위는 볼 수 있지만, 내 기록을 올리려면 이 페이지의 편집 권한이 필요해요."}</p>`:"";
     // 상위 50명 + (50위 밖이면) 맨 아래에 내 순위 한 줄
     const mode=rk.mode||"week",league=mode!=="all";
@@ -1068,15 +1120,13 @@ function renderRank(){
   const m=rk.mode||"week";
   $("board").innerHTML=`<h3 class="rk-h">랭킹</h3>
     <div class="seg rk-seg" role="group" aria-label="랭킹 종류">${[["week","이번 주 리그"],["last","지난주 리그"],["all","전체 랭킹"]].map(([k,t])=>`<button data-rm="${k}" class="${m===k?"on":""}">${t}</button>`).join("")}</div>
-    <p class="rk-sub">${subs[m]}</p>${body}`;
+    <p class="rk-sub">${subs[m]}${rk.cached?' <span class="rk-live">· 최신 순위로 바꾸는 중…</span>':""}</p>${body}`;
   document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{rk.mode=b.dataset.rm;renderRank()});
   renderGrass();
-  // 랭킹 참가: 닉네임이 없으면 먼저 닉네임부터 정하게 한다 (랭킹에는 닉네임이 보인다)
-  if($("rk-join"))$("rk-join").onclick=()=>{
-    if(!S.nick&&!rk.myName){editingNick=true;renderRank();notifyText("랭킹에 보일 닉네임을 먼저 정해 주세요.");$("nick-in").focus();return}
-    S.rank=1;save();rk.last="";syncScore();renderRank()};
+  if($("rk-join"))$("rk-join").onclick=()=>setRankHidden(false);
   if($("nick-edit"))$("nick-edit").onclick=()=>{editingNick=true;renderRank();$("nick-in").focus()};
-  if($("nick-save")){const done=()=>{S.nick=$("nick-in").value.trim().slice(0,12);editingNick=false;save();rk.last="";syncScore();renderRank()};
+  // 닉네임을 비우면 지금 이름(가명 포함)을 그대로 둔다
+  if($("nick-save")){const done=()=>{const v=$("nick-in").value.trim().slice(0,12);if(v)S.nick=v;editingNick=false;save();rk.last="";syncScore();renderRank()};
     $("nick-save").onclick=done;$("nick-in").onkeydown=e=>{if(e.key==="Enter")done();if(e.key==="Escape"){editingNick=false;renderRank()}}}
   if($("title-pick"))$("title-pick").onchange=e=>{S.title=e.target.value;save();rk.last="";syncScore();renderRank()};
   $("av-edit").onclick=()=>{pickingAv=!pickingAv;renderRank()};
