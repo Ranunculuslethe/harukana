@@ -860,11 +860,29 @@ function loadRankCache(){
 function saveRankCache(){
   try{localStorage.setItem(RANK_CACHE,JSON.stringify({wn:rk.wn,me:rk.me,rows:rk.rows,weekRows:rk.weekRows,lastRows:rk.lastRows}))}catch(e){}
 }
+// 랭킹을 일반 웹 요청(REST)으로 먼저 받아 온다: Firebase 라이브러리·로그인 없이 되고, 실시간 연결이 막힌
+// 모바일 통신망이나 앱 안 브라우저(카카오톡 등)에서도 동작한다. 실시간 연결이 되면 그쪽 결과로 바뀐다
+const REST_BASE=`https://firestore.googleapis.com/v1/projects/${FB_CONFIG.projectId}/databases/(default)/documents`;
+const restVal=v=>v.stringValue??(v.integerValue!=null?Number(v.integerValue):v.doubleValue??v.booleanValue??null);
+async function restTop(parent,collectionId,field){
+  const r=await fetch(`${REST_BASE}${parent}:runQuery?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({structuredQuery:{from:[{collectionId}],orderBy:[{field:{fieldPath:field},direction:"DESCENDING"}],limit:TOP_N}})});
+  if(!r.ok)throw new Error("REST "+r.status);
+  return (await r.json()).filter(x=>x.document).map(x=>{const o={id:x.document.name.split("/").pop()};for(const k in x.document.fields)o[k]=restVal(x.document.fields[k]);return o});
+}
+function restRank(){
+  const wn=weekNum();rk.wn=rk.wn||wn;rk.lastWn=rk.lastWn||wn-1;
+  const done=()=>{rk.state="ready";saveRankCache();if(tab===5)renderRank()};
+  restTop("","scores","xp").then(rows=>{if(!rk.live.rows){rk.rows=rows;rk.cached=false;done()}}).catch(()=>{});
+  restTop(`/weeks/${wn}`,"players","weekXp").then(rows=>{if(!rk.live.week){rk.weekRows=rows;done()}}).catch(()=>{});
+  restTop(`/weeks/${wn-1}`,"players","weekXp").then(rows=>{if(!rk.lastRows||rk.cached){rk.lastRows=rows;done()}}).catch(()=>{});
+}
 async function initFirebase(){
-  loadRankCache();if(tab===5)renderRank();
+  loadRankCache();rk.live={};restRank();if(tab===5)renderRank();
   try{
     const [{initializeApp},au,fs]=await Promise.all([import(FB_SDK+"firebase-app.js"),import(FB_SDK+"firebase-auth.js"),import(FB_SDK+"firebase-firestore.js")]);
-    const app=initializeApp(FB_CONFIG),auth=au.getAuth(app),db=fs.getFirestore(app);
+    // 긴 연결(WebChannel 스트리밍) 대신 롱 폴링: 모바일 통신망·앱 안 브라우저에서 더 잘 된다
+    const app=initializeApp(FB_CONFIG),auth=au.getAuth(app),db=fs.initializeFirestore(app,{experimentalForceLongPolling:true});
     const wn=weekNum();
     rk.fb={fs,db};rk.state="ready";rk.wn=wn;rk.lastWn=wn-1;
     const scores=fs.collection(db,"scores"),thisWeek=fs.collection(db,"weeks",String(wn),"players"),lastWeek=fs.collection(db,"weeks",String(wn-1),"players");
@@ -881,8 +899,8 @@ async function initFirebase(){
       if(tab===5)renderRank();
     };
     // 랭킹 읽기는 누구나 가능해서 로그인을 기다리지 않고 바로 시작한다
-    fs.onSnapshot(fs.query(scores,fs.orderBy("xp","desc"),fs.limit(TOP_N)),s=>{rk.rows=docsOf(s);rk.cached=false;saveRankCache();if(tab===5)renderRank();rk.refreshMine()},fail);
-    fs.onSnapshot(fs.query(thisWeek,fs.orderBy("weekXp","desc"),fs.limit(TOP_N)),s=>{rk.weekRows=docsOf(s);saveRankCache();if(tab===5)renderRank();rk.refreshMine()},fail);
+    fs.onSnapshot(fs.query(scores,fs.orderBy("xp","desc"),fs.limit(TOP_N)),s=>{rk.rows=docsOf(s);rk.live.rows=true;rk.cached=false;saveRankCache();if(tab===5)renderRank();rk.refreshMine()},fail);
+    fs.onSnapshot(fs.query(thisWeek,fs.orderBy("weekXp","desc"),fs.limit(TOP_N)),s=>{rk.weekRows=docsOf(s);rk.live.week=true;saveRankCache();if(tab===5)renderRank();rk.refreshMine()},fail);
     // 지난주 리그: 이미 마감돼서 바뀌지 않으니 한 번만 읽는다
     const lastP=fs.getDocs(fs.query(lastWeek,fs.orderBy("weekXp","desc"),fs.limit(TOP_N))).then(s=>{rk.lastRows=docsOf(s);saveRankCache();if(tab===5)renderRank()});
     // 가입 없이 기기마다 익명 ID를 받는다 (다시 열어도 같은 ID)
@@ -1089,7 +1107,8 @@ function renderRank(){
   else if(rk.state==="loading")body=`<p class="rk-note">랭킹을 불러오는 중이에요…</p>`;
   else if(rk.state==="error")body=`<p class="rk-note">랭킹을 불러오지 못했어요. 페이지를 새로 고쳐 보세요.</p>`;
   else{
-    const join=!rk.me?`<p class="rk-note">로그인하면 랭킹에 참가할 수 있어요.</p>`
+    // GitHub 사이트(Firebase)에서는 로그인이 필요 없다. 익명 ID를 받는 중일 때는 아무것도 띄우지 않는다
+    const join=!rk.me?(window.claude&&typeof claude.use==="function"&&!rk.fb?`<p class="rk-note">claude.ai에 로그인하면 랭킹에 참가할 수 있어요.</p>`:"")
       :S.rankOff?`<div class="rk-join"><p>지금은 랭킹에서 내 기록이 숨겨져 있어요.</p><button class="next" id="rk-join">다시 참가하기</button></div>`
       :S.xp<=0?`<p class="rk-note">문제를 하나 맞히면 「${esc(S.nick)}」 이름으로 랭킹에 올라가요. 닉네임은 위 프로필에서 바꿀 수 있어요.</p>`
       :(rk.blocked||rk.canWrite===false)?`<p class="rk-note">${rk.fb?"내 기록을 랭킹에 올리지 못했어요. 잠시 뒤 다시 시도해 주세요.":"순위는 볼 수 있지만, 내 기록을 올리려면 이 페이지의 편집 권한이 필요해요."}</p>`:"";
