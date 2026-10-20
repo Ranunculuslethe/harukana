@@ -33,9 +33,10 @@ td.num,th.num{text-align:right}
 <body>
 <main>
 <h1>하루카나 관리</h1>
-<p class="sub">로그인한(Google·아이디) 학습자의 학습 현황이에요. 이름·이메일은 저장하지 않아서 닉네임과 계정 번호로만 보여요. 관리자 계정으로 로그인해야 보여요. (읽기 전용)</p>
+<p class="sub">로그인한(Google·아이디) 학습자의 학습 현황이에요. 이름·이메일은 저장하지 않아서 닉네임과 계정 번호로만 보여요. 관리자 계정으로 로그인해야 보여요. 학습 기록은 읽기만 하고, 랭킹 제재와 이름 초기화만 할 수 있어요.</p>
 <div class="bar" id="bar"><button class="main" id="login">Google로 로그인</button></div>
 <div id="out"></div>
+<div id="audit"></div>
 <div id="clean"></div>
 </main>
 <script>
@@ -59,7 +60,7 @@ let rows=[],sortKey="last",sortDir=-1,filter="";
 
 $("login").onclick=()=>au.signInWithPopup(auth,googleProvider()).catch(e=>show(`로그인하지 못했어요 (${esc(e.code||e.message)})`));
 au.onAuthStateChanged(auth,u=>{
-  if(!u){$("bar").innerHTML='<button class="main" id="login">Google로 로그인</button>';$("login").onclick=()=>au.signInWithPopup(auth,googleProvider()).catch(e=>show(`로그인하지 못했어요 (${esc(e.code||e.message)})`));show("");$("clean").innerHTML="";orphans=null;return}
+  if(!u){$("bar").innerHTML='<button class="main" id="login">Google로 로그인</button>';$("login").onclick=()=>au.signInWithPopup(auth,googleProvider()).catch(e=>show(`로그인하지 못했어요 (${esc(e.code||e.message)})`));show("");$("clean").innerHTML="";$("audit").innerHTML="";orphans=null;return}
   $("bar").innerHTML=`<span>${esc(u.email)}</span><button id="reload">새로고침</button><button id="logout">로그아웃</button><input id="q" placeholder="닉네임·계정 번호 검색">`;
   $("logout").onclick=()=>au.signOut(auth);
   $("reload").onclick=load;
@@ -81,7 +82,7 @@ function summarize(id,doc){
     chars:Object.values(s.c||{}).filter(v=>v&&v.d).length,words:Object.values(s.w||{}).filter(v=>v&&v.d).length,
     days:days.length,streak:streakOf(daily),solved:days.reduce((a,k)=>a+daily[k],0),
     rank:s.rankOff?"숨김":"참가",last:Math.max(saved,lastDay?+lastDay:0),
-    created:Date.parse(doc.createTime)||0};
+    created:Date.parse(doc.createTime)||0,raw:s};
 }
 async function load(){
   show("불러오는 중…");
@@ -96,8 +97,104 @@ async function load(){
       for(const d of j.documents||[])all.push(summarize(d.name.split("/").pop(),d));
       page=j.nextPageToken||"";
     }while(page);
-    rows=all;render();renderClean();
+    rows=all;render();loadAudit();renderClean();
   }catch(e){show("불러오지 못했어요 ("+esc(e.message)+")")}
+}
+
+/* ---------- 점수 점검과 제재 ----------
+   랭킹 점수가 학습 기록으로 설명되는지 본다. XP는 정답 1개 10, 배지 30, 하루 목표 최대 약 100, 리그 보상으로만 생긴다.
+   - 전체 XP > (정답 수×10 + 배지×30 + 공부한 날×100 + 받은 보상) → 의심
+   - 이번 주 XP > (이번 주 푼 문제×10 + 배지×30 + 700) → 의심
+   - 랭킹 XP가 학습 기록의 XP보다 훨씬 많음 → 의심 (랭킹 점수만 직접 고친 경우)
+   제재: bans/<uid>에 사유를 남기고 랭킹 기록을 지운다 (보안 규칙이 제재된 계정의 랭킹 쓰기를 막음) */
+const fv=v=>v==null?null:v.stringValue??(v.integerValue!=null?Number(v.integerValue):v.doubleValue??v.booleanValue??v.timestampValue??null);
+async function listDocs(path,token){
+  const out=[];let page="";
+  do{
+    const r=await fetch(`${BASE}/${path}?pageSize=300${page?"&pageToken="+encodeURIComponent(page):""}`,{headers:{Authorization:"Bearer "+token}});
+    if(!r.ok)throw new Error(path+" HTTP "+r.status);
+    const j=await r.json();
+    for(const d of j.documents||[]){const o={id:d.name.split("/").pop()};for(const k in d.fields||{})o[k]=fv(d.fields[k]);out.push(o)}
+    page=j.nextPageToken||"";
+  }while(page);
+  return out;
+}
+async function commit(writes){
+  const token=await auth.currentUser.getIdToken();
+  const r=await fetch(`${BASE}:commit`,{method:"POST",headers:{Authorization:"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({writes})});
+  if(!r.ok)throw new Error("HTTP "+r.status+" "+(await r.text()).slice(0,160));
+}
+const DOCN=p=>`projects/${FB_CONFIG.projectId}/databases/(default)/documents/${p}`;
+const strF=o=>{const f={};for(const k in o)f[k]=typeof o[k]==="number"?{integerValue:String(o[k])}:{stringValue:String(o[k])};return f};
+// 이번 주(한국 시간 월~일) 날짜 키 "2026-10-20" 꼴 (앱의 하루 기록 키와 같은 모양, 앞자리 0 없음)
+const weekDayKeys=wn=>{const s=(wn*7-3)*86400000;return [...Array(7)].map((_,i)=>{const d=new Date(s+i*86400000);return `${d.getUTCFullYear()}-${d.getUTCMonth()+1}-${d.getUTCDate()}`})};
+let audit=null,armed="";
+function auditOf(score,week,u){
+  const why=[];
+  if(!u){why.push("학습 기록이 없어서 확인할 수 없어요");return why}
+  const s=u.raw||{};
+  let rights=0;for(const k of ["c","w","cr","wr"])for(const v of Object.values(s[k]||{}))rights+=Number(v&&v.r)||0;
+  const badges=Object.keys(s.badges||{}).length,daily=s.daily||{};
+  const days=Object.keys(daily).filter(k=>daily[k]>0).length;
+  const rewards=Object.values(s.claimed||{}).reduce((a,c)=>a+(Number(c&&c.xp)||0),0);
+  const maxXp=rights*10+badges*30+days*100+rewards+200;
+  const wkAns=weekDayKeys(weekNum()).reduce((a,k)=>a+(Number(daily[k])||0),0);
+  const maxWeek=wkAns*10+badges*30+700;
+  if(score&&score.xp>maxXp*1.1)why.push(`전체 XP ${score.xp} > 가능한 최대 ${maxXp} (정답 ${rights}개)`);
+  if(week&&week.weekXp>maxWeek*1.1)why.push(`이번 주 XP ${week.weekXp} > 가능한 최대 ${maxWeek} (이번 주 푼 문제 ${wkAns}개)`);
+  if(score&&score.xp>(Number(s.xp)||0)+500)why.push(`랭킹 XP ${score.xp}가 학습 기록 XP ${Number(s.xp)||0}보다 훨씬 많아요`);
+  return why;
+}
+async function loadAudit(){
+  $("audit").innerHTML=box2("점수를 점검하는 중…");
+  try{
+    const token=await auth.currentUser.getIdToken(),wn=weekNum();
+    const [scores,week,bans,regs]=await Promise.all(["scores",`weeks/${wn}/players`,"bans","nickreg"].map(p=>listDocs(p,token)));
+    const by=(list)=>Object.fromEntries(list.map(d=>[d.id,d])),S_=by(scores),W=by(week),B=by(bans),R=by(regs),U=Object.fromEntries(rows.map(r=>[r.id,r]));
+    const ids=[...new Set([...scores.map(d=>d.id),...week.map(d=>d.id),...bans.map(d=>d.id)])];
+    audit=ids.map(id=>{const sc=S_[id],wk=W[id],why=B[id]?[]:auditOf(sc,wk,U[id]);
+      return{id,nick:(R[id]&&R[id].nick)||(sc&&sc.nick)||(wk&&wk.nick)||"",xp:sc?sc.xp:null,weekXp:wk?wk.weekXp:null,why,ban:B[id]||null,reg:R[id]||null}})
+      .sort((a,b)=>(b.why.length>0)-(a.why.length>0)||!!b.ban-!!a.ban||(b.xp||0)-(a.xp||0));
+    renderAudit();
+  }catch(e){$("audit").innerHTML=box2("점검하지 못했어요 ("+esc(e.message)+")")}
+}
+const box2=html=>`<h2 style="font-size:17px;margin:28px 0 8px">점수 점검 · 제재</h2><div class="wrap"><div class="msg">${html}</div></div>`;
+function renderAudit(){
+  if(!audit)return;
+  const sus=audit.filter(a=>a.why.length&&!a.ban);
+  const btn=(act,a,label)=>`<button data-act="${act}" data-id="${a.id}">${armed===act+a.id?"한 번 더 누르면 "+label:label}</button>`;
+  $("audit").innerHTML=`<h2 style="font-size:17px;margin:28px 0 8px">점수 점검 · 제재</h2>
+    <p class="sub" style="margin:0 0 10px">점수가 학습 기록으로 설명되지 않으면 <b>의심</b>으로 표시해요. 제재하면 그 사람의 랭킹 기록이 지워지고 다시 올릴 수 없어요 (공부 기록은 남아요).</p>
+    <div class="bar"><input id="ban-reason" placeholder="제재 사유 (학습자에게 보여요)" value="점수가 학습 기록에 비해 비정상적으로 높음">${sus.length?`<button class="main" data-act="banall" data-id="">${armed==="banall"?`한 번 더 누르면 ${sus.length}명 제재`:`의심 ${sus.length}명 모두 제재`}</button>`:""}<button id="audit-reload">다시 점검</button></div>
+    <div class="wrap">${audit.length?`<table><thead><tr><th>닉네임</th><th>계정 번호</th><th class="num">전체 XP</th><th class="num">이번 주 XP</th><th>판정</th><th>처리</th></tr></thead><tbody>
+    ${audit.map(a=>`<tr><td>${esc(a.nick)}</td><td>${esc(a.id.slice(0,8))}</td><td class="num">${a.xp??"-"}</td><td class="num">${a.weekXp??"-"}</td>
+      <td style="white-space:normal;min-width:220px">${a.ban?`<span class="tag">제재 중</span> ${esc(a.ban.reason||"")}`:a.why.length?`<span class="tag" style="background:#f6d4cf">의심</span> ${a.why.map(esc).join("<br>")}`:"정상"}</td>
+      <td>${a.ban?btn("unban",a,"해제"):btn("ban",a,"제재")} ${btn("renick",a,"이름 초기화")}</td></tr>`).join("")}
+    </tbody></table>`:`<div class="msg">랭킹에 참가한 사람이 없어요.</div>`}</div>`;
+  $("audit-reload").onclick=loadAudit;
+  document.querySelectorAll("#audit [data-act]").forEach(b=>b.onclick=()=>auditAct(b.dataset.act,b.dataset.id));
+}
+async function auditAct(act,id){
+  const k=act+id;
+  if(armed!==k){armed=k;renderAudit();setTimeout(()=>{if(armed===k){armed="";renderAudit()}},6000);return}
+  armed="";
+  const reason=($("ban-reason").value||"").trim().slice(0,100),wn=weekNum();
+  const banWrites=uid=>[{update:{name:DOCN("bans/"+uid),fields:strF({reason,t:Date.now()})}},{delete:DOCN("scores/"+uid)},{delete:DOCN(`weeks/${wn}/players/${uid}`)}];
+  try{
+    if(act==="ban")await commit(banWrites(id));
+    else if(act==="banall")await commit(audit.filter(a=>a.why.length&&!a.ban).flatMap(a=>banWrites(a.id)));
+    else if(act==="unban")await commit([{delete:DOCN("bans/"+id)}]);
+    else if(act==="renick"){
+      // 부적절한 이름: 자동 이름으로 바꾼다 (바꾼 횟수는 그대로). 랭킹 기록은 지워서 다음에 새 이름으로 다시 올라가게 한다
+      const a=audit.find(x=>x.id===id),nick="학습자"+String(Math.floor(1000+Math.random()*9000)),key=nick.toLowerCase();
+      const w=[{update:{name:DOCN("nicks/"+key),fields:strF({uid:id})},currentDocument:{exists:false}},
+        {update:{name:DOCN("nickreg/"+id),fields:strF({nick,key,n:Number(a&&a.reg&&a.reg.n)||0})}},
+        {delete:DOCN("scores/"+id)},{delete:DOCN(`weeks/${wn}/players/${id}`)}];
+      if(a&&a.reg&&a.reg.key)w.push({delete:DOCN("nicks/"+a.reg.key)});
+      await commit(w);
+    }
+  }catch(e){alert("처리하지 못했어요: "+e.message);return}
+  loadAudit();
 }
 
 /* 랭킹 정리: Google로 로그인하지 않은(익명) 사람의 랭킹 기록을 찾아 지운다

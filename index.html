@@ -148,6 +148,8 @@
 .login-banner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:22px;padding:16px 18px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:16px;background:var(--accent-soft)}
 .login-banner>div{flex:1 1 220px;min-width:0}.login-banner b{display:block;font-size:14px}.login-banner small{display:block;font-size:12px;color:var(--sub);margin-top:3px;line-height:1.6}
 .pf-acct{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 2px;font-size:12px;color:var(--sub)}
+.nick-help{font-size:12px;color:var(--sub);margin:6px 0 0;line-height:1.5}.nick-help.bad{color:var(--bad)}.pf-name .nick-help{margin:0}
+.pf-edit .link{margin:0 0 0 4px;font-size:12px}
 .login-btns{display:inline-flex;gap:8px;flex-wrap:wrap}.idbtn .g{font-size:10px;letter-spacing:0}
 .id-dlg{border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);padding:22px;width:min(380px,calc(100vw - 32px));box-shadow:0 12px 40px rgba(0,0,0,.18)}
 .id-dlg::backdrop{background:rgba(20,25,30,.45)}
@@ -864,7 +866,7 @@ function afterAnswer(ok,o){if(ok)addXp(XP_RIGHT);trackAnswer(ok,o||{});updateTit
    Firebase 설정값은 공개되어도 괜찮다: 쓰기는 보안 규칙이 막는다 (자기 익명 ID 문서만, 값 상한 있음) */
 const TOP_N=50;
 const WEEK_REWARDS=[3000,2500,2000,1600,1300,1000,800,600,400,200]; // 주간 리그 1~10등 보상 XP
-const rk={db:null,fb:null,user:null,me:null,canWrite:null,blocked:false,state:"loading",rows:null,weekRows:null,lastRows:null,myLast:null,myRank:{all:null,week:null,last:null},names:{},timer:0,last:"",busy:false};
+const rk={db:null,fb:null,user:null,me:null,canWrite:null,blocked:false,state:"loading",rows:null,weekRows:null,lastRows:null,myLast:null,myRank:{all:null,week:null,last:null},names:{},timer:0,last:"",busy:false,count:{week:null,last:null},banned:null,nickN:0,nickKey:null};
 const FB_CONFIG={apiKey:"AIzaSyDxJXq2AXCmTzJ-czbHEO5fKhrvn9NjKmg",authDomain:"harukana-74b43.firebaseapp.com",projectId:"harukana-74b43",storageBucket:"harukana-74b43.firebasestorage.app",messagingSenderId:"235663999566",appId:"1:235663999566:web:18e65cb4ee65b2c37c391f"};
 // GitHub 사이트에서는 Firebase 라이브러리 없이 일반 웹 요청(REST)만 쓴다.
 // 모바일 통신망·브라우저에 따라 라이브러리의 연결/로그인이 멈추는 일이 있어서, 읽기·로그인·쓰기를 모두 REST로 한다
@@ -977,6 +979,8 @@ async function loadBoard(mode,force){
   const [,col,field,key]=BOARD_SRC[mode];
   try{
     rk[key]=await restTop(boardParent(mode),col,field);
+    // 리그는 참가자 수도 센다 (보상 크기를 정하는 데 씀, 읽기 1건)
+    if(mode!=="all")rk.count[mode]=rk[key].length<TOP_N?rk[key].length:await restCountAbove(boardParent(mode),"players","weekXp",0);
     if(mode==="last")rk.lastFresh=true;
     rk.cached=false;rk.state="ready";saveRankCache();
   }catch(e){if(!rk[key])rk.state="offline"}
@@ -1023,12 +1027,16 @@ async function dropGuestRecords(){
 // 로그인한 사람의 랭킹 준비: 내 기록 올리기, 지난주 보상, 오래된 리그 정리
 async function memberInit(){
   const wn=rk.wn;
+  // 제재받은 계정인지 (운영자가 bans/<uid>에 사유를 남김)
+  try{const b=await restGet(`bans/${rk.me}`);rk.banned=b?{reason:b.reason||""}:null;if(b)rk.blocked=true}catch(e){}
+  await ensureNick();
   syncScore();
   if(tab===5)refreshMine(rk.mode||"week");
-  // 지난주 보상: 내 지난주 기록 1건 + 나보다 높은 사람 수 1건만 읽는다
+  // 지난주 보상: 내 지난주 기록 1건 + 나보다 높은 사람 수 1건 + 참가자 수 1건만 읽는다
   try{
     const mine=await restGet(`weeks/${wn-1}/players/${rk.me}`);
-    if(mine){rk.myLast=mine;rk.myRank.last=(await restCountAbove(boardParent("last"),"players","weekXp",mine.weekXp))+1}
+    if(mine){rk.myLast=mine;rk.myRank.last=(await restCountAbove(boardParent("last"),"players","weekXp",mine.weekXp))+1;
+      rk.count.last=await restCountAbove(boardParent("last"),"players","weekXp",0)}
   }catch(e){}
   claimWeekReward();
   cleanupOldWeeks();
@@ -1307,7 +1315,7 @@ async function wipeAccount(uid,idToken,deleteLogin){
   clearTimeout(rk.timer);rk.blocked=true;S.account=null;
   try{
     const h={Authorization:"Bearer "+idToken},wn=weekNum();
-    for(const p of [`users/${uid}`,`scores/${uid}`,`weeks/${wn}/players/${uid}`,`weeks/${wn-1}/players/${uid}`]){
+    for(const p of [`users/${uid}`,`scores/${uid}`,`weeks/${wn}/players/${uid}`,`weeks/${wn-1}/players/${uid}`,`nickreg/${uid}`,...(rk.nickKey?[`nicks/${encodeURIComponent(rk.nickKey)}`]:[])]){
       const r=await fetch(`${REST_BASE}/${p}`,{method:"DELETE",headers:h});
       if(!r.ok)throw new Error("기록 삭제 "+r.status);
     }
@@ -1343,11 +1351,86 @@ const loginBtn=(id,label)=>`<button class="gbtn" id="${id}"><span class="g">G</s
 const loginBtns=id=>`<span class="login-btns">${loginBtn(id)}<button class="gbtn idbtn" id="id-${id}"><span class="g">ID</span>아이디로 로그인</button></span>`;
 function bindLoginBtns(id){armLoginBtn($(id),googleLogin);if($("id-"+id))$("id-"+id).onclick=idLogin}
 const acctLabel=a=>a.kind==="id"?"아이디 "+a.id:a.email||a.name||"Google 계정";
-// 지난주 리그 1~10등이면 보상 XP를 한 번만 받는다 (전체 XP에만 더하고 이번 주 리그 XP에는 넣지 않는다)
+/* ---------- 닉네임: 겹치지 않게, 처음 정하기 1번 + 바꾸기 1번, 나쁜 말은 * ----------
+   서버에 nicks/<이름 키>(그 이름을 가진 사람)와 nickreg/<uid>(내 이름·바꾼 횟수 n)를 함께 둔다.
+   보안 규칙이 "이름 키는 한 사람만", "n은 1씩만, 최대 2(자동 이름 → 정하기 1 → 바꾸기 1)"를 지킨다 */
+const NICK_RE=/^[가-힣a-zA-Z0-9_]{2,12}$/;
+const NICK_RESERVED=/운영자|관리자|admin|하루카나|harukana|공식|official/i;
+const BAD_WORDS=["시발","씨발","씨빨","시빨","씨바","십새","씹","좆","존나","졸라","병신","븅신","빙신","등신","개새","새끼","쌔끼","지랄","염병","닥쳐","꺼져","미친","또라이","싸가지","창녀","걸레","보지","자지","섹스","야동","변태","느금","니애미","니엄마","애미","애비","엠창","호로","후레","썅","쌍놈","쌍년","개놈","개년","빠구리","딸딸이","자위","강간","살인","자살","일베","한남","김치녀","된장녀","틀딱","급식충","맘충","fuck","fuk","shit","bitch","sex","porn","dick","pussy","cock","nigger","nigga","fag","slut","whore","asshole","bastard","rape"];
+// 나쁜 말을 *로 가린다. 사이에 숫자·밑줄을 끼워 넣어도 찾는다 (예: 시1발 → *1*)
+function maskBad(s){
+  s=String(s||"");const ch=[...s],keep=[];
+  ch.forEach((c,i)=>{if(!/[0-9_\s.\-]/.test(c))keep.push([c.toLowerCase(),i])});
+  const flat=keep.map(x=>x[0]).join(""),hit=new Set();
+  for(const w of BAD_WORDS){let p=flat.indexOf(w);while(p>=0){for(let j=p;j<p+w.length;j++)hit.add(keep[j][1]);p=flat.indexOf(w,p+1)}}
+  return hit.size?ch.map((c,i)=>hit.has(i)?"*":c).join(""):s;
+}
+const nickKey=n=>n.toLowerCase();
+const pseudoNick=()=>"학습자"+String(Math.floor(1000+Math.random()*9000));
+const DOC=p=>`projects/${FB_CONFIG.projectId}/databases/(default)/documents/${p}`;
+// 여러 문서를 한 번에(모두 되거나 모두 안 되거나) 쓴다
+async function restCommit(writes,keepalive){
+  const r=await fetch(`${REST_BASE}:commit`,{method:"POST",keepalive:!!keepalive,headers:{...await authHeader(),"Content-Type":"application/json"},body:JSON.stringify({writes})});
+  if(!r.ok){const e=new Error("REST "+r.status);e.status=r.status;e.text=await r.text().catch(()=>"");throw e}
+  return r.json();
+}
+// 이름 등록·변경. first: 처음 등록(자동 이름 그대로 n=0)
+async function claimNick(nick,first){
+  const key=nickKey(nick),n=first?0:(rk.nickN||0)+1;
+  const writes=[
+    {update:{name:DOC("nicks/"+key),fields:toFields({uid:rk.me}).fields},currentDocument:{exists:false}},
+    {update:{name:DOC("nickreg/"+rk.me),fields:toFields({nick,key,n}).fields},currentDocument:{exists:!first}}];
+  if(!first&&rk.nickKey&&rk.nickKey!==key)writes.push({delete:DOC("nicks/"+rk.nickKey)});
+  await restCommit(writes);
+  rk.nickN=n;rk.nickKey=key;S.nick=nick;save();rk.last="";
+}
+// 로그인할 때: 서버에 등록된 이름을 쓰고, 없으면 지금 이름(겹치면 새 자동 이름)으로 등록한다
+async function ensureNick(){
+  try{
+    const reg=await restGet(`nickreg/${rk.me}`);
+    if(reg){rk.nickN=Number(reg.n)||0;rk.nickKey=reg.key;if(S.nick!==reg.nick){S.nick=reg.nick;save()}return true}
+    let nick=maskBad(S.nick||"");if(!NICK_RE.test(nick.replace(/\*/g,"_"))||NICK_RESERVED.test(nick))nick=pseudoNick();
+    for(let i=0;i<4;i++){
+      try{await claimNick(nick,true);return true}
+      catch(e){if(e.status===400||e.status===409){nick=pseudoNick();continue}throw e}
+    }
+  }catch(e){console.warn("이름 등록 실패",e)}
+  return false;
+}
+const nickLeft=()=>Math.max(0,2-(rk.nickN||0)); // 남은 이름 정하기·바꾸기 횟수
+// 프로필에서 이름 저장
+async function saveNick(raw){
+  raw=raw.trim();
+  if(!S.account)return "이름은 로그인한 뒤 정할 수 있어요.";
+  if(!NICK_RE.test(raw))return "이름은 한글·영어·숫자·밑줄(_)로 2~12자예요. 띄어쓰기와 ㅋㅋ 같은 낱자는 쓸 수 없어요.";
+  if(NICK_RESERVED.test(raw))return "운영자로 오해할 수 있는 이름은 쓸 수 없어요.";
+  if(!nickLeft())return "이름은 더 바꿀 수 없어요.";
+  const nick=maskBad(raw);
+  if(nickKey(nick)===rk.nickKey)return "지금 이름과 같아요.";
+  try{await claimNick(nick,false)}
+  catch(e){return e.status===400||e.status===409?"이미 누가 쓰고 있는 이름이에요. 다른 이름을 골라 주세요.":e.status===403?"이름은 더 바꿀 수 없어요.":"저장하지 못했어요. 잠시 뒤 다시 해 주세요."}
+  syncScore();
+  notifyText(nick!==raw?`부적절한 말은 *로 바꿔서 「${nick}」(으)로 저장했어요.`:`이름을 「${nick}」(으)로 정했어요.`);
+  return "";
+}
+
+/* ---------- 주간 리그 보상: 참가자 수에 따라 ----------
+   참가자가 적으면 1등이 너무 쉽게 큰 보상을 받으므로
+   - 보상받는 등수 = 참가자 수의 절반까지 (최대 10등). 1명이면 보상 없음
+   - 보상 크기 = 기본값 × (참가자 수 ÷ 20), 20명 이상이면 기본값 그대로
+   - 그 주에 리그 XP를 50 이상 모아야 받는다 */
+const MIN_LEAGUE_XP=50;
+function leagueRewards(n){
+  n=Number(n)||0;const places=Math.min(WEEK_REWARDS.length,Math.floor(n/2)),scale=Math.min(1,n/20);
+  return WEEK_REWARDS.slice(0,places).map(x=>Math.max(10,Math.round(x*scale/10)*10));
+}
+const rewardText=n=>{const r=leagueRewards(n);return r.length?`1~${r.length}등 보상 (1등 ${r[0]}${r.length>1?` · ${r.length}등 ${r[r.length-1]}`:""} XP)`:"참가자가 2명 이상이면 보상이 생겨요"};
+// 지난주 리그 보상은 한 번만 받는다 (전체 XP에만 더하고 이번 주 리그 XP에는 넣지 않는다)
 function claimWeekReward(){
-  const r=rk.myRank.last,key=String(rk.lastWn);
-  if(!r||r>WEEK_REWARDS.length||S.claimed[key])return;
-  const x=WEEK_REWARDS[r-1];
+  const r=rk.myRank.last,key=String(rk.lastWn),list=leagueRewards(rk.count.last);
+  if(!r||r>list.length||S.claimed[key]||rk.banned)return;
+  if((Number(rk.myLast&&rk.myLast.weekXp)||0)<MIN_LEAGUE_XP)return;
+  const x=list[r-1];
   S.claimed[key]={rank:r,xp:x};S.xp+=x;
   updateTitles();checkBadges();save();refreshSummary();rk.last="";syncScore();
   notifyText(`지난주 리그 ${r}등! 보상 +${x} XP를 받았어요.`);
@@ -1360,8 +1443,9 @@ async function initRank(){
   if(!IN_CLAUDE){initFirebase();return}
   rk.state="elsewhere";if(tab===5)renderRank();
 }
-// 내 기록 올리기: 무료 쓰기 한도를 아끼려고 30초에 한 번까지만 올리고, 페이지를 떠날 때 마지막으로 한 번 더 올린다
-const SYNC_GAP=30000;
+// 내 기록 올리기: 무료 읽기·쓰기 한도를 아끼려고 1분에 한 번까지만 올리고, 페이지를 떠날 때 마지막으로 한 번 더 올린다
+// (보안 규칙이 쓸 때마다 이름·제재 확인으로 2건을 읽는다)
+const SYNC_GAP=60000;
 function scoreData(){
   return{xp:S.xp,level:lvOf(S.xp),streak:streak(),chars:[...ALL,...ALL_K].filter(c=>cd(c.k)).length,words:WORDS.filter(w=>wd(w.id)).length,badges:Object.keys(S.badges).length,nick:(S.nick||"").slice(0,12),title:mainTitle(),avatar:avatarOf(S.avatar).id,week:weekId(),weekXp:weekXp()};
 }
@@ -1380,9 +1464,11 @@ async function pushScore(leaving){
   if(rk.busy&&!leaving){rk.timer=setTimeout(()=>pushScore(false),3000);return}
   clearTimeout(rk.timer);rk.busy=true;rk.wroteAt=Date.now();
   try{
-    const t=Date.now();
-    await restWrite("PATCH",`scores/${rk.me}`,toFields({...data,t}),leaving);
-    if(data.weekXp>0)await restWrite("PATCH",`weeks/${data.week}/players/${rk.me}`,toFields({nick:data.nick,title:data.title,avatar:data.avatar,level:data.level,weekXp:data.weekXp,t}),leaving);
+    // 기록 시각(t)은 기기 시계가 아니라 서버 시각으로 넣는다. 보안 규칙이 "지난 기록 뒤 흐른 시간만큼만" 점수가 오르게 막는 데 씀
+    const now=[{fieldPath:"t",setToServerValue:"REQUEST_TIME"}];
+    const writes=[{update:{name:DOC(`scores/${rk.me}`),fields:toFields(data).fields},updateTransforms:now}];
+    if(data.weekXp>0)writes.push({update:{name:DOC(`weeks/${data.week}/players/${rk.me}`),fields:toFields({nick:data.nick,title:data.title,avatar:data.avatar,level:data.level,weekXp:data.weekXp}).fields},updateTransforms:now});
+    await restCommit(writes,leaving);
     rk.last=sig;rk.syncErr=null;
     if(tab===5&&!leaving)loadBoard(rk.mode);
   }catch(e){
@@ -1481,8 +1567,12 @@ function renderRank(){
     <div class="pf-side"><div class="pf-avatar">${avatarSvg(S.avatar)}<span class="pf-lv">Lv.${lv}</span></div><button class="link" id="av-edit">${pickingAv?"닫기":"사진 바꾸기"}</button></div>
     <div class="pf-main">
       ${editingNick
-        ?`<div class="pf-edit"><input id="nick-in" maxlength="12" value="${esc(S.nick||"")}" placeholder="${esc(rk.myName||"학습자")}" aria-label="닉네임"><button class="next" id="nick-save">저장</button></div>`
-        :`<div class="pf-name"><b id="pf-nick"></b><button class="link" id="nick-edit">닉네임 바꾸기</button></div>`}
+        ?`<div class="pf-edit"><input id="nick-in" maxlength="12" value="${esc(S.nick||"")}" placeholder="한글·영어·숫자 2~12자" aria-label="닉네임"><button class="next" id="nick-save">${rk.nickArmed?"한 번 더 누르면 확정":"저장"}</button><button class="link" id="nick-cancel">취소</button></div>
+          <p class="nick-help" id="nick-msg">${IN_CLAUDE?"":nickLeft()===1?"<b>이번이 마지막이에요.</b> 이 이름은 다시 바꿀 수 없어요.":"이름은 다른 사람과 겹칠 수 없어요. 정한 뒤 한 번 더 바꿀 수 있어요."}</p>`
+        :`<div class="pf-name"><b id="pf-nick"></b>${IN_CLAUDE?`<button class="link" id="nick-edit">닉네임 바꾸기</button>`
+          :!S.account?`<small class="nick-help">로그인하면 이름을 정할 수 있어요</small>`
+          :nickLeft()?`<button class="link" id="nick-edit">${nickLeft()===2?"이름 정하기":"이름 바꾸기 (1번 남음)"}</button>`
+          :`<small class="nick-help">이름은 더 바꿀 수 없어요</small>`}</div>`}
       ${IN_CLAUDE?"":S.account?`<div class="pf-acct"><span class="g">${S.account.kind==="id"?"ID":"G"}</span><span>${esc(acctLabel(S.account))} · 기록이 계정에 저장돼요</span><button class="link" id="glogout">${rk.logoutArmed?"한 번 더 누르면 로그아웃":"로그아웃"}</button><button class="link" id="gdelete">${rk.deleteArmed?`한 번 더 누르면 삭제 (${S.account.kind==="id"?"비밀번호":"Google"} 확인)`:"계정 기록 삭제"}</button><a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></div>`
         :`<div class="pf-acct off"><span>지금은 이 브라우저에만 저장돼요.</span>${loginBtns("glogin-pf")}<a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></div>`}
       <div class="pf-title">${main?`<span class="title-chip">${esc(main)}</span>`:`<span class="title-none">아직 칭호가 없어요. 문제를 맞히면 첫 칭호를 받아요.</span>`}
@@ -1516,6 +1606,7 @@ function renderRank(){
   else{
     // GitHub 사이트(Firebase)에서는 로그인이 필요 없다. 익명 ID를 받는 중일 때는 아무것도 띄우지 않는다
     const join=!rk.me?(window.claude&&typeof claude.use==="function"&&!rk.fb?`<p class="rk-note">claude.ai에 로그인하면 랭킹에 참가할 수 있어요.</p>`:"")
+      :rk.banned?`<div class="rk-join rk-ban"><p><b>랭킹 참가가 제한된 계정이에요.</b><br>점수가 비정상적으로 올라 운영자가 랭킹 참가를 막았어요.${rk.banned.reason?` (사유: ${esc(rk.banned.reason)})`:""} 공부 기록은 그대로 저장돼요. 잘못된 제재라면 개인정보 처리방침의 연락처로 알려 주세요.</p></div>`
       :S.rankOff?`<div class="rk-join"><p>지금은 랭킹에서 내 기록이 숨겨져 있어요.</p><button class="next" id="rk-join">다시 참가하기</button></div>`
       :S.xp<=0?`<p class="rk-note">문제를 하나 맞히면 「${esc(S.nick)}」 이름으로 랭킹에 올라가요. 닉네임은 위 프로필에서 바꿀 수 있어요.</p>`
       :(rk.blocked||rk.canWrite===false)?`<p class="rk-note">${rk.fb?`내 기록을 랭킹에 올리지 못했어요 (오류 ${esc(rk.syncErr||"")}). 잠시 뒤 다시 시도해 주세요.`:"순위는 볼 수 있지만, 내 기록을 올리려면 이 페이지의 편집 권한이 필요해요."}</p>`
@@ -1526,7 +1617,8 @@ function renderRank(){
     const src=mode==="all"?rk.rows:mode==="week"?rk.weekRows:rk.lastRows,rows=src||[];
     const mine=mode==="all"?(S.rank?meRow:null):mode==="week"?(S.rank&&weekXp()>0?meRow:null):rk.myLast;
     const myRank=rk.myRank[mode];
-    const row=(r,rank)=>{const me=r.id===rk.me,nm=String(r.nick||"").slice(0,12)||rk.names[r.id]||"학습자",tt=String(r.title||"").slice(0,20),rw=league&&rank<=WEEK_REWARDS.length?WEEK_REWARDS[rank-1]:0;
+    const rewards=league?leagueRewards(rk.count[mode]):[];
+    const row=(r,rank)=>{const me=r.id===rk.me,nm=maskBad(String(r.nick||"").slice(0,12))||rk.names[r.id]||"학습자",tt=String(r.title||"").slice(0,20),rw=league&&rank<=rewards.length&&(Number(r.weekXp)||0)>=MIN_LEAGUE_XP?rewards[rank-1]:0;
       return `<li class="${me?"me":""}"><span class="rk-n r${rank}">${rank}</span><span class="rk-av">${avatarSvg(AVATARS.some(a=>a.id===r.avatar)?r.avatar:"fox")}</span><span class="rk-name">${esc(nm)}${me?' <em>나</em>':""}${tt?`<small>${esc(tt)}</small>`:""}</span><span class="rk-lv">Lv.${Number(r.level)||1}</span><span class="rk-xp">${Number(league?r.weekXp:r.xp)||0} XP</span>${rw?`<span class="rk-rw" title="${rank}등 보상">+${rw}</span>`:!league?`<span class="rk-st">${Number(r.streak)||0}일</span>`:""}</li>`};
     const emptyMsg={week:"이번 주 리그에 아직 아무도 없어요. 문제를 풀어 첫 번째가 되어 보세요!",last:"지난주 리그 기록이 없어요.",all:"아직 랭킹에 아무도 없어요. 첫 번째가 되어 보세요!"}[mode];
     let list;
@@ -1541,7 +1633,7 @@ function renderRank(){
   const md=ms=>{const d=new Date(ms+KST);return `${d.getUTCMonth()+1}/${d.getUTCDate()}`};
   const claimed=S.claimed[String(wn-1)];
   const subs={
-    week:`이번 주 XP 순이에요 · 마감까지 ${left}일 · 내 이번 주 XP <b>${weekXp()}</b><br>1~10등은 다음 주에 보상 XP를 받아요 (1등 3000 · 2등 2500 · 3등 2000 … 10등 200)`,
+    week:`이번 주 XP 순이에요 · 마감까지 ${left}일 · 내 이번 주 XP <b>${weekXp()}</b><br>${rk.count.week!=null?`참가자 ${rk.count.week}명 · ${rewardText(rk.count.week)}${leagueRewards(rk.count.week).length?` · 리그 XP ${MIN_LEAGUE_XP} 이상이면 다음 주에 받아요`:""}<br><small>보상은 참가자가 많을수록 커져요 (20명 이상이면 1등 3000 XP)</small>`:"참가자 수에 따라 1~10등이 다음 주에 보상 XP를 받아요"}`,
     last:`지난주(${md(weekStart(wn-1))}~${md(weekStart(wn)-DAYMS)}) 최종 순위예요.${claimed?` 나는 <b>${claimed.rank}등</b>, 보상 <b>+${claimed.xp} XP</b>를 받았어요.`:""}`,
     all:"지금까지 모은 전체 XP 순이에요 · 상위 50명과 내 순위가 보여요."};
   const m=rk.mode||"week";
@@ -1566,9 +1658,21 @@ function renderRank(){
   // 계정 기록 삭제도 두 번 눌러야 한다 (되돌릴 수 없음)
   if($("gdelete"))$("gdelete").onclick=()=>{if(rk.deleteArmed){rk.deleteArmed=false;deleteAccount()}else{rk.deleteArmed=true;preloadAuth()?.catch(()=>{});notifyText("계정과 이 기기의 학습 기록이 모두 지워지고 되돌릴 수 없어요.");renderRank();setTimeout(()=>{rk.deleteArmed=false;scheduleRank()},6000)}};
   if($("nick-edit"))$("nick-edit").onclick=()=>{editingNick=true;renderRank();$("nick-in").focus()};
-  // 닉네임을 비우면 지금 이름(가명 포함)을 그대로 둔다
-  if($("nick-save")){const done=()=>{const v=$("nick-in").value.trim().slice(0,12);if(v)S.nick=v;editingNick=false;save();rk.last="";syncScore();renderRank()};
-    $("nick-save").onclick=done;$("nick-in").onkeydown=e=>{if(e.key==="Enter")done();if(e.key==="Escape"){editingNick=false;renderRank()}}}
+  if($("nick-save")){
+    const close=()=>{editingNick=false;rk.nickArmed=false;renderRank()};
+    const done=async()=>{
+      const v=$("nick-in").value.trim().slice(0,12);
+      if(IN_CLAUDE){if(v)S.nick=maskBad(v);save();close();return} // claude.ai 링크는 이 기기에만 저장
+      // 마지막 변경은 두 번 눌러야 확정된다
+      if(nickLeft()===1&&!rk.nickArmed&&v&&v!==S.nick){rk.nickArmed=true;$("nick-save").textContent="한 번 더 누르면 확정";return}
+      $("nick-save").disabled=true;
+      const err=await saveNick(v);
+      if(err){$("nick-msg").textContent=err;$("nick-msg").classList.add("bad");$("nick-save").disabled=false;rk.nickArmed=false;$("nick-save").textContent="저장";return}
+      close();
+    };
+    $("nick-save").onclick=done;$("nick-cancel").onclick=close;
+    $("nick-in").onkeydown=e=>{if(e.key==="Enter")done();if(e.key==="Escape")close()};
+  }
   if($("title-pick"))$("title-pick").onchange=e=>{S.title=e.target.value;save();rk.last="";syncScore();renderRank()};
   $("av-edit").onclick=()=>{pickingAv=!pickingAv;renderRank()};
   document.querySelectorAll("[data-av]").forEach(b=>b.onclick=()=>{S.avatar=b.dataset.av;pickingAv=false;save();rk.last="";syncScore();renderRank()});
