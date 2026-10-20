@@ -148,6 +148,15 @@
 .login-banner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:22px;padding:16px 18px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:16px;background:var(--accent-soft)}
 .login-banner>div{flex:1 1 220px;min-width:0}.login-banner b{display:block;font-size:14px}.login-banner small{display:block;font-size:12px;color:var(--sub);margin-top:3px;line-height:1.6}
 .pf-acct{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 2px;font-size:12px;color:var(--sub)}
+.login-btns{display:inline-flex;gap:8px;flex-wrap:wrap}.idbtn .g{font-size:10px;letter-spacing:0}
+.id-dlg{border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);padding:22px;width:min(380px,calc(100vw - 32px));box-shadow:0 12px 40px rgba(0,0,0,.18)}
+.id-dlg::backdrop{background:rgba(20,25,30,.45)}
+.id-dlg h3{margin:0 0 12px;font-size:18px}.id-dlg label{display:block;font-size:13px;color:var(--sub);margin-top:12px}
+.id-dlg input{display:block;width:100%;margin-top:5px;padding:10px 12px;font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px}
+.id-dlg input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.id-seg{margin-bottom:4px}.id-note,.id-warn{font-size:12px;line-height:1.6;margin:12px 0 0}.id-warn{padding:10px 12px;border-radius:10px;background:var(--midbg);color:var(--ink)}
+.id-err{min-height:18px;font-size:12px;color:var(--bad);margin:10px 0 0}
+.id-btns{display:flex;justify-content:flex-end;align-items:center;gap:14px;margin-top:10px}.id-btns .link{margin:0}.id-btns .next{margin:0}
 .rk-guest{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);margin-top:0;gap:8px 20px}.rk-guest b{font-size:18px;margin-right:2px}
 .pf-acct span:not(.g){min-width:0;overflow-wrap:anywhere}.pf-acct .link{margin:0;font-size:12px}
 #words .seg{width:100%}#words .seg button{flex:1;padding:8px 6px;white-space:nowrap}
@@ -1198,41 +1207,92 @@ const loginErrText=(c,e,what)=>c==="harukana/not-ready"?"Google 확인 준비가
   :c==="auth/network-request-failed"?"인터넷 연결이 불안정해요. 잠시 뒤 다시 눌러 주세요."
   :c==="auth/operation-not-supported-in-this-environment"||c==="auth/web-storage-unsupported"?"이 브라우저에서는 Google 로그인을 쓸 수 없어요. Chrome이나 Safari로 열어 주세요."
   :what+"하지 못했어요 ("+(c||e.message)+")";
+// 로그인에 성공한 뒤 공통 처리 (Google·아이디 둘 다): 토큰 저장 → 계정 진도와 합치기 → 랭킹 참가
+async function finishLogin(a,account){
+  rk.auth={uid:a.uid,refreshToken:a.refreshToken,idToken:a.idToken,exp:Date.now()+50*60e3};
+  try{localStorage.setItem(AUTH_KEY,JSON.stringify({uid:a.uid,refreshToken:a.refreshToken}))}catch(e){}
+  rk.me=a.uid;S.account=account;rk.pulled=false;rk.progSig=null;
+  const merged=await pullProgress();
+  S.rankOff=S.rankOff||0;save();rk.last="";rk.blocked=false;rk.syncErr=null;rk.myRank={all:null,week:null,last:null};
+  await pushProgress(false);
+  // 이제 랭킹에 참가한다
+  if(rk.state==="guest")rk.state="loading";
+  memberInit();if(tab===5)loadBoard(rk.mode,true);
+  notifyText(merged?"로그인했어요. 계정에 있던 기록과 이 기기 기록을 합쳤어요.":"로그인했어요. 이제 기록이 계정에 저장돼요.");
+  rerenderAll();
+}
 async function googleLogin(){
   if(IN_CLAUDE)return;
-  if(IN_APP_BROWSER){notifyText("이 앱 안 브라우저에서는 Google 로그인이 막혀 있어요. 메뉴에서 'Chrome으로 열기' 후 로그인해 주세요.");return}
-  // 지금 쓰던 익명 ID(로그인 전 랭킹 기록)를 기억해 둔다. 팝업보다 먼저 기다리면 팝업이 막히므로 값만 복사한다
-  const old=rk.fb&&!S.account&&rk.auth?{...rk.auth}:null;
+  if(IN_APP_BROWSER){notifyText("이 앱 안 브라우저에서는 Google 로그인이 막혀 있어요. '아이디로 로그인'을 쓰거나, 메뉴에서 'Chrome으로 열기' 후 로그인해 주세요.");return}
   const popup=openGooglePopup(); // 반드시 await 없이 가장 먼저
   try{
     const {au,auth,user:u}=await popup;
-    rk.auth={uid:u.uid,refreshToken:u.refreshToken,idToken:await u.getIdToken(),exp:Date.now()+50*60e3};
-    try{localStorage.setItem(AUTH_KEY,JSON.stringify({uid:u.uid,refreshToken:u.refreshToken}))}catch(e){}
-    rk.me=u.uid;S.account={name:u.displayName||"",email:u.email||""};
+    const a={uid:u.uid,refreshToken:u.refreshToken,idToken:await u.getIdToken()};
     au.signOut(auth).catch(()=>{}); // 이후는 REST로 이어 간다(라이브러리 세션은 필요 없음)
-    const merged=await pullProgress();
-    // 로그인 전 익명 ID의 랭킹 기록은 지운다 (같은 사람이 두 줄로 나오지 않게, 새 계정으로 다시 올라감)
-    if(old&&old.uid!==u.uid){
-      for(const p of [`scores/${old.uid}`,`weeks/${weekId()}/players/${old.uid}`]){
-        try{
-          // 익명 ID의 토큰이 만료됐으면 그 ID의 갱신 토큰으로 새로 받는다
-          if(!old.idToken||Date.now()>old.exp){const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(old.refreshToken)});old.idToken=(await r.json()).id_token;old.exp=Date.now()+50*60e3}
-          await fetch(`${REST_BASE}/${p}`,{method:"DELETE",headers:{Authorization:"Bearer "+old.idToken}});
-        }catch(e){}
-      }
-    }
-    S.rankOff=S.rankOff||0;save();rk.last="";rk.blocked=false;rk.syncErr=null;rk.myRank={all:null,week:null,last:null};
-    await pushProgress(false);
-    // 이제 랭킹에 참가한다
-    if(rk.state==="guest")rk.state="loading";
-    memberInit();if(tab===5)loadBoard(rk.mode,true);
-    notifyText(merged?"로그인했어요. 계정에 있던 기록과 이 기기 기록을 합쳤어요.":"로그인했어요. 이제 기록이 Google 계정에 저장돼요.");
-    rerenderAll();
+    await finishLogin(a,{name:u.displayName||"",email:u.email||""});
   }catch(e){
     console.warn("Google 로그인 실패",e);
     notifyText(loginErrText(e&&e.code||"",e,"로그인"));
   }
 }
+
+/* ---------- 아이디·비밀번호 로그인 ----------
+   Google 계정이 없거나 쓰기 싫은 사람용. Firebase의 이메일·비밀번호 로그인을 쓰되, 이메일은 받지 않고
+   "아이디@id.harukana.invalid" 꼴의 가짜 주소로 바꿔 넣는다 (.invalid는 실제로 존재할 수 없는 주소라 메일이 가지 않음).
+   비밀번호는 Firebase가 암호화해 보관하고 운영자도 볼 수 없다. 대신 비밀번호를 잊으면 되찾을 방법이 없다 */
+const ID_DOMAIN="id.harukana.invalid";
+const ID_RE=/^[a-z0-9_]{4,16}$/;
+async function idAuth(mode,id,pw){ // mode: signUp(새로 만들기) | signInWithPassword(로그인)
+  const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:${mode}?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({email:id+"@"+ID_DOMAIN,password:pw,returnSecureToken:true})});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok){const e=new Error(j.error&&j.error.message||"HTTP "+r.status);e.code=e.message;throw e}
+  return{uid:j.localId,refreshToken:j.refreshToken,idToken:j.idToken};
+}
+const idErrText=c=>/EMAIL_EXISTS/.test(c)?"이미 누가 쓰고 있는 아이디예요. 다른 아이디를 골라 주세요."
+  :/INVALID_LOGIN_CREDENTIALS|EMAIL_NOT_FOUND|INVALID_PASSWORD/.test(c)?"아이디나 비밀번호가 맞지 않아요."
+  :/TOO_MANY_ATTEMPTS/.test(c)?"너무 여러 번 시도했어요. 잠시 뒤 다시 해 주세요."
+  :/WEAK_PASSWORD/.test(c)?"비밀번호는 6자 이상이어야 해요."
+  :/OPERATION_NOT_ALLOWED|PASSWORD_LOGIN_DISABLED/.test(c)?"아이디 로그인이 아직 준비되지 않았어요. 잠시 뒤 다시 해 주세요."
+  :/USER_DISABLED/.test(c)?"사용이 멈춘 계정이에요."
+  :/Failed to fetch|NetworkError/i.test(c)?"인터넷 연결을 확인해 주세요."
+  :"하지 못했어요 ("+c+")";
+// 아이디 창: mode = login(로그인) | signup(새로 만들기) | delete(계정 삭제 전 비밀번호 확인)
+function openIdDialog(mode,onDelete){
+  let d=$("id-dlg");if(!d){d=document.createElement("dialog");d.id="id-dlg";d.className="id-dlg";document.body.appendChild(d)}
+  const del=mode==="delete",sign=mode==="signup";
+  d.innerHTML=`<form method="dialog" id="id-form" novalidate>
+    <h3>${del?"비밀번호 확인":sign?"아이디 만들기":"아이디로 로그인"}</h3>
+    ${del?`<p class="id-note">계정과 모든 학습 기록을 지우려면 비밀번호를 한 번 더 넣어 주세요. 지우면 되돌릴 수 없어요.</p>`
+      :`<div class="seg id-seg"><button type="button" data-idm="login" class="${sign?"":"on"}">로그인</button><button type="button" data-idm="signup" class="${sign?"on":""}">새로 만들기</button></div>`}
+    ${del?"":`<label>아이디<input id="id-name" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="16" placeholder="영어 소문자·숫자 4~16자"></label>`}
+    <label>비밀번호<input id="id-pw" type="password" autocomplete="${sign?"new-password":"current-password"}" placeholder="6자 이상"></label>
+    ${sign?`<label>비밀번호 한 번 더<input id="id-pw2" type="password" autocomplete="new-password"></label>
+      <p class="id-warn"><b>비밀번호를 꼭 적어 두세요.</b> 이메일을 받지 않아서 비밀번호를 잊으면 기록을 되찾을 수 없어요.</p>`:""}
+    <p class="id-err" id="id-err" role="alert"></p>
+    <div class="id-btns"><button type="button" class="link" id="id-cancel">닫기</button><button class="next" id="id-ok">${del?"삭제하기":sign?"만들고 로그인":"로그인"}</button></div>
+  </form>`;
+  d.querySelectorAll("[data-idm]").forEach(b=>b.onclick=()=>openIdDialog(b.dataset.idm));
+  $("id-cancel").onclick=()=>d.close();
+  const err=t=>{$("id-err").textContent=t};
+  $("id-form").onsubmit=async ev=>{
+    ev.preventDefault();
+    const id=del?S.account.id:$("id-name").value.trim().toLowerCase(),pw=$("id-pw").value;
+    if(!ID_RE.test(id))return err("아이디는 영어 소문자·숫자·밑줄(_)로 4~16자예요.");
+    if(pw.length<6)return err("비밀번호는 6자 이상이어야 해요.");
+    if(sign&&pw!==$("id-pw2").value)return err("두 비밀번호가 서로 달라요.");
+    $("id-ok").disabled=true;err("");
+    try{
+      const a=await idAuth(sign?"signUp":"signInWithPassword",id,pw);
+      d.close();
+      if(del)return onDelete(a);
+      await finishLogin(a,{name:id,id,kind:"id"});
+    }catch(e){err(idErrText(e.code||e.message));$("id-ok").disabled=false}
+  };
+  if(!d.open)d.showModal();
+  (del?$("id-pw"):$("id-name")).focus();
+}
+function idLogin(){if(!IN_CLAUDE)openIdDialog("login")}
 // 로그아웃: 계정에 마지막으로 저장하고, 이 기기의 기록은 지운다 (계정에는 그대로 남음)
 async function googleLogout(){
   await pushProgress(false);
@@ -1240,32 +1300,49 @@ async function googleLogout(){
   location.reload();
 }
 // 계정 기록 삭제: Google로 한 번 더 확인한 뒤 서버의 진도·랭킹 기록과 로그인 계정, 이 기기의 기록을 모두 지운다
+// 서버의 진도·랭킹 기록, 로그인 계정, 이 기기의 기록을 모두 지운다 (방금 본인 확인을 받은 토큰으로)
+async function wipeAccount(uid,idToken,deleteLogin){
+  const acct=S.account;
+  // 지우는 동안 기록이 다시 올라가지 않게 막는다
+  clearTimeout(rk.timer);rk.blocked=true;S.account=null;
+  try{
+    const h={Authorization:"Bearer "+idToken},wn=weekNum();
+    for(const p of [`users/${uid}`,`scores/${uid}`,`weeks/${wn}/players/${uid}`,`weeks/${wn-1}/players/${uid}`]){
+      const r=await fetch(`${REST_BASE}/${p}`,{method:"DELETE",headers:h});
+      if(!r.ok)throw new Error("기록 삭제 "+r.status);
+    }
+    await deleteLogin();
+    try{["kana-v1",AUTH_KEY,"harukana-rank-cache",SYNC_KEY].forEach(k=>localStorage.removeItem(k))}catch(e){}
+    notifyText("계정과 학습 기록을 모두 지웠어요.");
+    setTimeout(()=>location.reload(),1500);
+  }catch(e){S.account=acct;rk.blocked=false;throw e}
+}
+// 계정 기록 삭제: Google 계정은 Google로, 아이디 계정은 비밀번호로 한 번 더 확인한 뒤 지운다
 async function deleteAccount(){
   if(IN_CLAUDE||!S.account||!rk.me)return;
+  if(S.account.kind==="id"){
+    openIdDialog("delete",async a=>{
+      if(a.uid!==rk.me)return notifyText("지금 로그인한 계정이 아니에요.");
+      try{await wipeAccount(a.uid,a.idToken,async()=>{
+        const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({idToken:a.idToken})});
+        if(!r.ok)throw new Error("계정 삭제 "+r.status);
+      })}catch(e){notifyText("삭제하지 못했어요 ("+e.message+")")}
+    });
+    return;
+  }
   const popup=openGooglePopup(); // 반드시 await 없이 가장 먼저
   try{
     const {au,auth,user:u}=await popup;
     if(u.uid!==rk.me){await au.signOut(auth);notifyText("지금 로그인한 계정과 다른 Google 계정이에요. 같은 계정으로 다시 확인해 주세요.");return}
-    // 지우는 동안 기록이 다시 올라가지 않게 막는다
-    clearTimeout(rk.timer);rk.blocked=true;S.account=null;
-    const h={Authorization:"Bearer "+await u.getIdToken()},wn=weekNum();
-    for(const p of [`users/${u.uid}`,`scores/${u.uid}`,`weeks/${wn}/players/${u.uid}`,`weeks/${wn-1}/players/${u.uid}`]){
-      const r=await fetch(`${REST_BASE}/${p}`,{method:"DELETE",headers:h});
-      if(!r.ok)throw new Error("기록 삭제 "+r.status);
-    }
-    await au.deleteUser(u);
-    try{["kana-v1",AUTH_KEY,"harukana-rank-cache",SYNC_KEY].forEach(k=>localStorage.removeItem(k))}catch(e){}
-    notifyText("계정과 학습 기록을 모두 지웠어요.");
-    setTimeout(()=>location.reload(),1500);
-  }catch(e){
-    const c=e&&e.code||"";
-    if(!S.account)S.account=JSON.parse(localStorage.getItem("kana-v1")||"{}").account||null;
-    rk.blocked=false;
-    notifyText(loginErrText(c,e,"삭제"));
-  }
+    await wipeAccount(u.uid,await u.getIdToken(),()=>au.deleteUser(u));
+  }catch(e){notifyText(loginErrText(e&&e.code||"",e,"삭제"))}
 }
 const PRIVACY_URL="privacy.html";
 const loginBtn=(id,label)=>`<button class="gbtn" id="${id}"><span class="g">G</span>${label||"Google로 로그인"}</button>`;
+// Google 버튼 + 아이디 버튼 한 쌍 (id-<이름> 버튼은 bindLoginBtns가 연결)
+const loginBtns=id=>`<span class="login-btns">${loginBtn(id)}<button class="gbtn idbtn" id="id-${id}"><span class="g">ID</span>아이디로 로그인</button></span>`;
+function bindLoginBtns(id){armLoginBtn($(id),googleLogin);if($("id-"+id))$("id-"+id).onclick=idLogin}
+const acctLabel=a=>a.kind==="id"?"아이디 "+a.id:a.email||a.name||"Google 계정";
 // 지난주 리그 1~10등이면 보상 XP를 한 번만 받는다 (전체 XP에만 더하고 이번 주 리그 XP에는 넣지 않는다)
 function claimWeekReward(){
   const r=rk.myRank.last,key=String(rk.lastWn);
@@ -1406,8 +1483,8 @@ function renderRank(){
       ${editingNick
         ?`<div class="pf-edit"><input id="nick-in" maxlength="12" value="${esc(S.nick||"")}" placeholder="${esc(rk.myName||"학습자")}" aria-label="닉네임"><button class="next" id="nick-save">저장</button></div>`
         :`<div class="pf-name"><b id="pf-nick"></b><button class="link" id="nick-edit">닉네임 바꾸기</button></div>`}
-      ${IN_CLAUDE?"":S.account?`<div class="pf-acct"><span class="g">G</span><span>${esc(S.account.email||S.account.name||"Google 계정")} · 기록이 계정에 저장돼요</span><button class="link" id="glogout">${rk.logoutArmed?"한 번 더 누르면 로그아웃":"로그아웃"}</button><button class="link" id="gdelete">${rk.deleteArmed?"한 번 더 누르면 삭제 (Google 확인)":"계정 기록 삭제"}</button><a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></div>`
-        :`<div class="pf-acct off"><span>지금은 이 브라우저에만 저장돼요.</span>${loginBtn("glogin-pf")}<a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></div>`}
+      ${IN_CLAUDE?"":S.account?`<div class="pf-acct"><span class="g">${S.account.kind==="id"?"ID":"G"}</span><span>${esc(acctLabel(S.account))} · 기록이 계정에 저장돼요</span><button class="link" id="glogout">${rk.logoutArmed?"한 번 더 누르면 로그아웃":"로그아웃"}</button><button class="link" id="gdelete">${rk.deleteArmed?`한 번 더 누르면 삭제 (${S.account.kind==="id"?"비밀번호":"Google"} 확인)`:"계정 기록 삭제"}</button><a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></div>`
+        :`<div class="pf-acct off"><span>지금은 이 브라우저에만 저장돼요.</span>${loginBtns("glogin-pf")}<a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></div>`}
       <div class="pf-title">${main?`<span class="title-chip">${esc(main)}</span>`:`<span class="title-none">아직 칭호가 없어요. 문제를 맞히면 첫 칭호를 받아요.</span>`}
         ${titles.length>1?`<label class="pf-pick">대표 칭호 <select id="title-pick">${titles.map(t=>`<option value="${t.id}"${t.title===main?" selected":""}>${esc(t.title)}</option>`).join("")}</select></label>`:""}</div>
       <div class="me-line"><b>${xp} XP</b><span>다음 레벨까지 ${XP_PER_LEVEL-inLv} XP</span></div><div class="bar"><i style="width:${inLv}%"></i></div>
@@ -1472,10 +1549,10 @@ function renderRank(){
   if(!IN_CLAUDE&&rk.fb&&!S.account){
     const stat=(n,l)=>`<span><b>${n}</b>${l}</span>`;
     $("board").innerHTML=`<h3 class="rk-h">랭킹</h3>
-      <div class="rk-join"><p><b>랭킹은 Google로 로그인한 사람끼리 겨뤄요.</b><br>로그인하면 이번 주 리그·전체 랭킹에 참가하고, 다른 사람의 순위도 볼 수 있어요. 1~10등은 매주 보상 XP를 받아요.</p>${loginBtn("glogin-rk")}</div>
+      <div class="rk-join"><p><b>랭킹은 로그인한 사람끼리 겨뤄요.</b><br>Google이나 아이디로 로그인하면 이번 주 리그·전체 랭킹에 참가하고, 다른 사람의 순위도 볼 수 있어요. 1~10등은 매주 보상 XP를 받아요.</p>${loginBtns("glogin-rk")}</div>
       <h3 class="rk-h" style="margin-top:14px">내 기록</h3>
       <div class="me-stats rk-guest">${stat(weekXp()," 이번 주 XP")}${stat(S.xp," 전체 XP")}${stat("Lv."+lvOf(S.xp),"")}${stat(streak(),"일 연속")}</div>`;
-    armLoginBtn($("glogin-rk"),googleLogin);
+    bindLoginBtns("glogin-rk");
   }else
   $("board").innerHTML=`<h3 class="rk-h">랭킹</h3>
     <div class="seg rk-seg" role="group" aria-label="랭킹 종류">${[["week","이번 주 리그"],["last","지난주 리그"],["all","전체 랭킹"]].map(([k,t])=>`<button data-rm="${k}" class="${m===k?"on":""}">${t}</button>`).join("")}</div>
@@ -1483,7 +1560,7 @@ function renderRank(){
   document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{rk.mode=b.dataset.rm;renderRank();loadBoard(rk.mode)});
   renderGrass();
   if($("rk-join"))$("rk-join").onclick=()=>setRankHidden(false);
-  armLoginBtn($("glogin-pf"),googleLogin);
+  bindLoginBtns("glogin-pf");
   // 로그아웃은 두 번 눌러야 한다 (이 기기의 기록은 지워지고 계정에는 남음)
   if($("glogout"))$("glogout").onclick=()=>{if(rk.logoutArmed){googleLogout()}else{rk.logoutArmed=true;notifyText("로그아웃하면 이 기기의 기록은 지워지고, 다시 로그인하면 계정에서 불러와요.");renderRank();setTimeout(()=>{rk.logoutArmed=false;scheduleRank()},5000)}};
   // 계정 기록 삭제도 두 번 눌러야 한다 (되돌릴 수 없음)
@@ -1594,8 +1671,8 @@ function renderHome(){
   if(!rv)renderReview();
   $("continue").title=lastPlace();
   // 로그인하지 않은 사람에게: 기록이 이 브라우저에만 있다는 안내 + Google 로그인
-  $("login-banner").innerHTML=!IN_CLAUDE&&!S.account?`<div class="login-banner"><div><b>기록을 안전하게 지키세요</b><small>지금은 이 브라우저에만 저장돼요. Google로 로그인하면 브라우저를 지우거나 기기를 바꿔도 그대로 이어서 할 수 있고, 랭킹에도 참가해요.<br>서버에는 학습 기록만 저장하고 이름·이메일은 저장하지 않아요. <a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></small></div>${loginBtn("glogin-home")}</div>`:"";
-  armLoginBtn($("glogin-home"),googleLogin);
+  $("login-banner").innerHTML=!IN_CLAUDE&&!S.account?`<div class="login-banner"><div><b>기록을 안전하게 지키세요</b><small>지금은 이 브라우저에만 저장돼요. Google이나 아이디로 로그인하면 브라우저를 지우거나 기기를 바꿔도 그대로 이어서 할 수 있고, 랭킹에도 참가해요.<br>서버에는 학습 기록만 저장하고 이름·이메일은 저장하지 않아요. <a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></small></div>${loginBtns("glogin-home")}</div>`:"";
+  bindLoginBtns("glogin-home");
   const labels=['첫 글자, 설레는 시작','소리에 작은 변화','조금 더 풍부한 발음'];
   const descriptions=[(pathScript==='h'?'あ・い・う・え・お':'ア・イ・ウ・エ・オ')+'부터 차근차근','탁음과 반탁음의 차이를 익혀요','촉음 · 요음 · 장음으로 한 단계 더'];
   const marks=pathScript==='h'?['あ','が','きゃ']:['ア','ガ','キャ'];
