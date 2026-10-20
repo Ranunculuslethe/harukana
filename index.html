@@ -1002,7 +1002,8 @@ async function initFirebase(){
   loadRankCache();
   if(tab===5)loadBoard(rk.mode);
   // 프로필 탭을 보고 있는 동안에만 60초마다 새로 받아 온다
-  setInterval(()=>{if(tab===5&&!document.hidden)loadBoard(rk.mode,true)},60000);
+  // 랭킹 50명을 다시 받으면 읽기 50건이라, 다른 사람 순위는 3분마다만 새로 받는다 (내 점수는 아래 patchMyRows로 바로 반영)
+  setInterval(()=>{if(tab===5&&!document.hidden)loadBoard(rk.mode,true)},180000);
   // 로그인하지 않은 사람: 랭킹에 참가하지 않고 내 기록만 본다 (예전에 올라간 익명 기록은 지운다)
   if(!S.account){rk.state="guest";rk.rows=rk.weekRows=rk.lastRows=null;try{localStorage.removeItem(RANK_CACHE)}catch(e){}dropGuestRecords();scheduleRank();return}
   try{rk.auth=await restAuth();rk.me=rk.auth.uid;rk.canWrite=true}catch(e){console.warn("로그인 갱신 실패",e)}
@@ -1046,7 +1047,8 @@ async function memberInit(){
 // (보안 규칙이 "이번 주·지난주가 아닌 기록"만 아무나 지울 수 있게 허용)
 async function cleanupOldWeeks(){
   try{const k="harukana-cleanup",d=String(Math.floor(Date.now()/DAYMS));if(localStorage.getItem(k)===d)return;localStorage.setItem(k,d)}catch(e){return}
-  for(let w=rk.wn-2;w>=rk.wn-10;w--){
+  // 날마다 누군가 지우므로 남아 있을 수 있는 건 2~3주 전 기록뿐이다 (예전엔 9주를 뒤져 읽기 9건)
+  for(let w=rk.wn-2;w>=rk.wn-3;w--){
     try{const rows=await restTop(`/weeks/${w}`,"players","weekXp");
       for(const d of rows){try{await restWrite("DELETE",`weeks/${w}/players/${d.id}`)}catch(e){}}}catch(e){}
   }
@@ -1191,11 +1193,14 @@ function preloadAuth(){
   }).catch(e=>{authLibP=null;throw e});
   return authLibP;
 }
-const idle=f=>("requestIdleCallback" in window?requestIdleCallback(f,{timeout:3000}):setTimeout(f,1500));
-// 로그인 버튼이 화면에 그려지면 미리 받기 시작한다 (누르기 직전 손가락이 닿을 때도)
+// Google 로그인 라이브러리(약 60KB)는 로그인 버튼이 실제로 화면에 보일 때 받기 시작한다.
+// 로그인하지 않고 공부만 하는 사람은 받지 않아도 되도록 (누르기 직전 손가락이 닿을 때도 받기 시작)
+const authSeen=("IntersectionObserver" in window)?new IntersectionObserver(es=>{
+  if(es.some(e=>e.isIntersecting)){authSeen.disconnect();preloadAuth()?.catch(()=>{})}
+}):null;
 function armLoginBtn(btn,fn){
   if(!btn)return;
-  idle(()=>preloadAuth()?.catch(()=>{}));
+  if(!authLib&&!IN_APP_BROWSER){if(authSeen)authSeen.observe(btn);else preloadAuth()?.catch(()=>{})}
   btn.addEventListener("pointerdown",()=>preloadAuth()?.catch(()=>{}),{once:true});
   btn.onclick=fn;
 }
@@ -1470,13 +1475,32 @@ async function pushScore(leaving){
     if(data.weekXp>0)writes.push({update:{name:DOC(`weeks/${data.week}/players/${rk.me}`),fields:toFields({nick:data.nick,title:data.title,avatar:data.avatar,level:data.level,weekXp:data.weekXp}).fields},updateTransforms:now});
     await restCommit(writes,leaving);
     rk.last=sig;rk.syncErr=null;
-    if(tab===5&&!leaving)loadBoard(rk.mode);
+    if(!leaving)patchMyRows(data);
   }catch(e){
     rk.syncErr=String(e&&(e.status||e.message));
     if(e&&e.status===403){rk.blocked=true;scheduleRank()}
     else if(!leaving)rk.timer=setTimeout(()=>pushScore(false),15000); // 통신 오류면 잠시 뒤 다시 시도
   }
   rk.busy=false;
+}
+// 방금 올린 내 점수를 이미 받아 둔 랭킹에 직접 넣어 다시 정렬한다 (서버에서 50명을 다시 읽지 않음)
+function patchMyRows(d){
+  const put=(key,field,v,extra)=>{
+    const list=rk[key];if(!list)return;
+    const i=list.findIndex(r=>r.id===rk.me),wasIn=i>=0;
+    if(wasIn)Object.assign(list[i],extra,{[field]:v});
+    else if(v>0&&(list.length<TOP_N||v>(Number(list[list.length-1][field])||0)))list.push({id:rk.me,...extra,[field]:v});
+    else return;
+    list.sort((a,b)=>(Number(b[field])||0)-(Number(a[field])||0));
+    if(list.length>TOP_N)list.length=TOP_N;
+    // 50명 안쪽이면 목록 길이가 곧 참가자 수
+    if(key==="weekRows"&&!wasIn&&rk.count.week!=null&&list.length<TOP_N)rk.count.week=list.length;
+  };
+  const base={nick:d.nick,title:d.title,avatar:d.avatar,level:d.level};
+  put("rows","xp",d.xp,{...base,streak:d.streak});
+  if(d.weekXp>0)put("weekRows","weekXp",d.weekXp,base);
+  saveRankCache();
+  if(tab===5)refreshMine(rk.mode||"week"); // 50위 밖이면 내 순위만 다시 센다 (읽기 1건)
 }
 // 탭을 닫거나 다른 앱으로 넘어갈 때 아직 안 올린 기록을 올린다
 document.addEventListener("visibilitychange",()=>{if(document.hidden)pushScore(true)});
