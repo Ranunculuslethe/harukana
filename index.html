@@ -118,6 +118,15 @@
 .missions li.done span{color:var(--ok);font-weight:700}.missions li.done .bar i{background:var(--ok)}
 .goal-ring>span{font-size:13px;font-weight:800;color:var(--accent)}
 .big.sound{font-size:64px}
+.big.ear{font-size:16px;padding:18px 0}
+.ear-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));background:var(--accent-soft);color:var(--ink);font:inherit;font-size:16px;font-weight:700;cursor:pointer}
+.ear-btn .icon{width:28px;height:28px;color:var(--accent)}.ear-btn:active{transform:scale(.97)}
+.ear-warn{margin:8px 0 0}
+.cf-panel{margin-top:16px}.cf-panel .intro{margin:6px 0 12px}
+.cf-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.cf-chip{display:inline-flex;align-items:baseline;gap:6px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--bg)}
+.cf-chip b{font-size:18px;letter-spacing:.04em}.cf-chip small{font-size:11px;color:var(--bad)}
+#v2 .mode-seg{flex-wrap:wrap}
 .choices.kana button{font-family:"Yu Gothic","Hiragino Sans","Noto Sans JP",sans-serif;font-size:28px}
 .choices.text.kana button{font-size:20px}
 /* 학습 잔디 달력 */
@@ -223,7 +232,7 @@
 <section id="v2" role="tabpanel" aria-labelledby="t2" hidden>
   <div class="section-intro"><div><p class="section-kicker">PRACTICE / 02</p><h2>글자 퀴즈</h2><p class="section-copy">히라가나·가타카나를 골라 카테고리별로 문제를 풀어요.</p></div><div class="section-mark" aria-hidden="true">問</div></div>
   <div class="seg"><button class="on" id="qh">히라가나</button><button id="qk">가타카나</button></div>
-  <div class="seg mode-seg" role="group" aria-label="문제 방향"><button class="on" id="qm-fwd">글자 → 발음</button><button id="qm-rev">발음 → 글자</button></div>
+  <div class="seg mode-seg" role="group" aria-label="문제 방향"><button class="on" id="qm-fwd">글자 → 발음</button><button id="qm-rev">발음 → 글자</button><button id="qm-ear">소리 → 글자</button></div>
   <div class="stagebar" id="stagebar"></div>
   <div class="panel" id="quiz"></div>
   <div id="quiz-tools"></div>
@@ -427,7 +436,7 @@ function autoHangul(kana){
 const KEY="kana-v1";
 // co: 글자 종류별로 열린 단어 카테고리 수 (h 히라가나, k 가타카나, m 섞어 쓰기), mix: 섞어 쓰기가 열렸는지
 // xp: 경험치, badges: 받은 배지 {id: 받은 시각}, flags: 배지 조건용 기록, rank: 랭킹에 참가했는지
-const fresh=()=>({c:{},w:{},n:{},co:{h:1,k:1,m:1},mix:0,daily:{},xp:0,badges:{},flags:{},rank:1,titles:{},sr:{},wk:{id:"",xp:0},cr:{},wr:{},claimed:{}});
+const fresh=()=>({c:{},w:{},n:{},co:{h:1,k:1,m:1},mix:0,daily:{},xp:0,badges:{},flags:{},rank:1,titles:{},sr:{},wk:{id:"",xp:0},cr:{},wr:{},claimed:{},ca:{},cf:{}});
 let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||typeof S!=="object")S=fresh();
 S.c=S.c||{};S.w=S.w||{};S.n=S.n||{};S.daily=S.daily||{};delete S.u;
@@ -435,7 +444,8 @@ if(!S.co){S.co={h:S.cu||1,k:1,m:1}}delete S.cu; // 예전 저장분: 히라가�
 S.mix=S.mix||0;S.xp=S.xp||0;S.badges=S.badges||{};S.flags=S.flags||{};// 랭킹은 기본으로 참가한다 (프로필에서 "랭킹에서 숨기기"를 누른 사람만 rankOff). 닉네임이 없으면 "학습자1234" 같은 가명을 한 번 만든다
 if(!S.rankOff)S.rank=1;
 if(!S.nick)S.nick="학습자"+String(Math.floor(1000+Math.random()*9000));
-S.titles=S.titles||{};delete S.ro;S.sr=S.sr||{};S.wk=S.wk||{id:"",xp:0};S.cr=S.cr||{};S.wr=S.wr||{};S.claimed=S.claimed||{}; // claimed: 주간 리그 보상을 받은 주 {주 번호:{rank,xp}} // cr/wr: 발음→글자, 뜻→일본어 문제의 진도 // sr: 복습 일정 {키:{lv,due}}, wk: 이번 주 리그 XP // titles: 분야별로 받은 칭호의 최고 단계
+S.titles=S.titles||{};delete S.ro;S.sr=S.sr||{};S.wk=S.wk||{id:"",xp:0};S.cr=S.cr||{};S.wr=S.wr||{};S.claimed=S.claimed||{};S.ca=S.ca||{};S.cf=S.cf||{}; // ca: 소리 듣고 글자 고르기 진도, cf: 헷갈린 글자 짝 {"シ|ツ": 횟수}
+ // claimed: 주간 리그 보상을 받은 주 {주 번호:{rank,xp}} // cr/wr: 발음→글자, 뜻→일본어 문제의 진도 // sr: 복습 일정 {키:{lv,due}}, wk: 이번 주 리그 XP // titles: 분야별로 받은 칭호의 최고 단계
 // 예전 저장분 옮기기: 마지막에 맞힌 상태였으면 맞힘으로
 for(const k in S.c)if(S.c[k].d===undefined)S.c[k].d=S.c[k].s>=1?1:0;
 for(const k in S.w)if(S.w[k].d===undefined)S.w[k].d=S.w[k].s>=1?1:0;
@@ -530,7 +540,7 @@ function mc(el,o){
     bs.forEach((x,j)=>{x.disabled=true;if(j===o.correct)x.classList.add("right");else if(j===i)x.classList.add("wrong")});
     el.querySelector(".fb").classList.add(ok?"feedback-correct":"feedback-wrong");
     // 결과 문구 앞의 "정답!/아쉬워요."는 제목과 겹쳐서 뺀다
-    el.querySelector(".fb").innerHTML=(ok?`<strong>✓ 잘했어요! +${XP_RIGHT} XP</strong> `:"<strong>다시 배우는 기회예요.</strong> ")+o.onPick(ok).replace(/^(정답!|아쉬워요\.) /,"");
+    el.querySelector(".fb").innerHTML=(ok?`<strong>✓ 잘했어요! +${XP_RIGHT} XP</strong> `:"<strong>다시 배우는 기회예요.</strong> ")+o.onPick(ok,i).replace(/^(정답!|아쉬워요\.) /,"");
     afterAnswer(ok,o);
     const nb=document.createElement("button");nb.className="next";nb.textContent=o.nextLabel||"다음 문제";nb.onclick=o.onNext;
     el.querySelector(".nx").appendChild(nb);nb.focus();
@@ -569,17 +579,29 @@ const catChars=(s,n)=>SCRIPTS[s].all.filter(c=>c.stage===n);
 const rowOf=c=>[...ROWS,...ROWS_K].find(r=>r.cells.includes(c));
 const rowName=r=>r.cells[0].sp?"촉음·장음":r.cells[0].k+"행";
 const RETRY_GAP=3; // 틀린 글자는 3문제 뒤에 다시
-// 문제 방향은 따로 고른다: fwd 글자 → 발음, rev 발음 → 글자 (진도도 따로 센다)
+// 문제 방향은 따로 고른다: fwd 글자 → 발음, rev 발음 → 글자, ear 소리 듣고 → 글자 (진도도 따로 센다)
 let qMode="fwd";
 const gr=k=>S.cr[k]||(S.cr[k]={r:0,w:0,d:0});
-const cdm=(k,m=qMode)=>m==="rev"?!!(S.cr[k]&&S.cr[k].d):cd(k);
-// 발음 → 글자에서는 촉음·장음(예시 단어로 읽는 문제)은 뺀다
-const modeChars=(s,n,m=qMode)=>catChars(s,n).filter(c=>m!=="rev"||!c.sp);
+const ga=k=>S.ca[k]||(S.ca[k]={r:0,w:0,d:0});
+const modeRec=m=>m==="ear"?S.ca:m==="rev"?S.cr:S.c;
+const cdm=(k,m=qMode)=>m==="fwd"?cd(k):!!(modeRec(m)[k]&&modeRec(m)[k].d);
+// 발음 → 글자, 소리 → 글자에서는 촉음·장음(예시 단어로 읽는 문제)은 뺀다
+const modeChars=(s,n,m=qMode)=>catChars(s,n).filter(c=>m==="fwd"||!c.sp);
+// 소리 문제: 브라우저의 일본어 음성으로 읽어 준다. 일본어 음성이 없는 기기도 있어서 미리 확인한다
+const SPK='<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+function jaVoice(){
+  if(!("speechSynthesis" in window))return "none";
+  const v=speechSynthesis.getVoices();if(!v.length)return "unknown"; // 목록을 아직 못 받은 기기도 있다
+  return v.some(x=>/^ja/i.test(x.lang))?"ok":"none";
+}
+try{speechSynthesis.onvoiceschanged=()=>{if(qMode==="ear"&&tab===2)renderCharQuiz()}}catch(e){}
+// 소리 문제의 "다시 듣기" 버튼을 연결하고, 처음 한 번은 바로 들려준다
+function bindEar(el,say){const b=el.querySelector(".ear-btn");if(!b)return;b.onclick=()=>speak(say);setTimeout(()=>speak(say),250)}
 const firstOpenCat=s=>[1,2,3].find(n=>modeChars(s,n).some(c=>!cdm(c.k)))||1;
 let qScript="h",qStage=firstOpenCat("h"),cq=null;
 // 카테고리 전체를 행 구분 없이 섞어서 한 번씩 (순서대로 나오면 외우기보다 흐름으로 맞히게 돼서)
 function startStage(n,all){
-  qStage=n;setLast({t:"char",s:qScript,n,m:qMode});
+  qStage=n;setLast({t:"char",s:qScript,n,m:qMode});cfq=null;
   cq={queue:shuffle(modeChars(qScript,n).filter(c=>all||!cdm(c.k)).map(c=>c.k))};
 }
 function setScript(s){qScript=s;startStage(firstOpenCat(s));renderStageBar();renderCharQuiz()}
@@ -601,15 +623,19 @@ function charQ(c,mode){
   }
   const opts=shuffle([c,...others]);
   const fb=ok=>`${ok?"정답!":"아쉬워요."} ${c.k} = ${c.h} (${c.r})${ok?"":'<span class="tip">조금 뒤에 다시 나와요.</span>'}`;
-  // 발음 → 글자: 보기에는 발음이 같은 글자(じ/ぢ 등)를 넣지 않아서 답이 하나로 정해진다
+  // 발음 → 글자, 소리 → 글자: 보기에는 발음이 같은 글자(じ/ぢ 등)를 넣지 않아서 답이 하나로 정해진다
+  const keys=opts.map(x=>x.k); // 틀렸을 때 어떤 글자와 헷갈렸는지 기록하는 데 씀
+  if(mode==="ear")
+    return{prompt:"소리를 듣고 글자를 고르세요",big:`<button class="ear-btn" type="button" aria-label="소리 다시 듣기">${SPK}<span>다시 듣기</span></button>`,bigCls:"ear",choices:keys,chCls:"kana",correct:opts.indexOf(c),say:c.k,fb,kind:"char",kata:!!c.kata,ear:1,keys};
   if(mode==="rev")
-    return{prompt:"이 발음의 글자는?",big:clean(c.h),bigCls:"sound",choices:opts.map(x=>x.k),chCls:"kana",correct:opts.indexOf(c),say:c.k,fb,kind:"char",kata:!!c.kata,rev:1};
-  return{prompt:"이 글자의 발음은?",big:c.k,choices:opts.map(x=>x.h),correct:opts.indexOf(c),say:c.k,fb,kind:"char",kata:!!c.kata};
+    return{prompt:"이 발음의 글자는?",big:clean(c.h),bigCls:"sound",choices:keys,chCls:"kana",correct:opts.indexOf(c),say:c.k,fb,kind:"char",kata:!!c.kata,rev:1,keys};
+  return{prompt:"이 글자의 발음은?",big:c.k,choices:opts.map(x=>x.h),correct:opts.indexOf(c),say:c.k,fb,kind:"char",kata:!!c.kata,keys};
 }
-const MODE_NAMES={fwd:"글자 → 발음",rev:"발음 → 글자"};
+const MODE_NAMES={fwd:"글자 → 발음",rev:"발음 → 글자",ear:"소리 → 글자"};
 function renderStageBar(){
   $("qh").classList.toggle("on",qScript==="h");$("qk").classList.toggle("on",qScript==="k");
-  $("qm-fwd").classList.toggle("on",qMode==="fwd");$("qm-rev").classList.toggle("on",qMode==="rev");
+  for(const m of ["fwd","rev","ear"]){$("qm-"+m).classList.toggle("on",qMode===m);$("qm-"+m).setAttribute("aria-pressed",qMode===m)}
+  renderConfTools();
   $("stagebar").innerHTML=[1,2,3].map(n=>{const all=modeChars(qScript,n),m=all.filter(c=>cdm(c.k)).length;
     return `<button class="chip${n===qStage?" on":""}" data-n="${n}">${catLabel(n)}<small>${m}/${all.length}</small></button>`}).join("");
   $("stagebar").querySelectorAll("button").forEach(b=>b.onclick=()=>{startStage(+b.dataset.n);renderStageBar();renderCharQuiz()});
@@ -617,8 +643,9 @@ function renderStageBar(){
 // 문제 위 상태 줄: 히라가나 · (탁음·반탁음) · 맞힌 글자 · 남은 문제 + 오른쪽 끝에 이 카테고리(이 방향) 초기화
 function quizStatus(n,extra){
   const all=modeChars(qScript,n),m=all.filter(x=>cdm(x.k)).length;
-  const parts=[SCRIPTS[qScript].name,...(n>1?[QCATS[n-1]]:[]),...(qMode==="rev"?[MODE_NAMES.rev]:[]),...(extra||[`맞힌 글자 ${m}/${all.length}`,`남은 문제 ${cq.queue.length}`])];
-  return `<div class="status qstat"><span>${parts.join(" · ")}</span>${resetBtn(`ch-${qScript}-${n}-${qMode}`,"초기화")}</div>`;
+  const parts=[SCRIPTS[qScript].name,...(n>1?[QCATS[n-1]]:[]),...(qMode!=="fwd"?[MODE_NAMES[qMode]]:[]),...(extra||[`맞힌 글자 ${m}/${all.length}`,`남은 문제 ${cq.queue.length}`])];
+  const noVoice=qMode==="ear"&&jaVoice()==="none"?`<p class="rk-note ear-warn">이 기기에는 일본어 음성이 없어서 소리가 안 나올 수 있어요. 기기 설정에서 일본어 음성(텍스트 음성 변환)을 추가하거나, 다른 방향으로 연습해 주세요.</p>`:"";
+  return `<div class="status qstat"><span>${parts.join(" · ")}</span>${resetBtn(`ch-${qScript}-${n}-${qMode}`,"초기화")}</div>${noVoice}`;
 }
 function renderCharQuiz(){
   if(!cq)startStage(qStage);
@@ -631,13 +658,14 @@ function renderCharQuiz(){
     if($("nextst"))$("nextst").onclick=()=>{startStage(n+1);renderStageBar();renderCharQuiz()};
     return;
   }
-  const key=cq.queue[0],c=CH[key],q=charQ(c,qMode),rec=qMode==="rev"?S.cr[key]:S.c[key],retry=(rec||{}).w>0&&!cdm(key);
+  const key=cq.queue[0],c=CH[key],q=charQ(c,qMode),rec=modeRec(qMode)[key],retry=(rec||{}).w>0&&!cdm(key);
   mc($("quiz"),{...q,
     head:`${quizStatus(n)}${retry?'<span class="pill">다시 나온 글자</span>':""}`,
-    onPick(ok){
+    onPick(ok,picked){
       S.last={t:"char",s:qScript,n,m:qMode};
-      if(qMode==="rev"){const x=gr(key);if(ok){if(!x.r)dayState().fresh++;x.r++;x.d=1}else{x.w++;x.d=0;addNote("c:"+key)}}
+      if(qMode!=="fwd"){const x=qMode==="ear"?ga(key):gr(key);if(ok){if(!x.r)dayState().fresh++;x.r++;x.d=1}else{x.w++;x.d=0;addNote("c:"+key)}}
       else recordChar(key,ok);
+      if(!ok&&q.keys)addConfusion(key,q.keys[picked]);
       speak(q.say);
       // 틀린 글자는 최소 3문제 뒤, 그 뒤 아무 곳에나 랜덤으로 다시 넣는다
       cq.queue.shift();if(!ok){const from=Math.min(RETRY_GAP,cq.queue.length);cq.queue.splice(from+Math.floor(Math.random()*(cq.queue.length-from+1)),0,key)}
@@ -646,9 +674,92 @@ function renderCharQuiz(){
     },
     onNext:renderCharQuiz
   });
+  if(q.ear)bindEar($("quiz"),q.say);
 }
 $("qh").onclick=()=>setScript("h");$("qk").onclick=()=>setScript("k");
-$("qm-fwd").onclick=()=>setMode("fwd");$("qm-rev").onclick=()=>setMode("rev");
+$("qm-fwd").onclick=()=>setMode("fwd");$("qm-rev").onclick=()=>setMode("rev");$("qm-ear").onclick=()=>setMode("ear");
+
+/* ---------- 헷갈리는 글자 연습 ----------
+   글자 퀴즈에서 틀리면 "어떤 글자와 헷갈렸는지"를 S.cf에 센다 (예: {"シ|ツ": 3}).
+   내가 자주 헷갈린 짝 + 많이들 헷갈리는 모양 비슷한 글자를 나란히 놓고, 그 글자들끼리만 보기로 10문제 */
+const CONF_SETS=[
+  {s:"k",ks:["シ","ツ"],tip:"シ는 점 두 개가 왼쪽에 세로로 놓이고 마지막 획이 아래에서 위로 올라가요. ツ는 점이 위에 가로로 놓이고 마지막 획이 위에서 아래로 내려와요."},
+  {s:"k",ks:["ソ","ン"],tip:"ソ는 두 획이 모두 위에서 아래로 내려와요. ン은 점이 왼쪽 위에 있고 긴 획이 아래에서 위로 올라가요."},
+  {s:"k",ks:["ノ","ソ"],tip:"ノ는 비스듬한 한 획이고, ソ는 그 앞에 짧은 점이 하나 더 있어요."},
+  {s:"k",ks:["ク","タ"],tip:"タ는 ク 안에 짧은 획이 하나 더 들어가 있어요."},
+  {s:"k",ks:["ヌ","ス"],tip:"ヌ는 ス에 짧은 획이 하나 더 그어져 있어요."},
+  {s:"k",ks:["チ","テ"],tip:"チ는 맨 위 획이 비스듬하고, テ는 위에 반듯한 가로획이 두 개예요."},
+  {s:"k",ks:["ナ","メ"],tip:"ナ는 十자처럼 가로획이 있고, メ는 X자처럼 두 획이 엇갈려요."},
+  {s:"k",ks:["コ","ユ"],tip:"ユ는 아래 가로획이 왼쪽으로 더 길게 나와요. コ는 네모의 오른쪽 반쪽 모양이에요."},
+  {s:"k",ks:["ウ","ワ"],tip:"ウ는 위에 점이 있고, ワ는 점이 없어요."},
+  {s:"h",ks:["ぬ","め"],tip:"ぬ는 끝에 작은 고리가 있고, め는 고리 없이 끝나요."},
+  {s:"h",ks:["ね","れ","わ"],tip:"왼쪽은 같고 끝 모양이 달라요. ね는 끝에 고리, れ는 바깥으로 꺾여 뻗고, わ는 둥글게 감겨요."},
+  {s:"h",ks:["は","ほ"],tip:"ほ는 は의 오른쪽 위에 가로획이 하나 더 있어요."},
+  {s:"h",ks:["る","ろ"],tip:"る는 끝에 작은 고리가 있고, ろ는 고리 없이 열려 있어요."},
+  {s:"h",ks:["き","さ"],tip:"き는 가로획이 두 개, さ는 하나예요."},
+  {s:"h",ks:["さ","ち"],tip:"좌우가 뒤집힌 모양이에요. さ는 아래가 c처럼 오른쪽으로 열리고, ち는 반대로 왼쪽으로 열려요."},
+  {s:"h",ks:["い","り"],tip:"い는 짧은 두 획이 나란히 있고, り는 오른쪽 획이 아래로 길게 내려와요."},
+  {s:"h",ks:["あ","お"],tip:"お는 오른쪽 위에 점이 있고, あ는 점이 없어요."}
+];
+const pairKey=(a,b)=>[a,b].sort().join("|");
+function addConfusion(a,b){if(!a||!b||a===b||!CH[a]||!CH[b])return;const k=pairKey(a,b);S.cf[k]=(S.cf[k]||0)+1}
+const scriptOfKey=k=>CH[k]&&CH[k].kata?"k":"h";
+const confTip=ks=>(CONF_SETS.find(x=>ks.every(k=>x.ks.includes(k)))||{}).tip||"";
+// 연습할 묶음: 내가 헷갈린 짝(많이 헷갈린 순, 6개까지) + 이미 풀어 본 글자로 된 흔한 묶음
+function confSets(s){
+  const seen=k=>!!(S.c[k]||S.cr[k]||S.ca[k]);
+  // 한 번 잘못 누른 건 실수일 수 있어서, 두 번 이상 헷갈린 짝만 "내가 헷갈린 짝"으로 본다
+  const mine=Object.entries(S.cf).filter(([,n])=>n>=2).map(([k,n])=>({ks:k.split("|"),n}))
+    .filter(x=>x.ks.length===2&&x.ks.every(k=>CH[k]&&!CH[k].sp&&scriptOfKey(k)===s)).sort((a,b)=>b.n-a.n).slice(0,6);
+  const common=CONF_SETS.filter(x=>x.s===s&&x.ks.every(seen)&&!mine.some(m=>x.ks.length===2&&pairKey(...x.ks)===pairKey(...m.ks)));
+  return [...mine,...common];
+}
+let cfq=null;
+function renderConfTools(){
+  const el=$("quiz-tools");if(!el)return;
+  if(cfq){el.innerHTML="";return}
+  const sets=confSets(qScript);
+  el.innerHTML=`<div class="panel cf-panel"><h3 class="rk-h">헷갈리는 글자 연습 <small>${SCRIPTS[qScript].name}</small></h3>
+    ${sets.length?`<p class="intro">${sets.some(x=>x.n)?"내가 자주 헷갈린 짝과 ":""}모양이 비슷한 글자를 나란히 놓고, 그 글자들끼리만 골라서 구별해요.</p>
+      <div class="cf-chips">${sets.map(x=>`<span class="cf-chip"><b>${x.ks.join(" · ")}</b>${x.n?`<small>${x.n}번 헷갈림</small>`:""}</span>`).join("")}</div>
+      <button class="next" id="cf-start">10문제 연습하기</button>`
+    :`<p class="intro">글자 퀴즈를 조금 풀면, 내가 헷갈린 짝과 모양이 비슷한 글자를 모아 따로 연습할 수 있어요.</p>`}</div>`;
+  if($("cf-start"))$("cf-start").onclick=()=>startConf(sets);
+}
+function startConf(sets){
+  const dirs=jaVoice()==="none"?["fwd","rev"]:["fwd","rev","ear"],q=[];
+  for(let i=0;i<10;i++){const set=sets[i%sets.length];q.push({ks:set.ks,target:rand(set.ks),dir:rand(dirs)})}
+  cfq={queue:shuffle(q),right:0,sets};renderConfTools();renderConf();
+  $("quiz").scrollIntoView({block:"start",behavior:"smooth"});
+}
+function renderConf(){
+  const el=$("quiz");
+  if(!cfq.queue.length){
+    const r=cfq.right,sets=cfq.sets;cfq=null;
+    el.innerHTML=`<h2>헷갈리는 글자 연습을 마쳤어요</h2><p class="intro">10문제 중 ${r}개를 맞혔어요.${r<10?" 틀린 짝은 다음 연습에 또 나와요.":""}</p>
+      <div class="navrow"><button class="ghost" id="cf-back">글자 퀴즈로 돌아가기</button><button class="next" id="cf-again">한 번 더 연습</button></div>`;
+    $("cf-back").onclick=()=>{renderCharQuiz();renderConfTools()};
+    $("cf-again").onclick=()=>startConf(confSets(qScript).length?confSets(qScript):sets);
+    renderConfTools();return;
+  }
+  const it=cfq.queue[0],c=CH[it.target],opts=shuffle(it.ks.slice()),no=10-cfq.queue.length+1,tip=confTip(it.ks);
+  const cmp=it.ks.map(k=>`${k} = ${clean(CH[k].h)}`).join(" · ");
+  const q=it.dir==="fwd"?{prompt:"이 글자의 발음은?",big:c.k,choices:opts.map(k=>CH[k].h)}
+    :it.dir==="rev"?{prompt:"이 발음의 글자는?",big:clean(c.h),bigCls:"sound",choices:opts,chCls:"kana",rev:1}
+    :{prompt:"소리를 듣고 글자를 고르세요",big:`<button class="ear-btn" type="button" aria-label="소리 다시 듣기">${SPK}<span>다시 듣기</span></button>`,bigCls:"ear",choices:opts,chCls:"kana",ear:1};
+  mc(el,{...q,correct:opts.indexOf(c.k),say:c.k,kind:"char",kata:!!c.kata,
+    head:`<div class="status qstat"><span>헷갈리는 글자 연습 · ${no}/10</span><button class="link" id="cf-quit">그만하기</button></div>`,
+    onPick(ok,i){
+      // 맞히면 그 짝의 헷갈림 횟수를 하나 줄이고, 틀리면 늘린다
+      if(ok){cfq.right++;for(const k of it.ks)if(k!==c.k){const p=pairKey(c.k,k);if(S.cf[p])S.cf[p]=Math.max(0,S.cf[p]-1)}}
+      else addConfusion(c.k,opts[i]);
+      speak(c.k);cfq.queue.shift();save();
+      return `${ok?"정답!":"아쉬워요."} ${cmp}${tip?`<span class="tip">${tip}</span>`:""}`;
+    },
+    onNext:renderConf});
+  if(q.ear)bindEar(el,c.k);
+  $("cf-quit").onclick=()=>{cfq=null;renderCharQuiz();renderConfTools()};
+}
 
 /* ---------- 단어 학습: 히라가나·가타카나·섞어 쓰기, 종류마다 첫 카테고리 열림, 끝내면 다음 카테고리 ---------- */
 // 섞어 쓰기는 히라가나·가타카나 카테고리 6개 중 2개를 끝내면 열린다
@@ -1077,7 +1188,7 @@ const IN_APP_BROWSER=/KAKAOTALK|NAVER\(|Instagram|FBAN|FBAV|Line\/|DaumApps/i.te
 function mergeState(L,C){
   const R=JSON.parse(JSON.stringify(L||{}));C=C||{};
   const max=(a,b)=>Math.max(Number(a)||0,Number(b)||0);
-  for(const k of ["c","w","cr","wr"]){R[k]=R[k]||{};
+  for(const k of ["c","w","cr","wr","ca"]){R[k]=R[k]||{};
     for(const id in C[k]||{}){const a=R[k][id],b=C[k][id];
       R[k][id]=!a?b:{...a,...b,r:max(a.r,b.r),w:max(a.w,b.w),d:(a.d||b.d)?1:0,v:(a.v||b.v)?1:0}}}
   R.n={...(C.n||{}),...(R.n||{})};
@@ -1088,6 +1199,7 @@ function mergeState(L,C){
   R.claimed={...(C.claimed||{}),...(R.claimed||{})};
   R.titles=R.titles||{};for(const k in C.titles||{})R.titles[k]=Math.max(R.titles[k]??-1,C.titles[k]??-1);
   R.co=R.co||{};for(const k in C.co||{})R.co[k]=max(R.co[k],C.co[k]);
+  R.cf=R.cf||{};for(const k in C.cf||{})R.cf[k]=max(R.cf[k],C.cf[k]);
   R.mix=(R.mix||C.mix)?1:0;
   const wk=x=>Number((x||{}).id)||0;
   if(C.wk){if(wk(C.wk)>wk(R.wk))R.wk=C.wk;else if(wk(C.wk)===wk(R.wk))R.wk={id:R.wk.id,xp:max(R.wk.xp,C.wk.xp)}}
@@ -1101,7 +1213,7 @@ function mergeState(L,C){
    base에서 "이 기기만 바꾼 것"과 "다른 기기만 바꾼 것"을 각각 살린다.
    그래서 한쪽에서 지운 것(초기화·오답노트에서 뺀 것)은 지운 채로 남고, 두 기기에서 따로 번 XP는 더해진다 */
 const SYNC_KEY="harukana-sync";
-const SYNC_MAPS=new Set(["c","w","cr","wr","n","sr","daily","badges","flags","claimed","titles","co"]);
+const SYNC_MAPS=new Set(["c","w","cr","wr","ca","cf","n","sr","daily","badges","flags","claimed","titles","co"]);
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const isObj=x=>x&&typeof x==="object"&&!Array.isArray(x);
 function pick3(path,b,l,c){
@@ -1118,7 +1230,7 @@ function pick3(path,b,l,c){
     for(const k of new Set([...Object.keys(bb),...Object.keys(l),...Object.keys(c)])){const v=pick3(path+"."+k,bb[k],l[k],c[k]);if(v!==undefined)o[k]=v}
     return o;
   }
-  if(/^(c|w|cr|wr)\./.test(path)&&isObj(l)&&isObj(c))return{...c,...l,r:Math.max(l.r||0,c.r||0),w:Math.max(l.w||0,c.w||0)};
+  if(/^(c|w|cr|wr|ca)./.test(path)&&isObj(l)&&isObj(c))return{...c,...l,r:Math.max(l.r||0,c.r||0),w:Math.max(l.w||0,c.w||0)};
   return l; // 닉네임 같은 나머지는 이 기기 쪽
 }
 function merge3(B,L,C){
@@ -1633,8 +1745,8 @@ function resetRecord(id){
   const r=RECORDS.find(x=>x.id===id);let label;
   // 글자·단어 초기화는 지금 고른 문제 방향(fwd/rev)의 기록만 지운다
   if(id.startsWith("ch-")){const[,s,n,m]=id.split("-");
-    catChars(s,+n).forEach(c=>{if(m==="rev")delete S.cr[c.k];else{delete S.c[c.k];delete S.n["c:"+c.k];delete S.sr["c:"+c.k]}});
-    cq=null;label=(n==="1"?`${SCRIPTS[s].name} 글자`:`${SCRIPTS[s].name} ${QCATS[n-1]}`)+(m==="rev"?` (${MODE_NAMES.rev})`:"")}
+    catChars(s,+n).forEach(c=>{if(m==="rev")delete S.cr[c.k];else if(m==="ear")delete S.ca[c.k];else{delete S.c[c.k];delete S.n["c:"+c.k];delete S.sr["c:"+c.k]}});
+    cq=null;label=(n==="1"?`${SCRIPTS[s].name} 글자`:`${SCRIPTS[s].name} ${QCATS[n-1]}`)+(m!=="fwd"&&MODE_NAMES[m]?` (${MODE_NAMES[m]})`:"")}
   else if(id.startsWith("wc-")){const[,cid,m]=id.split("-"),c=catOf(cid);if(!c)return;
     catWords(c.id).forEach(w=>{if(m==="rev")delete S.wr[w.id];else{delete S.w[w.id];delete S.n["w:"+w.id];delete S.sr["w:"+w.id]}});
     wv={view:"cat",cat:c.id};label=`${c.name} 단어`+(m==="rev"?` (${WMODE_NAMES.rev})`:"")}
@@ -1902,7 +2014,7 @@ function lastPlace(){const L=S.last;if(!L)return"";
   if(L.t==="table")return`문자 도감 · ${L.kata?"가타카나":"히라가나"}`;
   if(L.t==="profile")return"프로필";
   if(L.t==="wordlist")return`단어 모으기 · ${WSCRIPTS[L.s]||"히라가나"}${L.m==="rev"?" · "+WMODE_NAMES.rev:""}`;
-  if(L.t==="char")return`${SCRIPTS[L.s].name}${L.n>1?" "+QCATS[L.n-1]:""}${L.m==="rev"?" · "+MODE_NAMES.rev:""}`;
+  if(L.t==="char")return`${SCRIPTS[L.s].name}${L.n>1?" "+QCATS[L.n-1]:""}${L.m&&L.m!=="fwd"&&MODE_NAMES[L.m]?" · "+MODE_NAMES[L.m]:""}`;
   const c=catOf(L.cat);return c?`${c.name} 단어${L.m==="rev"?" · "+WMODE_NAMES.rev:""}`:""}
 function continueStudy(){
   const L=S.last;
@@ -1910,7 +2022,7 @@ function continueStudy(){
   if(L&&L.t==="table"){kataMode=!!L.kata;$("s1").classList.toggle("on",!kataMode);$("s2").classList.toggle("on",kataMode);show(1);return}
   if(L&&L.t==="wordlist"){wMode=L.m==="rev"?"rev":"fwd";wv={view:"list",script:WSCRIPTS[L.s]?L.s:"h"};show(3);return}
   if(L&&L.t==="review"){if(!rv&&dueKeys().length)$("rv-start").click();$("review").scrollIntoView({block:"start"});return}
-  if(L&&L.t==="char"&&SCRIPTS[L.s]){qMode=L.m==="rev"?"rev":"fwd";openLesson(L.n||1,L.s);return}
+  if(L&&L.t==="char"&&SCRIPTS[L.s]){qMode=MODE_NAMES[L.m]?L.m:"fwd";openLesson(L.n||1,L.s);return}
   if(L&&L.t==="word"&&catOf(L.cat)&&catOpen(catOf(L.cat))){wMode=L.m==="rev"?"rev":"fwd";wv={view:"cat",cat:L.cat};show(3);return}
   openLesson(firstOpenCat(pathScript),pathScript);
 }

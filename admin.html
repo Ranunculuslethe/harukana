@@ -133,7 +133,7 @@ function auditOf(score,week,u){
   const why=[];
   if(!u){why.push("학습 기록이 없어서 확인할 수 없어요");return why}
   const s=u.raw||{};
-  let rights=0;for(const k of ["c","w","cr","wr"])for(const v of Object.values(s[k]||{}))rights+=Number(v&&v.r)||0;
+  let rights=0;for(const k of ["c","w","cr","wr","ca"])for(const v of Object.values(s[k]||{}))rights+=Number(v&&v.r)||0;
   const badges=Object.keys(s.badges||{}).length,daily=s.daily||{};
   const days=Object.keys(daily).filter(k=>daily[k]>0).length;
   const rewards=Object.values(s.claimed||{}).reduce((a,c)=>a+(Number(c&&c.xp)||0),0);
