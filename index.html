@@ -871,7 +871,7 @@ const FB_CONFIG={apiKey:"AIzaSyDxJXq2AXCmTzJ-czbHEO5fKhrvn9NjKmg",authDomain:"ha
 // GitHub 사이트에서는 Firebase 라이브러리 없이 일반 웹 요청(REST)만 쓴다.
 // 모바일 통신망·브라우저에 따라 라이브러리의 연결/로그인이 멈추는 일이 있어서, 읽기·로그인·쓰기를 모두 REST로 한다
 const REST_BASE=`https://firestore.googleapis.com/v1/projects/${FB_CONFIG.projectId}/databases/(default)/documents`;
-const restVal=v=>v.stringValue??(v.integerValue!=null?Number(v.integerValue):v.doubleValue??v.booleanValue??null);
+const restVal=v=>v.stringValue??(v.integerValue!=null?Number(v.integerValue):v.timestampValue!=null?Date.parse(v.timestampValue):v.doubleValue??v.booleanValue??null);
 const toFields=o=>{const f={};for(const k in o){const v=o[k];f[k]=typeof v==="number"?{integerValue:String(Math.round(v))}:{stringValue:String(v)}}return{fields:f}};
 const docOf=d=>{const o={id:d.name.split("/").pop()};for(const k in d.fields||{})o[k]=restVal(d.fields[k]);return o};
 async function restTop(parent,collectionId,field){
@@ -931,7 +931,7 @@ function sessionLost(){
   if(!S.account)return;
   S.account=null;save();
   try{localStorage.removeItem(AUTH_KEY);localStorage.removeItem(RANK_CACHE)}catch(e){}
-  clearTimeout(rk.timer);rk.auth=null;rk.me=null;rk.pulled=false;rk.progSig=null;
+  clearTimeout(rk.timer);rk.auth=null;rk.me=null;rk.pulled=false;rk.progSig=null;rk.srv=undefined;
   rk.state="guest";rk.rows=rk.weekRows=rk.lastRows=null;rk.myLast=null;rk.myRank={all:null,week:null,last:null};
   notifyText("Google 로그인이 풀렸어요. 기록은 이 기기에 남아 있으니 다시 로그인해 주세요.");
   rerenderAll();
@@ -1058,7 +1058,7 @@ async function setRankHidden(hide){
   S.rankOff=hide?1:0;S.rank=hide?0:1;save();rk.last="";
   if(hide&&rk.me){
     try{
-      if(rk.fb){await restWrite("DELETE",`scores/${rk.me}`);await restWrite("DELETE",`weeks/${weekId()}/players/${rk.me}`)}
+      if(rk.fb){await restWrite("DELETE",`scores/${rk.me}`);await restWrite("DELETE",`weeks/${weekId()}/players/${rk.me}`);rk.srv={score:null,player:null}}
       else if(rk.db)await rk.db.doc("scores/"+rk.me).delete();
     }catch(e){}
     rk.myRank.all=rk.myRank.week=null;
@@ -1224,7 +1224,7 @@ const loginErrText=(c,e,what)=>c==="harukana/not-ready"?"Google 확인 준비가
 async function finishLogin(a,account){
   rk.auth={uid:a.uid,refreshToken:a.refreshToken,idToken:a.idToken,exp:Date.now()+50*60e3};
   try{localStorage.setItem(AUTH_KEY,JSON.stringify({uid:a.uid,refreshToken:a.refreshToken}))}catch(e){}
-  rk.me=a.uid;S.account=account;rk.pulled=false;rk.progSig=null;
+  rk.me=a.uid;S.account=account;rk.pulled=false;rk.progSig=null;rk.srv=undefined;rk.retried=false;
   const merged=await pullProgress();
   S.rankOff=S.rankOff||0;save();rk.last="";rk.blocked=false;rk.syncErr=null;rk.myRank={all:null,week:null,last:null};
   await pushProgress(false);
@@ -1306,6 +1306,45 @@ function openIdDialog(mode,onDelete){
   (del?$("id-pw"):$("id-name")).focus();
 }
 function idLogin(){if(!IN_CLAUDE)openIdDialog("login")}
+// 비밀번호 바꾸기 (아이디 계정): 지금 비밀번호로 확인한 뒤 새 비밀번호로 바꾼다.
+// 바꾸면 다른 기기의 로그인은 풀리고(다시 로그인 필요), 이 기기는 새 토큰으로 이어 간다
+function openPwDialog(){
+  if(!S.account||S.account.kind!=="id")return;
+  let d=$("id-dlg");if(!d){d=document.createElement("dialog");d.id="id-dlg";d.className="id-dlg";document.body.appendChild(d)}
+  d.innerHTML=`<form method="dialog" id="pw-form" novalidate>
+    <h3>비밀번호 바꾸기</h3>
+    <p class="id-note">아이디 <b>${esc(S.account.id)}</b> · 바꾸면 다른 기기에서는 다시 로그인해야 해요.</p>
+    <label>지금 비밀번호<input id="pw-cur" type="password" autocomplete="current-password"></label>
+    <label>새 비밀번호<input id="pw-new" type="password" autocomplete="new-password" placeholder="6자 이상"></label>
+    <label>새 비밀번호 한 번 더<input id="pw-new2" type="password" autocomplete="new-password"></label>
+    <p class="id-warn"><b>새 비밀번호를 꼭 적어 두세요.</b> 잊으면 되찾을 수 없어요.</p>
+    <p class="id-err" id="pw-err" role="alert"></p>
+    <div class="id-btns"><button type="button" class="link" id="pw-cancel">닫기</button><button class="next" id="pw-ok">바꾸기</button></div>
+  </form>`;
+  $("pw-cancel").onclick=()=>d.close();
+  const err=t=>{$("pw-err").textContent=t};
+  $("pw-form").onsubmit=async ev=>{
+    ev.preventDefault();
+    const cur=$("pw-cur").value,nw=$("pw-new").value;
+    if(nw.length<6)return err("새 비밀번호는 6자 이상이어야 해요.");
+    if(nw!==$("pw-new2").value)return err("새 비밀번호 두 개가 서로 달라요.");
+    if(nw===cur)return err("지금 비밀번호와 같아요.");
+    $("pw-ok").disabled=true;err("");
+    try{
+      const a=await idAuth("signInWithPassword",S.account.id,cur);
+      if(a.uid!==rk.me)throw Object.assign(new Error("다른 계정"),{code:"INVALID_LOGIN_CREDENTIALS"});
+      const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({idToken:a.idToken,password:nw,returnSecureToken:true})});
+      const j=await r.json().catch(()=>({}));
+      if(!r.ok)throw Object.assign(new Error(j.error&&j.error.message||"HTTP "+r.status),{code:j.error&&j.error.message||""});
+      rk.auth={uid:a.uid,refreshToken:j.refreshToken,idToken:j.idToken,exp:Date.now()+50*60e3};
+      try{localStorage.setItem(AUTH_KEY,JSON.stringify({uid:a.uid,refreshToken:j.refreshToken}))}catch(e){}
+      d.close();notifyText("비밀번호를 바꿨어요.");
+    }catch(e){err(idErrText(e.code||e.message));$("pw-ok").disabled=false}
+  };
+  if(!d.open)d.showModal();
+  $("pw-cur").focus();
+}
 // 로그아웃: 계정에 마지막으로 저장하고, 이 기기의 기록은 지운다 (계정에는 그대로 남음)
 async function googleLogout(){
   await pushProgress(false);
@@ -1361,6 +1400,7 @@ const acctLabel=a=>a.kind==="id"?"아이디 "+a.id:a.email||a.name||"Google 계�
    보안 규칙이 "이름 키는 한 사람만", "n은 1씩만, 최대 2(자동 이름 → 정하기 1 → 바꾸기 1)"를 지킨다 */
 const NICK_RE=/^[가-힣a-zA-Z0-9_]{2,12}$/;
 const NICK_RESERVED=/운영자|관리자|admin|하루카나|harukana|공식|official/i;
+const NICK_SYS=/^__.*__$/; // Firebase가 예약해 둔 문서 이름 모양이라 저장할 수 없다
 const BAD_WORDS=["시발","씨발","씨빨","시빨","씨바","십새","씹","좆","존나","졸라","병신","븅신","빙신","등신","개새","새끼","쌔끼","지랄","염병","닥쳐","꺼져","미친","또라이","싸가지","창녀","걸레","보지","자지","섹스","야동","변태","느금","니애미","니엄마","애미","애비","엠창","호로","후레","썅","쌍놈","쌍년","개놈","개년","빠구리","딸딸이","자위","강간","살인","자살","일베","한남","김치녀","된장녀","틀딱","급식충","맘충","fuck","fuk","shit","bitch","sex","porn","dick","pussy","cock","nigger","nigga","fag","slut","whore","asshole","bastard","rape"];
 // 나쁜 말을 *로 가린다. 사이에 숫자·밑줄을 끼워 넣어도 찾는다 (예: 시1발 → *1*)
 function maskBad(s){
@@ -1394,7 +1434,7 @@ async function ensureNick(){
   try{
     const reg=await restGet(`nickreg/${rk.me}`);
     if(reg){rk.nickN=Number(reg.n)||0;rk.nickKey=reg.key;if(S.nick!==reg.nick){S.nick=reg.nick;save()}return true}
-    let nick=maskBad(S.nick||"");if(!NICK_RE.test(nick.replace(/\*/g,"_"))||NICK_RESERVED.test(nick))nick=pseudoNick();
+    let nick=maskBad(S.nick||"");if(!NICK_RE.test(nick.replace(/\*/g,"_"))||NICK_RESERVED.test(nick)||NICK_SYS.test(nick))nick=pseudoNick();
     for(let i=0;i<4;i++){
       try{await claimNick(nick,true);return true}
       catch(e){if(e.status===400||e.status===409){nick=pseudoNick();continue}throw e}
@@ -1409,6 +1449,7 @@ async function saveNick(raw){
   if(!S.account)return "이름은 로그인한 뒤 정할 수 있어요.";
   if(!NICK_RE.test(raw))return "이름은 한글·영어·숫자·밑줄(_)로 2~12자예요. 띄어쓰기와 ㅋㅋ 같은 낱자는 쓸 수 없어요.";
   if(NICK_RESERVED.test(raw))return "운영자로 오해할 수 있는 이름은 쓸 수 없어요.";
+  if(NICK_SYS.test(raw))return "앞뒤를 밑줄 두 개(__)로 감싼 이름은 쓸 수 없어요.";
   if(!nickLeft())return "이름은 더 바꿀 수 없어요.";
   const nick=maskBad(raw);
   if(nickKey(nick)===rk.nickKey)return "지금 이름과 같아요.";
@@ -1462,22 +1503,63 @@ function syncScore(){
   const wait=Math.max(1200,SYNC_GAP-(Date.now()-(rk.wroteAt||0)));
   rk.timer=setTimeout(()=>pushScore(false),wait);
 }
+/* 서버 규칙이 허용하는 만큼만 올린다 (규칙: 처음 만들 때 전체 2만·이번 주 3천, 그 뒤엔 지난 기록 + 여유 + 1초에 7 XP).
+   정상 사용자가 상한에 걸려 랭킹에서 막히지 않도록, 넘는 만큼은 다음 기록 때 조금씩 따라 올라간다.
+   rk.srv = 서버에 있는 내 랭킹 기록 {score, player} (모르면 undefined → 한 번 읽어 옴) */
+const LIM={xpBurst:3500,wkBurst:500,perSec:7,createXp:20000,createWk:3000};
+async function rawFields(path){
+  const r=await fetch(`${REST_BASE}/${path}`,{headers:await authHeader()});
+  if(r.status===404)return null;if(!r.ok)throw new Error("REST "+r.status);
+  return (await r.json()).fields||{};
+}
+async function loadSrv(){
+  try{
+    const [s,p]=await Promise.all([rawFields(`scores/${rk.me}`),rawFields(`weeks/${weekId()}/players/${rk.me}`)]),at=Date.now(),num=v=>Number(v&&v.integerValue)||0;
+    // timed: 기록 시각이 서버 시각(timestamp)이면 흐른 시간만큼 더 올릴 수 있다 (예전 기록은 여유분만)
+    rk.srv={score:s?{xp:num(s.xp),weekXp:num(s.weekXp),week:s.week&&s.week.stringValue,at,timed:!!(s.t&&s.t.timestampValue)}:null,
+      player:p?{weekXp:num(p.weekXp),week:weekId(),at,timed:!!(p.t&&p.t.timestampValue)}:null};
+  }catch(e){rk.srv=undefined}
+}
+function allowed(prev,field,burst,createCap){
+  if(!prev)return createCap;
+  return (Number(prev[field])||0)+burst-10+(prev.timed?Math.floor(Math.max(0,Date.now()-prev.at)/1000)*LIM.perSec:0);
+}
+function clampScore(d){
+  const sv=rk.srv||{},wk=weekId();
+  const xp=Math.min(d.xp,allowed(sv.score,"xp",LIM.xpBurst,LIM.createXp));
+  const wkS=sv.score&&sv.score.week!==wk?LIM.createWk:allowed(sv.score,"weekXp",LIM.wkBurst,LIM.createWk);
+  const wkP=sv.player&&sv.player.week===wk?allowed(sv.player,"weekXp",LIM.wkBurst,LIM.createWk):LIM.createWk;
+  const weekXp=Math.min(d.weekXp,wkS,wkP);
+  return{...d,xp,weekXp,level:lvOf(xp)};
+}
 async function pushScore(leaving){
   if(!rk.fb||!rk.me||!S.account||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
-  const data=scoreData(),sig=JSON.stringify(data);
+  const full=scoreData(),sig=JSON.stringify(full);
   if(sig===rk.last)return;
   if(rk.busy&&!leaving){rk.timer=setTimeout(()=>pushScore(false),3000);return}
+  if(rk.srv===undefined){if(leaving)return;await loadSrv();if(rk.srv===undefined)return}
   clearTimeout(rk.timer);rk.busy=true;rk.wroteAt=Date.now();
+  const data=clampScore(full),partial=data.xp<full.xp||data.weekXp<full.weekXp;
   try{
     // 기록 시각(t)은 기기 시계가 아니라 서버 시각으로 넣는다. 보안 규칙이 "지난 기록 뒤 흐른 시간만큼만" 점수가 오르게 막는 데 씀
     const now=[{fieldPath:"t",setToServerValue:"REQUEST_TIME"}];
     const writes=[{update:{name:DOC(`scores/${rk.me}`),fields:toFields(data).fields},updateTransforms:now}];
     if(data.weekXp>0)writes.push({update:{name:DOC(`weeks/${data.week}/players/${rk.me}`),fields:toFields({nick:data.nick,title:data.title,avatar:data.avatar,level:data.level,weekXp:data.weekXp}).fields},updateTransforms:now});
     await restCommit(writes,leaving);
-    rk.last=sig;rk.syncErr=null;
+    const at=Date.now();
+    rk.srv={score:{xp:data.xp,weekXp:data.weekXp,week:data.week,at,timed:true},player:data.weekXp>0?{weekXp:data.weekXp,week:data.week,at,timed:true}:(rk.srv&&rk.srv.player)||null};
+    rk.syncErr=null;rk.retried=false;
+    // 다 못 올렸으면 1분 뒤 나머지를 이어서 올린다
+    if(partial){rk.last=JSON.stringify(data);if(!leaving)rk.timer=setTimeout(()=>pushScore(false),SYNC_GAP)}
+    else rk.last=sig;
     if(!leaving)patchMyRows(data);
   }catch(e){
     rk.syncErr=String(e&&(e.status||e.message));
+    if(e&&e.status===403&&!rk.retried&&!leaving){
+      // 이름이 바뀌었거나(운영자 초기화 등) 서버 기록이 예상과 다를 수 있다 → 다시 읽고 한 번만 더 시도
+      rk.retried=true;rk.busy=false;await ensureNick();await loadSrv();
+      rk.timer=setTimeout(()=>pushScore(false),5000);return;
+    }
     if(e&&e.status===403){rk.blocked=true;scheduleRank()}
     else if(!leaving)rk.timer=setTimeout(()=>pushScore(false),15000); // 통신 오류면 잠시 뒤 다시 시도
   }
@@ -1597,7 +1679,7 @@ function renderRank(){
           :!S.account?`<small class="nick-help">로그인하면 이름을 정할 수 있어요</small>`
           :nickLeft()?`<button class="link" id="nick-edit">${nickLeft()===2?"이름 정하기":"이름 바꾸기 (1번 남음)"}</button>`
           :`<small class="nick-help">이름은 더 바꿀 수 없어요</small>`}</div>`}
-      ${IN_CLAUDE?"":S.account?`<div class="pf-acct"><span class="g">${S.account.kind==="id"?"ID":"G"}</span><span>${esc(acctLabel(S.account))} · 기록이 계정에 저장돼요</span><button class="link" id="glogout">${rk.logoutArmed?"한 번 더 누르면 로그아웃":"로그아웃"}</button><button class="link" id="gdelete">${rk.deleteArmed?`한 번 더 누르면 삭제 (${S.account.kind==="id"?"비밀번호":"Google"} 확인)`:"계정 기록 삭제"}</button><a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></div>`
+      ${IN_CLAUDE?"":S.account?`<div class="pf-acct"><span class="g">${S.account.kind==="id"?"ID":"G"}</span><span>${esc(acctLabel(S.account))} · 기록이 계정에 저장돼요</span><button class="link" id="glogout">${rk.logoutArmed?"한 번 더 누르면 로그아웃":"로그아웃"}</button>${S.account.kind==="id"?`<button class="link" id="gpw">비밀번호 바꾸기</button>`:""}<button class="link" id="gdelete">${rk.deleteArmed?`한 번 더 누르면 삭제 (${S.account.kind==="id"?"비밀번호":"Google"} 확인)`:"계정 기록 삭제"}</button><a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></div>`
         :`<div class="pf-acct off"><span>지금은 이 브라우저에만 저장돼요.</span>${loginBtns("glogin-pf")}<a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></div>`}
       <div class="pf-title">${main?`<span class="title-chip">${esc(main)}</span>`:`<span class="title-none">아직 칭호가 없어요. 문제를 맞히면 첫 칭호를 받아요.</span>`}
         ${titles.length>1?`<label class="pf-pick">대표 칭호 <select id="title-pick">${titles.map(t=>`<option value="${t.id}"${t.title===main?" selected":""}>${esc(t.title)}</option>`).join("")}</select></label>`:""}</div>
@@ -1679,6 +1761,7 @@ function renderRank(){
   bindLoginBtns("glogin-pf");
   // 로그아웃은 두 번 눌러야 한다 (이 기기의 기록은 지워지고 계정에는 남음)
   if($("glogout"))$("glogout").onclick=()=>{if(rk.logoutArmed){googleLogout()}else{rk.logoutArmed=true;notifyText("로그아웃하면 이 기기의 기록은 지워지고, 다시 로그인하면 계정에서 불러와요.");renderRank();setTimeout(()=>{rk.logoutArmed=false;scheduleRank()},5000)}};
+  if($("gpw"))$("gpw").onclick=openPwDialog;
   // 계정 기록 삭제도 두 번 눌러야 한다 (되돌릴 수 없음)
   if($("gdelete"))$("gdelete").onclick=()=>{if(rk.deleteArmed){rk.deleteArmed=false;deleteAccount()}else{rk.deleteArmed=true;preloadAuth()?.catch(()=>{});notifyText("계정과 이 기기의 학습 기록이 모두 지워지고 되돌릴 수 없어요.");renderRank();setTimeout(()=>{rk.deleteArmed=false;scheduleRank()},6000)}};
   if($("nick-edit"))$("nick-edit").onclick=()=>{editingNick=true;renderRank();$("nick-in").focus()};
