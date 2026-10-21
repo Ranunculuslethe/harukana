@@ -54,7 +54,7 @@ const {initializeApp}=await import(SDK+"firebase-app.js");
 const au=await import(SDK+"firebase-auth.js");
 const app=initializeApp(FB_CONFIG),auth=au.getAuth(app);
 // App Check(보이지 않는 reCAPTCHA): 앱과 같은 사이트 키. 서버가 App Check를 강제하면 관리 페이지 요청에도 토큰이 필요하다
-const RECAPTCHA_SITE_KEY="";
+const RECAPTCHA_SITE_KEY="6LfM3vktAAAAAHbuTo9VgMEDZnV-9uG0xrBgT5-i";
 let acP=null;
 async function acH(){
   if(!RECAPTCHA_SITE_KEY)return{};

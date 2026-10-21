@@ -1369,7 +1369,7 @@ async function googleLogin(){
    서버(Firestore·로그인)가 "진짜 하루카나 앱에서 온 요청"만 받게 한다. 프로그램으로 계정·점수를 찍어내는 걸 막는다.
    화면에 체크박스는 없고, 로그인한 사람(과 로그인 창)에서만 불러온다 (공부만 하는 사람은 받지 않음).
    사이트 키가 비어 있으면 App Check 없이 동작한다 */
-const RECAPTCHA_SITE_KEY="";
+const RECAPTCHA_SITE_KEY="6LfM3vktAAAAAHbuTo9VgMEDZnV-9uG0xrBgT5-i";
 let appCheckP=null;
 function appCheckInit(){
   if(!RECAPTCHA_SITE_KEY||IN_CLAUDE)return null;
