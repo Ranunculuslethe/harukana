@@ -58,7 +58,7 @@ const RECAPTCHA_SITE_KEY="6LfM3vktAAAAAHbuTo9VgMEDZnV-9uG0xrBgT5-i";
 let acP=null;
 async function acH(){
   if(!RECAPTCHA_SITE_KEY)return{};
-  try{if(!acP)acP=import(SDK+"firebase-app-check.js").then(ac=>({ac,c:ac.initializeAppCheck(app,{provider:new ac.ReCaptchaV3Provider(RECAPTCHA_SITE_KEY),isTokenAutoRefreshEnabled:true})}));
+  try{if(!acP)acP=import(SDK+"firebase-app-check.js").then(ac=>({ac,c:ac.initializeAppCheck(app,{provider:new ac.ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY),isTokenAutoRefreshEnabled:true})}));
     const {ac,c}=await acP;return{"X-Firebase-AppCheck":(await ac.getToken(c,false)).token}}catch(e){console.warn("App Check 실패",e);return{}}
 }
 const $=id=>document.getElementById(id);
