@@ -122,6 +122,16 @@
 /* 홈의 오늘의 목표: 오른쪽 칸이 옆에 있을 땐 숨기고, 아래로 내려가는 좁은 화면(1080px 이하)에서만 홈에 보인다 */
 .home-goal{display:none;margin-top:18px;min-height:0!important}
 @media(max-width:1080px){.home-goal{display:block}.rightbar #goal-card{display:none}.rightbar>.progress-card{grid-column:1/-1}}
+/* 보기 번호: 마우스·키보드를 쓰는 화면에서만 왼쪽 위에 1~4 */
+.choices{counter-reset:ch}.choices button{position:relative;counter-increment:ch}
+@media(hover:hover) and (pointer:fine){.choices button::before{content:counter(ch);position:absolute;left:10px;top:7px;font-size:11px;font-weight:700;color:var(--sub);opacity:.75;font-family:system-ui,sans-serif}}
+/* 천천히 듣기 */
+.slow-tg{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--sub);cursor:pointer;user-select:none;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+.slow-tg input{accent-color:var(--accent);margin:0}.slow-tg:has(input:checked){color:var(--ink);border-color:var(--accent);background:var(--accent-soft)}
+.slow-row{display:flex;justify-content:flex-end;margin:8px 0 0}
+.scene-caption small{display:block;font-size:10px;letter-spacing:0;opacity:.85;margin-top:1px}
+.hint-list{list-style:none;margin:4px 0 12px;padding:12px 14px;border-radius:12px;background:var(--midbg);font-size:13px;line-height:1.7;text-align:left}
+.hint-list b{display:inline-block;min-width:26px;font-size:16px;margin-right:6px}
 /* 새 글자 만나기 */
 .learn-h{margin:14px 0 4px}.learn-h small{font-size:13px;color:var(--sub);font-weight:600;margin-left:6px}
 .learn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:10px;margin:14px 0}
@@ -230,7 +240,7 @@
 <g fill="#D98E87"><ellipse cx="120" cy="43" rx="4" ry="8" transform="rotate(-35 120 43)"/><ellipse cx="277" cy="157" rx="4" ry="8" transform="rotate(25 277 157)"/><ellipse cx="66" cy="66" rx="3" ry="6" transform="rotate(40 66 66)"/></g>
 <path d="M247 36h28m-42 6h32M18 58h36m-21 7h35" stroke="#FFFBF3" stroke-width="7" stroke-linecap="round"/>
 <use href="#fox" x="130" y="79" width="175" height="185"/>
-</svg><span class="scene-caption">はじめまして！</span></div>
+</svg><span class="scene-caption" title="처음 뵙겠습니다!">はじめまして！<small>처음 뵙겠습니다!</small></span></div>
 <div id="login-banner"></div>
 <div class="goal-card home-goal" id="home-goal" aria-label="오늘의 작은 목표"></div>
 <div id="review"></div>
@@ -250,6 +260,7 @@
   <div class="section-intro"><div><p class="section-kicker">PRACTICE / 02</p><h2>글자 퀴즈</h2><p class="section-copy">히라가나·가타카나를 골라 카테고리별로 문제를 풀어요.</p></div><div class="section-mark" aria-hidden="true">問</div></div>
   <div class="seg"><button class="on" id="qh">히라가나</button><button id="qk">가타카나</button></div>
   <div class="seg mode-seg" role="group" aria-label="문제 방향"><button class="on" id="qm-fwd">글자 → 발음</button><button id="qm-rev">발음 → 글자</button><button id="qm-ear">소리 → 글자</button></div>
+  <div class="slow-row" id="slow-quiz"></div>
   <div class="stagebar" id="stagebar"></div>
   <div class="panel" id="quiz"></div>
   <div id="quiz-tools"></div>
@@ -476,7 +487,16 @@ const wd=id=>!!(S.w[id]&&S.w[id].d);
 
 /* ---------- 공통 ---------- */
 const $=id=>document.getElementById(id);
-const speak=t=>{try{const u=new SpeechSynthesisUtterance(t);u.lang="ja-JP";speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}};
+// 일본어로 읽어 주기. "천천히 듣기"를 켜면(S.slow) 0.6배 속도로 읽는다
+const speak=(t,rate)=>{try{const u=new SpeechSynthesisUtterance(t);u.lang="ja-JP";u.rate=rate||(S.slow?0.6:1);speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}};
+// 천천히 듣기 스위치 (글자 퀴즈·문자 도감·단어 카드에 같은 스위치가 있고, 하나를 바꾸면 모두 바뀐다)
+const slowToggle=()=>`<label class="slow-tg" title="일본어 소리를 천천히 들려줘요"><input type="checkbox" class="slow-cb" ${S.slow?"checked":""}>천천히 듣기</label>`;
+document.addEventListener("change",e=>{
+  if(!e.target.classList||!e.target.classList.contains("slow-cb"))return;
+  S.slow=e.target.checked?1:0;save();
+  document.querySelectorAll(".slow-cb").forEach(x=>x.checked=!!S.slow);
+  notifyText(S.slow?"이제 소리를 천천히 들려줘요.":"보통 속도로 돌아왔어요.");
+});
 const rand=a=>a[Math.floor(Math.random()*a.length)];
 const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
 
@@ -548,12 +568,23 @@ function refreshSummary(){
   $("continue").title=lastPlace();
 }
 
+// PC에서는 1~4(보기 번호) 키로 답을 고르고, Enter로 다음 문제 (다음 버튼에 자동으로 초점이 가 있음)
+let curMc=null;
+document.addEventListener("keydown",e=>{
+  if(!curMc||e.ctrlKey||e.metaKey||e.altKey||e.repeat)return;
+  const t=e.target;if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.isContentEditable))return;
+  if(document.querySelector("dialog[open]"))return;
+  const n=Number(e.key);
+  if(!(n>=1&&n<=curMc.bs.length)||curMc.isDone()||!document.body.contains(curMc.el)||!curMc.el.offsetParent)return;
+  e.preventDefault();curMc.bs[n-1].click();
+});
 // 객관식 문제 하나 그리기
 function mc(el,o){
   el.innerHTML=`${o.head||""}<div class="q">${o.prompt}</div><div class="big ${o.bigCls||""}">${o.big}</div>
     <div class="choices ${o.chCls||""}">${o.choices.map((c,i)=>`<button data-i="${i}">${c}</button>`).join("")}</div>
     <div class="fb" aria-live="polite"></div><div class="nx"></div>`;
   const bs=[...el.querySelectorAll(".choices button")];let done=false;
+  curMc={el,bs,isDone:()=>done}; // 숫자키로 고르기용
   bs.forEach(b=>b.onclick=()=>{
     if(done)return;done=true;recordPractice();
     const i=+b.dataset.i,ok=i===o.correct;
@@ -572,6 +603,7 @@ let kataMode=false;
 const level=k=>{const c=S.c[k];if(!c)return"";if(c.d)return c.w>0?"l-mid":"l-ok";return c.w>0?"l-bad":""};
 function renderTable(){
   const el=$("table");el.innerHTML="";let lastSec="";
+  el.insertAdjacentHTML("beforeend",`<div class="slow-row">${slowToggle()}</div>`);
   (kataMode?ROWS_K:ROWS).forEach(r=>{
     const sec=r.stage===1?"기본 46자":r.stage===2?"탁음·반탁음":r.cells[0].sp?"촉음·장음":"요음";
     if(sec!==lastSec){const h=document.createElement("div");h.className="sec";h.textContent=sec;el.appendChild(h);lastSec=sec}
@@ -585,7 +617,7 @@ function renderTable(){
         d.className="cell "+level(c.k);
         d.setAttribute("aria-label",ch+", "+clean(c.h)+", 발음 듣기");
         d.innerHTML=`<b>${ch}</b><small>${clean(c.h)}</small>`;
-        d.onclick=()=>speak(c.sp?c.ex[0][0]:ch);
+        d.onclick=()=>{speak(c.sp?c.ex[0][0]:ch);if(HINTS[c.k])notifyText(`${ch} ${clean(c.h)} · ${HINTS[c.k]}`)};
       }
       row.appendChild(d);
     });
@@ -629,6 +661,46 @@ function startStage(n,all){
   for(const k of fresh){const i=rowIndex(k);(rows[i]=rows[i]||[]).push(k)}
   cq={queue:[...shuffle(known),...Object.keys(rows).sort((a,b)=>a-b).flatMap(i=>shuffle(rows[i]))]};
 }
+/* 외우는 요령: 글자 모양을 그림이나 소리와 엮은 한 줄 (기본 46자씩).
+   새 글자 만나기 카드, 문자 도감(누르면 아래에 표시), 글자 퀴즈에서 틀렸을 때 보여 준다 */
+const HINTS={
+  "あ":"십자 아래 둥근 몸 — '아!' 하고 놀란 사람","い":"나란히 선 두 줄 — 숫자 이(2)","う":"머리에 점 하나, 웅크린 '우'",
+  "え":"점 아래로 지그재그 — '에'너지 넘치는 춤","お":"あ와 닮았지만 오른쪽 위에 점 — '오!' 하고 손든 모양",
+  "か":"칼날(ㄱ)과 점 — 칼 휘두르는 '카'","き":"가로줄 두 개 열쇠 — 키(key)","く":"꺾인 새 부리 — '쿡' 찌르기",
+  "け":"기둥 옆 칼 — 케이크 자르기","こ":"누운 두 줄 — 콧구멍 두 개 '코'",
+  "さ":"き에서 가로줄 하나 빠진 '사'","し":"낚싯바늘처럼 쭉 내려와 꺾인 '시'","す":"가운데 고리 한 번 — 실을 스윽 감은 '스'",
+  "せ":"가로줄에 세로 두 개 — 세 갈래 길 '세'","そ":"지그재그로 흐르는 '소'용돌이",
+  "た":"ナ 옆에 こ — '타'자 치는 손","ち":"숫자 5를 닮은 '치' (さ를 뒤집은 모양)","つ":"옆으로 밀려오는 파도 — 쓰나미의 '츠'",
+  "て":"가로줄 아래 휘는 팔 — 손(て) '테'","と":"발가락에 박힌 가시 — '토'(발)",
+  "な":"십자 옆 리본 매듭 — 나비 리본 '나'","に":"세로줄 옆에 こ 두 줄 — '니'","ぬ":"꼬불꼬불 면에 고리 — 누들 '누'",
+  "ね":"끝이 말린 고양이 꼬리 — 네코의 '네'","の":"한 번에 그리는 동그라미 — No 표시 '노'",
+  "は":"세로줄 옆 '하'하 웃는 입","ひ":"활짝 웃는 입 — '히'히","ふ":"'후~' 부는 입과 바람 방울",
+  "へ":"산봉우리 하나 — '헤'이, 산이다","ほ":"は에 가로줄 하나 더 — 호텔 간판 '호'",
+  "ま":"세로줄 아래 고리 — 병'마'개","み":"21처럼 생긴 '미'","む":"뿔 달린 소 — '음메(무)'",
+  "め":"눈 모양 — 눈(め) '메' (ぬ와 달리 고리 없음)","も":"가로줄 두 개 걸린 낚싯바늘 — 더 '모'으기",
+  "や":"비스듬한 야크 뿔 — '야'","ゆ":"헤엄치는 물고기 — '유'유히","よ":"줄 끝에 매달린 요요 — '요'",
+  "ら":"위에 점 하나 — 토끼 귀 '라'빗","り":"흐르는 두 물줄기 — 리버(river) '리'","る":"끝에 작은 고리 — 루프(loop) '루'",
+  "れ":"끝이 바깥으로 차고 나가는 레이서 '레'","ろ":"る에서 고리가 없는 '로' — 열린 길",
+  "わ":"끝이 둥글게 감긴 '와'","を":"조사 '을/를'에만 쓰는 '오' — 칼을 든 사람","ん":"필기체 n처럼 생긴 '응'",
+  "ア":"도끼 모양 — '아'크스(axe)","イ":"비스듬히 기댄 사람 — '이'웃","ウ":"う처럼 위에 점 — 지붕 아래 '우'",
+  "エ":"공(工)자 모양 — '에'스컬레이터 계단","オ":"팔 벌린 오페라 가수 '오'",
+  "カ":"か에서 점이 빠진 '카' — 힘 력(力)","キ":"가로줄 두 개 열쇠 '키'","ク":"각진 새 부리 '쿠'",
+  "ケ":"기울어진 K — '케'이","コ":"네모의 오른쪽 반 — 코너 '코'",
+  "サ":"가로줄에 세로 두 개 — '사'다리","シ":"점 두 개가 왼쪽, 획이 위로 — 웃는 얼굴 '시'","ス":"다리 벌린 스키 선수 '스'",
+  "セ":"せ와 닮은 '세'","ソ":"위에서 아래로 내리는 빗줄기 — '소'나기",
+  "タ":"ク 안에 획 하나 더 — '타'코 다리","チ":"千처럼 생긴 '치'","ツ":"점 두 개가 위, 획이 아래로 — 쓰나미 '츠'",
+  "テ":"가로줄 두 개 아래 다리 — '테'이블","ト":"세로줄 옆 점 하나 — '토'마토 꼭지",
+  "ナ":"十자처럼 생긴 '나'","ニ":"두 줄 — 숫자 이(2) '니'","ヌ":"ス에 획 하나 더 — 젓가락으로 집은 누들 '누'",
+  "ネ":"네모난 지붕 아래 '네'","ノ":"한 획 빗금 — No 하고 긋는 '노'",
+  "ハ":"벌어진 두 획 — 팔(八) '하'","ヒ":"옆으로 누운 숟가락 '히'","フ":"한 획으로 '후~' 부는 바람",
+  "ヘ":"へ와 같은 모양 — 산봉우리 '헤'","ホ":"나무 목(木) 모양 '호'",
+  "マ":"아래로 점이 찍힌 '마'","ミ":"빗금 세 개 '미'","ム":"세모에 점 — 소 코 '무'",
+  "メ":"X표 — 메모에 엑스 '메'","モ":"も와 닮은 '모'",
+  "ヤ":"や와 닮은 '야'","ユ":"아래 줄이 길게 나온 '유'","ヨ":"E를 뒤집은 '요'",
+  "ラ":"위에 짧은 줄 하나 — ら처럼 '라'","リ":"り와 닮은 '리'","ル":"두 다리, 오른쪽 끝이 꺾인 '루'",
+  "レ":"체크 표시(✓) '레'","ロ":"네모 = 입 구(口) '로'",
+  "ワ":"ウ에서 점이 빠진 '와'","ヲ":"조사 '을/를'에만 쓰는 '오'","ン":"점이 왼쪽, 획이 아래에서 위로 '응'"
+};
 // 한 번이라도 본(배운) 글자: "새 글자 만나기"로 봤거나, 어느 방향으로든 풀어 본 글자
 const introduced=k=>!!(S.seen[k]||S.c[k]||S.cr[k]||S.ca[k]);
 const rowIndex=k=>{const c=CH[k];return (c&&c.kata?ROWS_K:ROWS).findIndex(r=>r.cells.some(x=>x&&x.k===k))};
@@ -639,10 +711,12 @@ function renderLearn(keys){
   const tile=k=>{const c=CH[k],say=c.sp?c.ex[0][0]:c.k;
     return `<button class="learn-tile" data-say="${say}"><b>${c.sp?c.disp:c.k}</b><span>${clean(c.h)}</span>${c.sp?`<small>${c.ex[0][0]}</small>`:c.r?`<small>${c.r}</small>`:""}</button>`};
   const tips=keys.map(k=>CH[k]).filter(c=>c.sp&&c.tip).map(c=>`<p class="tip">${c.tip}</p>`).join("");
+  const hints=keys.filter(k=>HINTS[k]);
+  const hintList=hints.length?`<ul class="hint-list" aria-label="외우는 요령">${hints.map(k=>`<li><b>${k}</b>${HINTS[k]}</li>`).join("")}</ul>`:"";
   $("quiz").innerHTML=`${quizStatus(qStage,[`새 글자 ${keys.length}개`])}
     <h2 class="learn-h">새 글자를 먼저 만나요 <small>${row?rowName(row):""}</small></h2>
     <p class="intro">글자를 눌러 소리를 들어 보세요. 다 봤으면 바로 퀴즈로 확인해요.</p>
-    <div class="learn-grid">${keys.map(tile).join("")}</div>${tips}
+    <div class="learn-grid">${keys.map(tile).join("")}</div>${hintList}${tips}
     <div class="navrow"><button class="ghost" id="learn-all">${SPK} 차례로 듣기</button><button class="next" id="learn-go">다 봤어요, 퀴즈 풀기</button></div>`;
   $("quiz").querySelectorAll(".learn-tile").forEach(b=>b.onclick=()=>speak(b.dataset.say));
   $("learn-all").onclick=()=>{const ts=[...$("quiz").querySelectorAll(".learn-tile")];ts.forEach((b,i)=>setTimeout(()=>{ts.forEach(x=>x.classList.remove("on"));b.classList.add("on");speak(b.dataset.say)},i*1300));setTimeout(()=>ts.forEach(x=>x.classList.remove("on")),ts.length*1300)};
@@ -667,7 +741,7 @@ function charQ(c,mode){
     const h=clean(x.h);if(used.has(h))continue;used.add(h);others.push(x);if(others.length===3)break;
   }
   const opts=shuffle([c,...others]);
-  const fb=ok=>`${ok?"정답!":"아쉬워요."} ${c.k} = ${c.h} (${c.r})${ok?"":'<span class="tip">조금 뒤에 다시 나와요.</span>'}`;
+  const fb=ok=>`${ok?"정답!":"아쉬워요."} ${c.k} = ${c.h} (${c.r})${ok?"":`<span class="tip">${HINTS[c.k]?`외우는 요령: ${HINTS[c.k]} · `:""}조금 뒤에 다시 나와요.</span>`}`;
   // 발음 → 글자, 소리 → 글자: 보기에는 발음이 같은 글자(じ/ぢ 등)를 넣지 않아서 답이 하나로 정해진다
   const keys=opts.map(x=>x.k); // 틀렸을 때 어떤 글자와 헷갈렸는지 기록하는 데 씀
   if(mode==="ear")
@@ -680,6 +754,7 @@ const MODE_NAMES={fwd:"글자 → 발음",rev:"발음 → 글자",ear:"소리 �
 function renderStageBar(){
   $("qh").classList.toggle("on",qScript==="h");$("qk").classList.toggle("on",qScript==="k");
   for(const m of ["fwd","rev","ear"]){$("qm-"+m).classList.toggle("on",qMode===m);$("qm-"+m).setAttribute("aria-pressed",qMode===m)}
+  $("slow-quiz").innerHTML=slowToggle();
   renderConfTools();
   $("stagebar").innerHTML=[1,2,3].map(n=>{const all=modeChars(qScript,n),m=all.filter(c=>cdm(c.k)).length;
     return `<button class="chip${n===qStage?" on":""}" data-n="${n}">${catLabel(n)}<small>${m}/${all.length}</small></button>`}).join("");
@@ -922,6 +997,7 @@ function renderWords(){
       <div class="big word">${w.kana}</div><div class="hg">${w.hangul}</div><div class="mean">${w.meaning}</div>
       ${unknownNote(w)}
       <button class="ghost" id="say">발음 듣기</button>
+      <div class="slow-row" style="justify-content:center">${slowToggle()}</div>
       <div class="navrow"><button class="ghost" id="pv" ${wv.i?"":"disabled"}>이전</button><button class="next" id="nx">${last?"확인 퀴즈 시작":"다음"}</button></div>
       <button class="link" id="skip">다 아는 단어면 바로 퀴즈</button></div>`;
     speak(w.kana);
@@ -2187,7 +2263,7 @@ document.querySelector('.brand').onclick=e=>{e.preventDefault();show(0)};
 let toastTimer;
 // 알림이 거의 동시에 여러 개 오면(목표 달성 + 배지) 한 줄로 이어서 보여준다
 let toastAt=0;
-function notifyText(text){if(!$("toast").hidden&&Date.now()-toastAt<800)text=$("toast").textContent+" · "+text;toastAt=Date.now();$("toast").textContent=text;$("toast").hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").hidden=true,2600)}
+function notifyText(text){if(!$("toast").hidden&&Date.now()-toastAt<800)text=$("toast").textContent+" · "+text;toastAt=Date.now();$("toast").textContent=text;$("toast").hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").hidden=true,Math.max(2600,text.length*80))}
 $("phrase-listen").onclick=()=>{if(!('speechSynthesis' in window)){notifyText('이 브라우저에서는 음성 재생을 지원하지 않아요.');return}speak('こんにちは');notifyText('こんにちは · 곤니치와 · 안녕하세요')};
 function applyTheme(theme){document.documentElement.dataset.theme=theme;$("theme").querySelector('span').textContent=theme==='dark'?'낮 모드':'밤 모드';$("theme").setAttribute('aria-label',theme==='dark'?'낮 모드로 전환':'밤 모드로 전환')}
 // 저장한 선택이 없으면 기기 설정(다크 모드)을 따른다
