@@ -166,7 +166,11 @@
 .id-dlg input{display:block;width:100%;margin-top:5px;padding:10px 12px;font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px}
 .id-dlg input:focus{outline:2px solid var(--accent);outline-offset:1px}
 .id-seg{margin-bottom:4px}.id-note,.id-warn{font-size:12px;line-height:1.6;margin:12px 0 0}.id-warn{padding:10px 12px;border-radius:10px;background:var(--midbg);color:var(--ink)}
-.id-err{min-height:18px;font-size:12px;color:var(--bad);margin:10px 0 0}
+.id-err{min-height:18px;font-size:12px;color:var(--bad);margin:10px 0 0}.id-err.good{color:var(--ok)}
+.id-note .link{margin:0;font-size:12px}
+.id-recap{font-size:11px;color:var(--sub);margin:12px 0 0;line-height:1.5}.id-recap a{color:inherit}
+/* reCAPTCHA 표시 배지는 숨기고, 대신 로그인 창에 안내 문구를 넣는다 (Google이 허용하는 방식) */
+.grecaptcha-badge{visibility:hidden}
 .id-btns{display:flex;justify-content:flex-end;align-items:center;gap:14px;margin-top:10px}.id-btns .link{margin:0}.id-btns .next{margin:0}
 .rk-guest{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);margin-top:0;gap:8px 20px}.rk-guest b{font-size:18px;margin-right:2px}
 .pf-acct span:not(.g){min-width:0;overflow-wrap:anywhere}.pf-acct .link{margin:0;font-size:12px}
@@ -1049,7 +1053,7 @@ function sessionLost(){
 }
 async function authHeader(){
   if(!rk.auth||Date.now()>rk.auth.exp){rk.auth=await restAuth();rk.me=rk.auth.uid}
-  return{"Authorization":"Bearer "+rk.auth.idToken};
+  return{"Authorization":"Bearer "+rk.auth.idToken,...await appCheckHeader()};
 }
 // 로그인이 필요한 쓰기/지우기 (토큰이 만료됐으면 한 번 새로 받아서 다시 시도)
 async function restWrite(method,path,body,keepalive){
@@ -1332,7 +1336,7 @@ const loginErrText=(c,e,what)=>c==="harukana/not-ready"?"Google 확인 준비가
   :c==="auth/network-request-failed"?"인터넷 연결이 불안정해요. 잠시 뒤 다시 눌러 주세요."
   :c==="auth/operation-not-supported-in-this-environment"||c==="auth/web-storage-unsupported"?"이 브라우저에서는 Google 로그인을 쓸 수 없어요. Chrome이나 Safari로 열어 주세요."
   :what+"하지 못했어요 ("+(c||e.message)+")";
-// 로그인에 성공한 뒤 공통 처리 (Google·아이디 둘 다): 토큰 저장 → 계정 진도와 합치기 → 랭킹 참가
+// 로그인에 성공한 뒤 공통 처리 (Google·이메일 둘 다): 토큰 저장 → 계정 진도와 합치기 → 랭킹 참가
 async function finishLogin(a,account){
   rk.auth={uid:a.uid,refreshToken:a.refreshToken,idToken:a.idToken,exp:Date.now()+50*60e3};
   try{localStorage.setItem(AUTH_KEY,JSON.stringify({uid:a.uid,refreshToken:a.refreshToken}))}catch(e){}
@@ -1348,7 +1352,7 @@ async function finishLogin(a,account){
 }
 async function googleLogin(){
   if(IN_CLAUDE)return;
-  if(IN_APP_BROWSER){notifyText("이 앱 안 브라우저에서는 Google 로그인이 막혀 있어요. '아이디로 로그인'을 쓰거나, 메뉴에서 'Chrome으로 열기' 후 로그인해 주세요.");return}
+  if(IN_APP_BROWSER){notifyText("이 앱 안 브라우저에서는 Google 로그인이 막혀 있어요. '이메일로 로그인'을 쓰거나, 메뉴에서 'Chrome으로 열기' 후 로그인해 주세요.");return}
   const popup=openGooglePopup(); // 반드시 await 없이 가장 먼저
   try{
     const {au,auth,user:u}=await popup;
@@ -1361,71 +1365,153 @@ async function googleLogin(){
   }
 }
 
-/* ---------- 아이디·비밀번호 로그인 ----------
-   Google 계정이 없거나 쓰기 싫은 사람용. Firebase의 이메일·비밀번호 로그인을 쓰되, 이메일은 받지 않고
-   "아이디@id.harukana.invalid" 꼴의 가짜 주소로 바꿔 넣는다 (.invalid는 실제로 존재할 수 없는 주소라 메일이 가지 않음).
-   비밀번호는 Firebase가 암호화해 보관하고 운영자도 볼 수 없다. 대신 비밀번호를 잊으면 되찾을 방법이 없다 */
+/* ---------- 로봇 막기: Firebase App Check + 보이지 않는 reCAPTCHA v3 ----------
+   서버(Firestore·로그인)가 "진짜 하루카나 앱에서 온 요청"만 받게 한다. 프로그램으로 계정·점수를 찍어내는 걸 막는다.
+   화면에 체크박스는 없고, 로그인한 사람(과 로그인 창)에서만 불러온다 (공부만 하는 사람은 받지 않음).
+   사이트 키가 비어 있으면 App Check 없이 동작한다 */
+const RECAPTCHA_SITE_KEY="";
+let appCheckP=null;
+function appCheckInit(){
+  if(!RECAPTCHA_SITE_KEY||IN_CLAUDE)return null;
+  if(!appCheckP)appCheckP=Promise.all([import(AUTH_SDK+"firebase-app.js"),import(AUTH_SDK+"firebase-app-check.js")]).then(([appMod,ac])=>{
+    const app=appMod.getApps().length?appMod.getApps()[0]:appMod.initializeApp(FB_CONFIG);
+    return{ac,check:ac.initializeAppCheck(app,{provider:new ac.ReCaptchaV3Provider(RECAPTCHA_SITE_KEY),isTokenAutoRefreshEnabled:true})};
+  }).catch(e=>{appCheckP=null;throw e});
+  return appCheckP;
+}
+async function appCheckHeader(){
+  if(!RECAPTCHA_SITE_KEY||IN_CLAUDE)return{};
+  try{const {ac,check}=await appCheckInit();const t=await ac.getToken(check,false);return{"X-Firebase-AppCheck":t.token}}
+  catch(e){console.warn("App Check 토큰을 받지 못했어요",e);return{}}
+}
+
+/* ---------- 이메일·비밀번호 로그인 (이메일 인증) ----------
+   Google 계정이 없거나 쓰기 싫은 사람용. 가입하면 인증 메일이 가고, 메일의 링크를 눌러야 진도 저장·랭킹을 쓸 수 있다
+   (한 사람이 계정을 마구 만들지 못하게. 보안 규칙도 인증된 이메일만 받는다).
+   이메일은 Firebase 로그인 쪽에만 있고 학습 기록(users)에는 저장하지 않는다. 비밀번호를 잊으면 재설정 메일을 받을 수 있다.
+   예전 "아이디" 계정(아이디@id.harukana.invalid)은 아이디로 로그인한 뒤 진짜 이메일을 연결해 인증하면 그대로 이어서 쓴다 */
 const ID_DOMAIN="id.harukana.invalid";
-const ID_RE=/^[a-z0-9_]{4,16}$/;
-async function idAuth(mode,id,pw){ // mode: signUp(새로 만들기) | signInWithPassword(로그인)
-  const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:${mode}?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({email:id+"@"+ID_DOMAIN,password:pw,returnSecureToken:true})});
+const EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const isLegacy=e=>String(e||"").endsWith("@"+ID_DOMAIN);
+const loginEmail=s=>{s=String(s||"").trim().toLowerCase();return s.includes("@")?s:s+"@"+ID_DOMAIN};
+async function idt(method,body){ // Firebase 로그인 REST (App Check 토큰을 붙인다)
+  const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:${method}?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json",...await appCheckHeader()},body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));
   if(!r.ok){const e=new Error(j.error&&j.error.message||"HTTP "+r.status);e.code=e.message;throw e}
-  return{uid:j.localId,refreshToken:j.refreshToken,idToken:j.idToken};
+  return j;
 }
-const idErrText=c=>/EMAIL_EXISTS/.test(c)?"이미 누가 쓰고 있는 아이디예요. 다른 아이디를 골라 주세요."
-  :/INVALID_LOGIN_CREDENTIALS|EMAIL_NOT_FOUND|INVALID_PASSWORD/.test(c)?"아이디나 비밀번호가 맞지 않아요."
-  :/TOO_MANY_ATTEMPTS/.test(c)?"너무 여러 번 시도했어요. 잠시 뒤 다시 해 주세요."
+async function idAuth(mode,login,pw){ // mode: signUp(가입) | signInWithPassword(로그인)
+  const j=await idt(mode,{email:loginEmail(login),password:pw,returnSecureToken:true});
+  return{uid:j.localId,refreshToken:j.refreshToken,idToken:j.idToken,email:j.email};
+}
+// 인증 여부는 새 토큰으로 확인한다 (링크를 누른 뒤에도 예전 토큰에는 "미인증"으로 남아 있어서)
+async function refreshTok(a){
+  const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(a.refreshToken)});
+  const j=await r.json();if(!r.ok)throw Object.assign(new Error("TOKEN"),{code:(j.error&&j.error.message)||"TOKEN"});
+  return{...a,idToken:j.id_token,refreshToken:j.refresh_token};
+}
+async function isVerified(a){const j=await idt("lookup",{idToken:a.idToken});return !!(j.users&&j.users[0]&&j.users[0].emailVerified)}
+const idErrText=c=>/EMAIL_EXISTS/.test(c)?"이미 가입된 이메일이에요. '로그인'에서 들어와 주세요."
+  :/INVALID_LOGIN_CREDENTIALS|EMAIL_NOT_FOUND|INVALID_PASSWORD/.test(c)?"이메일(아이디)이나 비밀번호가 맞지 않아요."
+  :/INVALID_EMAIL|MISSING_EMAIL/.test(c)?"이메일 주소를 다시 확인해 주세요."
+  :/TOO_MANY_ATTEMPTS|QUOTA_EXCEEDED/.test(c)?"너무 여러 번 시도했어요. 잠시 뒤 다시 해 주세요."
   :/WEAK_PASSWORD/.test(c)?"비밀번호는 6자 이상이어야 해요."
-  :/OPERATION_NOT_ALLOWED|PASSWORD_LOGIN_DISABLED/.test(c)?"아이디 로그인이 아직 준비되지 않았어요. 잠시 뒤 다시 해 주세요."
+  :/OPERATION_NOT_ALLOWED|PASSWORD_LOGIN_DISABLED/.test(c)?"이메일 로그인이 아직 준비되지 않았어요. 잠시 뒤 다시 해 주세요."
   :/USER_DISABLED/.test(c)?"사용이 멈춘 계정이에요."
+  :/APP_CHECK|app-check|appCheck/i.test(c)?"보안 확인(reCAPTCHA)을 통과하지 못했어요. 광고 차단을 끄고 다시 해 주세요."
   :/Failed to fetch|NetworkError/i.test(c)?"인터넷 연결을 확인해 주세요."
   :"하지 못했어요 ("+c+")";
-// 아이디 창: mode = login(로그인) | signup(새로 만들기) | delete(계정 삭제 전 비밀번호 확인)
-function openIdDialog(mode,onDelete){
+const acctLogin=a=>a&&(a.email||a.id&&a.id+"@"+ID_DOMAIN)||"";
+/* 이메일 창 mode:
+   login(로그인) · signup(가입) · reset(비밀번호 재설정 메일) · verify(인증 메일 확인 대기, a=토큰) ·
+   link(예전 아이디 계정에 진짜 이메일 연결, a=토큰) · delete(계정 삭제 전 비밀번호 확인) */
+function openIdDialog(mode,arg){
   let d=$("id-dlg");if(!d){d=document.createElement("dialog");d.id="id-dlg";d.className="id-dlg";document.body.appendChild(d)}
-  const del=mode==="delete",sign=mode==="signup";
-  d.innerHTML=`<form method="dialog" id="id-form" novalidate>
-    <h3>${del?"비밀번호 확인":sign?"아이디 만들기":"아이디로 로그인"}</h3>
-    ${del?`<p class="id-note">계정과 모든 학습 기록을 지우려면 비밀번호를 한 번 더 넣어 주세요. 지우면 되돌릴 수 없어요.</p>`
-      :`<div class="seg id-seg"><button type="button" data-idm="login" class="${sign?"":"on"}">로그인</button><button type="button" data-idm="signup" class="${sign?"on":""}">새로 만들기</button></div>`}
-    ${del?"":`<label>아이디<input id="id-name" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="16" placeholder="영어 소문자·숫자 4~16자"></label>`}
-    <label>비밀번호<input id="id-pw" type="password" autocomplete="${sign?"new-password":"current-password"}" placeholder="6자 이상"></label>
-    ${sign?`<label>비밀번호 한 번 더<input id="id-pw2" type="password" autocomplete="new-password"></label>
-      <p class="id-warn"><b>비밀번호를 꼭 적어 두세요.</b> 이메일을 받지 않아서 비밀번호를 잊으면 기록을 되찾을 수 없어요.</p>`:""}
-    <p class="id-err" id="id-err" role="alert"></p>
-    <div class="id-btns"><button type="button" class="link" id="id-cancel">닫기</button><button class="next" id="id-ok">${del?"삭제하기":sign?"만들고 로그인":"로그인"}</button></div>
+  appCheckInit()?.catch(()=>{}); // reCAPTCHA를 미리 준비
+  const tabs=mode==="login"||mode==="signup";
+  const title={login:"이메일로 로그인",signup:"이메일로 가입",reset:"비밀번호 재설정",verify:"이메일 인증",link:"이메일 연결",delete:"비밀번호 확인"}[mode];
+  const pw=(id,ac,ph)=>`<label>${ph||"비밀번호"}<input id="${id}" type="password" autocomplete="${ac}" placeholder="6자 이상"></label>`;
+  const body={
+    login:`<label>이메일<input id="id-name" type="email" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="name@example.com"></label>${pw("id-pw","current-password")}
+      <p class="id-note"><button type="button" class="link" id="id-forgot">비밀번호를 잊었어요</button> · 예전 아이디 계정은 이메일 칸에 아이디를 넣으세요.</p>`,
+    signup:`<label>이메일<input id="id-name" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="name@example.com"></label>${pw("id-pw","new-password")}${pw("id-pw2","new-password","비밀번호 한 번 더")}
+      <p class="id-note">가입하면 이 주소로 인증 메일이 가요. 메일의 링크를 눌러야 기록 저장과 랭킹을 쓸 수 있어요. 이메일은 로그인·인증·비밀번호 재설정에만 써요.</p>`,
+    reset:`<label>가입한 이메일<input id="id-name" type="email" autocomplete="email" autocapitalize="none" spellcheck="false"></label><p class="id-note">비밀번호를 새로 정하는 링크를 메일로 보내 드려요.</p>`,
+    verify:`<p class="id-note"><b>${esc(arg&&arg.email||"")}</b>로 인증 메일을 보냈어요. 메일의 링크를 누른 뒤 아래 <b>인증했어요</b>를 눌러 주세요.<br>메일이 안 보이면 스팸함도 확인해 주세요.</p>
+      <p class="id-note"><button type="button" class="link" id="id-resend">인증 메일 다시 보내기</button></p>`,
+    link:`<p class="id-note">이제 계정마다 이메일 인증이 필요해요. 쓸 이메일을 넣으면 인증 메일을 보내요. 메일의 링크를 누르면 연결되고, 그 뒤로는 <b>이 이메일과 지금 비밀번호</b>로 로그인해요. 기록은 그대로 이어져요.</p>
+      <label>이메일<input id="id-name" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="name@example.com"></label>`,
+    delete:`<p class="id-note">계정과 모든 학습 기록을 지우려면 비밀번호를 한 번 더 넣어 주세요. 지우면 되돌릴 수 없어요.</p>${pw("id-pw","current-password")}`
+  }[mode];
+  const ok={login:"로그인",signup:"가입하고 인증 메일 받기",reset:"재설정 메일 보내기",verify:"인증했어요",link:"인증 메일 보내기",delete:"삭제하기"}[mode];
+  d.innerHTML=`<form method="dialog" id="id-form" novalidate><h3>${title}</h3>
+    ${tabs?`<div class="seg id-seg"><button type="button" data-idm="login" class="${mode==="login"?"on":""}">로그인</button><button type="button" data-idm="signup" class="${mode==="signup"?"on":""}">가입</button></div>`:""}
+    ${body}<p class="id-err" id="id-err" role="alert"></p>
+    <div class="id-btns"><button type="button" class="link" id="id-cancel">닫기</button><button class="next" id="id-ok">${ok}</button></div>
+    ${RECAPTCHA_SITE_KEY?`<p class="id-recap">이 사이트는 reCAPTCHA로 보호되며 Google <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">개인정보처리방침</a>과 <a href="https://policies.google.com/terms" target="_blank" rel="noopener">서비스 약관</a>이 적용돼요.</p>`:""}
   </form>`;
   d.querySelectorAll("[data-idm]").forEach(b=>b.onclick=()=>openIdDialog(b.dataset.idm));
   $("id-cancel").onclick=()=>d.close();
-  const err=t=>{$("id-err").textContent=t};
+  if($("id-forgot"))$("id-forgot").onclick=()=>openIdDialog("reset");
+  const err=(t,good)=>{$("id-err").textContent=t;$("id-err").classList.toggle("good",!!good)};
+  const busy=v=>{$("id-ok").disabled=v};
+  if($("id-resend"))$("id-resend").onclick=async()=>{try{await idt("sendOobCode",{requestType:"VERIFY_EMAIL",idToken:arg.idToken});err("인증 메일을 다시 보냈어요.",true)}catch(e){err(/TOO_MANY/.test(e.code)?"방금 보낸 메일이 있어요. 1분쯤 뒤에 다시 보낼 수 있어요.":idErrText(e.code||e.message))}};
+  // 로그인에 성공했지만 아직 인증 전이면 인증 단계로, 예전 아이디 계정이면 이메일 연결로 보낸다
+  const afterAuth=async a=>{
+    if(isLegacy(a.email))return openIdDialog("link",a);
+    if(!(await isVerified(a)))return openIdDialog("verify",a);
+    d.close();await finishLogin(a,{name:a.email,email:a.email,kind:"email"});
+  };
   $("id-form").onsubmit=async ev=>{
-    ev.preventDefault();
-    const id=del?S.account.id:$("id-name").value.trim().toLowerCase(),pw=$("id-pw").value;
-    if(!ID_RE.test(id))return err("아이디는 영어 소문자·숫자·밑줄(_)로 4~16자예요.");
-    if(pw.length<6)return err("비밀번호는 6자 이상이어야 해요.");
-    if(sign&&pw!==$("id-pw2").value)return err("두 비밀번호가 서로 달라요.");
-    $("id-ok").disabled=true;err("");
+    ev.preventDefault();err("");
+    const v=id=>($(id)&&$(id).value||"");
     try{
-      const a=await idAuth(sign?"signUp":"signInWithPassword",id,pw);
-      d.close();
-      if(del)return onDelete(a);
-      await finishLogin(a,{name:id,id,kind:"id"});
-    }catch(e){err(idErrText(e.code||e.message));$("id-ok").disabled=false}
+      if(mode==="login"){
+        if(!v("id-name").trim())return err("이메일(또는 예전 아이디)을 넣어 주세요.");
+        if(v("id-pw").length<6)return err("비밀번호는 6자 이상이에요.");
+        busy(true);await afterAuth(await idAuth("signInWithPassword",v("id-name"),v("id-pw")));
+      }else if(mode==="signup"){
+        const em=v("id-name").trim().toLowerCase();
+        if(!EMAIL_RE.test(em))return err("이메일 주소를 다시 확인해 주세요.");
+        if(v("id-pw").length<6)return err("비밀번호는 6자 이상이어야 해요.");
+        if(v("id-pw")!==v("id-pw2"))return err("두 비밀번호가 서로 달라요.");
+        busy(true);const a=await idAuth("signUp",em,v("id-pw"));
+        await idt("sendOobCode",{requestType:"VERIFY_EMAIL",idToken:a.idToken});
+        openIdDialog("verify",a);
+      }else if(mode==="reset"){
+        const em=v("id-name").trim().toLowerCase();
+        if(!EMAIL_RE.test(em))return err("이메일 주소를 다시 확인해 주세요.");
+        busy(true);try{await idt("sendOobCode",{requestType:"PASSWORD_RESET",email:em})}catch(e){if(!/EMAIL_NOT_FOUND/.test(e.code))throw e}
+        err("가입된 이메일이면 재설정 메일을 보냈어요. 메일의 링크에서 새 비밀번호를 정한 뒤 로그인해 주세요.",true);busy(false);
+      }else if(mode==="verify"){
+        busy(true);const a=await refreshTok(arg);
+        if(!(await isVerified(a))){busy(false);return err("아직 인증이 확인되지 않았어요. 메일의 링크를 누른 뒤 다시 눌러 주세요.")}
+        d.close();await finishLogin(a,{name:a.email,email:a.email,kind:"email"});
+      }else if(mode==="link"){
+        const em=v("id-name").trim().toLowerCase();
+        if(!EMAIL_RE.test(em))return err("이메일 주소를 다시 확인해 주세요.");
+        busy(true);await idt("sendOobCode",{requestType:"VERIFY_AND_CHANGE_EMAIL",idToken:arg.idToken,newEmail:em});
+        err(`${em}로 인증 메일을 보냈어요. 메일의 링크를 누른 뒤, 이 이메일과 지금 비밀번호로 다시 로그인해 주세요.`,true);
+        // 이메일이 바뀌면 예전 로그인은 풀린다. 이 기기 기록은 남아 있고, 새 이메일로 로그인하면 계정 기록과 합쳐진다
+        $("id-ok").textContent="새 이메일로 로그인";$("id-ok").disabled=false;$("id-form").onsubmit=e=>{e.preventDefault();openIdDialog("login")};
+      }else if(mode==="delete"){
+        if(v("id-pw").length<6)return err("비밀번호를 넣어 주세요.");
+        busy(true);const a=await idAuth("signInWithPassword",acctLogin(S.account),v("id-pw"));d.close();arg(a);
+      }
+    }catch(e){err(idErrText(e.code||e.message));busy(false)}
   };
   if(!d.open)d.showModal();
-  (del?$("id-pw"):$("id-name")).focus();
+  ($("id-name")||$("id-pw")||$("id-ok")).focus();
 }
 function idLogin(){if(!IN_CLAUDE)openIdDialog("login")}
-// 비밀번호 바꾸기 (아이디 계정): 지금 비밀번호로 확인한 뒤 새 비밀번호로 바꾼다.
+// 비밀번호 바꾸기 (이메일·예전 아이디 계정): 지금 비밀번호로 확인한 뒤 새 비밀번호로 바꾼다.
 // 바꾸면 다른 기기의 로그인은 풀리고(다시 로그인 필요), 이 기기는 새 토큰으로 이어 간다
 function openPwDialog(){
-  if(!S.account||S.account.kind!=="id")return;
+  if(!S.account||(S.account.kind!=="id"&&S.account.kind!=="email"))return;
   let d=$("id-dlg");if(!d){d=document.createElement("dialog");d.id="id-dlg";d.className="id-dlg";document.body.appendChild(d)}
   d.innerHTML=`<form method="dialog" id="pw-form" novalidate>
     <h3>비밀번호 바꾸기</h3>
-    <p class="id-note">아이디 <b>${esc(S.account.id)}</b> · 바꾸면 다른 기기에서는 다시 로그인해야 해요.</p>
+    <p class="id-note"><b>${esc(acctLabel(S.account))}</b> · 바꾸면 다른 기기에서는 다시 로그인해야 해요.</p>
     <label>지금 비밀번호<input id="pw-cur" type="password" autocomplete="current-password"></label>
     <label>새 비밀번호<input id="pw-new" type="password" autocomplete="new-password" placeholder="6자 이상"></label>
     <label>새 비밀번호 한 번 더<input id="pw-new2" type="password" autocomplete="new-password"></label>
@@ -1443,7 +1529,7 @@ function openPwDialog(){
     if(nw===cur)return err("지금 비밀번호와 같아요.");
     $("pw-ok").disabled=true;err("");
     try{
-      const a=await idAuth("signInWithPassword",S.account.id,cur);
+      const a=await idAuth("signInWithPassword",acctLogin(S.account),cur);
       if(a.uid!==rk.me)throw Object.assign(new Error("다른 계정"),{code:"INVALID_LOGIN_CREDENTIALS"});
       const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({idToken:a.idToken,password:nw,returnSecureToken:true})});
@@ -1481,10 +1567,10 @@ async function wipeAccount(uid,idToken,deleteLogin){
     setTimeout(()=>location.reload(),1500);
   }catch(e){S.account=acct;rk.blocked=false;throw e}
 }
-// 계정 기록 삭제: Google 계정은 Google로, 아이디 계정은 비밀번호로 한 번 더 확인한 뒤 지운다
+// 계정 기록 삭제: Google 계정은 Google로, 이메일 계정은 비밀번호로 한 번 더 확인한 뒤 지운다
 async function deleteAccount(){
   if(IN_CLAUDE||!S.account||!rk.me)return;
-  if(S.account.kind==="id"){
+  if(S.account.kind==="id"||S.account.kind==="email"){
     openIdDialog("delete",async a=>{
       if(a.uid!==rk.me)return notifyText("지금 로그인한 계정이 아니에요.");
       try{await wipeAccount(a.uid,a.idToken,async()=>{
@@ -1503,8 +1589,8 @@ async function deleteAccount(){
 }
 const PRIVACY_URL="privacy.html";
 const loginBtn=(id,label)=>`<button class="gbtn" id="${id}"><span class="g">G</span>${label||"Google로 로그인"}</button>`;
-// Google 버튼 + 아이디 버튼 한 쌍 (id-<이름> 버튼은 bindLoginBtns가 연결)
-const loginBtns=id=>`<span class="login-btns">${loginBtn(id)}<button class="gbtn idbtn" id="id-${id}"><span class="g">ID</span>아이디로 로그인</button></span>`;
+// Google 버튼 + 이메일 버튼 한 쌍 (id-<이름> 버튼은 bindLoginBtns가 연결)
+const loginBtns=id=>`<span class="login-btns">${loginBtn(id)}<button class="gbtn idbtn" id="id-${id}"><span class="g">@</span>이메일로 로그인</button></span>`;
 function bindLoginBtns(id){armLoginBtn($(id),googleLogin);if($("id-"+id))$("id-"+id).onclick=idLogin}
 const acctLabel=a=>a.kind==="id"?"아이디 "+a.id:a.email||a.name||"Google 계정";
 /* ---------- 닉네임: 겹치지 않게, 처음 정하기 1번 + 바꾸기 1번, 나쁜 말은 * ----------
@@ -1791,7 +1877,7 @@ function renderRank(){
           :!S.account?`<small class="nick-help">로그인하면 이름을 정할 수 있어요</small>`
           :nickLeft()?`<button class="link" id="nick-edit">${nickLeft()===2?"이름 정하기":"이름 바꾸기 (1번 남음)"}</button>`
           :`<small class="nick-help">이름은 더 바꿀 수 없어요</small>`}</div>`}
-      ${IN_CLAUDE?"":S.account?`<div class="pf-acct"><span class="g">${S.account.kind==="id"?"ID":"G"}</span><span>${esc(acctLabel(S.account))} · 기록이 계정에 저장돼요</span><button class="link" id="glogout">${rk.logoutArmed?"한 번 더 누르면 로그아웃":"로그아웃"}</button>${S.account.kind==="id"?`<button class="link" id="gpw">비밀번호 바꾸기</button>`:""}<button class="link" id="gdelete">${rk.deleteArmed?`한 번 더 누르면 삭제 (${S.account.kind==="id"?"비밀번호":"Google"} 확인)`:"계정 기록 삭제"}</button><a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></div>`
+      ${IN_CLAUDE?"":S.account?`<div class="pf-acct"><span class="g">${S.account.kind==="id"?"ID":S.account.kind==="email"?"@":"G"}</span><span>${esc(acctLabel(S.account))} · 기록이 계정에 저장돼요</span><button class="link" id="glogout">${rk.logoutArmed?"한 번 더 누르면 로그아웃":"로그아웃"}</button>${S.account.kind==="id"?`<button class="link" id="glink">이메일 연결 필요</button>`:""}${S.account.kind==="id"||S.account.kind==="email"?`<button class="link" id="gpw">비밀번호 바꾸기</button>`:""}<button class="link" id="gdelete">${rk.deleteArmed?`한 번 더 누르면 삭제 (${S.account.kind==="id"||S.account.kind==="email"?"비밀번호":"Google"} 확인)`:"계정 기록 삭제"}</button><a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></div>`
         :`<div class="pf-acct off"><span>지금은 이 브라우저에만 저장돼요.</span>${loginBtns("glogin-pf")}<a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></div>`}
       <div class="pf-title">${main?`<span class="title-chip">${esc(main)}</span>`:`<span class="title-none">아직 칭호가 없어요. 문제를 맞히면 첫 칭호를 받아요.</span>`}
         ${titles.length>1?`<label class="pf-pick">대표 칭호 <select id="title-pick">${titles.map(t=>`<option value="${t.id}"${t.title===main?" selected":""}>${esc(t.title)}</option>`).join("")}</select></label>`:""}</div>
@@ -1859,7 +1945,7 @@ function renderRank(){
   if(!IN_CLAUDE&&rk.fb&&!S.account){
     const stat=(n,l)=>`<span><b>${n}</b>${l}</span>`;
     $("board").innerHTML=`<h3 class="rk-h">랭킹</h3>
-      <div class="rk-join"><p><b>랭킹은 로그인한 사람끼리 겨뤄요.</b><br>Google이나 아이디로 로그인하면 이번 주 리그·전체 랭킹에 참가하고, 다른 사람의 순위도 볼 수 있어요. 1~10등은 매주 보상 XP를 받아요.</p>${loginBtns("glogin-rk")}</div>
+      <div class="rk-join"><p><b>랭킹은 로그인한 사람끼리 겨뤄요.</b><br>Google이나 이메일로 로그인하면 이번 주 리그·전체 랭킹에 참가하고, 다른 사람의 순위도 볼 수 있어요. 1~10등은 매주 보상 XP를 받아요.</p>${loginBtns("glogin-rk")}</div>
       <h3 class="rk-h" style="margin-top:14px">내 기록</h3>
       <div class="me-stats rk-guest">${stat(weekXp()," 이번 주 XP")}${stat(S.xp," 전체 XP")}${stat("Lv."+lvOf(S.xp),"")}${stat(streak(),"일 연속")}</div>`;
     bindLoginBtns("glogin-rk");
@@ -1874,6 +1960,8 @@ function renderRank(){
   // 로그아웃은 두 번 눌러야 한다 (이 기기의 기록은 지워지고 계정에는 남음)
   if($("glogout"))$("glogout").onclick=()=>{if(rk.logoutArmed){googleLogout()}else{rk.logoutArmed=true;notifyText("로그아웃하면 이 기기의 기록은 지워지고, 다시 로그인하면 계정에서 불러와요.");renderRank();setTimeout(()=>{rk.logoutArmed=false;scheduleRank()},5000)}};
   if($("gpw"))$("gpw").onclick=openPwDialog;
+  // 예전 아이디 계정: 이메일을 연결해 인증해야 기록 저장·랭킹을 쓸 수 있다
+  if($("glink"))$("glink").onclick=async()=>{try{await authHeader();openIdDialog("link",{...rk.auth,email:acctLogin(S.account)})}catch(e){notifyText("다시 로그인해 주세요.")}};
   // 계정 기록 삭제도 두 번 눌러야 한다 (되돌릴 수 없음)
   if($("gdelete"))$("gdelete").onclick=()=>{if(rk.deleteArmed){rk.deleteArmed=false;deleteAccount()}else{rk.deleteArmed=true;preloadAuth()?.catch(()=>{});notifyText("계정과 이 기기의 학습 기록이 모두 지워지고 되돌릴 수 없어요.");renderRank();setTimeout(()=>{rk.deleteArmed=false;scheduleRank()},6000)}};
   if($("nick-edit"))$("nick-edit").onclick=()=>{editingNick=true;renderRank();$("nick-in").focus()};
@@ -1994,7 +2082,7 @@ function renderHome(){
   if(!rv)renderReview();
   $("continue").title=lastPlace();
   // 로그인하지 않은 사람에게: 기록이 이 브라우저에만 있다는 안내 + Google 로그인
-  $("login-banner").innerHTML=!IN_CLAUDE&&!S.account?`<div class="login-banner"><div><b>기록을 안전하게 지키세요</b><small>지금은 이 브라우저에만 저장돼요. Google이나 아이디로 로그인하면 브라우저를 지우거나 기기를 바꿔도 그대로 이어서 할 수 있고, 랭킹에도 참가해요.<br>서버에는 학습 기록만 저장하고 이름·이메일은 저장하지 않아요. <a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></small></div>${loginBtns("glogin-home")}</div>`:"";
+  $("login-banner").innerHTML=!IN_CLAUDE&&!S.account?`<div class="login-banner"><div><b>기록을 안전하게 지키세요</b><small>지금은 이 브라우저에만 저장돼요. Google이나 이메일로 로그인하면 브라우저를 지우거나 기기를 바꿔도 그대로 이어서 할 수 있고, 랭킹에도 참가해요.<br>학습 기록에는 이름·이메일을 저장하지 않아요. <a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></small></div>${loginBtns("glogin-home")}</div>`:"";
   bindLoginBtns("glogin-home");
   const labels=['첫 글자, 설레는 시작','소리에 작은 변화','조금 더 풍부한 발음'];
   const descriptions=[(pathScript==='h'?'あ・い・う・え・お':'ア・イ・ウ・エ・オ')+'부터 차근차근','탁음과 반탁음의 차이를 익혀요','촉음 · 요음 · 장음으로 한 단계 더'];
