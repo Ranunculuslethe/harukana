@@ -119,6 +119,18 @@
 .goal-ring>span{font-size:13px;font-weight:800;color:var(--accent)}
 .big.sound{font-size:64px}
 .big.ear{font-size:16px;padding:18px 0}
+/* 홈의 오늘의 목표: 오른쪽 칸이 옆에 있을 땐 숨기고, 아래로 내려가는 좁은 화면(1080px 이하)에서만 홈에 보인다 */
+.home-goal{display:none;margin-top:18px;min-height:0!important}
+@media(max-width:1080px){.home-goal{display:block}.rightbar #goal-card{display:none}.rightbar>.progress-card{grid-column:1/-1}}
+/* 새 글자 만나기 */
+.learn-h{margin:14px 0 4px}.learn-h small{font-size:13px;color:var(--sub);font-weight:600;margin-left:6px}
+.learn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:10px;margin:14px 0}
+.learn-tile{display:flex;flex-direction:column;align-items:center;gap:2px;padding:14px 6px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);font:inherit;cursor:pointer}
+.learn-tile b{font-size:40px;line-height:1.15}.learn-tile span{font-size:15px;font-weight:700}.learn-tile small{font-size:11px;color:var(--sub)}
+.learn-tile.on,.learn-tile:active{border-color:var(--accent);background:var(--accent-soft)}
+#learn-all{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}#learn-all .icon{width:18px;height:18px}
+/* 단어: 처음 보는 글자 */
+.wnew{display:block;font-size:11px;color:var(--mid)}.wnew-tip{margin:8px auto 4px;max-width:420px}
 .ear-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));background:var(--accent-soft);color:var(--ink);font:inherit;font-size:16px;font-weight:700;cursor:pointer}
 .ear-btn .icon{width:28px;height:28px;color:var(--accent)}.ear-btn:active{transform:scale(.97)}
 .ear-warn{margin:8px 0 0}
@@ -220,6 +232,7 @@
 <use href="#fox" x="130" y="79" width="175" height="185"/>
 </svg><span class="scene-caption">はじめまして！</span></div>
 <div id="login-banner"></div>
+<div class="goal-card home-goal" id="home-goal" aria-label="오늘의 작은 목표"></div>
 <div id="review"></div>
 <div class="journey-heading"><div><span class="section-kicker">LEARNING PATH</span><h2>나의 학습 길</h2></div><span class="journey-badge">입문 · 첫 번째 여정</span></div>
 <div class="path-tabs" role="group" aria-label="학습 길 문자 종류"><button id="path-h" class="on" aria-pressed="true">ひ <span>히라가나</span></button><button id="path-k" aria-pressed="false">カ <span>가타카나</span></button></div>
@@ -440,7 +453,7 @@ function autoHangul(kana){
 const KEY="kana-v1";
 // co: 글자 종류별로 열린 단어 카테고리 수 (h 히라가나, k 가타카나, m 섞어 쓰기), mix: 섞어 쓰기가 열렸는지
 // xp: 경험치, badges: 받은 배지 {id: 받은 시각}, flags: 배지 조건용 기록, rank: 랭킹에 참가했는지
-const fresh=()=>({c:{},w:{},n:{},co:{h:1,k:1,m:1},mix:0,daily:{},xp:0,badges:{},flags:{},rank:1,titles:{},sr:{},wk:{id:"",xp:0},cr:{},wr:{},claimed:{},ca:{},cf:{}});
+const fresh=()=>({c:{},w:{},n:{},co:{h:1,k:1,m:1},mix:0,daily:{},xp:0,badges:{},flags:{},rank:1,titles:{},sr:{},wk:{id:"",xp:0},cr:{},wr:{},claimed:{},ca:{},cf:{},seen:{}});
 let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||typeof S!=="object")S=fresh();
 S.c=S.c||{};S.w=S.w||{};S.n=S.n||{};S.daily=S.daily||{};delete S.u;
@@ -448,7 +461,8 @@ if(!S.co){S.co={h:S.cu||1,k:1,m:1}}delete S.cu; // 예전 저장분: 히라가�
 S.mix=S.mix||0;S.xp=S.xp||0;S.badges=S.badges||{};S.flags=S.flags||{};// 랭킹은 기본으로 참가한다 (프로필에서 "랭킹에서 숨기기"를 누른 사람만 rankOff). 닉네임이 없으면 "학습자1234" 같은 가명을 한 번 만든다
 if(!S.rankOff)S.rank=1;
 if(!S.nick)S.nick="학습자"+String(Math.floor(1000+Math.random()*9000));
-S.titles=S.titles||{};delete S.ro;S.sr=S.sr||{};S.wk=S.wk||{id:"",xp:0};S.cr=S.cr||{};S.wr=S.wr||{};S.claimed=S.claimed||{};S.ca=S.ca||{};S.cf=S.cf||{}; // ca: 소리 듣고 글자 고르기 진도, cf: 헷갈린 글자 짝 {"シ|ツ": 횟수}
+S.titles=S.titles||{};delete S.ro;S.sr=S.sr||{};S.wk=S.wk||{id:"",xp:0};S.cr=S.cr||{};S.wr=S.wr||{};S.claimed=S.claimed||{};S.ca=S.ca||{};S.cf=S.cf||{};S.seen=S.seen||{}; // seen: 글자 퀴즈 전에 "새 글자 만나기"로 본 글자
+ // ca: 소리 듣고 글자 고르기 진도, cf: 헷갈린 글자 짝 {"シ|ツ": 횟수}
  // claimed: 주간 리그 보상을 받은 주 {주 번호:{rank,xp}} // cr/wr: 발음→글자, 뜻→일본어 문제의 진도 // sr: 복습 일정 {키:{lv,due}}, wk: 이번 주 리그 XP // titles: 분야별로 받은 칭호의 최고 단계
 // 예전 저장분 옮기기: 마지막에 맞힌 상태였으면 맞힘으로
 for(const k in S.c)if(S.c[k].d===undefined)S.c[k].d=S.c[k].s>=1?1:0;
@@ -519,6 +533,8 @@ function renderMissions(){
       <div><b>${done===d.m.length?"오늘 목표를 모두 달성했어요!":`목표 ${d.m.length}개 중 ${done}개 달성`}</b><p>달성할 때마다 XP를 받아요</p></div></div>
     <ul class="missions">${d.m.map(id=>{const M=MISSIONS[id],v=Math.min(M.v(d),M.need),ok=!!d.got[id];
       return `<li class="${ok?"done":""}"><div class="ms-top"><span>${ok?"✓ ":""}${M.t}</span><em>+${M.xp} XP</em></div><div class="bar"><i style="width:${v/M.need*100}%"></i></div><small>${v} / ${M.need}</small></li>`}).join("")}</ul>`;
+  // 화면이 좁으면 오른쪽 칸이 맨 아래로 내려가서, 홈에도 같은 목표 카드를 보여 준다 (넓으면 CSS로 숨김)
+  if($("home-goal"))$("home-goal").innerHTML=$("goal-card").innerHTML;
 }
 function refreshSummary(){
   const chars=[...ALL,...ALL_K], mc=chars.filter(c=>cd(c.k)).length;
@@ -606,7 +622,32 @@ let qScript="h",qStage=firstOpenCat("h"),cq=null;
 // 카테고리 전체를 행 구분 없이 섞어서 한 번씩 (순서대로 나오면 외우기보다 흐름으로 맞히게 돼서)
 function startStage(n,all){
   qStage=n;setLast({t:"char",s:qScript,n,m:qMode});cfq=null;
-  cq={queue:shuffle(modeChars(qScript,n).filter(c=>all||!cdm(c.k)).map(c=>c.k))};
+  // 이미 만난 글자는 섞어서 먼저, 처음 보는 글자는 한 행씩(あ행 → か행 …) 뒤에 붙인다.
+  // 처음 보는 행에 닿으면 퀴즈 전에 "새 글자 만나기" 카드로 먼저 보여 준다
+  const ks=modeChars(qScript,n).filter(c=>all||!cdm(c.k)).map(c=>c.k);
+  const known=ks.filter(introduced),fresh=ks.filter(k=>!introduced(k)),rows={};
+  for(const k of fresh){const i=rowIndex(k);(rows[i]=rows[i]||[]).push(k)}
+  cq={queue:[...shuffle(known),...Object.keys(rows).sort((a,b)=>a-b).flatMap(i=>shuffle(rows[i]))]};
+}
+// 한 번이라도 본(배운) 글자: "새 글자 만나기"로 봤거나, 어느 방향으로든 풀어 본 글자
+const introduced=k=>!!(S.seen[k]||S.c[k]||S.cr[k]||S.ca[k]);
+const rowIndex=k=>{const c=CH[k];return (c&&c.kata?ROWS_K:ROWS).findIndex(r=>r.cells.some(x=>x&&x.k===k))};
+// 새 글자 만나기: 이번에 처음 보는 행의 글자를 한꺼번에 보여 주고, 눌러서 소리를 들어 본 뒤 퀴즈로 간다
+function renderLearn(keys){
+  const row=(CH[keys[0]].kata?ROWS_K:ROWS)[rowIndex(keys[0])];
+  if(row){const pos=k=>row.cells.findIndex(x=>x&&x.k===k);keys=keys.slice().sort((a,b)=>pos(a)-pos(b))} // 배울 때는 あいうえお 순서대로
+  const tile=k=>{const c=CH[k],say=c.sp?c.ex[0][0]:c.k;
+    return `<button class="learn-tile" data-say="${say}"><b>${c.sp?c.disp:c.k}</b><span>${clean(c.h)}</span>${c.sp?`<small>${c.ex[0][0]}</small>`:c.r?`<small>${c.r}</small>`:""}</button>`};
+  const tips=keys.map(k=>CH[k]).filter(c=>c.sp&&c.tip).map(c=>`<p class="tip">${c.tip}</p>`).join("");
+  $("quiz").innerHTML=`${quizStatus(qStage,[`새 글자 ${keys.length}개`])}
+    <h2 class="learn-h">새 글자를 먼저 만나요 <small>${row?rowName(row):""}</small></h2>
+    <p class="intro">글자를 눌러 소리를 들어 보세요. 다 봤으면 바로 퀴즈로 확인해요.</p>
+    <div class="learn-grid">${keys.map(tile).join("")}</div>${tips}
+    <div class="navrow"><button class="ghost" id="learn-all">${SPK} 차례로 듣기</button><button class="next" id="learn-go">다 봤어요, 퀴즈 풀기</button></div>`;
+  $("quiz").querySelectorAll(".learn-tile").forEach(b=>b.onclick=()=>speak(b.dataset.say));
+  $("learn-all").onclick=()=>{const ts=[...$("quiz").querySelectorAll(".learn-tile")];ts.forEach((b,i)=>setTimeout(()=>{ts.forEach(x=>x.classList.remove("on"));b.classList.add("on");speak(b.dataset.say)},i*1300));setTimeout(()=>ts.forEach(x=>x.classList.remove("on")),ts.length*1300)};
+  $("learn-go").onclick=()=>{keys.forEach(k=>S.seen[k]=1);save();renderCharQuiz()};
+  $("learn-go").focus();
 }
 function setScript(s){qScript=s;startStage(firstOpenCat(s));renderStageBar();renderCharQuiz()}
 function setMode(m){qMode=m;startStage(qStage);renderStageBar();renderCharQuiz()}
@@ -662,6 +703,8 @@ function renderCharQuiz(){
     if($("nextst"))$("nextst").onclick=()=>{startStage(n+1);renderStageBar();renderCharQuiz()};
     return;
   }
+  // 처음 보는 글자면, 그 행에서 아직 안 본 글자를 모아 먼저 보여 준다 (배우기 전에 찍게 하지 않도록)
+  if(!introduced(cq.queue[0])){const ri=rowIndex(cq.queue[0]);return renderLearn(cq.queue.filter((k,i,a)=>!introduced(k)&&rowIndex(k)===ri&&a.indexOf(k)===i))}
   const key=cq.queue[0],c=CH[key],q=charQ(c,qMode),rec=modeRec(qMode)[key],retry=(rec||{}).w>0&&!cdm(key);
   mc($("quiz"),{...q,
     head:`${quizStatus(n)}${retry?'<span class="pill">다시 나온 글자</span>':""}`,
@@ -785,7 +828,28 @@ let wMode="fwd";
 const WMODE_NAMES={fwd:"일본어 → 뜻",rev:"뜻 → 일본어"};
 const wdm=(id,m=wMode)=>m==="rev"?!!(S.wr[id]&&S.wr[id].d):wd(id);
 const modeTag=()=>wMode==="rev"?` · ${WMODE_NAMES.rev}`:"";
-const batchCands=id=>catWords(id).filter(w=>!wdm(w.id)).sort((a,b)=>(b.koreanSimilar?1:0)-(a.koreanSimilar?1:0));
+// 단어 속에서 아직 만나지 않은 STEP 02·03 글자 (탁음·반탁음, 요음, 촉음). 작은 ゃゅょ는 앞 글자와 합친 요음으로 본다.
+// 기본 46자는 단어 공부의 출발점이라 표시하지 않고, 장음(ああ)은 읽는 규칙이라 뺀다
+function wordUnknown(w){
+  const s=[...w.kana],out=[];
+  for(let i=0;i<s.length;i++){
+    const two=s[i]+(s[i+1]||""),k=CH[two]?two:CH[s[i]]?s[i]:null;
+    if(CH[two])i++;
+    if(k&&CH[k].stage>1&&!introduced(k)&&!out.includes(k))out.push(k);
+  }
+  return out;
+}
+const STEP_NAMES={1:"STEP 01 기본 글자",2:"STEP 02 탁음·반탁음",3:"STEP 03 촉음·요음·장음"};
+// 단어 카드에 붙이는 안내: 처음 보는 글자와, 그 글자를 배우는 단계
+function unknownNote(w){
+  const u=wordUnknown(w);if(!u.length)return "";
+  const steps=[...new Set(u.map(k=>CH[k].stage))].sort().map(n=>STEP_NAMES[n]).join(", ");
+  const small=u.some(k=>k.length===2)?" 작은 ゃ·ゅ·ょ는 앞 글자와 합쳐 한 소리로 읽어요.":"";
+  const tsu=u.some(k=>k==="っ"||k==="ッ")?" 작은 っ는 받침 ㅅ처럼 한 박자 멈춰요.":"";
+  return `<p class="tip wnew-tip">처음 보는 글자: <b>${u.map(k=>CH[k].disp||k).join(" ")}</b> · 글자 퀴즈 ${steps}에서 배워요.${small}${tsu}</p>`;
+}
+// 이번 묶음 순서: 지금 읽을 수 있는 단어 먼저, 그다음 한국어와 소리가 비슷한 단어
+const batchCands=id=>catWords(id).filter(w=>!wdm(w.id)).sort((a,b)=>wordUnknown(a).length-wordUnknown(b).length||(b.koreanSimilar?1:0)-(a.koreanSimilar?1:0));
 // 단어를 맞혔을 때: 히라가나·가타카나 카테고리 2개를 끝냈으면 섞어 쓰기를 연다
 function checkUnlocks(){
   const opened=[];
@@ -826,7 +890,7 @@ function renderWords(){
         const ws=catWords(c.id),mw=ws.filter(w=>wdm(w.id)).length,open=catOpen(c);
         return `<button class="catcard" data-id="${c.id}" ${open?"":"disabled"}><div class="cat-top"><b>${c.name}</b>${c.recommended&&open&&mw<ws.length?'<span class="pill">처음 추천</span>':""}${open&&mw===ws.length?'<span class="pill ok">완료</span>':""}${open?"":'<span class="pill lockp">잠김</span>'}</div>
           <div class="desc">${open?c.desc:`${josa(cats[i-1].name,"을","를")} 끝내면 열려요`}</div><div class="bar"><i style="width:${ws.length?mw/ws.length*100:0}%"></i></div>
-          <div class="meta">맞힌 단어 ${mw}/${ws.length}</div></button>`}).join("")}</div>`;
+          <div class="meta">맞힌 단어 ${mw}/${ws.length}${(()=>{const n=ws.filter(w=>!wdm(w.id)&&wordUnknown(w).length).length;return open&&n?` · 처음 보는 글자가 든 단어 ${n}개`:""})()}</div></button>`}).join("")}</div>`;
     }
     // 열린 카테고리마다 따로 초기화 (이미 열린 다음 카테고리는 그대로 열려 있다)
     el.innerHTML=seg+body;
@@ -844,7 +908,8 @@ function renderWords(){
       <div class="wlist">${ws.map(w=>{
         const x=S.w[w.id],seen=x&&(x.v||x.r||x.w);
         const st=wdm(w.id)?'<span class="st pill ok">맞힘</span>':seen?'<span class="st pill">학습 중</span>':'<span class="st pill lockp">새 단어</span>';
-        return `<div class="wrow"><span class="wk">${w.kana}</span><span class="wm">${seen?`${w.hangul} · ${w.meaning}`:"아직 안 본 단어"}</span>${st}</div>`}).join("")}</div>`;
+        const u=wordUnknown(w);
+        return `<div class="wrow"><span class="wk">${w.kana}</span><span class="wm">${seen?`${w.hangul} · ${w.meaning}`:"아직 안 본 단어"}${u.length?`<small class="wnew">처음 보는 글자 ${u.map(k=>CH[k].disp||k).join(" ")}</small>`:""}</span>${st}</div>`}).join("")}</div>`;
     $("bk").onclick=()=>toList(cat);
     $("go").onclick=()=>{if(cands.length)startCards(cat.id);else startQuiz(cat.id,ws);renderWords()};
     return;
@@ -855,9 +920,10 @@ function renderWords(){
     el.innerHTML=`<div class="panel">${exitBtn}<div class="status">새 단어 ${wv.i+1} / ${n}</div>
       ${w.koreanSimilar?'<span class="pill">한국어와 소리가 비슷해요</span>':""}
       <div class="big word">${w.kana}</div><div class="hg">${w.hangul}</div><div class="mean">${w.meaning}</div>
+      ${unknownNote(w)}
       <button class="ghost" id="say">발음 듣기</button>
       <div class="navrow"><button class="ghost" id="pv" ${wv.i?"":"disabled"}>이전</button><button class="next" id="nx">${last?"확인 퀴즈 시작":"다음"}</button></div>
-      <button class="link" id="skip">아는 단어들이면 바로 퀴즈</button></div>`;
+      <button class="link" id="skip">다 아는 단어면 바로 퀴즈</button></div>`;
     speak(w.kana);
     const toQuiz=()=>{startQuiz(wv.cat,wv.batch,wv.batch);renderWords()};
     $("say").onclick=()=>speak(w.kana);
@@ -1204,6 +1270,7 @@ function mergeState(L,C){
   R.titles=R.titles||{};for(const k in C.titles||{})R.titles[k]=Math.max(R.titles[k]??-1,C.titles[k]??-1);
   R.co=R.co||{};for(const k in C.co||{})R.co[k]=max(R.co[k],C.co[k]);
   R.cf=R.cf||{};for(const k in C.cf||{})R.cf[k]=max(R.cf[k],C.cf[k]);
+  R.seen={...(C.seen||{}),...(R.seen||{})};
   R.mix=(R.mix||C.mix)?1:0;
   const wk=x=>Number((x||{}).id)||0;
   if(C.wk){if(wk(C.wk)>wk(R.wk))R.wk=C.wk;else if(wk(C.wk)===wk(R.wk))R.wk={id:R.wk.id,xp:max(R.wk.xp,C.wk.xp)}}
@@ -1217,7 +1284,7 @@ function mergeState(L,C){
    base에서 "이 기기만 바꾼 것"과 "다른 기기만 바꾼 것"을 각각 살린다.
    그래서 한쪽에서 지운 것(초기화·오답노트에서 뺀 것)은 지운 채로 남고, 두 기기에서 따로 번 XP는 더해진다 */
 const SYNC_KEY="harukana-sync";
-const SYNC_MAPS=new Set(["c","w","cr","wr","ca","cf","n","sr","daily","badges","flags","claimed","titles","co"]);
+const SYNC_MAPS=new Set(["c","w","cr","wr","ca","cf","seen","n","sr","daily","badges","flags","claimed","titles","co"]);
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const isObj=x=>x&&typeof x==="object"&&!Array.isArray(x);
 function pick3(path,b,l,c){
