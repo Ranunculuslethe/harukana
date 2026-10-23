@@ -947,7 +947,7 @@ const startCards=cat=>{const batch=batchCands(cat);wv={view:"card",cat,batch,i:0
 const exitBtn=`<div style="text-align:left"><button class="back" id="wexit">← 그만하고 나가기</button></div>`;
 const startQuiz=(cat,list,batch)=>{wv={view:"quiz",cat,batch:batch||[],queue:shuffle(list),total:list.length,wrong:new Set(),opened:[]}};
 const catOf=id=>CATS.find(c=>c.id===id);
-const toList=cat=>{wv={view:"list",script:cat?cat.script:"h"};renderWords()};
+const toList=cat=>{wv={view:"list",script:cat?cat.script:"h"};wordsHist();renderWords()};
 
 function renderWords(){
   const el=$("words");
@@ -971,7 +971,7 @@ function renderWords(){
     el.innerHTML=seg+body;
     el.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{wv={view:"list",script:b.dataset.s};renderWords()});
     el.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{wMode=b.dataset.wm;renderWords()});
-    el.querySelectorAll(".catcard").forEach(b=>b.onclick=()=>{wv={view:"cat",cat:b.dataset.id};renderWords()});
+    el.querySelectorAll(".catcard").forEach(b=>b.onclick=()=>{wv={view:"cat",cat:b.dataset.id};wordsHist();renderWords()});
     return;
   }
   const cat=catOf(wv.cat);
@@ -2206,7 +2206,29 @@ function renderGrass(){
 let tab=0, pathScript='h';
 const tabNames=['학습 길','문자 도감','글자 퀴즈','단어 모으기','오답노트','프로필'];
 const TABS=[0,1,2,3,4,5];
+/* 뒤로·앞으로: 탭을 옮길 때마다 브라우저 방문 기록에 남겨서, 마우스 옆 버튼(4·5번)·브라우저 버튼·휴대폰 뒤로 가기로
+   앱 안에서 이전 화면으로 돌아가게 한다. 주소 끝에 #quiz 처럼 탭 이름이 붙어서 그 화면을 바로 열 수도 있다 */
+const TAB_SLUG=["home","chart","quiz","words","notes","profile"];
+let histTab=null,navPop=false;
+function histPush(st,replace){
+  const hash="#"+TAB_SLUG[st.tab]+(st.w==="cat"&&st.cat?"/"+st.cat:"");
+  try{history[replace?"replaceState":"pushState"](st,"",hash)}catch(e){} // claude.ai 안에서는 막혀 있을 수 있다
+}
+// 단어 화면 안에서 목록 ↔ 카테고리를 옮길 때도 기록에 남긴다
+function wordsHist(){if(navPop||tab!==3)return;histPush(wv.view==="cat"?{tab:3,w:"cat",cat:wv.cat}:{tab:3,w:"list",s:wv.script||"h"})}
+window.addEventListener("popstate",e=>{
+  const st=e.state;if(!st||st.tab==null||!TAB_SLUG[st.tab])return;
+  navPop=true;
+  try{
+    const d=document.querySelector("dialog[open]");if(d)d.close();
+    if(st.tab===3&&st.w)wv=st.w==="cat"&&catOf(st.cat)&&catOpen(catOf(st.cat))?{view:"cat",cat:st.cat}:{view:"list",script:st.s||"h"};
+    show(st.tab);
+    if(st.tab===3)renderWords();
+  }finally{navPop=false}
+});
 function show(n){
+  if(!navPop&&n!==histTab)histPush(n===3?{tab:3,w:wv.view==="cat"?"cat":"list",cat:wv.cat,s:wv.script}:{tab:n},histTab===null);
+  histTab=n;
   tab=n;TABS.forEach(i=>{$("v"+i).hidden=i!==n;$("t"+i).classList.toggle("on",i===n);$("t"+i).setAttribute("aria-selected",String(i===n));$("t"+i).tabIndex=i===n?0:-1});
   $("page-label").textContent=tabNames[n];
   if(n===0)renderHome();
@@ -2281,6 +2303,10 @@ const mobileNav=matchMedia('(max-width:760px)');
 const orientNav=()=>document.querySelector('.tabs').setAttribute('aria-orientation',mobileNav.matches?'horizontal':'vertical');
 mobileNav.addEventListener('change',orientNav);orientNav();
 updateTitles();migrateSr();save();refreshSummary();renderHome();initRank();
+// 시작 화면(홈)을 방문 기록의 첫 칸으로 둔다. 주소에 #quiz, #words/카테고리 같은 이름이 있으면 그 화면을 바로 연다
+{const [slug,cat]=decodeURIComponent(location.hash.slice(1)).split("/"),i=TAB_SLUG.indexOf(slug);
+  histPush({tab:0},true);histTab=0;
+  if(i>0){if(i===3&&cat&&catOf(cat)&&catOpen(catOf(cat)))wv={view:"cat",cat};show(i)}}
 </script>
 
 
