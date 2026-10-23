@@ -6,9 +6,6 @@
 <meta name="description" content="하루카나 - 일본어를 처음 시작하는 한국인을 위한 히라가나·가타카나·기초 단어 학습 웹">
 <meta name="theme-color" content="#FAF9F5">
 <title>하루카나</title>
-<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
-<link rel="preconnect" href="https://securetoken.googleapis.com" crossorigin>
-<link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
 <body>
@@ -26,7 +23,6 @@
 .hero h2{word-break:keep-all}
 @media(max-width:760px){.hero h2{font-size:20px;letter-spacing:-.065em}.hero p{font-size:12px}.hero-tag{font-size:12px}.hero-cta{font-size:12px}.scene-caption{font-size:12px}.lesson p{font-size:12px}.lesson-meta,.lesson-eyebrow,.journey-badge{font-size:12px}.lesson-eyebrow em{font-size:12px}.vocab-banner b{font-size:12px}.vocab-banner small{font-size:12px;line-height:1.7}.vocab-banner .icon{width:16px}.vocab-symbol{width:32px}.stat-details>div:first-child{font-size:12px}.goal-card #goal-message{font-size:12px}.goal-main b{font-size:12px}.review-link,.review-link b{font-size:12px}.card-heading h2{font-size:12px}.card-heading>.icon{display:none}.goal-card,.progress-card{min-height:240px}.tab{font-size:12px}.mobile-tools{display:flex;grid-column:1/-1;padding:6px 0!important;gap:20px;justify-content:center;flex-wrap:wrap}.mobile-tools button{display:flex;align-items:center;gap:7px;background:none;border:0;color:var(--sub);font-size:12px;padding:8px}.mobile-tools .icon{width:17px;height:17px}.path-footer{font-size:12px}.wrow .wm{font-size:12px}.legend{font-size:12px}.chip{font-size:12px}.chip small{font-size:12px}}
 @media(max-width:380px){.hero h2{font-size:19px}.hero-content{width:60%}.lesson p{font-size:12px}.lesson h3{font-size:14px}.vocab-banner small{font-size:12px}}
-/* 랭킹·보상 */
 .me-card{display:flex;gap:16px;align-items:center;padding:20px;border:1px solid var(--line);border-bottom:4px solid var(--panel-shadow);border-radius:18px;background:var(--card)}
 .lv{flex:0 0 72px;height:72px;border-radius:50%;display:grid;place-content:center;text-align:center;background:var(--accent);color:var(--onaccent);box-shadow:0 4px 0 var(--accent-dark)}
 .lv small{font-size:12px;opacity:.85}.lv b{font-size:28px;line-height:1}
@@ -53,7 +49,6 @@
 .rk-rw{font-size:12px;font-weight:800;color:var(--mid);background:var(--midbg);border-radius:8px;padding:2px 7px;white-space:nowrap}
 .rk-list li.rk-gap{justify-content:center;border:0;background:none;padding:0;color:var(--sub);font-size:16px;letter-spacing:4px}
 @media(max-width:760px){.tab span[data-s]{font-size:0}.tab span[data-s]:after{content:attr(data-s);font-size:12px}.me-card{padding:16px;gap:12px}.lv{flex-basis:60px;height:60px}.rk-st{display:none}}
-/* 프로필 */
 .pf-card{display:flex;gap:18px;align-items:center;padding:20px;border:1px solid var(--line);border-bottom:4px solid var(--panel-shadow);border-radius:18px;background:var(--card)}
 .pf-avatar{position:relative;flex:0 0 88px;height:88px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;overflow:hidden;border:3px solid var(--card);box-shadow:0 0 0 2px var(--line)}
 .pf-avatar .fox{width:84px;height:88px;margin-top:14px}
@@ -79,7 +74,6 @@
 .rec-etc b{font-size:13px}.rec-etc small{font-size:12px;color:var(--sub);margin-bottom:6px}
 .rk-name small{display:block;font-size:12px;font-weight:700;color:var(--mid)}
 @media(max-width:760px){.pf-card{padding:16px;gap:12px;align-items:flex-start}.pf-avatar{flex-basis:68px;height:68px}.pf-avatar .fox{width:64px;height:68px}}
-/* 초기화 줄, 프로필 사진 */
 .reset-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:22px;padding:12px 14px;border:1px dashed var(--line);border-radius:12px}
 .reset-bar span{font-size:12px;color:var(--sub);flex:1 1 200px}.reset-bar .rec-reset{margin:0}
 .reset-btns{display:flex;flex-wrap:wrap;gap:8px}
@@ -93,7 +87,6 @@
 .av-c .fox{width:54px;height:57px;margin-top:10px}.av-opt small{font-size:12px;color:var(--sub)}
 .rk-av{flex:0 0 32px;height:32px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--accent-soft)}
 .rk-av .fox{width:31px;height:33px;margin-top:6px}
-/* 오늘의 복습, 학습 잔디, 주간 리그 */
 .review-card{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:22px;padding:18px 20px;border:1px solid var(--line);border-bottom:4px solid var(--panel-shadow);border-radius:18px;background:var(--card)}
 .review-card.due{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));background:var(--accent-soft)}
 .rv-ic{flex:0 0 46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--accent);color:var(--onaccent);font-size:22px;font-weight:800}
@@ -111,7 +104,6 @@
 .g-cell.future{background:transparent}
 .g-legend{display:flex;align-items:center;gap:3px;justify-content:flex-end;font-size:12px;color:var(--sub);margin-top:10px}.g-legend .g-cell{margin:0 1px}
 .rk-seg{margin-bottom:8px}.rk-sub{font-size:12px;color:var(--sub);margin:0 0 12px}.rk-sub b{color:var(--accent)}
-/* 오늘의 목표, 거꾸로 문제 */
 .missions{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:10px}
 .missions li{font-size:12px}.ms-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px}.ms-top span{min-width:0}.ms-top em{font-style:normal;color:var(--accent);font-weight:700;white-space:nowrap}
 .missions .bar{height:5px}.missions .bar i{background:var(--accent)}.missions small{display:block;font-size:12px;color:var(--sub);margin-top:2px;text-align:right}
@@ -119,27 +111,22 @@
 .goal-ring>span{font-size:13px;font-weight:800;color:var(--accent)}
 .big.sound{font-size:64px}
 .big.ear{font-size:16px;padding:18px 0}
-/* 홈의 오늘의 목표: 오른쪽 칸이 옆에 있을 땐 숨기고, 아래로 내려가는 좁은 화면(1080px 이하)에서만 홈에 보인다 */
 .home-goal{display:none;margin-top:18px;min-height:0!important}
 @media(max-width:1080px){.home-goal{display:block}.rightbar #goal-card{display:none}.rightbar>.progress-card{grid-column:1/-1}}
-/* 보기 번호: 마우스·키보드를 쓰는 화면에서만 왼쪽 위에 1~4 */
 .choices{counter-reset:ch}.choices button{position:relative;counter-increment:ch}
 @media(hover:hover) and (pointer:fine){.choices button::before{content:counter(ch);position:absolute;left:10px;top:7px;font-size:11px;font-weight:700;color:var(--sub);opacity:.75;font-family:system-ui,sans-serif}}
-/* 천천히 듣기 */
 .slow-tg{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--sub);cursor:pointer;user-select:none;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
 .slow-tg input{accent-color:var(--accent);margin:0}.slow-tg:has(input:checked){color:var(--ink);border-color:var(--accent);background:var(--accent-soft)}
 .slow-row{display:flex;justify-content:flex-end;margin:8px 0 0}
 .scene-caption small{display:block;font-size:10px;letter-spacing:0;opacity:.85;margin-top:1px}
 .hint-list{list-style:none;margin:4px 0 12px;padding:12px 14px;border-radius:12px;background:var(--midbg);font-size:13px;line-height:1.7;text-align:left}
 .hint-list b{display:inline-block;min-width:26px;font-size:16px;margin-right:6px}
-/* 새 글자 만나기 */
 .learn-h{margin:14px 0 4px}.learn-h small{font-size:13px;color:var(--sub);font-weight:600;margin-left:6px}
 .learn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:10px;margin:14px 0}
 .learn-tile{display:flex;flex-direction:column;align-items:center;gap:2px;padding:14px 6px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);font:inherit;cursor:pointer}
 .learn-tile b{font-size:40px;line-height:1.15}.learn-tile span{font-size:15px;font-weight:700}.learn-tile small{font-size:11px;color:var(--sub)}
 .learn-tile.on,.learn-tile:active{border-color:var(--accent);background:var(--accent-soft)}
 #learn-all{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}#learn-all .icon{width:18px;height:18px}
-/* 단어: 처음 보는 글자 */
 .wnew{display:block;font-size:11px;color:var(--mid)}.wnew-tip{margin:8px auto 4px;max-width:420px}
 .ear-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));background:var(--accent-soft);color:var(--ink);font:inherit;font-size:16px;font-weight:700;cursor:pointer}
 .ear-btn .icon{width:28px;height:28px;color:var(--accent)}.ear-btn:active{transform:scale(.97)}
@@ -151,7 +138,6 @@
 #v2 .mode-seg{flex-wrap:wrap}
 .choices.kana button{font-family:"Yu Gothic","Hiragino Sans","Noto Sans JP",sans-serif;font-size:28px}
 .choices.text.kana button{font-size:20px}
-/* 학습 잔디 달력 */
 .cal{padding:18px;border:1px solid var(--line);border-bottom:4px solid var(--panel-shadow);border-radius:18px;background:var(--card);max-width:560px}
 .cal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
 .cal-title{text-align:center}.cal-title b{display:block;font-size:18px}.cal-title small{display:block;font-size:12px;color:var(--sub);margin-top:2px}
@@ -172,7 +158,6 @@
 .cal-day.future{opacity:.45}
 .cal-day.today{box-shadow:0 0 0 2px var(--ink)}
 @media(max-width:420px){.cal{padding:12px}.cal-week,.cal-grid{gap:4px}.cal-day{padding:4px 5px;border-radius:8px}.cal-day b{font-size:13px}}
-/* Google 로그인 */
 .gbtn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-bottom-width:3px;background:var(--card);color:var(--ink);border-radius:12px;padding:9px 14px;font-size:13px;font-weight:700;white-space:nowrap}
 .gbtn:hover{border-color:var(--accent)}
 .g{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#fff;border:1px solid #dadce0;color:#4285F4;font:800 13px/1 Arial,sans-serif;flex:0 0 auto}
@@ -191,7 +176,6 @@
 .id-err{min-height:18px;font-size:12px;color:var(--bad);margin:10px 0 0}.id-err.good{color:var(--ok)}
 .id-note .link{margin:0;font-size:12px}
 .id-recap{font-size:11px;color:var(--sub);margin:12px 0 0;line-height:1.5}.id-recap a{color:inherit}
-/* reCAPTCHA 표시 배지는 숨기고, 대신 로그인 창에 안내 문구를 넣는다 (Google이 허용하는 방식) */
 .grecaptcha-badge{visibility:hidden}
 .id-btns{display:flex;justify-content:flex-end;align-items:center;gap:14px;margin-top:10px}.id-btns .link{margin:0}.id-btns .next{margin:0}
 .rk-guest{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);margin-top:0;gap:8px 20px}.rk-guest b{font-size:18px;margin-right:2px}
@@ -224,7 +208,7 @@
 <path d="M61 138q-15-16-23-3t16 20m70-17q15-16 23-3t-16 20" fill="#E99160"/>
 <rect x="59" y="164" width="27" height="13" rx="6" fill="#613F3E"/><rect x="101" y="164" width="27" height="13" rx="6" fill="#613F3E"/>
 </symbol></defs></svg>
-<aside class="sidebar"><a class="brand" href="#" aria-label="하루카나 홈"><span class="brand-fox"><svg viewBox="0 0 180 190" class="fox " aria-hidden="true"><use href="#fox"/></svg></span><span>하루카나<small>harukana</small></span></a><p class="nav-label">나의 일본어 여행</p><nav class="tabs" role="tablist" aria-label="학습 메뉴" aria-orientation="vertical"><button class="tab on" id="t0" role="tab" aria-selected="true" aria-controls="v0" tabindex="0"><svg class="icon " aria-hidden="true"><use href="#i-home"/></svg><span data-s="홈">학습 길</span></button><button class="tab" id="t1" role="tab" aria-selected="false" aria-controls="v1" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-book"/></svg><span data-s="도감">문자 도감</span></button><button class="tab" id="t2" role="tab" aria-selected="false" aria-controls="v2" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-spark"/></svg><span data-s="퀴즈">글자 퀴즈</span></button><button class="tab" id="t3" role="tab" aria-selected="false" aria-controls="v3" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-cards"/></svg><span data-s="단어">단어 모으기</span></button><button class="tab" id="t4" role="tab" aria-selected="false" aria-controls="v4" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-note"/></svg><span data-s="오답">오답노트</span><span class="badge" id="nbadge" hidden></span></button><button class="tab" id="t5" role="tab" aria-selected="false" aria-controls="v5" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-trophy"/></svg><span data-s="프로필">프로필</span></button></nav><div class="sidebar-bottom"><div class="little-note"><svg class="icon " aria-hidden="true"><use href="#i-flower"/></svg><p>작은 한 걸음이<br>새로운 세상을 열어요.</p><span>一日、一歩。</span></div><button class="utility" id="theme"><svg class="icon " aria-hidden="true"><use href="#i-moon"/></svg><span>밤 모드</span></button><button class="reset" id="reset">학습 기록 관리</button></div></aside>
+<aside class="sidebar"><a class="brand" href="#" aria-label="하루카나 홈" id="brand-home"><span class="brand-fox"><svg viewBox="0 0 180 190" class="fox " aria-hidden="true"><use href="#fox"/></svg></span><span>하루카나<small>harukana</small></span></a><p class="nav-label">나의 일본어 여행</p><nav class="tabs" role="tablist" aria-label="학습 메뉴" aria-orientation="vertical"><button class="tab on" id="t0" role="tab" aria-selected="true" aria-controls="v0" tabindex="0"><svg class="icon " aria-hidden="true"><use href="#i-home"/></svg><span data-s="홈">학습 길</span></button><button class="tab" id="t1" role="tab" aria-selected="false" aria-controls="v1" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-book"/></svg><span data-s="도감">문자 도감</span></button><button class="tab" id="t2" role="tab" aria-selected="false" aria-controls="v2" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-spark"/></svg><span data-s="퀴즈">글자 퀴즈</span></button><button class="tab" id="t3" role="tab" aria-selected="false" aria-controls="v3" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-cards"/></svg><span data-s="단어">단어 모으기</span></button><button class="tab" id="t4" role="tab" aria-selected="false" aria-controls="v4" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-note"/></svg><span data-s="오답">오답노트</span><span class="badge" id="nbadge" hidden></span></button><button class="tab" id="t5" role="tab" aria-selected="false" aria-controls="v5" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-trophy"/></svg><span data-s="프로필">프로필</span></button></nav><div class="sidebar-bottom"><div class="little-note"><svg class="icon " aria-hidden="true"><use href="#i-flower"/></svg><p>작은 한 걸음이<br>새로운 세상을 열어요.</p><span>一日、一歩。</span></div><button class="utility" id="theme"><svg class="icon " aria-hidden="true"><use href="#i-moon"/></svg><span>밤 모드</span></button><button class="reset" id="reset">학습 기록 관리</button></div></aside>
 <div class="workspace"><header class="topbar"><div class="breadcrumb">나의 배움 <span>/</span> <b id="page-label">학습 길</b></div><div class="top-meta"><span class="language"><i class="japan-flag"></i> 일본어 <small>기초</small></span><span class="top-divider"></span><span class="top-count"><svg class="icon " aria-hidden="true"><use href="#i-flower"/></svg><b id="header-count">0</b><span>글자</span></span><span class="avatar" aria-label="내 학습 공간">하</span></div></header>
 <div class="content-layout"><main id="content" tabindex="-1">
 <section id="v0" role="tabpanel" aria-labelledby="t0"><div class="welcome"><p class="eyebrow">조금씩, 매일 더 가까이</p><h1>오늘도, 일본어 한 걸음<span class="heading-flower">✿</span></h1><p>하루와 함께 나만의 속도로 배워요.</p></div>
@@ -393,12 +377,10 @@
 </script>
 
 <script>
-/* ---------- 글자 데이터 ---------- */
 const QCATS=["기본 46자","탁음·반탁음","촉음·요음·장음"]; // 글자 퀴즈 카테고리 (히라가나·가타카나 공통)
 const D1="あ:아:a い:이:i う:우:u え:에:e お:오:o|か:카:ka き:키:ki く:쿠:ku け:케:ke こ:코:ko|さ:사:sa し:시:shi す:스:su せ:세:se そ:소:so|た:타:ta ち:치:chi つ:츠:tsu て:테:te と:토:to|な:나:na に:니:ni ぬ:누:nu ね:네:ne の:노:no|は:하:ha ひ:히:hi ふ:후:fu へ:헤:he ほ:호:ho|ま:마:ma み:미:mi む:무:mu め:메:me も:모:mo|や:야:ya _ ゆ:유:yu _ よ:요:yo|ら:라:ra り:리:ri る:루:ru れ:레:re ろ:로:ro|わ:와:wa _ _ _ を:오(wo):wo|ん:응:n";
 const D2="が:가:ga ぎ:기:gi ぐ:구:gu げ:게:ge ご:고:go|ざ:자:za じ:지:ji ず:즈:zu ぜ:제:ze ぞ:조:zo|だ:다:da ぢ:지:ji づ:즈:zu で:데:de ど:도:do|ば:바:ba び:비:bi ぶ:부:bu べ:베:be ぼ:보:bo|ぱ:파:pa ぴ:피:pi ぷ:푸:pu ぺ:페:pe ぽ:포:po";
 const D3="きゃ:캬:kya きゅ:큐:kyu きょ:쿄:kyo|しゃ:샤:sha しゅ:슈:shu しょ:쇼:sho|ちゃ:차:cha ちゅ:추:chu ちょ:초:cho|にゃ:냐:nya にゅ:뉴:nyu にょ:뇨:nyo|ひゃ:햐:hya ひゅ:휴:hyu ひょ:효:hyo|みゃ:먀:mya みゅ:뮤:myu みょ:묘:myo|りゃ:랴:rya りゅ:류:ryu りょ:료:ryo|ぎゃ:갸:gya ぎゅ:규:gyu ぎょ:교:gyo|じゃ:자:ja じゅ:주:ju じょ:조:jo|びゃ:뱌:bya びゅ:뷰:byu びょ:뵤:byo|ぴゃ:퍄:pya ぴゅ:퓨:pyu ぴょ:표:pyo";
-// 촉음·장음: 글자 하나로는 문제를 낼 수 없어서 예시 단어로 읽는 법을 묻는다 ([단어, 정답, 오답들])
 const SPECIAL=[
   {k:"っ",disp:"っ",kdisp:"ッ",h:"ㅅ받침",r:"촉음",sp:1,tip:"작은 っ는 앞 글자에 받침 ㅅ처럼 붙여, 한 박자 멈췄다 다음 소리를 읽어요.",
    ex:[["きって","킷테",["키츠테","키테","킷데"]],["いっぱい","잇파이",["이츠파이","이파이","잇바이"]],["ざっし","잣시",["자츠시","자시","잣지"]],["みっつ","밋츠",["미츠츠","미츠","밋스"]]]},
@@ -408,7 +390,6 @@ const SPECIAL=[
 const parse=(src,stage,cols)=>src.split("|").map(r=>({stage,cols,cells:r.split(" ").map(t=>{if(t==="_")return null;const[k,h,ro]=t.split(":");return{k,h,r:ro,stage}})}));
 const ROWS=[...parse(D1,1,5),...parse(D2,2,5),{stage:3,cols:5,cells:SPECIAL.map(c=>({...c,stage:3}))},...parse(D3,3,3)];
 const ALL=ROWS.flatMap(r=>r.cells).filter(Boolean);
-// 가타카나: 히라가나 표를 그대로 바꾸고, 촉음·장음만 가타카나 예시를 따로 둔다 (장음은 ー, 한글로는 - 로 표기)
 const kataStr=s=>[...s].map(ch=>{const c=ch.charCodeAt(0);return c>=0x3041&&c<=0x3096?String.fromCharCode(c+0x60):ch}).join("");
 const KSPECIAL=[
   {k:"ッ",disp:"ッ",h:"ㅅ받침",r:"촉음",sp:1,tip:"작은 ッ는 앞 글자에 받침 ㅅ처럼 붙여, 한 박자 멈췄다 다음 소리를 읽어요.",
@@ -421,14 +402,10 @@ const ALL_K=ROWS_K.flatMap(r=>r.cells).filter(Boolean);
 const CH={};[...ALL,...ALL_K].forEach(c=>CH[c.k]=c);
 const clean=h=>h.replace(/\(.*\)/,"");
 
-/* ---------- 단어 데이터 ---------- */
 let DATA={categories:[],words:[]};
 try{DATA=JSON.parse(document.getElementById("word-data").textContent)}catch(e){console.error("단어 데이터를 읽지 못했어요",e)}
 const CATS=DATA.categories,WORDS=DATA.words;
-// 가나 → 글자 단위 (요음은 두 글자를 하나로)
 function units(kana){const out=[];for(let i=0;i<kana.length;i++){const n=kana[i+1];if(n&&"ゃゅょャュョ".includes(n)){out.push(kana[i]+n);i++}else out.push(kana[i])}return out}
-// 한글 발음 규칙: 글자마다 그대로 읽기, っ/ッ = ㅅ받침, ん/ン = ㄴ받침,
-// 히라가나 장음은 모음 그대로(오우, 에이), 가타카나 장음 ー 는 "-"
 function autoHangul(kana){
   let s="";
   for(const u of units(kana)){
@@ -441,7 +418,6 @@ function autoHangul(kana){
   }
   return s;
 }
-// 데이터 검증: 카테고리 글자 종류에 맞는지(h=히라가나만, k=가타카나만, m=둘 다), 모르는 글자 없음, 한글 발음 규칙 일치, 카테고리 존재
 (function validate(){
   const p=[],ids=new Set(),catMap={};CATS.forEach(c=>catMap[c.id]=c);
   const HIRA=/[ぁ-ゖ]/,KATA=/[ァ-ヶ]/;
@@ -459,11 +435,7 @@ function autoHangul(kana){
   if(p.length)console.warn("단어 데이터 확인 필요\n"+p.join("\n"));else console.info(`단어 데이터 검증 통과 (${WORDS.length}개)`);
 })();
 
-/* ---------- 저장 ---------- */
-// 규칙: 문제는 한 번 맞히면 끝(d=1), 틀린 것만 다시 나온다
 const KEY="kana-v1";
-// co: 글자 종류별로 열린 단어 카테고리 수 (h 히라가나, k 가타카나, m 섞어 쓰기), mix: 섞어 쓰기가 열렸는지
-// xp: 경험치, badges: 받은 배지 {id: 받은 시각}, flags: 배지 조건용 기록, rank: 랭킹에 참가했는지
 const fresh=()=>({c:{},w:{},n:{},co:{h:1,k:1,m:1},mix:0,daily:{},xp:0,badges:{},flags:{},rank:1,titles:{},sr:{},wk:{id:"",xp:0},cr:{},wr:{},claimed:{},ca:{},cf:{},seen:{}});
 let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||typeof S!=="object")S=fresh();
@@ -473,9 +445,6 @@ S.mix=S.mix||0;S.xp=S.xp||0;S.badges=S.badges||{};S.flags=S.flags||{};// 랭킹�
 if(!S.rankOff)S.rank=1;
 if(!S.nick)S.nick="학습자"+String(Math.floor(1000+Math.random()*9000));
 S.titles=S.titles||{};delete S.ro;S.sr=S.sr||{};S.wk=S.wk||{id:"",xp:0};S.cr=S.cr||{};S.wr=S.wr||{};S.claimed=S.claimed||{};S.ca=S.ca||{};S.cf=S.cf||{};S.seen=S.seen||{}; // seen: 글자 퀴즈 전에 "새 글자 만나기"로 본 글자
- // ca: 소리 듣고 글자 고르기 진도, cf: 헷갈린 글자 짝 {"シ|ツ": 횟수}
- // claimed: 주간 리그 보상을 받은 주 {주 번호:{rank,xp}} // cr/wr: 발음→글자, 뜻→일본어 문제의 진도 // sr: 복습 일정 {키:{lv,due}}, wk: 이번 주 리그 XP // titles: 분야별로 받은 칭호의 최고 단계
-// 예전 저장분 옮기기: 마지막에 맞힌 상태였으면 맞힘으로
 for(const k in S.c)if(S.c[k].d===undefined)S.c[k].d=S.c[k].s>=1?1:0;
 for(const k in S.w)if(S.w[k].d===undefined)S.w[k].d=S.w[k].s>=1?1:0;
 for(const k in S.n)S.n[k].s=0;
@@ -485,11 +454,8 @@ const gw=id=>S.w[id]||(S.w[id]={r:0,w:0,d:0});
 const cd=k=>!!(S.c[k]&&S.c[k].d);
 const wd=id=>!!(S.w[id]&&S.w[id].d);
 
-/* ---------- 공통 ---------- */
 const $=id=>document.getElementById(id);
-// 일본어로 읽어 주기. "천천히 듣기"를 켜면(S.slow) 0.6배 속도로 읽는다
 const speak=(t,rate)=>{try{const u=new SpeechSynthesisUtterance(t);u.lang="ja-JP";u.rate=rate||(S.slow?0.6:1);speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}};
-// 천천히 듣기 스위치 (글자 퀴즈·문자 도감·단어 카드에 같은 스위치가 있고, 하나를 바꾸면 모두 바뀐다)
 const slowToggle=()=>`<label class="slow-tg" title="일본어 소리를 천천히 들려줘요"><input type="checkbox" class="slow-cb" ${S.slow?"checked":""}>천천히 듣기</label>`;
 document.addEventListener("change",e=>{
   if(!e.target.classList||!e.target.classList.contains("slow-cb"))return;
@@ -501,7 +467,6 @@ const rand=a=>a[Math.floor(Math.random()*a.length)];
 const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
 
 function addNote(key){const n=S.n[key]||(S.n[key]={wr:0});n.wr++}
-// 처음 맞힌 문제는 1일 뒤 복습 일정에 올린다
 const today=()=>{const d=new Date();return Math.floor((d.getTime()-d.getTimezoneOffset()*6e4)/864e5)};
 function schedule(key){if(!S.sr[key])S.sr[key]={lv:0,due:today()+1}}
 function recordChar(k,ok){const x=g(k);if(ok){if(!x.r)dayState().fresh++;x.r++;x.d=1;schedule("c:"+k)}else{x.w++;x.d=0;addNote("c:"+k)}}
@@ -511,7 +476,6 @@ const keyOf=d=>d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
 function dayKey(){return keyOf(new Date())}
 function recordPractice(){const key=dayKey();S.daily[key]=(S.daily[key]||0)+1}
 
-/* ---------- 오늘의 작은 목표: 날마다 3개, 달성하면 XP ---------- */
 const MISSIONS={
   solve:{t:"문제 10개 풀기",need:10,xp:20,v:d=>d.solved},
   right:{t:"정답 15개 맞히기",need:15,xp:30,v:d=>d.right},
@@ -523,7 +487,6 @@ const MISSIONS={
   note:{t:"오답노트 문제 3개 다시 맞히기",need:3,xp:20,v:d=>d.note},
   review:{t:"오늘의 복습 끝내기",need:1,xp:30,v:d=>d.review}
 };
-// 오늘의 목표 3개: "문제 10개 풀기"는 늘 있고, 복습할 게 있으면 복습, 나머지는 날짜로 정해지는 랜덤
 function dayState(){
   const t=today();
   if(!S.day||S.day.id!==t){
@@ -553,7 +516,6 @@ function renderMissions(){
       <div><b>${done===d.m.length?"오늘 목표를 모두 달성했어요!":`목표 ${d.m.length}개 중 ${done}개 달성`}</b><p>달성할 때마다 XP를 받아요</p></div></div>
     <ul class="missions">${d.m.map(id=>{const M=MISSIONS[id],v=Math.min(M.v(d),M.need),ok=!!d.got[id];
       return `<li class="${ok?"done":""}"><div class="ms-top"><span>${ok?"✓ ":""}${M.t}</span><em>+${M.xp} XP</em></div><div class="bar"><i style="width:${v/M.need*100}%"></i></div><small>${v} / ${M.need}</small></li>`}).join("")}</ul>`;
-  // 화면이 좁으면 오른쪽 칸이 맨 아래로 내려가서, 홈에도 같은 목표 카드를 보여 준다 (넓으면 CSS로 숨김)
   if($("home-goal"))$("home-goal").innerHTML=$("goal-card").innerHTML;
 }
 function refreshSummary(){
@@ -568,17 +530,15 @@ function refreshSummary(){
   $("continue").title=lastPlace();
 }
 
-// PC에서는 1~4(보기 번호) 키로 답을 고르고, Enter로 다음 문제 (다음 버튼에 자동으로 초점이 가 있음)
 let curMc=null;
 document.addEventListener("keydown",e=>{
   if(!curMc||e.ctrlKey||e.metaKey||e.altKey||e.repeat)return;
   const t=e.target;if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.isContentEditable))return;
   if(document.querySelector("dialog[open]"))return;
   const n=Number(e.key);
-  if(!(n>=1&&n<=curMc.bs.length)||curMc.isDone()||!document.body.contains(curMc.el)||!curMc.el.offsetParent)return;
+  if(!(n>=1&&n<=curMc.bs.length)||curMc.isDone()||!curMc.bs[0].isConnected||!curMc.el.offsetParent)return;
   e.preventDefault();curMc.bs[n-1].click();
 });
-// 객관식 문제 하나 그리기
 function mc(el,o){
   el.innerHTML=`${o.head||""}<div class="q">${o.prompt}</div><div class="big ${o.bigCls||""}">${o.big}</div>
     <div class="choices ${o.chCls||""}">${o.choices.map((c,i)=>`<button data-i="${i}">${c}</button>`).join("")}</div>
@@ -590,7 +550,6 @@ function mc(el,o){
     const i=+b.dataset.i,ok=i===o.correct;
     bs.forEach((x,j)=>{x.disabled=true;if(j===o.correct)x.classList.add("right");else if(j===i)x.classList.add("wrong")});
     el.querySelector(".fb").classList.add(ok?"feedback-correct":"feedback-wrong");
-    // 결과 문구 앞의 "정답!/아쉬워요."는 제목과 겹쳐서 뺀다
     el.querySelector(".fb").innerHTML=(ok?`<strong>✓ 잘했어요! +${XP_RIGHT} XP</strong> `:"<strong>다시 배우는 기회예요.</strong> ")+o.onPick(ok,i).replace(/^(정답!|아쉬워요\.) /,"");
     afterAnswer(ok,o);
     const nb=document.createElement("button");nb.className="next";nb.textContent=o.nextLabel||"다음 문제";nb.onclick=o.onNext;
@@ -598,7 +557,6 @@ function mc(el,o){
   });
 }
 
-/* ---------- 표 ---------- */
 let kataMode=false;
 const level=k=>{const c=S.c[k];if(!c)return"";if(c.d)return c.w>0?"l-mid":"l-ok";return c.w>0?"l-bad":""};
 function renderTable(){
@@ -625,21 +583,17 @@ function renderTable(){
   });
 }
 
-/* ---------- 글자 퀴즈: 히라가나/가타카나 선택, 카테고리 3개, あ행부터 한 행씩, 행 안에서는 랜덤으로 한 번씩 ---------- */
 const SCRIPTS={h:{name:"히라가나",rows:ROWS,all:ALL},k:{name:"가타카나",rows:ROWS_K,all:ALL_K}};
 const catChars=(s,n)=>SCRIPTS[s].all.filter(c=>c.stage===n);
 const rowOf=c=>[...ROWS,...ROWS_K].find(r=>r.cells.includes(c));
 const rowName=r=>r.cells[0].sp?"촉음·장음":r.cells[0].k+"행";
 const RETRY_GAP=3; // 틀린 글자는 3문제 뒤에 다시
-// 문제 방향은 따로 고른다: fwd 글자 → 발음, rev 발음 → 글자, ear 소리 듣고 → 글자 (진도도 따로 센다)
 let qMode="fwd";
 const gr=k=>S.cr[k]||(S.cr[k]={r:0,w:0,d:0});
 const ga=k=>S.ca[k]||(S.ca[k]={r:0,w:0,d:0});
 const modeRec=m=>m==="ear"?S.ca:m==="rev"?S.cr:S.c;
 const cdm=(k,m=qMode)=>m==="fwd"?cd(k):!!(modeRec(m)[k]&&modeRec(m)[k].d);
-// 발음 → 글자, 소리 → 글자에서는 촉음·장음(예시 단어로 읽는 문제)은 뺀다
 const modeChars=(s,n,m=qMode)=>catChars(s,n).filter(c=>m==="fwd"||!c.sp);
-// 소리 문제: 브라우저의 일본어 음성으로 읽어 준다. 일본어 음성이 없는 기기도 있어서 미리 확인한다
 const SPK='<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
 function jaVoice(){
   if(!("speechSynthesis" in window))return "none";
@@ -647,32 +601,24 @@ function jaVoice(){
   return v.some(x=>/^ja/i.test(x.lang))?"ok":"none";
 }
 try{speechSynthesis.onvoiceschanged=()=>{if(qMode==="ear"&&tab===2)renderCharQuiz()}}catch(e){}
-// 소리 문제의 "다시 듣기" 버튼을 연결하고, 처음 한 번은 바로 들려준다
 function bindEar(el,say){const b=el.querySelector(".ear-btn");if(!b)return;b.onclick=()=>speak(say);setTimeout(()=>speak(say),250)}
 const firstOpenCat=s=>[1,2,3].find(n=>modeChars(s,n).some(c=>!cdm(c.k)))||1;
 let qScript="h",qStage=firstOpenCat("h"),cq=null;
-// 풀던 글자 퀴즈가 있으면 그 글자 종류·카테고리·방향으로 연다 (문제 순서는 startStage가 이어 붙인다)
 try{const v=JSON.parse(localStorage.getItem("harukana-qsess"));if(v&&(v.s==="h"||v.s==="k")&&[1,2,3].includes(v.n)&&["fwd","rev","ear"].includes(v.m)&&Date.now()-v.t<7*864e5){qScript=v.s;qStage=v.n;qMode=v.m}}catch(e){}
-// 카테고리 전체를 행 구분 없이 섞어서 한 번씩 (순서대로 나오면 외우기보다 흐름으로 맞히게 돼서)
 function startStage(n,all){
   qStage=n;setLast({t:"char",s:qScript,n,m:qMode});cfq=null;
-  // 이미 만난 글자는 섞어서 먼저, 처음 보는 글자는 한 행씩(あ행 → か행 …) 뒤에 붙인다.
-  // 처음 보는 행에 닿으면 퀴즈 전에 "새 글자 만나기" 카드로 먼저 보여 준다
   const ks=modeChars(qScript,n).filter(c=>all||!cdm(c.k)).map(c=>c.k);
-  // 풀던 퀴즈(같은 글자 종류·카테고리·방향)가 남아 있으면 그 문제부터 이어서 (탭을 옮기거나 새로고침해도)
   const sv=loadQSess();
-  if(!all&&sv&&sv.s===qScript&&sv.n===n&&sv.m===qMode&&Array.isArray(sv.queue)&&sv.queue.length&&sv.queue.every(k=>ks.includes(k))){cq={queue:sv.queue};return}
+  const every=modeChars(qScript,n).map(c=>c.k); // "처음부터 다시"로 푸는 중이면 이미 맞힌 글자도 들어 있다
+  if(!all&&sv&&sv.s===qScript&&sv.n===n&&sv.m===qMode&&Array.isArray(sv.queue)&&sv.queue.length&&sv.queue.every(k=>(sv.all?every:ks).includes(k))){cq={queue:sv.queue,all:!!sv.all};return}
   const known=ks.filter(introduced),fresh=ks.filter(k=>!introduced(k)),rows={};
   for(const k of fresh){const i=rowIndex(k);(rows[i]=rows[i]||[]).push(k)}
-  cq={queue:[...shuffle(known),...Object.keys(rows).sort((a,b)=>a-b).flatMap(i=>shuffle(rows[i]))]};
+  cq={queue:[...shuffle(known),...Object.keys(rows).sort((a,b)=>a-b).flatMap(i=>shuffle(rows[i]))],all:!!all};
   saveQSess();
 }
-// 풀던 퀴즈의 위치 저장 (이 기기에만. 맞히고 틀린 기록은 답을 고를 때마다 이미 저장된다)
 const QSESS="harukana-qsess",WSESS="harukana-wsess";
-function saveQSess(){try{if(cq)localStorage.setItem(QSESS,JSON.stringify({s:qScript,n:qStage,m:qMode,queue:cq.queue,t:Date.now()}))}catch(e){}}
+function saveQSess(){try{if(cq)localStorage.setItem(QSESS,JSON.stringify({s:qScript,n:qStage,m:qMode,queue:cq.queue,all:!!cq.all,t:Date.now()}))}catch(e){}}
 function loadQSess(){try{const v=JSON.parse(localStorage.getItem(QSESS));return v&&Date.now()-v.t<7*864e5?v:null}catch(e){return null}}
-/* 외우는 요령: 글자 모양을 그림이나 소리와 엮은 한 줄 (기본 46자씩).
-   새 글자 만나기 카드, 문자 도감(누르면 아래에 표시), 글자 퀴즈에서 틀렸을 때 보여 준다 */
 const HINTS={
   "あ":"십자 아래 둥근 몸 — '아!' 하고 놀란 사람","い":"나란히 선 두 줄 — 숫자 이(2)","う":"머리에 점 하나, 웅크린 '우'",
   "え":"점 아래로 지그재그 — '에'너지 넘치는 춤","お":"あ와 닮았지만 오른쪽 위에 점 — '오!' 하고 손든 모양",
@@ -711,10 +657,8 @@ const HINTS={
   "レ":"체크 표시(✓) '레'","ロ":"네모 = 입 구(口) '로'",
   "ワ":"ウ에서 점이 빠진 '와'","ヲ":"조사 '을/를'에만 쓰는 '오'","ン":"점이 왼쪽, 획이 아래에서 위로 '응'"
 };
-// 한 번이라도 본(배운) 글자: "새 글자 만나기"로 봤거나, 어느 방향으로든 풀어 본 글자
 const introduced=k=>!!(S.seen[k]||S.c[k]||S.cr[k]||S.ca[k]);
 const rowIndex=k=>{const c=CH[k];return (c&&c.kata?ROWS_K:ROWS).findIndex(r=>r.cells.some(x=>x&&x.k===k))};
-// 새 글자 만나기: 이번에 처음 보는 행의 글자를 한꺼번에 보여 주고, 눌러서 소리를 들어 본 뒤 퀴즈로 간다
 function renderLearn(keys){
   const row=(CH[keys[0]].kata?ROWS_K:ROWS)[rowIndex(keys[0])];
   if(row){const pos=k=>row.cells.findIndex(x=>x&&x.k===k);keys=keys.slice().sort((a,b)=>pos(a)-pos(b))} // 배울 때는 あいうえお 순서대로
@@ -735,10 +679,8 @@ function renderLearn(keys){
 }
 function setScript(s){qScript=s;startStage(firstOpenCat(s));renderStageBar();renderCharQuiz()}
 function setMode(m){qMode=m;startStage(qStage);renderStageBar();renderCharQuiz()}
-// 첫 카테고리(기본 46자)는 글자 이름(히라가나/가타카나)으로 보여준다
 const catLabel=(n,s=qScript)=>n===1?SCRIPTS[s].name:QCATS[n-1];
 
-// 글자 하나에 대한 문제 만들기 (글자 퀴즈·오답노트·복습이 같이 씀). mode "rev"면 발음 → 글자
 function charQ(c,mode){
   if(c.sp){
     const ex=rand(c.ex),ch=shuffle([ex[1],...ex[2]]);
@@ -752,7 +694,6 @@ function charQ(c,mode){
   }
   const opts=shuffle([c,...others]);
   const fb=ok=>`${ok?"정답!":"아쉬워요."} ${c.k} = ${c.h} (${c.r})${ok?"":`<span class="tip">${HINTS[c.k]?`외우는 요령: ${HINTS[c.k]} · `:""}조금 뒤에 다시 나와요.</span>`}`;
-  // 발음 → 글자, 소리 → 글자: 보기에는 발음이 같은 글자(じ/ぢ 등)를 넣지 않아서 답이 하나로 정해진다
   const keys=opts.map(x=>x.k); // 틀렸을 때 어떤 글자와 헷갈렸는지 기록하는 데 씀
   if(mode==="ear")
     return{prompt:"소리를 듣고 글자를 고르세요",big:`<button class="ear-btn" type="button" aria-label="소리 다시 듣기">${SPK}<span>다시 듣기</span></button>`,bigCls:"ear",choices:keys,chCls:"kana",correct:opts.indexOf(c),say:c.k,fb,kind:"char",kata:!!c.kata,ear:1,keys};
@@ -770,7 +711,6 @@ function renderStageBar(){
     return `<button class="chip${n===qStage?" on":""}" data-n="${n}">${catLabel(n)}<small>${m}/${all.length}</small></button>`}).join("");
   $("stagebar").querySelectorAll("button").forEach(b=>b.onclick=()=>{startStage(+b.dataset.n);renderStageBar();renderCharQuiz()});
 }
-// 문제 위 상태 줄: 히라가나 · (탁음·반탁음) · 맞힌 글자 · 남은 문제 + 오른쪽 끝에 이 카테고리(이 방향) 초기화
 function quizStatus(n,extra){
   const all=modeChars(qScript,n),m=all.filter(x=>cdm(x.k)).length;
   const parts=[SCRIPTS[qScript].name,...(n>1?[QCATS[n-1]]:[]),...(qMode!=="fwd"?[MODE_NAMES[qMode]]:[]),...(extra||[`맞힌 글자 ${m}/${all.length}`,`남은 문제 ${cq.queue.length}`])];
@@ -788,7 +728,6 @@ function renderCharQuiz(){
     if($("nextst"))$("nextst").onclick=()=>{startStage(n+1);renderStageBar();renderCharQuiz()};
     return;
   }
-  // 처음 보는 글자면, 그 행에서 아직 안 본 글자를 모아 먼저 보여 준다 (배우기 전에 찍게 하지 않도록)
   if(!introduced(cq.queue[0])){const ri=rowIndex(cq.queue[0]);return renderLearn(cq.queue.filter((k,i,a)=>!introduced(k)&&rowIndex(k)===ri&&a.indexOf(k)===i))}
   const key=cq.queue[0],c=CH[key],q=charQ(c,qMode),rec=modeRec(qMode)[key],retry=(rec||{}).w>0&&!cdm(key);
   mc($("quiz"),{...q,
@@ -799,7 +738,6 @@ function renderCharQuiz(){
       else recordChar(key,ok);
       if(!ok&&q.keys)addConfusion(key,q.keys[picked]);
       speak(q.say);
-      // 틀린 글자는 최소 3문제 뒤, 그 뒤 아무 곳에나 랜덤으로 다시 넣는다
       cq.queue.shift();if(!ok){const from=Math.min(RETRY_GAP,cq.queue.length);cq.queue.splice(from+Math.floor(Math.random()*(cq.queue.length-from+1)),0,key)}
       saveQSess(); // 다음 문제로 넘어가기 전에 떠나도, 돌아오면 다음 문제부터
       save();refreshSummary();renderStageBar();
@@ -812,9 +750,6 @@ function renderCharQuiz(){
 $("qh").onclick=()=>setScript("h");$("qk").onclick=()=>setScript("k");
 $("qm-fwd").onclick=()=>setMode("fwd");$("qm-rev").onclick=()=>setMode("rev");$("qm-ear").onclick=()=>setMode("ear");
 
-/* ---------- 헷갈리는 글자 연습 ----------
-   글자 퀴즈에서 틀리면 "어떤 글자와 헷갈렸는지"를 S.cf에 센다 (예: {"シ|ツ": 3}).
-   내가 자주 헷갈린 짝 + 많이들 헷갈리는 모양 비슷한 글자를 나란히 놓고, 그 글자들끼리만 보기로 10문제 */
 const CONF_SETS=[
   {s:"k",ks:["シ","ツ"],tip:"シ는 점 두 개가 왼쪽에 세로로 놓이고 마지막 획이 아래에서 위로 올라가요. ツ는 점이 위에 가로로 놓이고 마지막 획이 위에서 아래로 내려와요."},
   {s:"k",ks:["ソ","ン"],tip:"ソ는 두 획이 모두 위에서 아래로 내려와요. ン은 점이 왼쪽 위에 있고 긴 획이 아래에서 위로 올라가요."},
@@ -838,10 +773,8 @@ const pairKey=(a,b)=>[a,b].sort().join("|");
 function addConfusion(a,b){if(!a||!b||a===b||!CH[a]||!CH[b])return;const k=pairKey(a,b);S.cf[k]=(S.cf[k]||0)+1}
 const scriptOfKey=k=>CH[k]&&CH[k].kata?"k":"h";
 const confTip=ks=>(CONF_SETS.find(x=>ks.every(k=>x.ks.includes(k)))||{}).tip||"";
-// 연습할 묶음: 내가 헷갈린 짝(많이 헷갈린 순, 6개까지) + 이미 풀어 본 글자로 된 흔한 묶음
 function confSets(s){
   const seen=k=>!!(S.c[k]||S.cr[k]||S.ca[k]);
-  // 한 번 잘못 누른 건 실수일 수 있어서, 두 번 이상 헷갈린 짝만 "내가 헷갈린 짝"으로 본다
   const mine=Object.entries(S.cf).filter(([,n])=>n>=2).map(([k,n])=>({ks:k.split("|"),n}))
     .filter(x=>x.ks.length===2&&x.ks.every(k=>CH[k]&&!CH[k].sp&&scriptOfKey(k)===s)).sort((a,b)=>b.n-a.n).slice(0,6);
   const common=CONF_SETS.filter(x=>x.s===s&&x.ks.every(seen)&&!mine.some(m=>x.ks.length===2&&pairKey(...x.ks)===pairKey(...m.ks)));
@@ -883,7 +816,6 @@ function renderConf(){
   mc(el,{...q,correct:opts.indexOf(c.k),say:c.k,kind:"char",kata:!!c.kata,
     head:`<div class="status qstat"><span>헷갈리는 글자 연습 · ${no}/10</span><button class="link" id="cf-quit">그만하기</button></div>`,
     onPick(ok,i){
-      // 맞히면 그 짝의 헷갈림 횟수를 하나 줄이고, 틀리면 늘린다
       if(ok){cfq.right++;for(const k of it.ks)if(k!==c.k){const p=pairKey(c.k,k);if(S.cf[p])S.cf[p]=Math.max(0,S.cf[p]-1)}}
       else addConfusion(c.k,opts[i]);
       speak(c.k);cfq.queue.shift();save();
@@ -894,12 +826,9 @@ function renderConf(){
   $("cf-quit").onclick=()=>{cfq=null;renderCharQuiz();renderConfTools()};
 }
 
-/* ---------- 단어 학습: 히라가나·가타카나·섞어 쓰기, 종류마다 첫 카테고리 열림, 끝내면 다음 카테고리 ---------- */
-// 섞어 쓰기는 히라가나·가타카나 카테고리 6개 중 2개를 끝내면 열린다
 const WSCRIPTS={h:"히라가나",k:"가타카나",m:"섞어 쓰기"};
 const MIX_NEED=2;
 let wv={view:"list",script:"h"};
-// 풀던 단어 카드·퀴즈가 있으면 그 자리부터 (새로고침해도)
 try{const v=JSON.parse(localStorage.getItem("harukana-wsess"));if(v&&(v.view==="card"||v.view==="quiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)){delete v.t;const byId=x=>WORDS.find(w=>w.id===(x&&x.id));v.batch=v.batch.map(byId).filter(Boolean);if(v.queue)v.queue=v.queue.map(byId).filter(Boolean);if(v.batch.length)wv={...v,wrong:new Set(v.wrong||[])}}}catch(e){}
 function saveWSess(){try{if(wv.view==="card"||wv.view==="quiz")localStorage.setItem("harukana-wsess",JSON.stringify({...wv,wrong:[...(wv.wrong||[])],t:Date.now()}));else localStorage.removeItem("harukana-wsess")}catch(e){}}
 const catWords=id=>WORDS.filter(w=>w.category===id);
@@ -907,18 +836,12 @@ const scriptCats=s=>CATS.filter(c=>c.script===s);
 const catDone=id=>catWords(id).every(w=>wd(w.id));
 const doneHK=()=>CATS.filter(c=>c.script!=="m"&&catDone(c.id)).length;
 const scriptOpen=s=>s!=="m"||!!S.mix;
-// 히라가나·가타카나 카테고리는 모두 열려 있고, 섞어 쓰기만 조건을 채우면 열린다
 const catOpen=c=>scriptOpen(c.script);
-// 받침 있으면 a(이/을), 없으면 b(가/를)
 const josa=(s,a,b)=>{const c=s.charCodeAt(s.length-1)-0xAC00;return s+(c>=0&&c<11172&&c%28?a:b)};
-// 이번 묶음 후보: 아직 못 맞힌 단어, 한국어와 비슷한 단어 먼저
-// 단어 문제 방향도 따로: fwd 일본어 → 뜻, rev 뜻 → 일본어 (진도도 따로 센다)
 let wMode="fwd";
 const WMODE_NAMES={fwd:"일본어 → 뜻",rev:"뜻 → 일본어"};
 const wdm=(id,m=wMode)=>m==="rev"?!!(S.wr[id]&&S.wr[id].d):wd(id);
 const modeTag=()=>wMode==="rev"?` · ${WMODE_NAMES.rev}`:"";
-// 단어 속에서 아직 만나지 않은 STEP 02·03 글자 (탁음·반탁음, 요음, 촉음). 작은 ゃゅょ는 앞 글자와 합친 요음으로 본다.
-// 기본 46자는 단어 공부의 출발점이라 표시하지 않고, 장음(ああ)은 읽는 규칙이라 뺀다
 function wordUnknown(w){
   const s=[...w.kana],out=[];
   for(let i=0;i<s.length;i++){
@@ -929,7 +852,6 @@ function wordUnknown(w){
   return out;
 }
 const STEP_NAMES={1:"STEP 01 기본 글자",2:"STEP 02 탁음·반탁음",3:"STEP 03 촉음·요음·장음"};
-// 단어 카드에 붙이는 안내: 처음 보는 글자와, 그 글자를 배우는 단계
 function unknownNote(w){
   const u=wordUnknown(w);if(!u.length)return "";
   const steps=[...new Set(u.map(k=>CH[k].stage))].sort().map(n=>STEP_NAMES[n]).join(", ");
@@ -937,9 +859,7 @@ function unknownNote(w){
   const tsu=u.some(k=>k==="っ"||k==="ッ")?" 작은 っ는 받침 ㅅ처럼 한 박자 멈춰요.":"";
   return `<p class="tip wnew-tip">처음 보는 글자: <b>${u.map(k=>CH[k].disp||k).join(" ")}</b> · 글자 퀴즈 ${steps}에서 배워요.${small}${tsu}</p>`;
 }
-// 이번 묶음 순서: 지금 읽을 수 있는 단어 먼저, 그다음 한국어와 소리가 비슷한 단어
 const batchCands=id=>catWords(id).filter(w=>!wdm(w.id)).sort((a,b)=>wordUnknown(a).length-wordUnknown(b).length||(b.koreanSimilar?1:0)-(a.koreanSimilar?1:0));
-// 단어를 맞혔을 때: 히라가나·가타카나 카테고리 2개를 끝냈으면 섞어 쓰기를 연다
 function checkUnlocks(){
   const opened=[];
   if(!S.mix&&doneHK()>=MIX_NEED){S.mix=1;opened.push("섞어 쓰기 단어")}
@@ -950,14 +870,11 @@ function wordQ(w,mode){
   const used=new Set([w.meaning]),picks=[];
   for(const x of pool){if(used.has(x.meaning)||x.kana===w.kana)continue;used.add(x.meaning);picks.push(x);if(picks.length===3)break}
   const opts=shuffle([w,...picks]),fb=ok=>`${ok?"정답!":"아쉬워요."} ${w.kana} (${w.hangul}) = ${w.meaning}`;
-  // mode "rev": 뜻 → 일본어
   if(mode==="rev")
     return{prompt:"이 뜻의 일본어는?",big:w.meaning,bigCls:"word",chCls:"text kana",choices:opts.map(x=>x.kana),correct:opts.indexOf(w),say:w.kana,fb,kind:"word",rev:1};
   return{prompt:"이 단어의 뜻은?",big:w.kana,bigCls:"word",chCls:"text",choices:opts.map(x=>x.meaning),correct:opts.indexOf(w),say:w.kana,fb,kind:"word"};
 }
-// 남은 단어를 카테고리 통째로 한 번에 (끊어서 하면 마지막에 2개만 남는 묶음이 생겨서)
 const startCards=cat=>{const batch=batchCands(cat);wv={view:"card",cat,batch,i:0}};
-// 카드·퀴즈 도중에 나가기 (맞힌 단어는 이미 저장돼 있다)
 const exitBtn=`<div style="text-align:left"><button class="back" id="wexit">← 그만하고 나가기</button></div>`;
 const startQuiz=(cat,list,batch)=>{wv={view:"quiz",cat,batch:batch||[],queue:shuffle(list),total:list.length,wrong:new Set(),opened:[]}};
 const catOf=id=>CATS.find(c=>c.id===id);
@@ -982,7 +899,6 @@ function renderWords(){
           <div class="desc">${open?c.desc:`${josa(cats[i-1].name,"을","를")} 끝내면 열려요`}</div><div class="bar"><i style="width:${ws.length?mw/ws.length*100:0}%"></i></div>
           <div class="meta">맞힌 단어 ${mw}/${ws.length}${(()=>{const n=ws.filter(w=>!wdm(w.id)&&wordUnknown(w).length).length;return open&&n?` · 처음 보는 글자가 든 단어 ${n}개`:""})()}</div></button>`}).join("")}</div>`;
     }
-    // 열린 카테고리마다 따로 초기화 (이미 열린 다음 카테고리는 그대로 열려 있다)
     el.innerHTML=seg+body;
     el.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{wv={view:"list",script:b.dataset.s};renderWords()});
     el.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{wMode=b.dataset.wm;renderWords()});
@@ -1057,7 +973,6 @@ function renderWords(){
   }
 }
 
-/* ---------- 오답노트: 한 번 맞히면 노트에서 빠짐 ---------- */
 let nq=null;
 function noteItem(key){
   const [t,id]=[key.slice(0,1),key.slice(2)];
@@ -1094,11 +1009,9 @@ function renderNoteQuiz(){
   $("nstop").onclick=()=>{nq=null;renderNote()};
 }
 
-/* ---------- 보상: XP·레벨·연속 학습·배지 ---------- */
 const XP_RIGHT=10,XP_BADGE=30,XP_PER_LEVEL=100;
 const lvOf=xp=>Math.floor(xp/XP_PER_LEVEL)+1;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-// 오늘(또는 어제)까지 하루도 빠지지 않고 공부한 날 수
 function streak(){let n=0;const d=new Date();if(!S.daily[keyOf(d)])d.setDate(d.getDate()-1);while(S.daily[keyOf(d)]){n++;d.setDate(d.getDate()-1)}return n}
 const allCd=list=>list.every(c=>cd(c.k));
 const BADGES=[
@@ -1120,9 +1033,6 @@ function checkBadges(){
   BADGES.forEach(([id,name,,,test])=>{if(!S.badges[id]&&test()){S.badges[id]=Date.now();addXp(XP_BADGE);got.push(name)}});
   if(got.length)notifyText(`배지를 받았어요: ${got.join(", ")} (+${XP_BADGE*got.length} XP)`);
 }
-// 문제 하나를 풀 때마다: XP, 배지, 저장, 랭킹 기록
-// 이번 주 리그: 월요일마다 새로 센다
-// 주 번호: 한국 시간 월요일 0시에 바뀐다 (1970-01-01이 목요일이라 +3). 보안 규칙도 같은 계산으로 지난 주 기록을 잠근다
 const KST=9*3600e3,DAYMS=864e5;
 const weekNum=(ms=Date.now())=>Math.floor(((ms+KST)/DAYMS+3)/7);
 const weekStart=wn=>(wn*7-3)*DAYMS-KST;
@@ -1131,17 +1041,10 @@ const weekXp=()=>S.wk.id===weekId()?S.wk.xp:0;
 function addXp(n){S.xp+=n;const w=weekId();if(S.wk.id!==w)S.wk={id:w,xp:0};S.wk.xp+=n}
 function afterAnswer(ok,o){if(ok)addXp(XP_RIGHT);trackAnswer(ok,o||{});updateTitles();checkBadges();save();refreshSummary();syncScore();if(tab===5)renderRank()}
 
-/* ---------- 랭킹 ----------
-   claude.ai 안에서 열면 claude.ai 저장 공간, 그 밖(GitHub Pages 등)에서는 Firebase(무료 Spark 요금제)에 저장한다.
-   - scores/<내 id>: 전체 랭킹용 (전체 XP)
-   - weeks/<주 번호>/players/<내 id>: 주간 리그용. 주가 끝나면 보안 규칙이 쓰기를 막아서 지난주 순위가 그대로 남는다
-   Firebase 설정값은 공개되어도 괜찮다: 쓰기는 보안 규칙이 막는다 (자기 익명 ID 문서만, 값 상한 있음) */
 const TOP_N=50;
 const WEEK_REWARDS=[3000,2500,2000,1600,1300,1000,800,600,400,200]; // 주간 리그 1~10등 보상 XP
 const rk={db:null,fb:null,user:null,me:null,canWrite:null,blocked:false,state:"loading",rows:null,weekRows:null,lastRows:null,myLast:null,myRank:{all:null,week:null,last:null},names:{},timer:0,last:"",busy:false,count:{week:null,last:null},banned:null,nickN:0,nickKey:null};
 const FB_CONFIG={apiKey:"AIzaSyDxJXq2AXCmTzJ-czbHEO5fKhrvn9NjKmg",authDomain:"harukana-74b43.firebaseapp.com",projectId:"harukana-74b43",storageBucket:"harukana-74b43.firebasestorage.app",messagingSenderId:"235663999566",appId:"1:235663999566:web:18e65cb4ee65b2c37c391f"};
-// GitHub 사이트에서는 Firebase 라이브러리 없이 일반 웹 요청(REST)만 쓴다.
-// 모바일 통신망·브라우저에 따라 라이브러리의 연결/로그인이 멈추는 일이 있어서, 읽기·로그인·쓰기를 모두 REST로 한다
 const REST_BASE=`https://firestore.googleapis.com/v1/projects/${FB_CONFIG.projectId}/databases/(default)/documents`;
 const restVal=v=>v.stringValue??(v.integerValue!=null?Number(v.integerValue):v.timestampValue!=null?Date.parse(v.timestampValue):v.doubleValue??v.booleanValue??null);
 const toFields=o=>{const f={};for(const k in o){const v=o[k];f[k]=typeof v==="number"?{integerValue:String(Math.round(v))}:{stringValue:String(v)}}return{fields:f}};
@@ -1152,7 +1055,6 @@ async function restTop(parent,collectionId,field){
   if(!r.ok)throw new Error("REST "+r.status);
   return (await r.json()).filter(x=>x.document).map(x=>docOf(x.document));
 }
-// 나보다 점수가 높은 사람 수 (상위 50명 밖일 때 내 순위 계산용)
 async function restCountAbove(parent,collectionId,field,v){
   const r=await fetch(`${REST_BASE}${parent}:runAggregationQuery?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{...await authHeader(),"Content-Type":"application/json"},
     body:JSON.stringify({structuredAggregationQuery:{structuredQuery:{from:[{collectionId}],where:{fieldFilter:{field:{fieldPath:field},op:"GREATER_THAN",value:{integerValue:String(v)}}}},aggregations:[{alias:"n",count:{}}]}})});
@@ -1165,8 +1067,6 @@ async function restGet(path){
   return docOf(await r.json());
 }
 
-/* 익명 로그인 (REST). 기기마다 익명 ID 하나: 갱신 토큰을 이 기기에 저장해 두고 다시 쓴다.
-   예전 버전(Firebase 라이브러리)이 만든 ID가 있으면 그대로 이어 쓴다 → 기존 랭킹 기록이 두 개로 갈라지지 않는다 */
 const AUTH_KEY="harukana-auth";
 function sdkStoredUser(){
   return new Promise(res=>{
@@ -1190,7 +1090,6 @@ async function restAuth(){
   if(a&&a.refreshToken){
     const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(a.refreshToken)});
     if(r.ok){const j=await r.json();return keep({uid:j.user_id,refreshToken:j.refresh_token,idToken:j.id_token,exp:Date.now()+(Number(j.expires_in)-120)*1000})}
-    // Google로 로그인한 사람의 로그인이 풀렸다(계정 삭제·만료 등). 익명 ID를 새로 만들면 기록이 엉뚱한 곳에 저장되므로 로그아웃 상태로 돌린다
     if(S.account){if(r.status>=400&&r.status<500)sessionLost();throw new Error("로그인 갱신 실패 "+r.status)}
   }
   if(S.account){sessionLost();throw new Error("로그인 정보가 없어요")}
@@ -1198,7 +1097,6 @@ async function restAuth(){
   if(!r.ok)throw new Error("익명 로그인 실패 "+r.status);
   const j=await r.json();return keep({uid:j.localId,refreshToken:j.refreshToken,idToken:j.idToken,exp:Date.now()+(Number(j.expiresIn)-120)*1000});
 }
-// 로그인이 풀렸을 때: 이 기기의 기록은 그대로 두고 로그아웃 상태로 돌려 다시 로그인하게 한다
 function sessionLost(){
   if(!S.account)return;
   S.account=null;save();
@@ -1212,7 +1110,6 @@ async function authHeader(){
   if(!rk.auth||Date.now()>rk.auth.exp){rk.auth=await restAuth();rk.me=rk.auth.uid}
   return{"Authorization":"Bearer "+rk.auth.idToken,...await appCheckHeader()};
 }
-// 로그인이 필요한 쓰기/지우기 (토큰이 만료됐으면 한 번 새로 받아서 다시 시도)
 async function restWrite(method,path,body,keepalive){
   for(let i=0;i<2;i++){
     const r=await fetch(`${REST_BASE}/${path}`,{method,keepalive:!!keepalive,headers:{...await authHeader(),"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
@@ -1222,11 +1119,6 @@ async function restWrite(method,path,body,keepalive){
   }
 }
 
-/* 무료 요금제 읽기 한도(하루 5만 건)를 아끼는 규칙
-   - 랭킹은 프로필 탭을 열었을 때, 보고 있는 종류(이번 주·지난주·전체)만 받아 온다. 공부하는 동안엔 읽지 않는다
-   - 같은 랭킹은 20초 안에 다시 받지 않는다. 프로필 탭을 보고 있으면 60초마다 새로 받는다
-   - 지난주 리그는 바뀌지 않으니 한 주에 한 번만 받는다
-   - 내 순위·지난주 보상은 50명을 받지 않고 "나보다 높은 사람 수"만 센다 (1건) */
 const RANK_CACHE="harukana-rank-cache";
 const BOARD_SRC={all:["","scores","xp","rows"],week:[null,"players","weekXp","weekRows"],last:[null,"players","weekXp","lastRows"]};
 const boardParent=m=>m==="all"?"":`/weeks/${m==="week"?rk.wn:rk.wn-1}`;
@@ -1238,7 +1130,6 @@ function loadRankCache(){
 function saveRankCache(){
   try{localStorage.setItem(RANK_CACHE,JSON.stringify({wn:rk.wn,me:rk.me,rows:rk.rows,weekRows:rk.weekRows,lastRows:rk.lastRows}))}catch(e){}
 }
-// 화면 다시 그리기는 한 프레임에 한 번만
 let rankFrame=0;
 function scheduleRank(){if(tab!==5||rankFrame)return;rankFrame=requestAnimationFrame(()=>{rankFrame=0;renderRank()})}
 rk.fetchedAt={all:0,week:0,last:0};
@@ -1251,7 +1142,6 @@ async function loadBoard(mode,force){
   const [,col,field,key]=BOARD_SRC[mode];
   try{
     rk[key]=await restTop(boardParent(mode),col,field);
-    // 리그는 참가자 수도 센다 (보상 크기를 정하는 데 씀, 읽기 1건)
     if(mode!=="all")rk.count[mode]=rk[key].length<TOP_N?rk[key].length:await restCountAbove(boardParent(mode),"players","weekXp",0);
     if(mode==="last")rk.lastFresh=true;
     rk.cached=false;rk.state="ready";saveRankCache();
@@ -1273,23 +1163,17 @@ async function initFirebase(){
   const wn=weekNum();rk.wn=wn;rk.lastWn=wn-1;rk.fb={rest:true};
   loadRankCache();
   if(tab===5)loadBoard(rk.mode);
-  // 프로필 탭을 보고 있는 동안에만 60초마다 새로 받아 온다
-  // 랭킹 50명을 다시 받으면 읽기 50건이라, 다른 사람 순위는 3분마다만 새로 받는다 (내 점수는 아래 patchMyRows로 바로 반영)
   setInterval(()=>{if(tab===5&&!document.hidden)loadBoard(rk.mode,true)},180000);
-  // 로그인하지 않은 사람: 랭킹에 참가하지 않고 내 기록만 본다 (예전에 올라간 익명 기록은 지운다)
   if(!S.account){rk.state="guest";rk.rows=rk.weekRows=rk.lastRows=null;try{localStorage.removeItem(RANK_CACHE)}catch(e){}dropGuestRecords();scheduleRank();return}
   try{rk.auth=await restAuth();rk.me=rk.auth.uid;rk.canWrite=true}catch(e){console.warn("로그인 갱신 실패",e)}
   if(!rk.me){scheduleRank();return}
-  // 로그인한 사람: 계정에 저장된 진도(다른 기기에서 한 것 포함)를 불러와 합친다
   if(await pullProgress())rerenderAll();
   memberInit();
 }
-// 로그인 전 익명으로 랭킹에 올라가 있던 내 기록을 지우고, 익명 ID는 더 쓰지 않는다
 async function dropGuestRecords(){
   let a=null;try{a=JSON.parse(localStorage.getItem(AUTH_KEY))}catch(e){}
   if(!a||!a.refreshToken)return;
   try{
-    // rk.auth는 건드리지 않는다 (그 사이 로그인할 수 있으므로). 새 익명 ID도 만들지 않는다
     const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(a.refreshToken)});
     if(!r.ok){if(!S.account)localStorage.removeItem(AUTH_KEY);return}
     const j=await r.json(),g={uid:j.user_id,idToken:j.id_token},h={Authorization:"Bearer "+g.idToken};
@@ -1297,15 +1181,12 @@ async function dropGuestRecords(){
     if(!S.account)localStorage.removeItem(AUTH_KEY);
   }catch(e){}
 }
-// 로그인한 사람의 랭킹 준비: 내 기록 올리기, 지난주 보상, 오래된 리그 정리
 async function memberInit(){
   const wn=rk.wn;
-  // 제재받은 계정인지 (운영자가 bans/<uid>에 사유를 남김)
-  try{const b=await restGet(`bans/${rk.me}`);rk.banned=b?{reason:b.reason||""}:null;if(b)rk.blocked=true}catch(e){}
+  try{const b=await cachedGet(`bans/${rk.me}`);rk.banned=b?{reason:b.reason||""}:null;if(b)rk.blocked=true}catch(e){}
   await ensureNick();
   syncScore();
   if(tab===5)refreshMine(rk.mode||"week");
-  // 지난주 보상: 내 지난주 기록 1건 + 나보다 높은 사람 수 1건 + 참가자 수 1건만 읽는다
   try{
     const mine=await restGet(`weeks/${wn-1}/players/${rk.me}`);
     if(mine){rk.myLast=mine;rk.myRank.last=(await restCountAbove(boardParent("last"),"players","weekXp",mine.weekXp))+1;
@@ -1315,17 +1196,13 @@ async function memberInit(){
   cleanupOldWeeks();
   scheduleRank();
 }
-// 2주가 지난 주간 리그 기록 지우기: 무료 요금제엔 서버 예약 작업이 없어서, 앱을 연 사람이 하루 한 번 대신 지운다
-// (보안 규칙이 "이번 주·지난주가 아닌 기록"만 아무나 지울 수 있게 허용)
 async function cleanupOldWeeks(){
   try{const k="harukana-cleanup",d=String(Math.floor(Date.now()/DAYMS));if(localStorage.getItem(k)===d)return;localStorage.setItem(k,d)}catch(e){return}
-  // 날마다 누군가 지우므로 남아 있을 수 있는 건 2~3주 전 기록뿐이다 (예전엔 9주를 뒤져 읽기 9건)
   for(let w=rk.wn-2;w>=rk.wn-3;w--){
     try{const rows=await restTop(`/weeks/${w}`,"players","weekXp");
       for(const d of rows){try{await restWrite("DELETE",`weeks/${w}/players/${d.id}`)}catch(e){}}}catch(e){}
   }
 }
-// 랭킹에서 숨기기 / 다시 참가하기
 async function setRankHidden(hide){
   S.rankOff=hide?1:0;S.rank=hide?0:1;save();rk.last="";
   if(hide&&rk.me){
@@ -1339,13 +1216,8 @@ async function setRankHidden(hide){
   notifyText(hide?"랭킹에서 내 기록을 숨겼어요.":"랭킹에 다시 참가했어요.");
   renderRank();
 }
-/* ---------- Google 로그인과 진도 저장 ----------
-   로그인하지 않아도 쓸 수 있지만, 기록은 이 브라우저에만 남는다(브라우저 데이터를 지우면 사라짐).
-   Google로 로그인하면 진도 전체(S)를 users/<uid> 에 저장하고, 다른 기기·브라우저에서 로그인하면 불러와 합친다.
-   Firebase 로그인 라이브러리는 로그인 버튼을 누를 때만 불러온다(평소에는 REST만 써서 가볍게) */
 const AUTH_SDK="https://www.gstatic.com/firebasejs/10.12.2/";
 const IN_APP_BROWSER=/KAKAOTALK|NAVER\(|Instagram|FBAN|FBAV|Line\/|DaumApps/i.test(navigator.userAgent);
-// 두 기기의 진도 합치기: 한쪽에서라도 맞힌 것은 맞힘, 숫자는 큰 쪽, 오답·배지·칭호는 합친다
 function mergeState(L,C){
   const R=JSON.parse(JSON.stringify(L||{}));C=C||{};
   const max=(a,b)=>Math.max(Number(a)||0,Number(b)||0);
@@ -1366,21 +1238,16 @@ function mergeState(L,C){
   const wk=x=>Number((x||{}).id)||0;
   if(C.wk){if(wk(C.wk)>wk(R.wk))R.wk=C.wk;else if(wk(C.wk)===wk(R.wk))R.wk={id:R.wk.id,xp:max(R.wk.xp,C.wk.xp)}}
   if(C.day&&(!R.day||C.day.id>R.day.id||(C.day.id===R.day.id&&(C.day.solved||0)>(R.day.solved||0))))R.day=C.day;
-  // 프로필: 이 기기 닉네임이 자동 가명("학습자1234")이면 계정 쪽 닉네임을 쓴다
   if(C.nick&&(!R.nick||/^학습자\d{4}$/.test(R.nick)))R.nick=C.nick;
   if(!R.avatar&&C.avatar)R.avatar=C.avatar;if(!R.title&&C.title)R.title=C.title;
   return R;
 }
-/* 세 갈래 합치기: 이 기기가 마지막으로 서버와 맞춘 기록(base)을 기억해 두고,
-   base에서 "이 기기만 바꾼 것"과 "다른 기기만 바꾼 것"을 각각 살린다.
-   그래서 한쪽에서 지운 것(초기화·오답노트에서 뺀 것)은 지운 채로 남고, 두 기기에서 따로 번 XP는 더해진다 */
 const SYNC_KEY="harukana-sync";
 const SYNC_MAPS=new Set(["c","w","cr","wr","ca","cf","seen","n","sr","daily","badges","flags","claimed","titles","co"]);
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const isObj=x=>x&&typeof x==="object"&&!Array.isArray(x);
 function pick3(path,b,l,c){
   if(same(l,b))return c;if(same(c,b))return l;if(same(l,c))return l;
-  // 여기부터는 두 기기에서 모두 바뀐 경우
   if(l===undefined)return c;if(c===undefined)return l;
   if(typeof l==="number"&&typeof c==="number")
     return path==="xp"||path.startsWith("daily.")?l+c-(Number(b)||0):Math.max(l,c); // XP·하루 푼 수는 늘어난 만큼 더한다
@@ -1403,7 +1270,6 @@ function merge3(B,L,C){
 const cloudCopy=()=>{const {account,...rest}=S;return rest}; // 이름·이메일(S.account)은 이 기기에만 둔다
 function getSync(){try{const m=JSON.parse(localStorage.getItem(SYNC_KEY));return m&&m.uid===rk.me?m:null}catch(e){return null}}
 function setSync(ut,base){try{localStorage.setItem(SYNC_KEY,JSON.stringify({uid:rk.me,ut,base}))}catch(e){}}
-// 계정의 진도를 받아 이 기기 기록과 합친다. 이 기기 기록이 바뀌었으면 true
 async function pullProgress(){
   if(!S.account||!rk.me)return false;
   try{
@@ -1412,7 +1278,6 @@ async function pullProgress(){
     if(!r.ok)return false;
     const d=await r.json(),cloudStr=d.fields?.s?.stringValue||"null",cloud=JSON.parse(cloudStr),m=getSync();
     let changed=false;
-    // 지난번에 맞춘 뒤로 다른 기기가 올린 게 없으면 합칠 것도 없다
     if(cloud&&!(m&&m.ut===d.updateTime)){
       const acct=S.account,before=JSON.stringify(S);
       S=m&&m.base?merge3(JSON.parse(m.base),cloudCopy(),cloud):mergeState(cloudCopy(),cloud); // 이 기기에서 처음 로그인하면 둘 다 살린다
@@ -1423,8 +1288,6 @@ async function pullProgress(){
   }catch(e){console.warn("진도 불러오기 실패",e)}
   return false;
 }
-// 진도 올리기: 바뀐 게 있을 때만, 1분에 한 번 + 페이지를 떠날 때.
-// 서버 기록이 내가 마지막으로 본 것과 같을 때만 덮어쓴다 (그 사이 다른 기기가 올렸으면 받아 합친 뒤 다시 올림)
 async function pushProgress(leaving,retried){
   if(!S.account||!rk.me)return;
   if(!rk.pulled){if(leaving)return;await pullProgress();if(!rk.pulled)return}
@@ -1444,7 +1307,6 @@ async function pushProgress(leaving,retried){
     console.warn("진도 저장 실패",e);
   }
 }
-// 1분마다: 로그인 토큰이 곧 만료되면 미리 새로 받고(페이지를 떠날 때 기다리지 않도록), 바뀐 진도를 올린다
 setInterval(async()=>{
   if(document.hidden||!S.account)return;
   if(rk.auth&&Date.now()>rk.auth.exp-5*60e3){try{rk.auth=await restAuth();rk.me=rk.auth.uid}catch(e){}}
@@ -1452,12 +1314,9 @@ setInterval(async()=>{
 },60000);
 document.addEventListener("visibilitychange",()=>{
   if(document.hidden){pushProgress(true);return}
-  // 오래 쉬다 돌아오면 토큰이 만료돼 있다. 다음에 떠날 때 기다리지 않도록 미리 받아 둔다
   if(S.account&&rk.auth&&Date.now()>rk.auth.exp-5*60e3)restAuth().then(a=>{rk.auth=a;rk.me=a.uid}).catch(()=>{});
 });
 function rerenderAll(){refreshSummary();show(tab)}
-/* 브라우저는 "버튼을 누른 그 순간"에 연 팝업만 허용한다 (아이폰 Safari는 특히 엄격).
-   그래서 로그인 라이브러리를 버튼이 보일 때 미리 받아 두고, 누르면 기다리는 일 없이 바로 팝업을 연다 */
 let authLib=null,authLibP=null;
 function preloadAuth(){
   if(IN_CLAUDE||authLibP)return authLibP;
@@ -1467,8 +1326,6 @@ function preloadAuth(){
   }).catch(e=>{authLibP=null;throw e});
   return authLibP;
 }
-// Google 로그인 라이브러리(약 60KB)는 로그인 버튼이 실제로 화면에 보일 때 받기 시작한다.
-// 로그인하지 않고 공부만 하는 사람은 받지 않아도 되도록 (누르기 직전 손가락이 닿을 때도 받기 시작)
 const authSeen=("IntersectionObserver" in window)?new IntersectionObserver(es=>{
   if(es.some(e=>e.isIntersecting)){authSeen.disconnect();preloadAuth()?.catch(()=>{})}
 }):null;
@@ -1478,10 +1335,8 @@ function armLoginBtn(btn,fn){
   btn.addEventListener("pointerdown",()=>preloadAuth()?.catch(()=>{}),{once:true});
   btn.onclick=fn;
 }
-// 팝업 열기: 라이브러리가 준비돼 있으면 곧바로(기다림 없이) 연다
 function openGooglePopup(){
   if(authLib){
-    // 매번 계정 선택 창을 띄운다 (같은 컴퓨터를 여럿이 쓰거나 계정이 여러 개일 때)
     const p=new authLib.au.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
     return authLib.au.signInWithPopup(authLib.auth,p).then(r=>({...authLib,user:r.user}));
   }
@@ -1494,7 +1349,6 @@ const loginErrText=(c,e,what)=>c==="harukana/not-ready"?"Google 확인 준비가
   :c==="auth/network-request-failed"?"인터넷 연결이 불안정해요. 잠시 뒤 다시 눌러 주세요."
   :c==="auth/operation-not-supported-in-this-environment"||c==="auth/web-storage-unsupported"?"이 브라우저에서는 Google 로그인을 쓸 수 없어요. Chrome이나 Safari로 열어 주세요."
   :what+"하지 못했어요 ("+(c||e.message)+")";
-// 로그인에 성공한 뒤 공통 처리 (Google·이메일 둘 다): 토큰 저장 → 계정 진도와 합치기 → 랭킹 참가
 async function finishLogin(a,account){
   rk.auth={uid:a.uid,refreshToken:a.refreshToken,idToken:a.idToken,exp:Date.now()+50*60e3};
   try{localStorage.setItem(AUTH_KEY,JSON.stringify({uid:a.uid,refreshToken:a.refreshToken}))}catch(e){}
@@ -1502,7 +1356,6 @@ async function finishLogin(a,account){
   const merged=await pullProgress();
   S.rankOff=S.rankOff||0;save();rk.last="";rk.blocked=false;rk.syncErr=null;rk.myRank={all:null,week:null,last:null};
   await pushProgress(false);
-  // 이제 랭킹에 참가한다
   if(rk.state==="guest")rk.state="loading";
   memberInit();if(tab===5)loadBoard(rk.mode,true);
   notifyText(merged?"로그인했어요. 계정에 있던 기록과 이 기기 기록을 합쳤어요.":"로그인했어요. 이제 기록이 계정에 저장돼요.");
@@ -1523,10 +1376,6 @@ async function googleLogin(){
   }
 }
 
-/* ---------- 로봇 막기: Firebase App Check + 보이지 않는 reCAPTCHA (Enterprise, 점수 방식) ----------
-   서버(Firestore·로그인)가 "진짜 하루카나 앱에서 온 요청"만 받게 한다. 프로그램으로 계정·점수를 찍어내는 걸 막는다.
-   화면에 체크박스는 없고, 로그인한 사람(과 로그인 창)에서만 불러온다 (공부만 하는 사람은 받지 않음).
-   사이트 키가 비어 있으면 App Check 없이 동작한다 */
 const RECAPTCHA_SITE_KEY="6LfM3vktAAAAAHbuTo9VgMEDZnV-9uG0xrBgT5-i";
 let appCheckP=null;
 function appCheckInit(){
@@ -1543,11 +1392,6 @@ async function appCheckHeader(){
   catch(e){console.warn("App Check 토큰을 받지 못했어요",e);return{}}
 }
 
-/* ---------- 이메일·비밀번호 로그인 (이메일 인증) ----------
-   Google 계정이 없거나 쓰기 싫은 사람용. 가입하면 인증 메일이 가고, 메일의 링크를 눌러야 진도 저장·랭킹을 쓸 수 있다
-   (한 사람이 계정을 마구 만들지 못하게. 보안 규칙도 인증된 이메일만 받는다).
-   이메일은 Firebase 로그인 쪽에만 있고 학습 기록(users)에는 저장하지 않는다. 비밀번호를 잊으면 재설정 메일을 받을 수 있다.
-   예전 "아이디" 계정(아이디@id.harukana.invalid)은 아이디로 로그인한 뒤 진짜 이메일을 연결해 인증하면 그대로 이어서 쓴다 */
 const ID_DOMAIN="id.harukana.invalid";
 const EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isLegacy=e=>String(e||"").endsWith("@"+ID_DOMAIN);
@@ -1562,7 +1406,6 @@ async function idAuth(mode,login,pw){ // mode: signUp(가입) | signInWithPasswo
   const j=await idt(mode,{email:loginEmail(login),password:pw,returnSecureToken:true});
   return{uid:j.localId,refreshToken:j.refreshToken,idToken:j.idToken,email:j.email};
 }
-// 인증 여부는 새 토큰으로 확인한다 (링크를 누른 뒤에도 예전 토큰에는 "미인증"으로 남아 있어서)
 async function refreshTok(a){
   const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(a.refreshToken)});
   const j=await r.json();if(!r.ok)throw Object.assign(new Error("TOKEN"),{code:(j.error&&j.error.message)||"TOKEN"});
@@ -1580,9 +1423,6 @@ const idErrText=c=>/EMAIL_EXISTS/.test(c)?"이미 가입된 이메일이에요. 
   :/Failed to fetch|NetworkError/i.test(c)?"인터넷 연결을 확인해 주세요."
   :"하지 못했어요 ("+c+")";
 const acctLogin=a=>a&&(a.email||a.id&&a.id+"@"+ID_DOMAIN)||"";
-/* 이메일 창 mode:
-   login(로그인) · signup(가입) · reset(비밀번호 재설정 메일) · verify(인증 메일 확인 대기, a=토큰) ·
-   link(예전 아이디 계정에 진짜 이메일 연결, a=토큰) · delete(계정 삭제 전 비밀번호 확인) */
 function openIdDialog(mode,arg){
   let d=$("id-dlg");if(!d){d=document.createElement("dialog");d.id="id-dlg";d.className="id-dlg";document.body.appendChild(d)}
   appCheckInit()?.catch(()=>{}); // reCAPTCHA를 미리 준비
@@ -1613,8 +1453,8 @@ function openIdDialog(mode,arg){
   if($("id-forgot"))$("id-forgot").onclick=()=>openIdDialog("reset");
   const err=(t,good)=>{$("id-err").textContent=t;$("id-err").classList.toggle("good",!!good)};
   const busy=v=>{$("id-ok").disabled=v};
-  if($("id-resend"))$("id-resend").onclick=async()=>{try{await idt("sendOobCode",{requestType:"VERIFY_EMAIL",idToken:arg.idToken});err("인증 메일을 다시 보냈어요.",true)}catch(e){err(/TOO_MANY/.test(e.code)?"방금 보낸 메일이 있어요. 1분쯤 뒤에 다시 보낼 수 있어요.":idErrText(e.code||e.message))}};
-  // 로그인에 성공했지만 아직 인증 전이면 인증 단계로, 예전 아이디 계정이면 이메일 연결로 보낸다
+  if($("id-resend"))$("id-resend").onclick=async()=>{try{Object.assign(arg,await refreshTok(arg)); // 창을 오래 열어 둬도(토큰 1시간) 다시 보낼 수 있게
+    await idt("sendOobCode",{requestType:"VERIFY_EMAIL",idToken:arg.idToken});err("인증 메일을 다시 보냈어요.",true)}catch(e){err(/TOO_MANY/.test(e.code)?"방금 보낸 메일이 있어요. 1분쯤 뒤에 다시 보낼 수 있어요.":idErrText(e.code||e.message))}};
   const afterAuth=async a=>{
     if(isLegacy(a.email))return openIdDialog("link",a);
     if(!(await isVerified(a)))return openIdDialog("verify",a);
@@ -1650,7 +1490,6 @@ function openIdDialog(mode,arg){
         if(!EMAIL_RE.test(em))return err("이메일 주소를 다시 확인해 주세요.");
         busy(true);await idt("sendOobCode",{requestType:"VERIFY_AND_CHANGE_EMAIL",idToken:arg.idToken,newEmail:em});
         err(`${em}로 인증 메일을 보냈어요. 메일의 링크를 누른 뒤, 이 이메일과 지금 비밀번호로 다시 로그인해 주세요.`,true);
-        // 이메일이 바뀌면 예전 로그인은 풀린다. 이 기기 기록은 남아 있고, 새 이메일로 로그인하면 계정 기록과 합쳐진다
         $("id-ok").textContent="새 이메일로 로그인";$("id-ok").disabled=false;$("id-form").onsubmit=e=>{e.preventDefault();openIdDialog("login")};
       }else if(mode==="delete"){
         if(v("id-pw").length<6)return err("비밀번호를 넣어 주세요.");
@@ -1662,8 +1501,6 @@ function openIdDialog(mode,arg){
   ($("id-name")||$("id-pw")||$("id-ok")).focus();
 }
 function idLogin(){if(!IN_CLAUDE)openIdDialog("login")}
-// 비밀번호 바꾸기 (이메일·예전 아이디 계정): 지금 비밀번호로 확인한 뒤 새 비밀번호로 바꾼다.
-// 바꾸면 다른 기기의 로그인은 풀리고(다시 로그인 필요), 이 기기는 새 토큰으로 이어 간다
 function openPwDialog(){
   if(!S.account||(S.account.kind!=="id"&&S.account.kind!=="email"))return;
   let d=$("id-dlg");if(!d){d=document.createElement("dialog");d.id="id-dlg";d.className="id-dlg";document.body.appendChild(d)}
@@ -1701,17 +1538,13 @@ function openPwDialog(){
   if(!d.open)d.showModal();
   $("pw-cur").focus();
 }
-// 로그아웃: 계정에 마지막으로 저장하고, 이 기기의 기록은 지운다 (계정에는 그대로 남음)
 async function googleLogout(){
   await pushProgress(false);
-  try{["kana-v1",AUTH_KEY,"harukana-rank-cache",SYNC_KEY].forEach(k=>localStorage.removeItem(k))}catch(e){}
+  try{["kana-v1",AUTH_KEY,"harukana-rank-cache",SYNC_KEY,"harukana-qsess","harukana-wsess"].forEach(k=>localStorage.removeItem(k));clearCaches()}catch(e){}
   location.reload();
 }
-// 계정 기록 삭제: Google로 한 번 더 확인한 뒤 서버의 진도·랭킹 기록과 로그인 계정, 이 기기의 기록을 모두 지운다
-// 서버의 진도·랭킹 기록, 로그인 계정, 이 기기의 기록을 모두 지운다 (방금 본인 확인을 받은 토큰으로)
 async function wipeAccount(uid,idToken,deleteLogin){
   const acct=S.account;
-  // 지우는 동안 기록이 다시 올라가지 않게 막는다
   clearTimeout(rk.timer);rk.blocked=true;S.account=null;
   try{
     const h={Authorization:"Bearer "+idToken},wn=weekNum();
@@ -1720,12 +1553,11 @@ async function wipeAccount(uid,idToken,deleteLogin){
       if(!r.ok)throw new Error("기록 삭제 "+r.status);
     }
     await deleteLogin();
-    try{["kana-v1",AUTH_KEY,"harukana-rank-cache",SYNC_KEY].forEach(k=>localStorage.removeItem(k))}catch(e){}
+    try{["kana-v1",AUTH_KEY,"harukana-rank-cache",SYNC_KEY,"harukana-qsess","harukana-wsess"].forEach(k=>localStorage.removeItem(k));clearCaches()}catch(e){}
     notifyText("계정과 학습 기록을 모두 지웠어요.");
     setTimeout(()=>location.reload(),1500);
   }catch(e){S.account=acct;rk.blocked=false;throw e}
 }
-// 계정 기록 삭제: Google 계정은 Google로, 이메일 계정은 비밀번호로 한 번 더 확인한 뒤 지운다
 async function deleteAccount(){
   if(IN_CLAUDE||!S.account||!rk.me)return;
   if(S.account.kind==="id"||S.account.kind==="email"){
@@ -1747,18 +1579,13 @@ async function deleteAccount(){
 }
 const PRIVACY_URL="privacy.html";
 const loginBtn=(id,label)=>`<button class="gbtn" id="${id}"><span class="g">G</span>${label||"Google로 로그인"}</button>`;
-// Google 버튼 + 이메일 버튼 한 쌍 (id-<이름> 버튼은 bindLoginBtns가 연결)
 const loginBtns=id=>`<span class="login-btns">${loginBtn(id)}<button class="gbtn idbtn" id="id-${id}"><span class="g">@</span>이메일로 로그인</button></span>`;
 function bindLoginBtns(id){armLoginBtn($(id),googleLogin);if($("id-"+id))$("id-"+id).onclick=idLogin}
 const acctLabel=a=>a.kind==="id"?"아이디 "+a.id:a.email||a.name||"Google 계정";
-/* ---------- 닉네임: 겹치지 않게, 처음 정하기 1번 + 바꾸기 1번, 나쁜 말은 * ----------
-   서버에 nicks/<이름 키>(그 이름을 가진 사람)와 nickreg/<uid>(내 이름·바꾼 횟수 n)를 함께 둔다.
-   보안 규칙이 "이름 키는 한 사람만", "n은 1씩만, 최대 2(자동 이름 → 정하기 1 → 바꾸기 1)"를 지킨다 */
 const NICK_RE=/^[가-힣a-zA-Z0-9_]{2,12}$/;
 const NICK_RESERVED=/운영자|관리자|admin|하루카나|harukana|공식|official/i;
 const NICK_SYS=/^__.*__$/; // Firebase가 예약해 둔 문서 이름 모양이라 저장할 수 없다
 const BAD_WORDS=["시발","씨발","씨빨","시빨","씨바","십새","씹","좆","존나","졸라","병신","븅신","빙신","등신","개새","새끼","쌔끼","지랄","염병","닥쳐","꺼져","미친","또라이","싸가지","창녀","걸레","보지","자지","섹스","야동","변태","느금","니애미","니엄마","애미","애비","엠창","호로","후레","썅","쌍놈","쌍년","개놈","개년","빠구리","딸딸이","자위","강간","살인","자살","일베","한남","김치녀","된장녀","틀딱","급식충","맘충","fuck","fuk","shit","bitch","sex","porn","dick","pussy","cock","nigger","nigga","fag","slut","whore","asshole","bastard","rape"];
-// 나쁜 말을 *로 가린다. 사이에 숫자·밑줄을 끼워 넣어도 찾는다 (예: 시1발 → *1*)
 function maskBad(s){
   s=String(s||"");const ch=[...s],keep=[];
   ch.forEach((c,i)=>{if(!/[0-9_\s.\-]/.test(c))keep.push([c.toLowerCase(),i])});
@@ -1769,13 +1596,11 @@ function maskBad(s){
 const nickKey=n=>n.toLowerCase();
 const pseudoNick=()=>"학습자"+String(Math.floor(1000+Math.random()*9000));
 const DOC=p=>`projects/${FB_CONFIG.projectId}/databases/(default)/documents/${p}`;
-// 여러 문서를 한 번에(모두 되거나 모두 안 되거나) 쓴다
 async function restCommit(writes,keepalive){
   const r=await fetch(`${REST_BASE}:commit`,{method:"POST",keepalive:!!keepalive,headers:{...await authHeader(),"Content-Type":"application/json"},body:JSON.stringify({writes})});
   if(!r.ok){const e=new Error("REST "+r.status);e.status=r.status;e.text=await r.text().catch(()=>"");throw e}
   return r.json();
 }
-// 이름 등록·변경. first: 처음 등록(자동 이름 그대로 n=0)
 async function claimNick(nick,first){
   const key=nickKey(nick),n=first?0:(rk.nickN||0)+1;
   const writes=[
@@ -1784,11 +1609,21 @@ async function claimNick(nick,first){
   if(!first&&rk.nickKey&&rk.nickKey!==key)writes.push({delete:DOC("nicks/"+rk.nickKey)});
   await restCommit(writes);
   rk.nickN=n;rk.nickKey=key;S.nick=nick;save();rk.last="";
+  setCache(`nickreg/${rk.me}`,{id:rk.me,nick,key,n});
 }
-// 로그인할 때: 서버에 등록된 이름을 쓰고, 없으면 지금 이름(겹치면 새 자동 이름)으로 등록한다
-async function ensureNick(){
+const CACHE_TTL=12*3600e3;
+async function cachedGet(path,force){
+  const k="harukana-c:"+path;
+  if(!force){try{const v=JSON.parse(localStorage.getItem(k));if(v&&Date.now()-v.t<CACHE_TTL)return v.d}catch(e){}}
+  const d=await restGet(path);
+  try{localStorage.setItem(k,JSON.stringify({t:Date.now(),d}))}catch(e){}
+  return d;
+}
+const setCache=(path,d)=>{try{localStorage.setItem("harukana-c:"+path,JSON.stringify({t:Date.now(),d}))}catch(e){}};
+const clearCaches=()=>{try{Object.keys(localStorage).filter(k=>k.startsWith("harukana-c:")).forEach(k=>localStorage.removeItem(k))}catch(e){}};
+async function ensureNick(force){
   try{
-    const reg=await restGet(`nickreg/${rk.me}`);
+    const reg=await cachedGet(`nickreg/${rk.me}`,force);
     if(reg){rk.nickN=Number(reg.n)||0;rk.nickKey=reg.key;if(S.nick!==reg.nick){S.nick=reg.nick;save()}return true}
     let nick=maskBad(S.nick||"");if(!NICK_RE.test(nick.replace(/\*/g,"_"))||NICK_RESERVED.test(nick)||NICK_SYS.test(nick))nick=pseudoNick();
     for(let i=0;i<4;i++){
@@ -1799,7 +1634,6 @@ async function ensureNick(){
   return false;
 }
 const nickLeft=()=>Math.max(0,2-(rk.nickN||0)); // 남은 이름 정하기·바꾸기 횟수
-// 프로필에서 이름 저장
 async function saveNick(raw){
   raw=raw.trim();
   if(!S.account)return "이름은 로그인한 뒤 정할 수 있어요.";
@@ -1816,18 +1650,12 @@ async function saveNick(raw){
   return "";
 }
 
-/* ---------- 주간 리그 보상: 참가자 수에 따라 ----------
-   참가자가 적으면 1등이 너무 쉽게 큰 보상을 받으므로
-   - 보상받는 등수 = 참가자 수의 절반까지 (최대 10등). 1명이면 보상 없음
-   - 보상 크기 = 기본값 × (참가자 수 ÷ 20), 20명 이상이면 기본값 그대로
-   - 그 주에 리그 XP를 50 이상 모아야 받는다 */
 const MIN_LEAGUE_XP=50;
 function leagueRewards(n){
   n=Number(n)||0;const places=Math.min(WEEK_REWARDS.length,Math.floor(n/2)),scale=Math.min(1,n/20);
   return WEEK_REWARDS.slice(0,places).map(x=>Math.max(10,Math.round(x*scale/10)*10));
 }
 const rewardText=n=>{const r=leagueRewards(n);return r.length?`1~${r.length}등 보상 (1등 ${r[0]}${r.length>1?` · ${r.length}등 ${r[r.length-1]}`:""} XP)`:"참가자가 2명 이상이면 보상이 생겨요"};
-// 지난주 리그 보상은 한 번만 받는다 (전체 XP에만 더하고 이번 주 리그 XP에는 넣지 않는다)
 function claimWeekReward(){
   const r=rk.myRank.last,key=String(rk.lastWn),list=leagueRewards(rk.count.last);
   if(!r||r>list.length||S.claimed[key]||rk.banned)return;
@@ -1837,31 +1665,23 @@ function claimWeekReward(){
   updateTitles();checkBadges();save();refreshSummary();rk.last="";syncScore();
   notifyText(`지난주 리그 ${r}등! 보상 +${x} XP를 받았어요.`);
 }
-// 모두의 랭킹은 GitHub 사이트(Firebase) 하나로 모은다.
-// claude.ai 링크에서는 보안 규칙 때문에 Firebase에 연결할 수 없어서, 랭킹 대신 GitHub 사이트로 안내한다
 const SITE_URL="https://ranunculuslethe.github.io/harukana/";
 const IN_CLAUDE=!!(window.claude&&typeof claude.use==="function");
 async function initRank(){
   if(!IN_CLAUDE){initFirebase();return}
   rk.state="elsewhere";if(tab===5)renderRank();
 }
-// 내 기록 올리기: 무료 읽기·쓰기 한도를 아끼려고 1분에 한 번까지만 올리고, 페이지를 떠날 때 마지막으로 한 번 더 올린다
-// (보안 규칙이 쓸 때마다 이름·제재 확인으로 2건을 읽는다)
 const SYNC_GAP=60000;
 function scoreData(){
   return{xp:S.xp,level:lvOf(S.xp),streak:streak(),chars:[...ALL,...ALL_K].filter(c=>cd(c.k)).length,words:WORDS.filter(w=>wd(w.id)).length,badges:Object.keys(S.badges).length,nick:(S.nick||"").slice(0,12),title:mainTitle(),avatar:avatarOf(S.avatar).id,week:weekId(),weekXp:weekXp()};
 }
 function syncScore(){
-  // 문제를 한 번이라도 맞힌 사람(XP가 있는 사람)만 랭킹에 올린다
   if(!rk.fb||!rk.me||!S.account||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
   if(JSON.stringify(scoreData())===rk.last)return;
   clearTimeout(rk.timer);
   const wait=Math.max(1200,SYNC_GAP-(Date.now()-(rk.wroteAt||0)));
   rk.timer=setTimeout(()=>pushScore(false),wait);
 }
-/* 서버 규칙이 허용하는 만큼만 올린다 (규칙: 처음 만들 때 전체 2만·이번 주 3천, 그 뒤엔 지난 기록 + 여유 + 1초에 7 XP).
-   정상 사용자가 상한에 걸려 랭킹에서 막히지 않도록, 넘는 만큼은 다음 기록 때 조금씩 따라 올라간다.
-   rk.srv = 서버에 있는 내 랭킹 기록 {score, player} (모르면 undefined → 한 번 읽어 옴) */
 const LIM={xpBurst:3500,wkBurst:500,perSec:7,createXp:20000,createWk:3000};
 async function rawFields(path){
   const r=await fetch(`${REST_BASE}/${path}`,{headers:await authHeader()});
@@ -1871,7 +1691,6 @@ async function rawFields(path){
 async function loadSrv(){
   try{
     const [s,p]=await Promise.all([rawFields(`scores/${rk.me}`),rawFields(`weeks/${weekId()}/players/${rk.me}`)]),at=Date.now(),num=v=>Number(v&&v.integerValue)||0;
-    // timed: 기록 시각이 서버 시각(timestamp)이면 흐른 시간만큼 더 올릴 수 있다 (예전 기록은 여유분만)
     rk.srv={score:s?{xp:num(s.xp),weekXp:num(s.weekXp),week:s.week&&s.week.stringValue,at,timed:!!(s.t&&s.t.timestampValue)}:null,
       player:p?{weekXp:num(p.weekXp),week:weekId(),at,timed:!!(p.t&&p.t.timestampValue)}:null};
   }catch(e){rk.srv=undefined}
@@ -1897,7 +1716,6 @@ async function pushScore(leaving){
   clearTimeout(rk.timer);rk.busy=true;rk.wroteAt=Date.now();
   const data=clampScore(full),partial=data.xp<full.xp||data.weekXp<full.weekXp;
   try{
-    // 기록 시각(t)은 기기 시계가 아니라 서버 시각으로 넣는다. 보안 규칙이 "지난 기록 뒤 흐른 시간만큼만" 점수가 오르게 막는 데 씀
     const now=[{fieldPath:"t",setToServerValue:"REQUEST_TIME"}];
     const writes=[{update:{name:DOC(`scores/${rk.me}`),fields:toFields(data).fields},updateTransforms:now}];
     if(data.weekXp>0)writes.push({update:{name:DOC(`weeks/${data.week}/players/${rk.me}`),fields:toFields({nick:data.nick,title:data.title,avatar:data.avatar,level:data.level,weekXp:data.weekXp}).fields},updateTransforms:now});
@@ -1905,15 +1723,14 @@ async function pushScore(leaving){
     const at=Date.now();
     rk.srv={score:{xp:data.xp,weekXp:data.weekXp,week:data.week,at,timed:true},player:data.weekXp>0?{weekXp:data.weekXp,week:data.week,at,timed:true}:(rk.srv&&rk.srv.player)||null};
     rk.syncErr=null;rk.retried=false;
-    // 다 못 올렸으면 1분 뒤 나머지를 이어서 올린다
     if(partial){rk.last=JSON.stringify(data);if(!leaving)rk.timer=setTimeout(()=>pushScore(false),SYNC_GAP)}
     else rk.last=sig;
     if(!leaving)patchMyRows(data);
   }catch(e){
     rk.syncErr=String(e&&(e.status||e.message));
     if(e&&e.status===403&&!rk.retried&&!leaving){
-      // 이름이 바뀌었거나(운영자 초기화 등) 서버 기록이 예상과 다를 수 있다 → 다시 읽고 한 번만 더 시도
-      rk.retried=true;rk.busy=false;await ensureNick();await loadSrv();
+      rk.retried=true;rk.busy=false;await ensureNick(true);await loadSrv();
+      try{const b=await cachedGet(`bans/${rk.me}`,true);rk.banned=b?{reason:b.reason||""}:null;if(b){rk.blocked=true;scheduleRank();return}}catch(e){}
       rk.timer=setTimeout(()=>pushScore(false),5000);return;
     }
     if(e&&e.status===403){rk.blocked=true;scheduleRank()}
@@ -1921,7 +1738,6 @@ async function pushScore(leaving){
   }
   rk.busy=false;
 }
-// 방금 올린 내 점수를 이미 받아 둔 랭킹에 직접 넣어 다시 정렬한다 (서버에서 50명을 다시 읽지 않음)
 function patchMyRows(d){
   const put=(key,field,v,extra)=>{
     const list=rk[key];if(!list)return;
@@ -1931,7 +1747,6 @@ function patchMyRows(d){
     else return;
     list.sort((a,b)=>(Number(b[field])||0)-(Number(a[field])||0));
     if(list.length>TOP_N)list.length=TOP_N;
-    // 50명 안쪽이면 목록 길이가 곧 참가자 수
     if(key==="weekRows"&&!wasIn&&rk.count.week!=null&&list.length<TOP_N)rk.count.week=list.length;
   };
   const base={nick:d.nick,title:d.title,avatar:d.avatar,level:d.level};
@@ -1940,11 +1755,8 @@ function patchMyRows(d){
   saveRankCache();
   if(tab===5)refreshMine(rk.mode||"week"); // 50위 밖이면 내 순위만 다시 센다 (읽기 1건)
 }
-// 탭을 닫거나 다른 앱으로 넘어갈 때 아직 안 올린 기록을 올린다
 document.addEventListener("visibilitychange",()=>{if(document.hidden)pushScore(true)});
 window.addEventListener("pagehide",()=>pushScore(true));
-/* ---------- 프로필: 닉네임, 대표 칭호, 분야별 칭호와 따로따로 초기화 ---------- */
-// 분야마다 진도에 따라 칭호 3단계: 1개 이상 → 1단계, 절반 이상 → 2단계, 전부 → 3단계
 const wordIdsOf=s=>WORDS.filter(w=>(catOf(w.category)||{}).script===s).map(w=>w.id);
 const RECORDS=[
   {id:"hc",name:"히라가나 글자",short:"히라가나",icon:"あ",items:()=>ALL.map(c=>c.k),done:cd,tiers:["새싹","수련생","달인"],kind:"char"},
@@ -1953,20 +1765,16 @@ const RECORDS=[
   {id:"kw",name:"가타카나 단어",short:"가타카나 단어",icon:"コトバ",items:()=>wordIdsOf("k"),done:wd,tiers:["새싹","수집가","박사"],kind:"word",script:"k"},
   {id:"mw",name:"섞어 쓰기 단어",short:"섞어 쓰기",icon:"あア",items:()=>wordIdsOf("m"),done:wd,tiers:["새싹","수집가","박사"],kind:"word",script:"m"}
 ];
-// 지금 진도로 계산한 단계
 function curTier(r){const it=r.items(),n=it.filter(r.done).length,t=it.length;return n===0?-1:n===t?2:n/t>=.5?1:0}
-// 한 번 받은 칭호는 초기화해도 남는다 (S.titles에 분야별 최고 단계 기록)
 function updateTitles(){RECORDS.forEach(r=>{const c=curTier(r);if(c>(S.titles[r.id]??-1))S.titles[r.id]=c})}
 function recProgress(r){const it=r.items(),n=it.filter(r.done).length,t=it.length;
   const tier=Math.max(curTier(r),S.titles[r.id]??-1);
   const nextAt=tier<0?1:tier===0?Math.ceil(t/2):tier===1?t:null;
   return{n,t,tier,title:tier<0?"":`${r.short} ${r.tiers[tier]}`,left:nextAt===null?0:Math.max(0,nextAt-n),nextName:tier<2?`${r.short} ${r.tiers[tier+1]}`:""}}
 const earnedTitles=()=>RECORDS.map(r=>({id:r.id,...recProgress(r)})).filter(x=>x.tier>=0);
-// 대표 칭호: 고른 칭호가 아직 있으면 그것, 아니면 가장 높은 단계
 function mainTitle(){const e=earnedTitles();if(!e.length)return"";const pick=e.find(x=>x.id===S.title);return(pick||e.slice().sort((a,b)=>b.tier-a.tier)[0]).title}
 const nickName=()=>S.nick||rk.myName||"학습자";
 
-// 프로필 사진 (기본 그림 중에서 고른다)
 const AVATARS=[
   {id:"fox",name:"여우 하루",vb:"0 0 180 190",fox:1,svg:'<use href="#fox"/>'},
   {id:"neko",name:"고양이",vb:"0 0 100 100",svg:'<rect width="100" height="100" fill="#FCEBDD"/><path d="M20 46 26 14l20 18ZM80 46 74 14 54 32Z" fill="#F2B48A"/><path d="m27 22 3 13 8-6Zm46 0-3 13-8-6Z" fill="#F7D3BF"/><circle cx="50" cy="58" r="32" fill="#F2B48A"/><circle cx="38" cy="54" r="4" fill="#293747"/><circle cx="62" cy="54" r="4" fill="#293747"/><path d="m46 63 4 4 4-4Z" fill="#D9786B"/><path d="M50 67q-4 6-10 4m10-4q4 6 10 4" stroke="#293747" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M14 60h16m-16 7h16m40-7h16m-16 7h16" stroke="#C98E6B" stroke-width="1.8" stroke-linecap="round"/>'},
@@ -1984,10 +1792,8 @@ const avatarOf=id=>AVATARS.find(a=>a.id===id)||AVATARS[0];
 const avatarSvg=id=>{const a=avatarOf(id);return `<svg viewBox="${a.vb}" class="${a.fox?"fox":"av"}" aria-hidden="true">${a.svg}</svg>`};
 let pickingAv=false;
 
-// 따로따로 초기화: 글자는 글자 퀴즈, 단어는 단어 모으기, 오답노트는 오답노트, XP·배지와 전체는 프로필에서
 function resetRecord(id){
   const r=RECORDS.find(x=>x.id===id);let label;
-  // 글자·단어 초기화는 지금 고른 문제 방향(fwd/rev)의 기록만 지운다
   if(id.startsWith("ch-")){const[,s,n,m]=id.split("-");
     catChars(s,+n).forEach(c=>{if(m==="rev")delete S.cr[c.k];else if(m==="ear")delete S.ca[c.k];else{delete S.c[c.k];delete S.n["c:"+c.k];delete S.sr["c:"+c.k]}});
     cq=null;label=(n==="1"?`${SCRIPTS[s].name} 글자`:`${SCRIPTS[s].name} ${QCATS[n-1]}`)+(m!=="fwd"&&MODE_NAMES[m]?` (${MODE_NAMES[m]})`:"")}
@@ -1997,9 +1803,7 @@ function resetRecord(id){
   else if(r&&r.kind==="char"){r.items().forEach(k=>{delete S.c[k];delete S.n["c:"+k]});cq=null;label=r.name}
   else if(r){r.items().forEach(w=>{delete S.w[w];delete S.n["w:"+w]});S.co[r.script]=1;wv={view:"list",script:r.script};label=r.name}
   else if(id==="note"){S.n={};nq=null;label="오답노트"}
-  // XP·배지 초기화: 이번 주 리그 XP는 남긴다 (리그 중간에 순위가 사라지지 않게)
   else if(id==="reward"){S.xp=0;S.badges={};S.flags={};label="XP·배지"}
-  // 모두 초기화: 학습 기록만 지우고, 내가 쌓은 XP·배지·연속 학습일과 프로필은 남긴다
   else if(id==="all"){const keep={xp:S.xp,badges:S.badges,flags:S.flags,daily:S.daily,nick:S.nick,avatar:S.avatar,rank:S.rank,titles:S.titles,title:S.title,wk:S.wk,day:S.day,claimed:S.claimed,account:S.account};S=fresh();Object.assign(S,keep);qScript="h";qStage=1;cq=null;wv={view:"list"};nq=null;label="학습"}
   save();refreshSummary();rk.last="";syncScore();
   if(tab===0)renderHome();
@@ -2011,7 +1815,6 @@ function resetRecord(id){
 }
 let editingNick=false;
 function resetBtn(id,label){return `<button class="rec-reset" data-reset="${id}" data-label="${label}">${label}</button>`}
-// 초기화 버튼은 어디서든 두 번 눌러야 지워진다 (처음 누르면 확인 문구로 바뀜)
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-reset]");
   document.querySelectorAll("[data-reset].armed").forEach(x=>{if(x!==b){x.classList.remove("armed");x.textContent=x.dataset.label}});
@@ -2066,14 +1869,12 @@ function renderRank(){
   else if(rk.state==="loading")body=`<p class="rk-note">랭킹을 불러오는 중이에요…</p>`;
   else if(rk.state==="error")body=`<p class="rk-note">랭킹을 불러오지 못했어요. 페이지를 새로 고쳐 보세요.</p>`;
   else{
-    // GitHub 사이트(Firebase)에서는 로그인이 필요 없다. 익명 ID를 받는 중일 때는 아무것도 띄우지 않는다
     const join=!rk.me?(window.claude&&typeof claude.use==="function"&&!rk.fb?`<p class="rk-note">claude.ai에 로그인하면 랭킹에 참가할 수 있어요.</p>`:"")
       :rk.banned?`<div class="rk-join rk-ban"><p><b>랭킹 참가가 제한된 계정이에요.</b><br>점수가 비정상적으로 올라 운영자가 랭킹 참가를 막았어요.${rk.banned.reason?` (사유: ${esc(rk.banned.reason)})`:""} 공부 기록은 그대로 저장돼요. 잘못된 제재라면 개인정보 처리방침의 연락처로 알려 주세요.</p></div>`
       :S.rankOff?`<div class="rk-join"><p>지금은 랭킹에서 내 기록이 숨겨져 있어요.</p><button class="next" id="rk-join">다시 참가하기</button></div>`
       :S.xp<=0?`<p class="rk-note">문제를 하나 맞히면 「${esc(S.nick)}」 이름으로 랭킹에 올라가요. 닉네임은 위 프로필에서 바꿀 수 있어요.</p>`
       :(rk.blocked||rk.canWrite===false)?`<p class="rk-note">${rk.fb?`내 기록을 랭킹에 올리지 못했어요 (오류 ${esc(rk.syncErr||"")}). 잠시 뒤 다시 시도해 주세요.`:"순위는 볼 수 있지만, 내 기록을 올리려면 이 페이지의 편집 권한이 필요해요."}</p>`
       :rk.syncErr?`<p class="rk-note">내 기록을 올리는 중 연결 문제가 있었어요 (오류 ${esc(rk.syncErr)}). 15초 뒤 자동으로 다시 시도해요.</p>`:"";
-    // 상위 50명 + (50위 밖이면) 맨 아래에 내 순위 한 줄
     const mode=rk.mode||"week",league=mode!=="all";
     const meRow={id:rk.me,nick:S.nick,title:mainTitle(),avatar:S.avatar,level:lvOf(S.xp),xp:S.xp,weekXp:weekXp(),streak:streak()};
     const src=mode==="all"?rk.rows:mode==="week"?rk.weekRows:rk.lastRows,rows=src||[];
@@ -2099,7 +1900,6 @@ function renderRank(){
     last:`지난주(${md(weekStart(wn-1))}~${md(weekStart(wn)-DAYMS)}) 최종 순위예요.${claimed?` 나는 <b>${claimed.rank}등</b>, 보상 <b>+${claimed.xp} XP</b>를 받았어요.`:""}`,
     all:"지금까지 모은 전체 XP 순이에요 · 상위 50명과 내 순위가 보여요."};
   const m=rk.mode||"week";
-  // 로그인하지 않은 사람: 다른 사람 순위 없이 내 기록만 보여 주고 로그인을 안내한다
   if(!IN_CLAUDE&&rk.fb&&!S.account){
     const stat=(n,l)=>`<span><b>${n}</b>${l}</span>`;
     $("board").innerHTML=`<h3 class="rk-h">랭킹</h3>
@@ -2115,12 +1915,9 @@ function renderRank(){
   renderGrass();
   if($("rk-join"))$("rk-join").onclick=()=>setRankHidden(false);
   bindLoginBtns("glogin-pf");
-  // 로그아웃은 두 번 눌러야 한다 (이 기기의 기록은 지워지고 계정에는 남음)
   if($("glogout"))$("glogout").onclick=()=>{if(rk.logoutArmed){googleLogout()}else{rk.logoutArmed=true;notifyText("로그아웃하면 이 기기의 기록은 지워지고, 다시 로그인하면 계정에서 불러와요.");renderRank();setTimeout(()=>{rk.logoutArmed=false;scheduleRank()},5000)}};
   if($("gpw"))$("gpw").onclick=openPwDialog;
-  // 예전 아이디 계정: 이메일을 연결해 인증해야 기록 저장·랭킹을 쓸 수 있다
   if($("glink"))$("glink").onclick=async()=>{try{await authHeader();openIdDialog("link",{...rk.auth,email:acctLogin(S.account)})}catch(e){notifyText("다시 로그인해 주세요.")}};
-  // 계정 기록 삭제도 두 번 눌러야 한다 (되돌릴 수 없음)
   if($("gdelete"))$("gdelete").onclick=()=>{if(rk.deleteArmed){rk.deleteArmed=false;deleteAccount()}else{rk.deleteArmed=true;preloadAuth()?.catch(()=>{});notifyText("계정과 이 기기의 학습 기록이 모두 지워지고 되돌릴 수 없어요.");renderRank();setTimeout(()=>{rk.deleteArmed=false;scheduleRank()},6000)}};
   if($("nick-edit"))$("nick-edit").onclick=()=>{editingNick=true;renderRank();$("nick-in").focus()};
   if($("nick-save")){
@@ -2128,7 +1925,6 @@ function renderRank(){
     const done=async()=>{
       const v=$("nick-in").value.trim().slice(0,12);
       if(IN_CLAUDE){if(v)S.nick=maskBad(v);save();close();return} // claude.ai 링크는 이 기기에만 저장
-      // 마지막 변경은 두 번 눌러야 확정된다
       if(nickLeft()===1&&!rk.nickArmed&&v&&v!==S.nick){rk.nickArmed=true;$("nick-save").textContent="한 번 더 누르면 확정";return}
       $("nick-save").disabled=true;
       const err=await saveNick(v);
@@ -2143,9 +1939,7 @@ function renderRank(){
   document.querySelectorAll("[data-av]").forEach(b=>b.onclick=()=>{S.avatar=b.dataset.av;pickingAv=false;save();rk.last="";syncScore();renderRank()});
 }
 
-/* ---------- 오늘의 복습: 맞힌 문제를 1 → 3 → 7 → 14 → 30일 뒤에 다시 ---------- */
 const INTERVALS=[1,3,7,14,30],REVIEW_MAX=20;
-// 예전 기록: 이미 맞힌 문제를 앞으로 7일에 나눠서 복습 일정에 올린다
 function migrateSr(){let i=0;const add=k=>{if(!S.sr[k])S.sr[k]={lv:0,due:today()+1+(i++%7)}};
   [...ALL,...ALL_K].forEach(c=>{if(cd(c.k))add("c:"+c.k)});WORDS.forEach(w=>{if(wd(w.id))add("w:"+w.id)})}
 const dueKeys=()=>Object.keys(S.sr).filter(k=>S.sr[k].due<=today()&&noteItem(k)).sort((a,b)=>S.sr[a].due-S.sr[b].due);
@@ -2173,7 +1967,6 @@ function renderReview(){
   mc($("rvp"),{...q,head:`<div class="status qstat"><span>오늘의 복습 · ${it.c?(it.c.kata?"가타카나":"히라가나"):"단어"} · 남은 문제 ${rv.queue.length}</span><button class="link" id="rv-stop" style="margin:0">그만하기</button></div>`,
     onPick(ok){
       speak(q.say);rv.queue.shift();
-      // 맞히면 다음 간격으로, 틀리면 내일 다시 (이번 복습에서도 3문제 뒤 랜덤으로 한 번 더)
       if(ok&&!rv.missed.has(key)){s.lv=Math.min(s.lv+1,INTERVALS.length-1);s.due=today()+INTERVALS[s.lv];rv.right++}
       else if(ok){s.lv=0;s.due=today()+1}
       else{s.lv=0;s.due=today()+1;rv.wrong++;rv.missed.add(key);addNote(key);const from=Math.min(RETRY_GAP,rv.queue.length);rv.queue.splice(from+Math.floor(Math.random()*(rv.queue.length-from+1)),0,key)}
@@ -2184,12 +1977,10 @@ function renderReview(){
   $("rv-stop").onclick=()=>{rv=null;renderReview()};
 }
 
-/* ---------- 학습 잔디: 달력으로 한 달씩, 날마다 푼 문제 수 ---------- */
 let grassOff=0; // 0 = 이번 달, -1 = 지난달 ...
 function renderGrass(){
   const el=$("grass");if(!el)return;
   const now=new Date();now.setHours(0,0,0,0);
-  // 기록이 있는 가장 이른 달까지 (최소 지난 11개월) 넘겨 볼 수 있다
   const keys=Object.keys(S.daily).map(k=>k.split("-").map(Number)).filter(a=>a.length===3);
   const minOff=Math.min(-11,...keys.map(([y,m])=>(y-now.getFullYear())*12+(m-1-now.getMonth())));
   grassOff=Math.max(minOff,Math.min(0,grassOff));
@@ -2217,35 +2008,28 @@ function renderGrass(){
   $("cal-next").onclick=()=>{grassOff++;renderGrass()};
 }
 
-/* ---------- 탭·초기화 ---------- */
 let tab=0, pathScript='h';
 const tabNames=['학습 길','문자 도감','글자 퀴즈','단어 모으기','오답노트','프로필'];
 const TABS=[0,1,2,3,4,5];
-/* 뒤로·앞으로: 내가 고른 화면만 브라우저 방문 기록에 남겨서, 마우스 옆 버튼(아래=뒤로, 위=앞으로)·브라우저 버튼·
-   휴대폰 뒤로 가기로 앱 안에서 오간다. 앞으로 가기는 뒤로 간 다음에만 갈 곳이 생긴다 (브라우저 기본 동작 그대로).
-   - 사이트를 열면 늘 홈에서 시작한다 (주소에 예전 #quiz 같은 게 남아 있어도 저절로 옮기지 않음)
-   - 예전에 열었던 기록(이번에 연 게 아닌 것)은 건너뛴다. 그래서 고른 적 없는 화면으로 움직이지 않는다 */
 const TAB_SLUG=["home","chart","quiz","words","notes","profile"];
 const LOAD_ID=Math.random().toString(36).slice(2); // 이번에 사이트를 연 회차
 let histTab=null,navPop=false,histSeq=0;
-// 기록마다 번호(seq)를 붙인다. 회차가 바뀌어도 이어지게 sessionStorage에 마지막 번호를 둔다
 const nextSeq=()=>{let n=0;try{n=Number(sessionStorage.getItem("harukana-hseq"))||0;sessionStorage.setItem("harukana-hseq",++n)}catch(e){n=Date.now()}return n};
 function histPush(st,replace){
+  if(IN_CLAUDE)return; // claude.ai 안에서는 바깥 화면의 뒤로 가기와 섞이지 않게 기록하지 않는다
   histSeq=nextSeq();
   const url=st.tab===0?location.pathname+location.search:"#"+TAB_SLUG[st.tab]+(st.w==="cat"&&st.cat?"/"+st.cat:"");
   try{history[replace?"replaceState":"pushState"]({...st,load:LOAD_ID,seq:histSeq},"",url)}catch(e){} // claude.ai 안에서는 막혀 있을 수 있다
 }
-// 단어 화면 안에서 목록 ↔ 카테고리를 옮길 때도 기록에 남긴다
 function wordsHist(){if(navPop||tab!==3)return;histPush(wv.view==="cat"?{tab:3,w:"cat",cat:wv.cat}:{tab:3,w:"list",s:wv.script||"h"})}
 window.addEventListener("popstate",e=>{
   const st=e.state;
-  // 이번에 연 게 아닌 예전 기록이면, 가던 방향으로 한 칸 더 건너뛴다 (뒤로 가는 중이면 뒤로, 앞으로 가는 중이면 앞으로)
-  if(!st||st.load!==LOAD_ID||!TAB_SLUG[st.tab]){if(st&&Number(st.seq)>histSeq)history.forward();else history.back();return}
+  if(!st)return; // 페이지 안 링크(#content 바로가기 등)가 만든 기록: 화면은 그대로 둔다
+  if(st.load!==LOAD_ID||!TAB_SLUG[st.tab]){if(Number(st.seq)>histSeq)history.forward();else history.back();return}
   histSeq=st.seq;
   navPop=true;
   try{
     const d=document.querySelector("dialog[open]");if(d)d.close();
-    // 단어: 같은 카테고리의 카드·퀴즈를 풀던 중이면 그대로 둔다 (풀던 문제를 잃지 않게)
     if(st.tab===3&&st.w&&!((wv.view==="card"||wv.view==="quiz")&&st.w==="cat"&&wv.cat===st.cat))
       wv=st.w==="cat"&&catOf(st.cat)&&catOpen(catOf(st.cat))?{view:"cat",cat:st.cat}:{view:"list",script:st.s||"h"};
     show(st.tab);
@@ -2272,7 +2056,6 @@ function openLesson(stage,script){qScript=script;startStage(stage);renderStageBa
 function renderHome(){
   if(!rv)renderReview();
   $("continue").title=lastPlace();
-  // 로그인하지 않은 사람에게: 기록이 이 브라우저에만 있다는 안내 + Google 로그인
   $("login-banner").innerHTML=!IN_CLAUDE&&!S.account?`<div class="login-banner"><div><b>기록을 안전하게 지키세요</b><small>지금은 이 브라우저에만 저장돼요. Google이나 이메일로 로그인하면 브라우저를 지우거나 기기를 바꿔도 그대로 이어서 할 수 있고, 랭킹에도 참가해요.<br>학습 기록에는 이름·이메일을 저장하지 않아요. <a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a></small></div>${loginBtns("glogin-home")}</div>`:"";
   bindLoginBtns("glogin-home");
   const labels=['첫 글자, 설레는 시작','소리에 작은 변화','조금 더 풍부한 발음'];
@@ -2284,8 +2067,6 @@ function renderHome(){
   ['h','k'].forEach(s=>{$('path-'+s).classList.toggle('on',pathScript===s);$('path-'+s).setAttribute('aria-pressed',String(pathScript===s))});
 }
 ['h','k'].forEach(s=>$('path-'+s).onclick=()=>{pathScript=s;renderHome()});
-// 이어서 학습하기: 마지막으로 공부하던 곳(글자 퀴즈 카테고리·방향, 단어 카테고리·방향, 오답노트, 오늘의 복습)으로 간다
-// 문제를 풀지 않고 화면만 열어도 그곳을 기억한다
 function setLast(o){if(JSON.stringify(S.last)!==JSON.stringify(o)){S.last=o;save()}}
 function lastPlace(){const L=S.last;if(!L)return"";
   if(L.t==="note")return"오답노트";
@@ -2309,20 +2090,18 @@ $("continue").onclick=continueStudy;
 $("home-words").onclick=()=>show(3);
 document.querySelector('.brand').onclick=e=>{e.preventDefault();show(0)};
 let toastTimer;
-// 알림이 거의 동시에 여러 개 오면(목표 달성 + 배지) 한 줄로 이어서 보여준다
 let toastAt=0;
 function notifyText(text){if(!$("toast").hidden&&Date.now()-toastAt<800)text=$("toast").textContent+" · "+text;toastAt=Date.now();$("toast").textContent=text;$("toast").hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").hidden=true,Math.max(2600,text.length*80))}
 $("phrase-listen").onclick=()=>{if(!('speechSynthesis' in window)){notifyText('이 브라우저에서는 음성 재생을 지원하지 않아요.');return}speak('こんにちは');notifyText('こんにちは · 곤니치와 · 안녕하세요')};
 function applyTheme(theme){document.documentElement.dataset.theme=theme;$("theme").querySelector('span').textContent=theme==='dark'?'낮 모드':'밤 모드';$("theme").setAttribute('aria-label',theme==='dark'?'낮 모드로 전환':'밤 모드로 전환')}
-// 저장한 선택이 없으면 기기 설정(다크 모드)을 따른다
 const systemTheme=()=>matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
 try{const saved=localStorage.getItem('harukana-theme');applyTheme(saved==='dark'||saved==='light'?saved:systemTheme())}catch{applyTheme(systemTheme())}
 document.documentElement.lang="ko";
 $("theme").onclick=()=>{const theme=document.documentElement.dataset.theme==='dark'?'light':'dark';applyTheme(theme);try{localStorage.setItem('harukana-theme',theme)}catch{}};
 $("s1").onclick=()=>{kataMode=false;$("s1").classList.add("on");$("s2").classList.remove("on");setLast({t:"table",kata:false});renderTable()};
 $("s2").onclick=()=>{kataMode=true;$("s2").classList.add("on");$("s1").classList.remove("on");setLast({t:"table",kata:true});renderTable()};
-// 초기화는 프로필의 분야별 기록에서 따로따로 한다
 const goRecords=()=>{show(5);setTimeout(()=>$("records").scrollIntoView({block:"start"}),0)};
+$("brand-home").onclick=e=>{e.preventDefault();show(0)};
 $("reset").onclick=goRecords;$("mobile-reset").onclick=goRecords;
 $("mobile-theme").onclick=()=>$("theme").onclick();
 const mobileNav=matchMedia('(max-width:760px)');
