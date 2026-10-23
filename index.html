@@ -651,16 +651,26 @@ try{speechSynthesis.onvoiceschanged=()=>{if(qMode==="ear"&&tab===2)renderCharQui
 function bindEar(el,say){const b=el.querySelector(".ear-btn");if(!b)return;b.onclick=()=>speak(say);setTimeout(()=>speak(say),250)}
 const firstOpenCat=s=>[1,2,3].find(n=>modeChars(s,n).some(c=>!cdm(c.k)))||1;
 let qScript="h",qStage=firstOpenCat("h"),cq=null;
+// 풀던 글자 퀴즈가 있으면 그 글자 종류·카테고리·방향으로 연다 (문제 순서는 startStage가 이어 붙인다)
+try{const v=JSON.parse(localStorage.getItem("harukana-qsess"));if(v&&(v.s==="h"||v.s==="k")&&[1,2,3].includes(v.n)&&["fwd","rev","ear"].includes(v.m)&&Date.now()-v.t<7*864e5){qScript=v.s;qStage=v.n;qMode=v.m}}catch(e){}
 // 카테고리 전체를 행 구분 없이 섞어서 한 번씩 (순서대로 나오면 외우기보다 흐름으로 맞히게 돼서)
 function startStage(n,all){
   qStage=n;setLast({t:"char",s:qScript,n,m:qMode});cfq=null;
   // 이미 만난 글자는 섞어서 먼저, 처음 보는 글자는 한 행씩(あ행 → か행 …) 뒤에 붙인다.
   // 처음 보는 행에 닿으면 퀴즈 전에 "새 글자 만나기" 카드로 먼저 보여 준다
   const ks=modeChars(qScript,n).filter(c=>all||!cdm(c.k)).map(c=>c.k);
+  // 풀던 퀴즈(같은 글자 종류·카테고리·방향)가 남아 있으면 그 문제부터 이어서 (탭을 옮기거나 새로고침해도)
+  const sv=loadQSess();
+  if(!all&&sv&&sv.s===qScript&&sv.n===n&&sv.m===qMode&&Array.isArray(sv.queue)&&sv.queue.length&&sv.queue.every(k=>ks.includes(k))){cq={queue:sv.queue};return}
   const known=ks.filter(introduced),fresh=ks.filter(k=>!introduced(k)),rows={};
   for(const k of fresh){const i=rowIndex(k);(rows[i]=rows[i]||[]).push(k)}
   cq={queue:[...shuffle(known),...Object.keys(rows).sort((a,b)=>a-b).flatMap(i=>shuffle(rows[i]))]};
+  saveQSess();
 }
+// 풀던 퀴즈의 위치 저장 (이 기기에만. 맞히고 틀린 기록은 답을 고를 때마다 이미 저장된다)
+const QSESS="harukana-qsess",WSESS="harukana-wsess";
+function saveQSess(){try{if(cq)localStorage.setItem(QSESS,JSON.stringify({s:qScript,n:qStage,m:qMode,queue:cq.queue,t:Date.now()}))}catch(e){}}
+function loadQSess(){try{const v=JSON.parse(localStorage.getItem(QSESS));return v&&Date.now()-v.t<7*864e5?v:null}catch(e){return null}}
 /* 외우는 요령: 글자 모양을 그림이나 소리와 엮은 한 줄 (기본 46자씩).
    새 글자 만나기 카드, 문자 도감(누르면 아래에 표시), 글자 퀴즈에서 틀렸을 때 보여 준다 */
 const HINTS={
@@ -791,6 +801,7 @@ function renderCharQuiz(){
       speak(q.say);
       // 틀린 글자는 최소 3문제 뒤, 그 뒤 아무 곳에나 랜덤으로 다시 넣는다
       cq.queue.shift();if(!ok){const from=Math.min(RETRY_GAP,cq.queue.length);cq.queue.splice(from+Math.floor(Math.random()*(cq.queue.length-from+1)),0,key)}
+      saveQSess(); // 다음 문제로 넘어가기 전에 떠나도, 돌아오면 다음 문제부터
       save();refreshSummary();renderStageBar();
       return q.fb(ok);
     },
@@ -888,6 +899,9 @@ function renderConf(){
 const WSCRIPTS={h:"히라가나",k:"가타카나",m:"섞어 쓰기"};
 const MIX_NEED=2;
 let wv={view:"list",script:"h"};
+// 풀던 단어 카드·퀴즈가 있으면 그 자리부터 (새로고침해도)
+try{const v=JSON.parse(localStorage.getItem("harukana-wsess"));if(v&&(v.view==="card"||v.view==="quiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)){delete v.t;const byId=x=>WORDS.find(w=>w.id===(x&&x.id));v.batch=v.batch.map(byId).filter(Boolean);if(v.queue)v.queue=v.queue.map(byId).filter(Boolean);if(v.batch.length)wv={...v,wrong:new Set(v.wrong||[])}}}catch(e){}
+function saveWSess(){try{if(wv.view==="card"||wv.view==="quiz")localStorage.setItem("harukana-wsess",JSON.stringify({...wv,wrong:[...(wv.wrong||[])],t:Date.now()}));else localStorage.removeItem("harukana-wsess")}catch(e){}}
 const catWords=id=>WORDS.filter(w=>w.category===id);
 const scriptCats=s=>CATS.filter(c=>c.script===s);
 const catDone=id=>catWords(id).every(w=>wd(w.id));
@@ -951,6 +965,7 @@ const toList=cat=>{wv={view:"list",script:cat?cat.script:"h"};wordsHist();render
 
 function renderWords(){
   const el=$("words");
+  saveWSess(); // 카드·퀴즈 중이면 위치 저장, 목록으로 나왔으면 지움
   if(wv.view==="list"){
     const s=wv.script||"h",cats=scriptCats(s);
     setLast({t:"wordlist",s,m:wMode});
@@ -1018,7 +1033,7 @@ function renderWords(){
         if(wMode==="rev"){const x=S.wr[w.id]||(S.wr[w.id]={r:0,w:0,d:0});if(ok){if(!x.r)dayState().fresh++;x.r++;x.d=1}else{x.w++;x.d=0;addNote("w:"+w.id)}}
         else recordWord(w.id,ok);
         speak(w.kana);
-        wv.queue.shift();
+        wv.queue.shift();saveWSess();
         if(!ok){wv.wrong.add(w.id);wv.queue.push(w)}
         else wv.opened.push(...checkUnlocks(cat));
         save();refreshSummary();this.nextLabel=wv.queue.length?"다음 문제":"결과 보기";
@@ -2206,37 +2221,39 @@ function renderGrass(){
 let tab=0, pathScript='h';
 const tabNames=['학습 길','문자 도감','글자 퀴즈','단어 모으기','오답노트','프로필'];
 const TABS=[0,1,2,3,4,5];
-/* 뒤로·앞으로: 탭을 옮길 때마다 브라우저 방문 기록에 남겨서, 마우스 옆 버튼(4·5번)·브라우저 버튼·휴대폰 뒤로 가기로
-   앱 안에서 이전 화면으로 돌아가게 한다. 주소 끝에 #quiz 처럼 탭 이름이 붙어서 그 화면을 바로 열 수도 있다 */
+/* 뒤로·앞으로: 내가 고른 화면만 브라우저 방문 기록에 남겨서, 마우스 옆 버튼(아래=뒤로, 위=앞으로)·브라우저 버튼·
+   휴대폰 뒤로 가기로 앱 안에서 오간다. 앞으로 가기는 뒤로 간 다음에만 갈 곳이 생긴다 (브라우저 기본 동작 그대로).
+   - 사이트를 열면 늘 홈에서 시작한다 (주소에 예전 #quiz 같은 게 남아 있어도 저절로 옮기지 않음)
+   - 예전에 열었던 기록(이번에 연 게 아닌 것)은 건너뛴다. 그래서 고른 적 없는 화면으로 움직이지 않는다 */
 const TAB_SLUG=["home","chart","quiz","words","notes","profile"];
-let histTab=null,navPop=false,histIdx=0,histMax=0; // histIdx: 지금 몇 번째 기록, histMax: 앞으로 갈 수 있는 끝
+const LOAD_ID=Math.random().toString(36).slice(2); // 이번에 사이트를 연 회차
+let histTab=null,navPop=false,histSeq=0;
+// 기록마다 번호(seq)를 붙인다. 회차가 바뀌어도 이어지게 sessionStorage에 마지막 번호를 둔다
+const nextSeq=()=>{let n=0;try{n=Number(sessionStorage.getItem("harukana-hseq"))||0;sessionStorage.setItem("harukana-hseq",++n)}catch(e){n=Date.now()}return n};
 function histPush(st,replace){
-  const hash="#"+TAB_SLUG[st.tab]+(st.w==="cat"&&st.cat?"/"+st.cat:"");
-  if(!replace){histMax=++histIdx;try{sessionStorage.setItem("harukana-histmax",histMax)}catch(e){}} // 새로 가면 그 뒤의 "앞으로" 기록은 사라진다
-  try{history[replace?"replaceState":"pushState"]({...st,i:histIdx},"",hash)}catch(e){} // claude.ai 안에서는 막혀 있을 수 있다
+  histSeq=nextSeq();
+  const url=st.tab===0?location.pathname+location.search:"#"+TAB_SLUG[st.tab]+(st.w==="cat"&&st.cat?"/"+st.cat:"");
+  try{history[replace?"replaceState":"pushState"]({...st,load:LOAD_ID,seq:histSeq},"",url)}catch(e){} // claude.ai 안에서는 막혀 있을 수 있다
 }
-// 마우스 옆 위쪽 버튼(앞으로): 앞으로 갈 기록이 있으면 브라우저가 평소처럼 앞으로 가고,
-// 없으면(뒤로 간 적이 없으면) 아무 일도 안 일어나는 대신 메뉴의 다음 탭으로 간다
-document.addEventListener("mouseup",e=>{
-  if(e.button!==4||histIdx<histMax)return;
-  e.preventDefault();
-  if(tab<TABS.length-1)show(tab+1);
-});
 // 단어 화면 안에서 목록 ↔ 카테고리를 옮길 때도 기록에 남긴다
 function wordsHist(){if(navPop||tab!==3)return;histPush(wv.view==="cat"?{tab:3,w:"cat",cat:wv.cat}:{tab:3,w:"list",s:wv.script||"h"})}
 window.addEventListener("popstate",e=>{
-  const st=e.state;if(!st||st.tab==null||!TAB_SLUG[st.tab])return;
-  histIdx=st.i||0;
+  const st=e.state;
+  // 이번에 연 게 아닌 예전 기록이면, 가던 방향으로 한 칸 더 건너뛴다 (뒤로 가는 중이면 뒤로, 앞으로 가는 중이면 앞으로)
+  if(!st||st.load!==LOAD_ID||!TAB_SLUG[st.tab]){if(st&&Number(st.seq)>histSeq)history.forward();else history.back();return}
+  histSeq=st.seq;
   navPop=true;
   try{
     const d=document.querySelector("dialog[open]");if(d)d.close();
-    if(st.tab===3&&st.w)wv=st.w==="cat"&&catOf(st.cat)&&catOpen(catOf(st.cat))?{view:"cat",cat:st.cat}:{view:"list",script:st.s||"h"};
+    // 단어: 같은 카테고리의 카드·퀴즈를 풀던 중이면 그대로 둔다 (풀던 문제를 잃지 않게)
+    if(st.tab===3&&st.w&&!((wv.view==="card"||wv.view==="quiz")&&st.w==="cat"&&wv.cat===st.cat))
+      wv=st.w==="cat"&&catOf(st.cat)&&catOpen(catOf(st.cat))?{view:"cat",cat:st.cat}:{view:"list",script:st.s||"h"};
     show(st.tab);
     if(st.tab===3)renderWords();
   }finally{navPop=false}
 });
 function show(n){
-  if(!navPop&&n!==histTab)histPush(n===3?{tab:3,w:wv.view==="cat"?"cat":"list",cat:wv.cat,s:wv.script}:{tab:n},histTab===null);
+  if(!navPop&&n!==histTab)histPush(n===3?{tab:3,w:wv.view==="list"?"list":"cat",cat:wv.cat,s:wv.script}:{tab:n},histTab===null);
   histTab=n;
   tab=n;TABS.forEach(i=>{$("v"+i).hidden=i!==n;$("t"+i).classList.toggle("on",i===n);$("t"+i).setAttribute("aria-selected",String(i===n));$("t"+i).tabIndex=i===n?0:-1});
   $("page-label").textContent=tabNames[n];
@@ -2245,7 +2262,7 @@ function show(n){
   if(n===2){if(!$("quiz").innerHTML){renderStageBar();renderCharQuiz()}else setLast({t:"char",s:qScript,n:qStage,m:qMode})}
   if(n===4)setLast({t:"note"});
   if(n===1)setLast({t:"table",kata:kataMode});
-  if(n===3&&(wv.view==="list"||wv.view==="cat"))renderWords();
+  if(n===3&&(wv.view==="list"||wv.view==="cat"||!$("words").innerHTML))renderWords();
   if(n===4&&!nq)renderNote();
   if(n===5){renderRank();loadBoard(rk.mode)}
   window.scrollTo({top:0,behavior:'instant'});
@@ -2312,16 +2329,7 @@ const mobileNav=matchMedia('(max-width:760px)');
 const orientNav=()=>document.querySelector('.tabs').setAttribute('aria-orientation',mobileNav.matches?'horizontal':'vertical');
 mobileNav.addEventListener('change',orientNav);orientNav();
 updateTitles();migrateSr();save();refreshSummary();renderHome();initRank();
-// 시작 화면(홈)을 방문 기록의 첫 칸으로 둔다. 주소에 #quiz, #words/카테고리 같은 이름이 있으면 그 화면을 바로 연다
-{const cur=history.state,[slug,cat]=decodeURIComponent(location.hash.slice(1)).split("/"),i=TAB_SLUG.indexOf(slug);
-  if(cur&&cur.i!=null&&TAB_SLUG[cur.tab]){ // 새로고침: 보던 화면과 기록 위치를 그대로 잇는다
-    histIdx=cur.i;try{histMax=Math.max(histIdx,Number(sessionStorage.getItem("harukana-histmax"))||0)}catch(e){histMax=histIdx}
-    histTab=cur.tab;
-    if(cur.tab>0){if(cur.tab===3&&cur.w==="cat"&&catOf(cur.cat)&&catOpen(catOf(cur.cat)))wv={view:"cat",cat:cur.cat};navPop=true;try{show(cur.tab)}finally{navPop=false}}
-  }else{
-    histPush({tab:0},true);histTab=0;
-    if(i>0){if(i===3&&cat&&catOf(cat)&&catOpen(catOf(cat)))wv={view:"cat",cat};show(i)}
-  }}
+{histPush({tab:0},true);histTab=0} // 늘 홈에서 시작하고, 지금 칸을 이번 회차의 첫 기록으로 둔다
 </script>
 
 
