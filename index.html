@@ -2209,15 +2209,24 @@ const TABS=[0,1,2,3,4,5];
 /* 뒤로·앞으로: 탭을 옮길 때마다 브라우저 방문 기록에 남겨서, 마우스 옆 버튼(4·5번)·브라우저 버튼·휴대폰 뒤로 가기로
    앱 안에서 이전 화면으로 돌아가게 한다. 주소 끝에 #quiz 처럼 탭 이름이 붙어서 그 화면을 바로 열 수도 있다 */
 const TAB_SLUG=["home","chart","quiz","words","notes","profile"];
-let histTab=null,navPop=false;
+let histTab=null,navPop=false,histIdx=0,histMax=0; // histIdx: 지금 몇 번째 기록, histMax: 앞으로 갈 수 있는 끝
 function histPush(st,replace){
   const hash="#"+TAB_SLUG[st.tab]+(st.w==="cat"&&st.cat?"/"+st.cat:"");
-  try{history[replace?"replaceState":"pushState"](st,"",hash)}catch(e){} // claude.ai 안에서는 막혀 있을 수 있다
+  if(!replace){histMax=++histIdx;try{sessionStorage.setItem("harukana-histmax",histMax)}catch(e){}} // 새로 가면 그 뒤의 "앞으로" 기록은 사라진다
+  try{history[replace?"replaceState":"pushState"]({...st,i:histIdx},"",hash)}catch(e){} // claude.ai 안에서는 막혀 있을 수 있다
 }
+// 마우스 옆 위쪽 버튼(앞으로): 앞으로 갈 기록이 있으면 브라우저가 평소처럼 앞으로 가고,
+// 없으면(뒤로 간 적이 없으면) 아무 일도 안 일어나는 대신 메뉴의 다음 탭으로 간다
+document.addEventListener("mouseup",e=>{
+  if(e.button!==4||histIdx<histMax)return;
+  e.preventDefault();
+  if(tab<TABS.length-1)show(tab+1);
+});
 // 단어 화면 안에서 목록 ↔ 카테고리를 옮길 때도 기록에 남긴다
 function wordsHist(){if(navPop||tab!==3)return;histPush(wv.view==="cat"?{tab:3,w:"cat",cat:wv.cat}:{tab:3,w:"list",s:wv.script||"h"})}
 window.addEventListener("popstate",e=>{
   const st=e.state;if(!st||st.tab==null||!TAB_SLUG[st.tab])return;
+  histIdx=st.i||0;
   navPop=true;
   try{
     const d=document.querySelector("dialog[open]");if(d)d.close();
@@ -2304,9 +2313,15 @@ const orientNav=()=>document.querySelector('.tabs').setAttribute('aria-orientati
 mobileNav.addEventListener('change',orientNav);orientNav();
 updateTitles();migrateSr();save();refreshSummary();renderHome();initRank();
 // 시작 화면(홈)을 방문 기록의 첫 칸으로 둔다. 주소에 #quiz, #words/카테고리 같은 이름이 있으면 그 화면을 바로 연다
-{const [slug,cat]=decodeURIComponent(location.hash.slice(1)).split("/"),i=TAB_SLUG.indexOf(slug);
-  histPush({tab:0},true);histTab=0;
-  if(i>0){if(i===3&&cat&&catOf(cat)&&catOpen(catOf(cat)))wv={view:"cat",cat};show(i)}}
+{const cur=history.state,[slug,cat]=decodeURIComponent(location.hash.slice(1)).split("/"),i=TAB_SLUG.indexOf(slug);
+  if(cur&&cur.i!=null&&TAB_SLUG[cur.tab]){ // 새로고침: 보던 화면과 기록 위치를 그대로 잇는다
+    histIdx=cur.i;try{histMax=Math.max(histIdx,Number(sessionStorage.getItem("harukana-histmax"))||0)}catch(e){histMax=histIdx}
+    histTab=cur.tab;
+    if(cur.tab>0){if(cur.tab===3&&cur.w==="cat"&&catOf(cur.cat)&&catOpen(catOf(cur.cat)))wv={view:"cat",cat:cur.cat};navPop=true;try{show(cur.tab)}finally{navPop=false}}
+  }else{
+    histPush({tab:0},true);histTab=0;
+    if(i>0){if(i===3&&cat&&catOf(cat)&&catOpen(catOf(cat)))wv={view:"cat",cat};show(i)}
+  }}
 </script>
 
 
