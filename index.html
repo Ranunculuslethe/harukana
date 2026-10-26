@@ -121,6 +121,16 @@
 .scene-caption small{display:block;font-size:10px;letter-spacing:0;opacity:.85;margin-top:1px}
 .hint-list{list-style:none;margin:4px 0 12px;padding:12px 14px;border-radius:12px;background:var(--midbg);font-size:13px;line-height:1.7;text-align:left}
 .hint-list b{display:inline-block;min-width:26px;font-size:16px;margin-right:6px}
+.kind-seg{margin-bottom:10px}
+.big.sent{font-size:clamp(22px,4.6vw,32px);line-height:1.5;letter-spacing:.02em;word-break:keep-all;padding:6px 4px}
+.big.sent.ko{font-family:inherit;font-weight:700}
+.big.sent .pt,.srow .pt{font-style:normal;color:var(--accent);border-bottom:2px solid var(--accent)}
+.sblank{display:inline-block;min-width:2.2em;color:var(--accent);font-weight:700}
+.s-ko{display:block;font-size:14px;color:var(--sub);font-weight:500;margin-top:6px;letter-spacing:0}
+.choices.sentc button{font-size:16px;line-height:1.5;padding:12px 14px;word-break:keep-all}
+.s-tip{background:var(--midbg);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.7;margin:8px 0 14px}
+.s-sub{font-size:14px;color:var(--sub);font-weight:600;margin-left:6px}
+.srow .wk{font-size:16px;letter-spacing:.02em}.s-note{max-width:460px;margin:8px auto}
 .learn-h{margin:14px 0 4px}.learn-h small{font-size:13px;color:var(--sub);font-weight:600;margin-left:6px}
 .learn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:10px;margin:14px 0}
 .learn-tile{display:flex;flex-direction:column;align-items:center;gap:2px;padding:14px 6px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);font:inherit;cursor:pointer}
@@ -232,6 +242,7 @@
 <div class="path-tabs" role="group" aria-label="학습 길 문자 종류"><button id="path-h" class="on" aria-pressed="true">ひ <span>히라가나</span></button><button id="path-k" aria-pressed="false">カ <span>가타카나</span></button></div>
 <div class="journey" id="journey"></div>
 <button class="vocab-banner" id="home-words"><span class="vocab-symbol">語</span><span><b>글자에서 단어로, 한 걸음 더</b><small>히라가나·가타카나 기초 단어 72개와 섞어 쓰기 20개</small></span><svg class="icon " aria-hidden="true"><use href="#i-arrow"/></svg></button>
+<button class="vocab-banner" id="home-sents"><span class="vocab-symbol">文</span><span><b>단어에서 문장으로</b><small>は·を·に 같은 조사로 짧은 문장 만들기 · 8단원 32문장</small></span><svg class="icon " aria-hidden="true"><use href="#i-arrow"/></svg></button>
 <p class="path-footer">한 글자씩 쌓이는 나의 일본어 <span>·</span> 一日、一歩。</p></section>
 <section id="v1" role="tabpanel" aria-labelledby="t1" hidden>
   <div class="section-intro"><div><p class="section-kicker">REFERENCE / 01</p><h2>나의 문자 도감</h2><p class="section-copy">글자를 눌러 발음을 듣고, 색상으로 익힌 정도를 확인하세요.</p></div><div class="section-mark" aria-hidden="true">あ</div></div>
@@ -405,6 +416,50 @@ const clean=h=>h.replace(/\(.*\)/,"");
 let DATA={categories:[],words:[]};
 try{DATA=JSON.parse(document.getElementById("word-data").textContent)}catch(e){console.error("단어 데이터를 읽지 못했어요",e)}
 const CATS=DATA.categories,WORDS=DATA.words;
+const SENT_UNITS=[
+  {id:"u1",title:"~は ~です",ko:"~은/는 ~입니다",tip:"「AはBです」는 \"A는 B입니다\". 조사 は는 '하'가 아니라 '와'로 읽어요. です의 끝 '스'는 약하게 읽어요.",items:[
+    {id:"s101",ja:"わたし[は] がくせいです。",hg:"와타시와 가쿠세이데스",ko:"저는 학생입니다."},
+    {id:"s102",ja:"たなかさん[は] せんせいです。",hg:"타나카상와 센세이데스",ko:"다나카 씨는 선생님입니다."},
+    {id:"s103",ja:"わたし[は] かんこくじんです。",hg:"와타시와 칸코쿠진데스",ko:"저는 한국인입니다."},
+    {id:"s104",ja:"きょう[は] にちようびです。",hg:"쿄우와 니치요우비데스",ko:"오늘은 일요일입니다."}]},
+  {id:"u2",title:"~ですか / ~じゃないです",ko:"~입니까? / ~이 아닙니다",tip:"문장 끝에 か를 붙이면 질문이 돼요. 「~じゃないです」는 \"~이 아닙니다\". 대답은 はい(네)·いいえ(아니요).",items:[
+    {id:"s201",ja:"がくせいです[か]。",hg:"가쿠세이데스카",ko:"학생입니까?"},
+    {id:"s202",ja:"はい、がくせいです。",hg:"하이, 가쿠세이데스",ko:"네, 학생입니다."},
+    {id:"s203",ja:"いいえ、せんせいじゃないです。",hg:"이이에, 센세이쟈나이데스",ko:"아니요, 선생님이 아닙니다."},
+    {id:"s204",ja:"これ{は} みずです[か]。",hg:"코레와 미즈데스카",ko:"이것은 물입니까?"}]},
+  {id:"u3",title:"これ・それ・あれ / ~の",ko:"이것·그것·저것 / ~의",tip:"これ(이것)·それ(그것)·あれ(저것). の는 \"~의\"로, 「わたしの」는 \"나의(내)\"예요.",items:[
+    {id:"s301",ja:"これ[は] ほんです。",hg:"코레와 혼데스",ko:"이것은 책입니다."},
+    {id:"s302",ja:"それ{は} わたし[の] かさです。",hg:"소레와 와타시노 카사데스",ko:"그것은 제 우산입니다."},
+    {id:"s303",ja:"あれ[は] がっこうです。",hg:"아레와 갓코우데스",ko:"저것은 학교입니다."},
+    {id:"s304",ja:"ともだち[の] いえです。",hg:"토모다치노 이에데스",ko:"친구의 집입니다."}]},
+  {id:"u4",title:"~を ~ます",ko:"~을/를 ~합니다",tip:"を는 \"~을/를\"이고 '오'로 읽어요. 동사 끝의 ます는 \"~합니다\"처럼 정중하게 말하는 모양이에요.",items:[
+    {id:"s401",ja:"みず[を] のみます。",hg:"미즈오 노미마스",ko:"물을 마십니다."},
+    {id:"s402",ja:"ごはん[を] たべます。",hg:"고한오 타베마스",ko:"밥을 먹습니다."},
+    {id:"s403",ja:"テレビ[を] みます。",hg:"테레비오 미마스",ko:"텔레비전을 봅니다."},
+    {id:"s404",ja:"にほんご[を] べんきょうします。",hg:"니혼고오 벤쿄우시마스",ko:"일본어를 공부합니다."}]},
+  {id:"u5",title:"~に / ~へ いきます",ko:"~에 갑니다",tip:"가는 곳에는 に나 へ를 붙여요. 둘 다 \"~에\"이고, 방향의 へ는 '에'로 읽어요.",items:[
+    {id:"s501",ja:"がっこう[に] いきます。",hg:"갓코우니 이키마스",ko:"학교에 갑니다.",no:["へ"]},
+    {id:"s502",ja:"えき[へ] いきます。",hg:"에키에 이키마스",ko:"역에 갑니다.",no:["に"]},
+    {id:"s503",ja:"うち[に] かえります。",hg:"우치니 카에리마스",ko:"집에 돌아갑니다.",no:["へ"]},
+    {id:"s504",ja:"にほん[に] いきます。",hg:"니혼니 이키마스",ko:"일본에 갑니다.",no:["へ"]}]},
+  {id:"u6",title:"~で ~ます",ko:"~에서 ~합니다",tip:"무엇을 하는 장소에는 で를 붙여요. \"~에서\"예요. 가는 곳의 に와 헷갈리지 않게!",items:[
+    {id:"s601",ja:"いえ[で] ごはん{を} たべます。",hg:"이에데 고한오 타베마스",ko:"집에서 밥을 먹습니다."},
+    {id:"s602",ja:"がっこう[で] べんきょうします。",hg:"갓코우데 벤쿄우시마스",ko:"학교에서 공부합니다."},
+    {id:"s603",ja:"こうえん[で] あそびます。",hg:"코우엔데 아소비마스",ko:"공원에서 놉니다."},
+    {id:"s604",ja:"みせ[で] パン{を} かいます。",hg:"미세데 판오 카이마스",ko:"가게에서 빵을 삽니다."}]},
+  {id:"u7",title:"~と / ~も",ko:"~와/과 / ~도",tip:"と는 \"~와/과\"(함께, 그리고), も는 \"~도\"예요. も를 쓰면 は 대신 들어가요.",items:[
+    {id:"s701",ja:"ともだち[と] いきます。",hg:"토모다치토 이키마스",ko:"친구와 갑니다."},
+    {id:"s702",ja:"わたし[も] がくせいです。",hg:"와타시모 가쿠세이데스",ko:"저도 학생입니다."},
+    {id:"s703",ja:"パン[と] みず{を} かいます。",hg:"판토 미즈오 카이마스",ko:"빵과 물을 삽니다."},
+    {id:"s704",ja:"あした[も] いきます。",hg:"아시타모 이키마스",ko:"내일도 갑니다."}]},
+  {id:"u8",title:"형용사 + です",ko:"~합니다 (맛있다, 춥다)",tip:"い로 끝나는 형용사에 です를 붙이면 정중한 말이 돼요. 「この」는 \"이 ~\"(이 사과, 이 방)예요.",items:[
+    {id:"s801",ja:"この りんご[は] おいしいです。",hg:"코노 린고와 오이시이데스",ko:"이 사과는 맛있습니다."},
+    {id:"s802",ja:"きょう[は] さむいです。",hg:"쿄우와 사무이데스",ko:"오늘은 춥습니다."},
+    {id:"s803",ja:"この へや[は] ひろいです。",hg:"코노 헤야와 히로이데스",ko:"이 방은 넓습니다."},
+    {id:"s804",ja:"にほんご[は] たのしいです。",hg:"니혼고와 타노시이데스",ko:"일본어는 즐겁습니다."}]}
+];
+const SENTS=SENT_UNITS.flatMap(u=>u.items.map(s=>({...s,unit:u.id})));
+const SENT_BY_ID=Object.fromEntries(SENTS.map(s=>[s.id,s]));
 function units(kana){const out=[];for(let i=0;i<kana.length;i++){const n=kana[i+1];if(n&&"ゃゅょャュョ".includes(n)){out.push(kana[i]+n);i++}else out.push(kana[i])}return out}
 function autoHangul(kana){
   let s="";
@@ -436,7 +491,7 @@ function autoHangul(kana){
 })();
 
 const KEY="kana-v1";
-const fresh=()=>({c:{},w:{},n:{},co:{h:1,k:1,m:1},mix:0,daily:{},xp:0,badges:{},flags:{},rank:1,titles:{},sr:{},wk:{id:"",xp:0},cr:{},wr:{},claimed:{},ca:{},cf:{},seen:{}});
+const fresh=()=>({c:{},w:{},n:{},co:{h:1,k:1,m:1},mix:0,daily:{},xp:0,badges:{},flags:{},rank:1,titles:{},sr:{},wk:{id:"",xp:0},cr:{},wr:{},claimed:{},ca:{},cf:{},seen:{},sx:{}});
 let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||typeof S!=="object")S=fresh();
 S.c=S.c||{};S.w=S.w||{};S.n=S.n||{};S.daily=S.daily||{};delete S.u;
@@ -444,7 +499,7 @@ if(!S.co){S.co={h:S.cu||1,k:1,m:1}}delete S.cu; // 예전 저장분: 히라가�
 S.mix=S.mix||0;S.xp=S.xp||0;S.badges=S.badges||{};S.flags=S.flags||{};// 랭킹은 기본으로 참가한다 (프로필에서 "랭킹에서 숨기기"를 누른 사람만 rankOff). 닉네임이 없으면 "학습자1234" 같은 가명을 한 번 만든다
 if(!S.rankOff)S.rank=1;
 if(!S.nick)S.nick="학습자"+String(Math.floor(1000+Math.random()*9000));
-S.titles=S.titles||{};delete S.ro;S.sr=S.sr||{};S.wk=S.wk||{id:"",xp:0};S.cr=S.cr||{};S.wr=S.wr||{};S.claimed=S.claimed||{};S.ca=S.ca||{};S.cf=S.cf||{};S.seen=S.seen||{}; // seen: 글자 퀴즈 전에 "새 글자 만나기"로 본 글자
+S.titles=S.titles||{};delete S.ro;S.sr=S.sr||{};S.wk=S.wk||{id:"",xp:0};S.cr=S.cr||{};S.wr=S.wr||{};S.claimed=S.claimed||{};S.ca=S.ca||{};S.cf=S.cf||{};S.seen=S.seen||{};S.sx=S.sx||{}; // sx: 문장 연습 진도 {문장id:{r,w,d}} // seen: 글자 퀴즈 전에 "새 글자 만나기"로 본 글자
 for(const k in S.c)if(S.c[k].d===undefined)S.c[k].d=S.c[k].s>=1?1:0;
 for(const k in S.w)if(S.w[k].d===undefined)S.w[k].d=S.w[k].s>=1?1:0;
 for(const k in S.n)S.n[k].s=0;
@@ -829,8 +884,10 @@ function renderConf(){
 const WSCRIPTS={h:"히라가나",k:"가타카나",m:"섞어 쓰기"};
 const MIX_NEED=2;
 let wv={view:"list",script:"h"};
-try{const v=JSON.parse(localStorage.getItem("harukana-wsess"));if(v&&(v.view==="card"||v.view==="quiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)){delete v.t;const byId=x=>WORDS.find(w=>w.id===(x&&x.id));v.batch=v.batch.map(byId).filter(Boolean);if(v.queue)v.queue=v.queue.map(byId).filter(Boolean);if(v.batch.length)wv={...v,wrong:new Set(v.wrong||[])}}}catch(e){}
-function saveWSess(){try{if(wv.view==="card"||wv.view==="quiz")localStorage.setItem("harukana-wsess",JSON.stringify({...wv,wrong:[...(wv.wrong||[])],t:Date.now()}));else localStorage.removeItem("harukana-wsess")}catch(e){}}
+try{const v=JSON.parse(localStorage.getItem("harukana-wsess"));
+  if(v&&(v.view==="scard"||v.view==="squiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)&&SENT_UNITS.some(u=>u.id===v.unit)){delete v.t;v.batch=v.batch.filter(id=>SENT_BY_ID[id]);if(v.queue)v.queue=v.queue.filter(id=>SENT_BY_ID[id]);v.wrong=(v.wrong||[]).filter(id=>SENT_BY_ID[id]);if(v.batch.length)wv=v}
+  else if(v&&(v.view==="card"||v.view==="quiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)){delete v.t;const byId=x=>WORDS.find(w=>w.id===(x&&x.id));v.batch=v.batch.map(byId).filter(Boolean);if(v.queue)v.queue=v.queue.map(byId).filter(Boolean);if(v.batch.length)wv={...v,wrong:new Set(v.wrong||[])}}}catch(e){}
+function saveWSess(){try{if(["card","quiz","scard","squiz"].includes(wv.view))localStorage.setItem("harukana-wsess",JSON.stringify({...wv,wrong:[...(wv.wrong||[])],t:Date.now()}));else localStorage.removeItem("harukana-wsess")}catch(e){}}
 const catWords=id=>WORDS.filter(w=>w.category===id);
 const scriptCats=s=>CATS.filter(c=>c.script===s);
 const catDone=id=>catWords(id).every(w=>wd(w.id));
@@ -883,6 +940,7 @@ const toList=cat=>{wv={view:"list",script:cat?cat.script:"h"};wordsHist();render
 function renderWords(){
   const el=$("words");
   saveWSess(); // 카드·퀴즈 중이면 위치 저장, 목록으로 나왔으면 지움
+  if(wv.view&&wv.view[0]==="s")return renderSent(el); // 문장 연습 화면들
   if(wv.view==="list"){
     const s=wv.script||"h",cats=scriptCats(s);
     setLast({t:"wordlist",s,m:wMode});
@@ -899,7 +957,9 @@ function renderWords(){
           <div class="desc">${open?c.desc:`${josa(cats[i-1].name,"을","를")} 끝내면 열려요`}</div><div class="bar"><i style="width:${ws.length?mw/ws.length*100:0}%"></i></div>
           <div class="meta">맞힌 단어 ${mw}/${ws.length}${(()=>{const n=ws.filter(w=>!wdm(w.id)&&wordUnknown(w).length).length;return open&&n?` · 처음 보는 글자가 든 단어 ${n}개`:""})()}</div></button>`}).join("")}</div>`;
     }
-    el.innerHTML=seg+body;
+    const kindSeg=`<div class="seg kind-seg" role="group" aria-label="단어 또는 문장"><button class="on" aria-pressed="true">단어</button><button id="to-sent">문장</button></div>`;
+    el.innerHTML=kindSeg+seg+body;
+    $("to-sent").onclick=()=>{wv={view:"slist"};wordsHist();renderWords()};
     el.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{wv={view:"list",script:b.dataset.s};renderWords()});
     el.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{wMode=b.dataset.wm;renderWords()});
     el.querySelectorAll(".catcard").forEach(b=>b.onclick=()=>{wv={view:"cat",cat:b.dataset.id};wordsHist();renderWords()});
@@ -973,16 +1033,107 @@ function renderWords(){
   }
 }
 
+const PARTICLES=["は","が","を","に","へ","で","と","も","の","か"];
+const sjPlain=s=>s.ja.replace(/[\[\]{}]/g,"");
+const sjMark=s=>esc(s.ja).replace(/\[([^\]]+)\]|\{([^}]+)\}/g,(m,a,b)=>`<em class="pt">${a||b}</em>`); // 조사 강조
+const sjBlank=s=>esc(s.ja).replace(/\{([^}]+)\}/g,"$1").replace(/\[[^\]]+\]/,'<span class="sblank">（　）</span>');
+const sAns=s=>(s.ja.match(/\[([^\]]+)\]/)||[])[1];
+const sxd=id=>!!(S.sx[id]&&S.sx[id].d);
+const unitDone=u=>u.items.every(s=>sxd(s.id));
+function recordSent(id,ok){const x=S.sx[id]||(S.sx[id]={r:0,w:0,d:0});if(ok){if(!x.r)dayState().fresh++;x.r++;x.d=1;schedule("s:"+id)}else{x.w++;x.d=0;addNote("s:"+id)}}
+function sentQ(s,type){
+  type=type||rand(sAns(s)?["mean","blank","rev"]:["mean","rev"]);
+  const fb=ok=>`${ok?"정답!":"아쉬워요."} ${esc(sjPlain(s))} = ${esc(s.ko)}<span class="tip">${esc(s.hg)}</span>`;
+  const base={say:sjPlain(s),fb,kind:"sent"};
+  if(type==="blank"){
+    const a=sAns(s),bad=new Set([a,...(s.no||[])]),opts=shuffle([a,...shuffle(PARTICLES.filter(p=>!bad.has(p))).slice(0,3)]);
+    return{...base,prompt:"뜻에 맞게 빈칸에 들어갈 조사를 고르세요",big:`${sjBlank(s)}<small class="s-ko">${esc(s.ko)}</small>`,bigCls:"sent",choices:opts,chCls:"kana",correct:opts.indexOf(a)};
+  }
+  const others=shuffle(SENTS.filter(x=>x.id!==s.id&&x.ko!==s.ko)),pick=[...others.filter(x=>x.unit===s.unit),...others.filter(x=>x.unit!==s.unit)].slice(0,3);
+  const opts=shuffle([s,...pick]);
+  if(type==="rev")return{...base,prompt:"이 뜻의 일본어 문장은?",big:esc(s.ko),bigCls:"sent ko",choices:opts.map(x=>esc(sjPlain(x))),chCls:"text kana sentc",correct:opts.indexOf(s),rev:1};
+  return{...base,prompt:"이 문장의 뜻은?",big:esc(sjPlain(s)),bigCls:"sent",choices:opts.map(x=>esc(x.ko)),chCls:"text",correct:opts.indexOf(s)};
+}
+const firstOpenUnit=()=>{const i=SENT_UNITS.findIndex(u=>!unitDone(u));return i<0?-1:i};
+function renderSent(el){
+  const seg=`<div class="seg kind-seg" role="group" aria-label="단어 또는 문장"><button id="to-words">단어</button><button class="on" aria-pressed="true">문장</button></div>`;
+  const toWords=()=>{if($("to-words"))$("to-words").onclick=()=>{wv={view:"list",script:"h"};wordsHist();renderWords()}};
+  if(wv.view==="slist"){
+    const nx=firstOpenUnit();
+    el.innerHTML=seg+`<p class="intro">단어를 이어 짧은 문장을 만들어요. 조사(は·を·に…)를 하나씩, 위에서부터 차례로 익히면 좋아요.</p>
+      <div class="cats">${SENT_UNITS.map((u,i)=>{const n=u.items.filter(s=>sxd(s.id)).length;
+        return `<button class="catcard" data-u="${u.id}"><div class="cat-top"><b>${i+1}. ${esc(u.title)}</b>${n===u.items.length?'<span class="pill ok">완료</span>':i===nx?'<span class="pill">다음 추천</span>':""}</div>
+          <div class="desc">${esc(u.ko)}</div><div class="bar"><i style="width:${n/u.items.length*100}%"></i></div><div class="meta">맞힌 문장 ${n}/${u.items.length}</div></button>`}).join("")}</div>`;
+    toWords();
+    el.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{wv={view:"sunit",unit:b.dataset.u};wordsHist();renderWords()});
+    return;
+  }
+  const u=SENT_UNITS.find(x=>x.id===wv.unit);
+  if(!u){wv={view:"slist"};return renderSent(el)}
+  const toUnit=()=>{wv={view:"sunit",unit:u.id};renderWords()};
+  const exitS=`<div style="text-align:left"><button class="back" id="sexit">← 그만하고 나가기</button></div>`;
+  if(wv.view==="sunit"){
+    const todo=u.items.filter(s=>!sxd(s.id));
+    el.innerHTML=seg+`<button class="back" id="sbk">← 문장 단원 목록</button>
+      <div class="status qstat"><span>문장 · ${esc(u.title)} · 맞힌 문장 ${u.items.length-todo.length}/${u.items.length}</span>${resetBtn(`sx-${u.id}`,"초기화")}</div>
+      <h2>${esc(u.title)} <small class="s-sub">${esc(u.ko)}</small></h2><p class="s-tip">${esc(u.tip)}</p>
+      <div style="text-align:center"><button class="next" id="sgo">${todo.length?`학습 시작 (${todo.length}개)`:"다시 풀기"}</button></div>
+      <div class="wlist">${u.items.map(s=>`<div class="wrow srow"><span class="wk">${sjMark(s)}</span><span class="wm">${esc(s.ko)}</span>${sxd(s.id)?'<span class="st pill ok">맞힘</span>':""}</div>`).join("")}</div>`;
+    toWords();
+    $("sbk").onclick=()=>{wv={view:"slist"};wordsHist();renderWords()};
+    $("sgo").onclick=()=>{wv={view:"scard",unit:u.id,batch:(todo.length?todo:u.items).map(s=>s.id),i:0};renderWords()};
+    return;
+  }
+  if(wv.view==="scard"){
+    const s=SENT_BY_ID[wv.batch[wv.i]],n=wv.batch.length,last=wv.i===n-1;
+    el.innerHTML=`<div class="panel">${exitS}<div class="status">${esc(u.title)} · 문장 ${wv.i+1} / ${n}</div>
+      <div class="big sent">${sjMark(s)}</div><div class="hg">${esc(s.hg)}</div><div class="mean">${esc(s.ko)}</div>
+      <p class="tip s-note">${esc(u.tip)}</p>
+      <button class="ghost" id="say">발음 듣기</button><div class="slow-row" style="justify-content:center">${slowToggle()}</div>
+      <div class="navrow"><button class="ghost" id="pv" ${wv.i?"":"disabled"}>이전</button><button class="next" id="nx">${last?"확인 퀴즈 시작":"다음"}</button></div>
+      <button class="link" id="skip">다 아는 문장이면 바로 퀴즈</button></div>`;
+    speak(sjPlain(s));
+    const toQuiz=()=>{wv={view:"squiz",unit:u.id,batch:wv.batch,queue:shuffle(wv.batch.slice()),total:wv.batch.length,wrong:[]};renderWords()};
+    $("sexit").onclick=toUnit;$("say").onclick=()=>speak(sjPlain(s));
+    $("pv").onclick=()=>{wv.i--;renderWords()};$("nx").onclick=()=>{if(last)toQuiz();else{wv.i++;renderWords()}};$("skip").onclick=toQuiz;
+    return;
+  }
+  if(wv.view==="squiz"){
+    if(!wv.queue.length){wv={view:"sdone",unit:u.id,wrong:wv.wrong||[]};return renderWords()}
+    const s=SENT_BY_ID[wv.queue[0]],q=sentQ(s),retry=(wv.wrong||[]).includes(s.id);
+    el.innerHTML=`<div class="panel" id="sq"></div>`;
+    mc($("sq"),{...q,head:`${exitS}<div class="status qstat"><span>문장 · ${esc(u.title)} · 남은 문제 ${wv.queue.length}</span></div>${retry?'<span class="pill">다시 나온 문장</span>':""}`,
+      onPick(ok){
+        recordSent(s.id,ok);speak(q.say);wv.queue.shift();
+        if(!ok){if(!wv.wrong.includes(s.id))wv.wrong.push(s.id);const from=Math.min(RETRY_GAP,wv.queue.length);wv.queue.splice(from+Math.floor(Math.random()*(wv.queue.length-from+1)),0,s.id)}
+        saveWSess();save();refreshSummary();
+        return q.fb(ok);
+      },
+      onNext:()=>renderWords()});
+    $("sexit").onclick=toUnit;
+    return;
+  }
+  if(wv.view==="sdone"){
+    const i=SENT_UNITS.indexOf(u),next=SENT_UNITS[i+1],wrong=(wv.wrong||[]).map(id=>SENT_BY_ID[id]).filter(Boolean);
+    el.innerHTML=`<div class="panel"><h2>${esc(u.title)} 문장을 모두 맞혔어요</h2>
+      ${wrong.length?`<p class="intro">처음에 틀린 문장 ${wrong.length}개는 오답노트에 있어요.</p><div class="wlist" style="text-align:left">${wrong.map(s=>`<div class="wrow srow"><span class="wk">${sjMark(s)}</span><span class="wm">${esc(s.ko)}</span></div>`).join("")}</div>`:'<p class="intro">한 번에 다 맞혔어요.</p>'}
+      <div class="navrow"><button class="ghost" id="sbk2">단원 목록</button>${next?'<button class="next" id="snext">다음 단원으로</button>':""}</div></div>`;
+    $("sbk2").onclick=()=>{wv={view:"slist"};renderWords()};
+    if($("snext"))$("snext").onclick=()=>{wv={view:"sunit",unit:next.id};wordsHist();renderWords()};
+  }
+}
+
 let nq=null;
 function noteItem(key){
   const [t,id]=[key.slice(0,1),key.slice(2)];
   if(t==="c"){const c=CH[id];return c&&{key,jp:c.sp?c.disp:c.k,pr:c.h,mean:c.sp?c.r:(c.kata?"가타카나":"히라가나"),c}}
+  if(t==="s"){const s=SENT_BY_ID[id];return s&&{key,jp:sjPlain(s),pr:s.hg,mean:s.ko,s}}
   const w=WORDS.find(x=>x.id===id);return w&&{key,jp:w.kana,pr:w.hangul,mean:w.meaning,w};
 }
 function renderNote(){
   const el=$("note"),items=Object.keys(S.n).map(noteItem).filter(Boolean).sort((a,b)=>S.n[b.key].wr-S.n[a.key].wr);
   if(nq){renderNoteQuiz();return}
-  if(!items.length){el.innerHTML=`<div class="empty-note">오답노트가 비어 있어요. 글자·단어 퀴즈에서 틀린 문제가 여기에 모여요.</div>`;return}
+  if(!items.length){el.innerHTML=`<div class="empty-note">오답노트가 비어 있어요. 글자·단어·문장 퀴즈에서 틀린 문제가 여기에 모여요.</div>`;return}
   el.innerHTML=`<div style="text-align:center"><button class="next" id="nstart">오답노트 퀴즈 (${items.length}개)</button>
     <p class="intro" style="margin-top:8px">맞히면 노트에서 빠지고, 틀리면 다시 나와요.</p></div>
     <div class="tablewrap"><table><thead><tr><th>일본어</th><th>발음</th><th>뜻</th><th style="text-align:right">틀린 횟수</th></tr></thead>
@@ -994,11 +1145,11 @@ function renderNoteQuiz(){
   const el=$("note");
   nq.queue=nq.queue.filter(k=>S.n[k]);
   if(!nq.queue.length){nq=null;if(!Object.keys(S.n).length){S.flags.noteClear=1;checkBadges();save()}el.innerHTML=`<div class="panel"><h2>오답노트를 모두 비웠어요</h2><p class="intro">틀렸던 문제를 전부 다시 맞혔어요.</p></div>`;return}
-  const key=nq.queue[0],it=noteItem(key),q=it.c?charQ(it.c):wordQ(it.w);
+  const key=nq.queue[0],it=noteItem(key),q=it.c?charQ(it.c):it.s?sentQ(it.s):wordQ(it.w);
   el.innerHTML=`<div class="panel" id="nqp"></div><div style="text-align:center"><button class="link" id="nstop">그만하고 목록 보기</button></div>`;
   mc($("nqp"),{...q,note:1,head:`<div class="status">남은 오답 ${nq.queue.length}개</div>`,
     onPick(ok){
-      if(it.c)recordChar(it.c.k,ok);else recordWord(it.w.id,ok);
+      if(it.c)recordChar(it.c.k,ok);else if(it.s)recordSent(it.s.id,ok);else recordWord(it.w.id,ok);
       nq.queue.shift();
       let extra="";
       if(ok){delete S.n[key];extra='<span class="tip">노트에서 뺐어요.</span>'}
@@ -1221,7 +1372,7 @@ const IN_APP_BROWSER=/KAKAOTALK|NAVER\(|Instagram|FBAN|FBAV|Line\/|DaumApps/i.te
 function mergeState(L,C){
   const R=JSON.parse(JSON.stringify(L||{}));C=C||{};
   const max=(a,b)=>Math.max(Number(a)||0,Number(b)||0);
-  for(const k of ["c","w","cr","wr","ca"]){R[k]=R[k]||{};
+  for(const k of ["c","w","cr","wr","ca","sx"]){R[k]=R[k]||{};
     for(const id in C[k]||{}){const a=R[k][id],b=C[k][id];
       R[k][id]=!a?b:{...a,...b,r:max(a.r,b.r),w:max(a.w,b.w),d:(a.d||b.d)?1:0,v:(a.v||b.v)?1:0}}}
   R.n={...(C.n||{}),...(R.n||{})};
@@ -1243,7 +1394,7 @@ function mergeState(L,C){
   return R;
 }
 const SYNC_KEY="harukana-sync";
-const SYNC_MAPS=new Set(["c","w","cr","wr","ca","cf","seen","n","sr","daily","badges","flags","claimed","titles","co"]);
+const SYNC_MAPS=new Set(["c","w","cr","wr","ca","cf","seen","sx","n","sr","daily","badges","flags","claimed","titles","co"]);
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const isObj=x=>x&&typeof x==="object"&&!Array.isArray(x);
 function pick3(path,b,l,c){
@@ -1259,7 +1410,7 @@ function pick3(path,b,l,c){
     for(const k of new Set([...Object.keys(bb),...Object.keys(l),...Object.keys(c)])){const v=pick3(path+"."+k,bb[k],l[k],c[k]);if(v!==undefined)o[k]=v}
     return o;
   }
-  if(/^(c|w|cr|wr|ca)./.test(path)&&isObj(l)&&isObj(c))return{...c,...l,r:Math.max(l.r||0,c.r||0),w:Math.max(l.w||0,c.w||0)};
+  if(/^(c|w|cr|wr|ca|sx)\./.test(path)&&isObj(l)&&isObj(c))return{...c,...l,r:Math.max(l.r||0,c.r||0),w:Math.max(l.w||0,c.w||0)};
   return l; // 닉네임 같은 나머지는 이 기기 쪽
 }
 function merge3(B,L,C){
@@ -1795,11 +1946,13 @@ let pickingAv=false;
 function resetRecord(id){
   const r=RECORDS.find(x=>x.id===id);let label;
   if(id.startsWith("ch-")){const[,s,n,m]=id.split("-");
-    catChars(s,+n).forEach(c=>{if(m==="rev")delete S.cr[c.k];else if(m==="ear")delete S.ca[c.k];else{delete S.c[c.k];delete S.n["c:"+c.k];delete S.sr["c:"+c.k]}});
+    catChars(s,+n).forEach(c=>{if(m==="rev")delete S.cr[c.k];else if(m==="ear")delete S.ca[c.k];else{delete S.c[c.k];delete S.n["c:"+c.k];delete S.sr["c:"+c.k]}});try{localStorage.removeItem("harukana-qsess")}catch(e){} // 풀던 순서도 새로
     cq=null;label=(n==="1"?`${SCRIPTS[s].name} 글자`:`${SCRIPTS[s].name} ${QCATS[n-1]}`)+(m!=="fwd"&&MODE_NAMES[m]?` (${MODE_NAMES[m]})`:"")}
   else if(id.startsWith("wc-")){const[,cid,m]=id.split("-"),c=catOf(cid);if(!c)return;
     catWords(c.id).forEach(w=>{if(m==="rev")delete S.wr[w.id];else{delete S.w[w.id];delete S.n["w:"+w.id];delete S.sr["w:"+w.id]}});
     wv={view:"cat",cat:c.id};label=`${c.name} 단어`+(m==="rev"?` (${WMODE_NAMES.rev})`:"")}
+  else if(id.startsWith("sx-")){const u=SENT_UNITS.find(x=>x.id===id.slice(3));if(!u)return;
+    u.items.forEach(s=>{delete S.sx[s.id];delete S.n["s:"+s.id];delete S.sr["s:"+s.id]});wv={view:"sunit",unit:u.id};label=`문장 ${u.title}`}
   else if(r&&r.kind==="char"){r.items().forEach(k=>{delete S.c[k];delete S.n["c:"+k]});cq=null;label=r.name}
   else if(r){r.items().forEach(w=>{delete S.w[w];delete S.n["w:"+w]});S.co[r.script]=1;wv={view:"list",script:r.script};label=r.name}
   else if(id==="note"){S.n={};nq=null;label="오답노트"}
@@ -1962,9 +2115,9 @@ function renderReview(){
     el.innerHTML=`<div class="panel"><h2>복습 완료!</h2><p class="intro">${rv.total}개를 복습했어요 · 정확도 ${acc}%. 맞힌 문제는 다음 복습 날짜가 뒤로 밀려요.</p><button class="next" id="rv-close">닫기</button></div>`;
     $("rv-close").onclick=()=>{rv=null;renderReview()};return;
   }
-  const key=rv.queue[0],it=noteItem(key),q=it.c?charQ(it.c):wordQ(it.w),s=S.sr[key];
+  const key=rv.queue[0],it=noteItem(key),q=it.c?charQ(it.c):it.s?sentQ(it.s):wordQ(it.w),s=S.sr[key];
   el.innerHTML=`<div class="panel" id="rvp"></div>`;
-  mc($("rvp"),{...q,head:`<div class="status qstat"><span>오늘의 복습 · ${it.c?(it.c.kata?"가타카나":"히라가나"):"단어"} · 남은 문제 ${rv.queue.length}</span><button class="link" id="rv-stop" style="margin:0">그만하기</button></div>`,
+  mc($("rvp"),{...q,head:`<div class="status qstat"><span>오늘의 복습 · ${it.c?(it.c.kata?"가타카나":"히라가나"):it.s?"문장":"단어"} · 남은 문제 ${rv.queue.length}</span><button class="link" id="rv-stop" style="margin:0">그만하기</button></div>`,
     onPick(ok){
       speak(q.say);rv.queue.shift();
       if(ok&&!rv.missed.has(key)){s.lv=Math.min(s.lv+1,INTERVALS.length-1);s.due=today()+INTERVALS[s.lv];rv.right++}
@@ -2018,10 +2171,11 @@ const nextSeq=()=>{let n=0;try{n=Number(sessionStorage.getItem("harukana-hseq"))
 function histPush(st,replace){
   if(IN_CLAUDE)return; // claude.ai 안에서는 바깥 화면의 뒤로 가기와 섞이지 않게 기록하지 않는다
   histSeq=nextSeq();
-  const url=st.tab===0?location.pathname+location.search:"#"+TAB_SLUG[st.tab]+(st.w==="cat"&&st.cat?"/"+st.cat:"");
+  const url=st.tab===0?location.pathname+location.search:"#"+TAB_SLUG[st.tab]+(st.w==="cat"&&st.cat?"/"+st.cat:st.w==="sent"?"/sent"+(st.unit?"/"+st.unit:""):"");
   try{history[replace?"replaceState":"pushState"]({...st,load:LOAD_ID,seq:histSeq},"",url)}catch(e){} // claude.ai 안에서는 막혀 있을 수 있다
 }
-function wordsHist(){if(navPop||tab!==3)return;histPush(wv.view==="cat"?{tab:3,w:"cat",cat:wv.cat}:{tab:3,w:"list",s:wv.script||"h"})}
+const wordsState=()=>wv.view[0]==="s"?{tab:3,w:"sent",unit:wv.view==="slist"?null:wv.unit}:wv.view==="list"?{tab:3,w:"list",s:wv.script||"h"}:{tab:3,w:"cat",cat:wv.cat};
+function wordsHist(){if(navPop||tab!==3)return;histPush(wordsState())}
 window.addEventListener("popstate",e=>{
   const st=e.state;
   if(!st)return; // 페이지 안 링크(#content 바로가기 등)가 만든 기록: 화면은 그대로 둔다
@@ -2030,14 +2184,16 @@ window.addEventListener("popstate",e=>{
   navPop=true;
   try{
     const d=document.querySelector("dialog[open]");if(d)d.close();
-    if(st.tab===3&&st.w&&!((wv.view==="card"||wv.view==="quiz")&&st.w==="cat"&&wv.cat===st.cat))
+    if(st.tab===3&&st.w==="sent"){
+      if(!(["scard","squiz","sdone"].includes(wv.view)&&wv.unit===st.unit))wv=st.unit&&SENT_UNITS.some(u=>u.id===st.unit)?{view:"sunit",unit:st.unit}:{view:"slist"};
+    }else if(st.tab===3&&st.w&&!((wv.view==="card"||wv.view==="quiz")&&st.w==="cat"&&wv.cat===st.cat))
       wv=st.w==="cat"&&catOf(st.cat)&&catOpen(catOf(st.cat))?{view:"cat",cat:st.cat}:{view:"list",script:st.s||"h"};
     show(st.tab);
     if(st.tab===3)renderWords();
   }finally{navPop=false}
 });
 function show(n){
-  if(!navPop&&n!==histTab)histPush(n===3?{tab:3,w:wv.view==="list"?"list":"cat",cat:wv.cat,s:wv.script}:{tab:n},histTab===null);
+  if(!navPop&&n!==histTab)histPush(n===3?wordsState():{tab:n},histTab===null);
   histTab=n;
   tab=n;TABS.forEach(i=>{$("v"+i).hidden=i!==n;$("t"+i).classList.toggle("on",i===n);$("t"+i).setAttribute("aria-selected",String(i===n));$("t"+i).tabIndex=i===n?0:-1});
   $("page-label").textContent=tabNames[n];
@@ -2046,7 +2202,7 @@ function show(n){
   if(n===2){if(!$("quiz").innerHTML){renderStageBar();renderCharQuiz()}else setLast({t:"char",s:qScript,n:qStage,m:qMode})}
   if(n===4)setLast({t:"note"});
   if(n===1)setLast({t:"table",kata:kataMode});
-  if(n===3&&(wv.view==="list"||wv.view==="cat"||!$("words").innerHTML))renderWords();
+  if(n===3&&(["list","cat","slist","sunit"].includes(wv.view)||!$("words").innerHTML))renderWords();
   if(n===4&&!nq)renderNote();
   if(n===5){renderRank();loadBoard(rk.mode)}
   window.scrollTo({top:0,behavior:'instant'});
@@ -2087,7 +2243,8 @@ function continueStudy(){
   openLesson(firstOpenCat(pathScript),pathScript);
 }
 $("continue").onclick=continueStudy;
-$("home-words").onclick=()=>show(3);
+$("home-words").onclick=()=>{if(wv.view[0]==="s")wv={view:"list",script:"h"};show(3)};
+$("home-sents").onclick=()=>{if(wv.view[0]!=="s")wv={view:"slist"};show(3);renderWords()};
 document.querySelector('.brand').onclick=e=>{e.preventDefault();show(0)};
 let toastTimer;
 let toastAt=0;
