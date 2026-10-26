@@ -510,7 +510,28 @@ const cd=k=>!!(S.c[k]&&S.c[k].d);
 const wd=id=>!!(S.w[id]&&S.w[id].d);
 
 const $=id=>document.getElementById(id);
-const speak=(t,rate)=>{try{const u=new SpeechSynthesisUtterance(t);u.lang="ja-JP";u.rate=rate||(S.slow?0.6:1);speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}};
+let jaVoiceObj=null,noVoiceWarned=false;
+function pickJaVoice(){
+  try{
+    const vs=speechSynthesis.getVoices().filter(v=>/^ja(-|_|$)/i.test(v.lang));
+    const rank=v=>/google/i.test(v.name)?0:/nanami|keita|online|natural/i.test(v.name)?1:/haruka|ayumi|ichiro|kyoko|otoya|sayaka/i.test(v.name)?2:3;
+    jaVoiceObj=vs.sort((a,b)=>rank(a)-rank(b))[0]||null;
+  }catch(e){jaVoiceObj=null}
+  return jaVoiceObj;
+}
+try{pickJaVoice();speechSynthesis.addEventListener("voiceschanged",pickJaVoice)}catch(e){}
+const speak=(t,rate)=>{try{
+  const ss=speechSynthesis,u=new SpeechSynthesisUtterance(t);
+  u.lang="ja-JP";u.rate=rate||(S.slow?0.6:1);
+  const v=jaVoiceObj||pickJaVoice();
+  if(v)u.voice=v;
+  else if(ss.getVoices().length&&!noVoiceWarned){ // 음성 목록은 받았는데 일본어가 없다
+    noVoiceWarned=true;
+    notifyText("이 기기에는 일본어 음성이 없어서 소리가 나지 않아요. 윈도우: 설정 → 시간 및 언어 → 음성 → 음성 추가 → 일본어. 휴대폰: 설정의 '텍스트 음성 변환'에서 일본어를 추가해 주세요.");
+  }
+  ss.cancel();if(ss.paused)ss.resume(); // 오래 쉬면 멈춤 상태로 남는 크롬 문제
+  ss.speak(u);
+}catch(e){}};
 const slowToggle=()=>`<label class="slow-tg" title="일본어 소리를 천천히 들려줘요"><input type="checkbox" class="slow-cb" ${S.slow?"checked":""}>천천히 듣기</label>`;
 document.addEventListener("change",e=>{
   if(!e.target.classList||!e.target.classList.contains("slow-cb"))return;
