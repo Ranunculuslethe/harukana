@@ -121,6 +121,13 @@
 .scene-caption small{display:block;font-size:10px;letter-spacing:0;opacity:.85;margin-top:1px}
 .hint-list{list-style:none;margin:4px 0 12px;padding:12px 14px;border-radius:12px;background:var(--midbg);font-size:13px;line-height:1.7;text-align:left}
 .hint-list b{display:inline-block;min-width:26px;font-size:16px;margin-right:6px}
+.chart-top{position:sticky;top:8px;z-index:3;display:flex;align-items:center;gap:10px;margin:0 0 12px;grid-column:1/-1}
+.chart-info{flex:1;display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:0 4px 14px rgba(0,0,0,.06)}
+.ci-empty{font-size:12px;color:var(--sub)}
+.ci-ch{font-size:34px;line-height:1;min-width:44px;text-align:center}
+.ci-main{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:13px;line-height:1.5}
+.ci-main strong{font-size:15px}.ci-main small{font-size:12px;color:var(--sub);font-weight:500}
+@media(max-width:480px){.chart-top{flex-direction:column;align-items:stretch}.chart-top .slow-tg{align-self:flex-end}}
 .kind-seg{margin-bottom:10px}
 .big.sent{font-size:clamp(22px,4.6vw,32px);line-height:1.5;letter-spacing:.02em;word-break:keep-all;padding:6px 4px}
 .big.sent.ko{font-family:inherit;font-weight:700}
@@ -635,9 +642,14 @@ function mc(el,o){
 
 let kataMode=false;
 const level=k=>{const c=S.c[k];if(!c)return"";if(c.d)return c.w>0?"l-mid":"l-ok";return c.w>0?"l-bad":""};
+function showChartInfo(c,ch){
+  const box=$("chart-info");if(!box)return;
+  const tip=HINTS[c.k]||c.tip||"";
+  box.innerHTML=`<b class="ci-ch">${ch}</b><span class="ci-main"><strong>${clean(c.h)}${c.r&&!c.sp?` <small>${c.r}</small>`:""}</strong>${tip?`<span>${tip}</span>`:""}</span>`;
+}
 function renderTable(){
   const el=$("table");el.innerHTML="";let lastSec="";
-  el.insertAdjacentHTML("beforeend",`<div class="slow-row">${slowToggle()}</div>`);
+  el.insertAdjacentHTML("beforeend",`<div class="chart-top"><div class="chart-info" id="chart-info" aria-live="polite"><span class="ci-empty">글자를 누르면 소리와 함께 외우는 요령이 여기에 나와요.</span></div>${slowToggle()}</div>`);
   (kataMode?ROWS_K:ROWS).forEach(r=>{
     const sec=r.stage===1?"기본 46자":r.stage===2?"탁음·반탁음":r.cells[0].sp?"촉음·장음":"요음";
     if(sec!==lastSec){const h=document.createElement("div");h.className="sec";h.textContent=sec;el.appendChild(h);lastSec=sec}
@@ -651,7 +663,7 @@ function renderTable(){
         d.className="cell "+level(c.k);
         d.setAttribute("aria-label",ch+", "+clean(c.h)+", 발음 듣기");
         d.innerHTML=`<b>${ch}</b><small>${clean(c.h)}</small>`;
-        d.onclick=()=>{speak(c.sp?c.ex[0][0]:ch);if(HINTS[c.k])notifyText(`${ch} ${clean(c.h)} · ${HINTS[c.k]}`)};
+        d.onclick=()=>{speak(c.sp?c.ex[0][0]:ch);showChartInfo(c,ch)};
       }
       row.appendChild(d);
     });
