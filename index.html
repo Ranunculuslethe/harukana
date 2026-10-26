@@ -128,6 +128,9 @@
 .ci-main{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:13px;line-height:1.5}
 .ci-main strong{font-size:15px}.ci-main small{font-size:12px;color:var(--sub);font-weight:500}
 @media(max-width:480px){.chart-top{flex-direction:column;align-items:stretch}.chart-top .slow-tg{align-self:flex-end}}
+button.wpick{width:100%;font:inherit;color:inherit;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);cursor:pointer;border-radius:10px}
+button.wpick:hover,button.wpick:focus-visible{background:var(--accent-soft)}
+.wpick-hint{font-size:12px;color:var(--sub);text-align:center;margin:8px 0 4px}
 .kind-seg{margin-bottom:10px}
 .big.sent{font-size:clamp(22px,4.6vw,32px);line-height:1.5;letter-spacing:.02em;word-break:keep-all;padding:6px 4px}
 .big.sent.ko{font-family:inherit;font-weight:700}
@@ -1094,14 +1097,15 @@ function renderWords(){
   if(wv.view==="cat"){
     const ws=catWords(cat.id),cands=batchCands(cat.id);
     const action=cands.length?`<button class="next" id="go">학습 시작 (${cands.length}개)</button>`:`<button class="next" id="go">다시 풀기</button>`;
-    el.innerHTML=`<button class="back" id="bk">← ${WSCRIPTS[cat.script]} 카테고리</button><div class="status qstat"><span>${WSCRIPTS[cat.script]} · ${cat.name}${modeTag()} · 맞힌 단어 ${ws.filter(w=>wdm(w.id)).length}/${ws.length} · 남은 문제 ${cands.length}</span>${resetBtn(`wc-${cat.id}-${wMode}`,"초기화")}</div><h2>${cat.name}</h2><div style="text-align:center">${action}</div>
+    el.innerHTML=`<button class="back" id="bk">← ${WSCRIPTS[cat.script]} 카테고리</button><div class="status qstat"><span>${WSCRIPTS[cat.script]} · ${cat.name}${modeTag()} · 맞힌 단어 ${ws.filter(w=>wdm(w.id)).length}/${ws.length} · 남은 문제 ${cands.length}</span>${resetBtn(`wc-${cat.id}-${wMode}`,"초기화")}</div><h2>${cat.name}</h2><div style="text-align:center">${action}</div><p class="intro wpick-hint">단어를 누르면 그 단어부터 볼 수 있어요.</p>
       <div class="wlist">${ws.map(w=>{
         const x=S.w[w.id],seen=x&&(x.v||x.r||x.w);
         const st=wdm(w.id)?'<span class="st pill ok">맞힘</span>':seen?'<span class="st pill">학습 중</span>':'<span class="st pill lockp">새 단어</span>';
         const u=wordUnknown(w);
-        return `<div class="wrow"><span class="wk">${w.kana}</span><span class="wm">${seen?`${w.hangul} · ${w.meaning}`:"아직 안 본 단어"}${u.length?`<small class="wnew">처음 보는 글자 ${u.map(k=>CH[k].disp||k).join(" ")}</small>`:""}</span>${st}</div>`}).join("")}</div>`;
+        return `<button class="wrow wpick" data-w="${w.id}" aria-label="${w.kana} 카드 보기"><span class="wk">${w.kana}</span><span class="wm">${seen?`${w.hangul} · ${w.meaning}`:"아직 안 본 단어"}${u.length?`<small class="wnew">처음 보는 글자 ${u.map(k=>CH[k].disp||k).join(" ")}</small>`:""}</span>${st}</button>`}).join("")}</div>`;
     $("bk").onclick=()=>toList(cat);
     $("go").onclick=()=>{if(cands.length)startCards(cat.id);else startQuiz(cat.id,ws);renderWords()};
+    el.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{const w=WORDS.find(x=>x.id===b.dataset.w);if(!w)return;wv={view:"card",cat:cat.id,batch:[w,...cands.filter(x=>x.id!==w.id)],i:0};renderWords()});
     return;
   }
   if(wv.view==="card"){
@@ -1202,10 +1206,12 @@ function renderSent(el){
       <div class="status qstat"><span>문장 · ${esc(u.title)} · 맞힌 문장 ${u.items.length-todo.length}/${u.items.length}</span>${resetBtn(`sx-${u.id}`,"초기화")}</div>
       <h2>${esc(u.title)} <small class="s-sub">${esc(u.ko)}</small></h2><p class="s-tip">${esc(u.tip)}</p>
       <div style="text-align:center"><button class="next" id="sgo">${todo.length?`학습 시작 (${todo.length}개)`:"다시 풀기"}</button></div>
-      <div class="wlist">${u.items.map(s=>`<div class="wrow srow"><span class="wk">${sjMark(s)}</span><span class="wm">${esc(s.ko)}</span>${sxd(s.id)?'<span class="st pill ok">맞힘</span>':""}</div>`).join("")}</div>`;
+      <p class="intro wpick-hint">문장을 누르면 그 문장부터 볼 수 있어요.</p>
+      <div class="wlist">${u.items.map(s=>`<button class="wrow srow wpick" data-sid="${s.id}"><span class="wk">${sjMark(s)}</span><span class="wm">${esc(s.ko)}</span>${sxd(s.id)?'<span class="st pill ok">맞힘</span>':""}</button>`).join("")}</div>`;
     toWords();
     $("sbk").onclick=()=>{wv={view:"slist"};wordsHist();renderWords()};
     $("sgo").onclick=()=>{wv={view:"scard",unit:u.id,batch:(todo.length?todo:u.items).map(s=>s.id),i:0};renderWords()};
+    el.querySelectorAll("[data-sid]").forEach(b=>b.onclick=()=>{const id=b.dataset.sid;wv={view:"scard",unit:u.id,batch:[id,...todo.map(s=>s.id).filter(x=>x!==id)],i:0};renderWords()});
     return;
   }
   if(wv.view==="scard"){
