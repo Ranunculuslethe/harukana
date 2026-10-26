@@ -75,6 +75,8 @@
 .rk-name small{display:block;font-size:12px;font-weight:700;color:var(--mid)}
 @media(max-width:760px){.pf-card{padding:16px;gap:12px;align-items:flex-start}.pf-avatar{flex-basis:68px;height:68px}.pf-avatar .fox{width:64px;height:68px}}
 .reset-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:22px;padding:12px 14px;border:1px dashed var(--line);border-radius:12px}
+.row-break{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:4px 0 14px;padding:12px 16px;border-radius:12px;background:var(--okbg);text-align:left}.row-break b{flex:1 1 100%;color:var(--ok)}.row-break span{flex:1 1 220px;font-size:12px;color:var(--sub)}.row-break .ghost{padding:7px 14px;font-size:12px}
+.phrase-tip{display:block;margin-top:4px;font-size:11px;line-height:1.5}
 .reset-bar span{font-size:12px;color:var(--sub);flex:1 1 200px}.reset-bar .rec-reset{margin:0}
 .reset-btns{display:flex;flex-wrap:wrap;gap:8px}
 .qstat{display:flex;align-items:center;gap:8px;text-align:left}.qstat>span{flex:1;min-width:0}.qstat .rec-reset{margin:0 0 0 auto;flex:0 0 auto;padding:4px 10px}
@@ -279,7 +281,7 @@ button.wpick:hover,button.wpick:focus-visible{background:var(--accent-soft)}
 
 </main><aside class="rightbar" aria-label="나의 학습 현황"><div class="goal-card" id="goal-card"></div>
 <div class="progress-card"><div class="card-heading"><h2>차곡차곡 쌓인 실력</h2><svg class="icon " aria-hidden="true"><use href="#i-book"/></svg></div><div id="summary" class="summary" aria-label="학습 진도"></div></div>
-<div class="phrase-card"><span class="phrase-label">오늘의 한마디</span><div class="phrase-jp" lang="ja">こんにちは</div><p>곤니치와 <span>·</span> 안녕하세요</p><button class="phrase-listen" id="phrase-listen"><svg class="icon " aria-hidden="true"><use href="#i-sound"/></svg> 발음 들어보기</button><div class="phrase-flower" aria-hidden="true">✿</div></div>
+<div class="phrase-card"><span class="phrase-label">오늘의 한마디</span><div class="phrase-jp" lang="ja" id="phrase-jp">こんにちは</div><p id="phrase-sub">콘니치와 <span>·</span> 안녕하세요</p><button class="phrase-listen" id="phrase-listen"><svg class="icon " aria-hidden="true"><use href="#i-sound"/></svg> 발음 들어보기</button><div class="phrase-flower" aria-hidden="true">✿</div></div>
 <div class="companion"><svg viewBox="0 0 180 190" class="fox " aria-hidden="true"><use href="#fox"/></svg><div class="speech"><b>서두르지 않아도 괜찮아.</b><span>어제보다 한 걸음이면 충분해!</span></div></div><p class="local-note">학습 기록은 이 브라우저에 저장돼요.</p><div class="mobile-tools"><button id="mobile-theme"><svg class="icon " aria-hidden="true"><use href="#i-moon"/></svg> 화면 모드 바꾸기</button><button id="mobile-sound"><svg class="icon " aria-hidden="true"><use href="#i-sound"/></svg> 소리 확인</button><button id="mobile-reset">학습 기록 관리</button></div></aside></div></div><div id="toast" role="status" class="toast" hidden></div><!-- 단어 데이터: 단어/카테고리를 늘릴 때는 여기만 고칩니다. kana는 히라가나만, 필요한 글자는 코드가 자동 계산합니다. -->
 <script type="application/json" id="word-data">
 {
@@ -751,6 +753,13 @@ document.addEventListener("keydown",e=>{
   if(!(n>=1&&n<=curMc.bs.length)||curMc.isDone()||!curMc.bs[0].isConnected||!curMc.el.offsetParent)return;
   e.preventDefault();curMc.bs[n-1].click();
 });
+function fitQuiz(el){
+  if(!el||!el.isConnected)return;
+  const nav=document.querySelector(".sidebar").getBoundingClientRect(),
+    bottom=nav.top>innerHeight/2?nav.top:innerHeight, // 휴대폰은 아래에 붙은 메뉴가 화면을 가린다
+    r=el.getBoundingClientRect(),last=el.querySelector(".choices button:last-child")||el.querySelector(".navrow");
+  if(r.top<0||(last&&last.getBoundingClientRect().bottom>bottom))window.scrollBy({top:r.top-8});
+}
 function mc(el,o){
   el.innerHTML=`${o.head||""}<div class="q">${o.prompt}</div><div class="big ${o.bigCls||""}">${o.big}</div>
     <div class="choices ${o.chCls||""}">${o.choices.map((c,i)=>`<button data-i="${i}">${c}</button>`).join("")}</div>
@@ -764,7 +773,7 @@ function mc(el,o){
     el.querySelector(".fb").classList.add(ok?"feedback-correct":"feedback-wrong");
     el.querySelector(".fb").innerHTML=(ok?`<strong>✓ 잘했어요! +${XP_RIGHT} XP</strong> `:"<strong>다시 배우는 기회예요.</strong> ")+o.onPick(ok,i).replace(/^(정답!|아쉬워요\.) /,"");
     afterAnswer(ok,o);
-    const nb=document.createElement("button");nb.className="next";nb.textContent=o.nextLabel||"다음 문제";nb.onclick=o.onNext;
+    const nb=document.createElement("button");nb.className="next";nb.textContent=o.nextLabel||"다음 문제";nb.onclick=()=>{o.onNext();fitQuiz(curMc&&curMc.el)};
     el.querySelector(".nx").appendChild(nb);nb.focus();
   });
 }
@@ -822,8 +831,9 @@ function bindEar(el,say){const b=el.querySelector(".ear-btn");if(!b)return;b.onc
 const firstOpenCat=s=>[1,2,3].find(n=>modeChars(s,n).some(c=>!cdm(c.k)))||1;
 let qScript="h",qStage=firstOpenCat("h"),cq=null;
 try{const v=JSON.parse(localStorage.getItem("harukana-qsess"));if(v&&(v.s==="h"||v.s==="k")&&[1,2,3].includes(v.n)&&["fwd","rev","ear"].includes(v.m)&&Date.now()-v.t<7*864e5){qScript=v.s;qStage=v.n;qMode=v.m}}catch(e){}
+let rowRun={n:0,ok:0};
 function startStage(n,all){
-  qStage=n;setLast({t:"char",s:qScript,n,m:qMode});cfq=null;
+  qStage=n;setLast({t:"char",s:qScript,n,m:qMode});cfq=null;rowRun={n:0,ok:0};
   const ks=modeChars(qScript,n).filter(c=>all||!cdm(c.k)).map(c=>c.k);
   const sv=loadQSess();
   const every=modeChars(qScript,n).map(c=>c.k); // "처음부터 다시"로 푸는 중이면 이미 맞힌 글자도 들어 있다
@@ -884,14 +894,17 @@ function renderLearn(keys){
   const tips=keys.map(k=>CH[k]).filter(c=>c.sp&&c.tip).map(c=>`<p class="tip">${c.tip}</p>`).join("");
   const hints=keys.filter(k=>HINTS[k]);
   const hintList=hints.length?`<ul class="hint-list" aria-label="외우는 요령">${hints.map(k=>`<li><b>${k}</b>${HINTS[k]}</li>`).join("")}</ul>`:"";
-  $("quiz").innerHTML=`${quizStatus(qStage,[`새 글자 ${keys.length}개`])}
+  const brk=rowRun.n?`<div class="row-break"><b>여기까지 ${rowRun.n}문제 중 ${rowRun.ok}개 맞혔어요</b>
+    <span>진도는 저장돼요. 쉬었다 와도 이 자리부터 이어서 할 수 있어요.</span><button class="ghost" id="learn-stop">오늘은 여기까지</button></div>`:"";
+  $("quiz").innerHTML=`${quizStatus(qStage,[`새 글자 ${keys.length}개`])}${brk}
     <h2 class="learn-h">새 글자를 먼저 만나요 <small>${row?rowName(row):""}</small></h2>
     <p class="intro">글자를 눌러 소리를 들어 보세요. 다 봤으면 바로 퀴즈로 확인해요.</p>
     <div class="learn-grid">${keys.map(tile).join("")}</div>${hintList}${tips}
     <div class="navrow"><button class="ghost" id="learn-all">${SPK} 차례로 듣기</button><button class="next" id="learn-go">다 봤어요, 퀴즈 풀기</button></div>`;
   $("quiz").querySelectorAll(".learn-tile").forEach(b=>b.onclick=()=>speak(b.dataset.say));
   $("learn-all").onclick=()=>{const ts=[...$("quiz").querySelectorAll(".learn-tile")];ts.forEach((b,i)=>setTimeout(()=>{ts.forEach(x=>x.classList.remove("on"));b.classList.add("on");speak(b.dataset.say)},i*1300));setTimeout(()=>ts.forEach(x=>x.classList.remove("on")),ts.length*1300)};
-  $("learn-go").onclick=()=>{keys.forEach(k=>S.seen[k]=1);save();renderCharQuiz()};
+  $("learn-go").onclick=()=>{keys.forEach(k=>S.seen[k]=1);save();rowRun={n:0,ok:0};renderCharQuiz();fitQuiz($("quiz"))};
+  if($("learn-stop"))$("learn-stop").onclick=()=>{rowRun={n:0,ok:0};show(0)};
   $("learn-go").focus();
 }
 function setScript(s){qScript=s;startStage(firstOpenCat(s));renderStageBar();renderCharQuiz()}
@@ -954,6 +967,7 @@ function renderCharQuiz(){
       if(qMode!=="fwd"){const x=qMode==="ear"?ga(key):gr(key);if(ok){if(!x.r)dayState().fresh++;x.r++;x.d=1}else{x.w++;x.d=0;addNote("c:"+key)}}
       else recordChar(key,ok);
       if(!ok&&q.keys)addConfusion(key,q.keys[picked]);
+      rowRun.n++;if(ok)rowRun.ok++;
       speak(q.say);
       cq.queue.shift();if(!ok){const from=Math.min(RETRY_GAP,cq.queue.length);cq.queue.splice(from+Math.floor(Math.random()*(cq.queue.length-from+1)),0,key)}
       saveQSess(); // 다음 문제로 넘어가기 전에 떠나도, 돌아오면 다음 문제부터
@@ -2373,7 +2387,7 @@ function show(n){
   window.scrollTo({top:0,behavior:'instant'});
 }
 TABS.forEach(i=>{$("t"+i).onclick=()=>show(i);$("t"+i).onkeydown=e=>{const N=TABS.length;let next;if(['ArrowDown','ArrowRight'].includes(e.key))next=(i+1)%N;else if(['ArrowUp','ArrowLeft'].includes(e.key))next=(i+N-1)%N;else if(e.key==='Home')next=0;else if(e.key==='End')next=N-1;else return;e.preventDefault();show(next);$("t"+next).focus()}});
-function openLesson(stage,script){qScript=script;startStage(stage);renderStageBar();renderCharQuiz();show(2);$("content").focus({preventScroll:true})}
+function openLesson(stage,script){qScript=script;startStage(stage);renderStageBar();renderCharQuiz();show(2);$("content").focus({preventScroll:true});fitQuiz($("quiz"))}
 function renderHome(){
   if(!rv)renderReview();
   $("continue").title=lastPlace();
@@ -2414,7 +2428,31 @@ document.querySelector('.brand').onclick=e=>{e.preventDefault();show(0)};
 let toastTimer;
 let toastAt=0;
 function notifyText(text){if(!$("toast").hidden&&Date.now()-toastAt<800)text=$("toast").textContent+" · "+text;toastAt=Date.now();$("toast").textContent=text;$("toast").hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").hidden=true,Math.max(2600,text.length*80))}
-$("phrase-listen").onclick=()=>{if(!('speechSynthesis' in window)){notifyText('이 브라우저에서는 음성 재생을 지원하지 않아요.');return}speak('こんにちは');notifyText('こんにちは · 곤니치와 · 안녕하세요')};
+const PHRASES=[
+  ["おはよう ございます","오하요우 고자이마스","안녕하세요 (아침)"],
+  ["こんにちは","콘니치와","안녕하세요 (낮)","끝의 は는 조사라서 '하'가 아니라 '와'로 읽어요."],
+  ["こんばんは","콘반와","안녕하세요 (저녁)","끝의 は는 조사라서 '하'가 아니라 '와'로 읽어요."],
+  ["ありがとう","아리가토우","고마워요"],
+  ["すみません","스미마센","죄송해요 · 저기요"],
+  ["はじめまして","하지메마시테","처음 뵙겠습니다"],
+  ["よろしく おねがいします","요로시쿠 오네가이시마스","잘 부탁합니다"],
+  ["いただきます","이타다키마스","잘 먹겠습니다"],
+  ["ごちそうさまでした","고치소우사마데시타","잘 먹었습니다"],
+  ["いってきます","잇테키마스","다녀오겠습니다"],
+  ["ただいま","타다이마","다녀왔습니다"],
+  ["おやすみなさい","오야스미나사이","안녕히 주무세요"],
+  ["さようなら","사요우나라","안녕히 가세요"],
+  ["だいじょうぶです","다이조우부데스","괜찮아요"],
+  ["おげんきですか","오겐키데스카","잘 지내세요?"]
+];
+const todayPhrase=()=>PHRASES[Math.floor((Date.now()+9*36e5)/864e5)%PHRASES.length];
+function renderPhrase(){
+  const [ja,hg,ko,tip]=todayPhrase();
+  $("phrase-jp").textContent=ja;
+  $("phrase-sub").innerHTML=`${esc(hg)} <span>·</span> ${esc(ko)}${tip?`<small class="phrase-tip">${esc(tip)}</small>`:""}`;
+}
+renderPhrase();
+$("phrase-listen").onclick=()=>{if(!('speechSynthesis' in window)){notifyText('이 브라우저에서는 음성 재생을 지원하지 않아요.');return}speak(todayPhrase()[0])};
 function applyTheme(theme){document.documentElement.dataset.theme=theme;$("theme").querySelector('span').textContent=theme==='dark'?'낮 모드':'밤 모드';$("theme").setAttribute('aria-label',theme==='dark'?'낮 모드로 전환':'밤 모드로 전환')}
 const systemTheme=()=>matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
 try{const saved=localStorage.getItem('harukana-theme');applyTheme(saved==='dark'||saved==='light'?saved:systemTheme())}catch{applyTheme(systemTheme())}
