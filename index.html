@@ -76,6 +76,7 @@
 .set-h{font-size:13px;margin:16px 0 8px;color:var(--sub);font-weight:600}.set-sound{padding:14px 16px;border:1px dashed var(--line);border-radius:14px}.set-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.set-voice{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub);flex:1 1 220px;min-width:0}.set-voice select{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:9px;padding:7px 9px;max-width:100%}.snd-test{display:inline-flex;align-items:center;gap:5px;margin-top:0;align-self:flex-end}.snd-test .icon{width:15px;height:15px}.set-row .slow-tg{align-self:flex-end}.set-note{font-size:12px;color:var(--sub);margin:10px 0 0}.set-warn{font-size:12px;line-height:1.7;margin:0;color:var(--bad)}
 @media(max-width:760px){.pf-card{padding:16px;gap:12px;align-items:flex-start}.pf-avatar{flex-basis:68px;height:68px}.pf-avatar .fox{width:64px;height:68px}}
 .reset-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:22px;padding:12px 14px;border:1px dashed var(--line);border-radius:12px}
+.set-vol{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12px;color:var(--sub)}.set-vol input{flex:1;min-width:0;accent-color:var(--accent)}.set-vol output{min-width:38px;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
 .rk-note .rk-set{margin:0;padding:0;font-size:inherit;vertical-align:baseline}
 .set-acct .pf-acct{margin:0}
 .set-dlg{border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);padding:20px 22px 22px;width:min(560px,calc(100vw - 32px));max-height:calc(100dvh - 48px);overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.18)}.set-dlg::backdrop{background:rgba(20,25,30,.45)}.set-top{display:flex;align-items:center;justify-content:space-between}.set-top h3{margin:0;font-size:18px}.set-x{border:0;background:none;font-size:24px;line-height:1;color:var(--sub);padding:2px 8px;border-radius:8px}.set-x:hover{color:var(--ink);background:var(--bg)}.set-dlg .set-h:first-of-type{margin-top:10px}.set-dlg .rec-etc{margin-top:0}
@@ -631,7 +632,8 @@ const wd=id=>!!(S.w[id]&&S.w[id].d);
 
 const $=id=>document.getElementById(id);
 let jaVoiceObj=null,noVoiceWarned=false,curUtt=null,speakTimer=0;
-const VOICE_KEY="harukana-voice";
+const VOICE_KEY="harukana-voice",VOL_KEY="harukana-volume";
+const sndVol=()=>{let v=100;try{const s=localStorage.getItem(VOL_KEY);if(s!==null&&!isNaN(+s))v=Math.min(100,Math.max(0,+s))}catch(e){}return v};
 const jaVoices=()=>{try{return speechSynthesis.getVoices().filter(v=>/^ja(-|_|$)/i.test(v.lang))}catch(e){return []}};
 function pickJaVoice(){
   try{
@@ -644,7 +646,7 @@ function pickJaVoice(){
 try{pickJaVoice();speechSynthesis.addEventListener("voiceschanged",()=>{pickJaVoice();renderSoundSettings()})}catch(e){}
 const speak=(t,rate,on)=>{try{
   const ss=speechSynthesis,u=new SpeechSynthesisUtterance(t);
-  u.lang="ja-JP";u.rate=rate||(S.slow?0.6:1);u.volume=1;
+  u.lang="ja-JP";u.rate=rate||(S.slow?0.6:1);u.volume=sndVol()/100;
   const v=jaVoiceObj||pickJaVoice();
   if(v)u.voice=v;
   else if(ss.getVoices().length&&!noVoiceWarned){ // 음성 목록은 받았는데 일본어가 없다
@@ -666,6 +668,7 @@ function soundSettings(){
   if(!vs.length)return `<p class="set-warn">이 기기에 일본어 음성이 없어서 소리가 나지 않아요.<br>윈도우: 설정 → 시간 및 언어 → 음성 → 음성 추가 → 일본어<br>휴대폰: 설정의 '텍스트 음성 변환'에서 일본어 추가<br>크롬에서 열면 Google 일본어 음성을 바로 쓸 수 있어요.</p>`;
   return `<div class="set-row"><label class="set-voice"><span>일본어 음성</span><select id="snd-voice">${vs.map(v=>`<option value="${esc(v.name)}"${cur&&v.name===cur.name?" selected":""}>${esc(v.name)}${v.localService?"":" (인터넷)"}</option>`).join("")}</select></label>
       <button type="button" class="rec-reset snd-test" id="snd-test">${SPK} 들어 보기</button>${slowToggle()}</div>
+    <label class="set-vol"><span>볼륨</span><input type="range" id="snd-vol" min="0" max="100" step="10" value="${sndVol()}" aria-label="읽어 주는 소리 볼륨"><output id="snd-vol-n">${sndVol()}%</output></label>
     <p class="set-note" id="snd-state" role="status">「あいうえお」를 읽어 줘요. 소리가 나는지 확인해 보세요.</p>
     <p class="set-note">소리가 안 나면: ① 기기 볼륨·무음 모드 ② 소리가 나오는 장치(스피커·이어폰) ③ 다른 음성을 골라 다시 들어 보기 ④ 크롬에서 열어 보기</p>`;
 }
@@ -675,6 +678,9 @@ function renderSoundSettings(){
   const sel=$("snd-voice");
   if(sel){
     sel.onchange=()=>{try{localStorage.setItem(VOICE_KEY,sel.value)}catch(e){}pickJaVoice();$("snd-test").click()};
+    const vol=$("snd-vol");
+    vol.oninput=()=>{$("snd-vol-n").textContent=vol.value+"%"};
+    vol.onchange=()=>{try{localStorage.setItem(VOL_KEY,vol.value)}catch(e){}if(+vol.value>0)$("snd-test").click();else $("snd-state").textContent="볼륨이 0이라 소리가 나지 않아요."};
     $("snd-test").onclick=()=>{
       const st=$("snd-state");let started=false;st.textContent="읽는 중…";
       speak("あいうえお",0,(k,why)=>{
