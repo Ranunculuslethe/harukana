@@ -76,6 +76,7 @@
 .set-h{font-size:13px;margin:16px 0 8px;color:var(--sub);font-weight:600}.set-sound{padding:14px 16px;border:1px dashed var(--line);border-radius:14px}.set-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.set-voice{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub);flex:1 1 220px;min-width:0}.set-voice select{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:9px;padding:7px 9px;max-width:100%}.snd-test{display:inline-flex;align-items:center;gap:5px;margin-top:0;align-self:flex-end}.snd-test .icon{width:15px;height:15px}.set-row .slow-tg{align-self:flex-end}.set-note{font-size:12px;color:var(--sub);margin:10px 0 0}.set-warn{font-size:12px;line-height:1.7;margin:0;color:var(--bad)}
 @media(max-width:760px){.pf-card{padding:16px;gap:12px;align-items:flex-start}.pf-avatar{flex-basis:68px;height:68px}.pf-avatar .fox{width:64px;height:68px}}
 .reset-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:22px;padding:12px 14px;border:1px dashed var(--line);border-radius:12px}
+.rk-note .rk-set{margin:0;padding:0;font-size:inherit;vertical-align:baseline}
 .set-acct .pf-acct{margin:0}
 .set-dlg{border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);padding:20px 22px 22px;width:min(560px,calc(100vw - 32px));max-height:calc(100dvh - 48px);overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.18)}.set-dlg::backdrop{background:rgba(20,25,30,.45)}.set-top{display:flex;align-items:center;justify-content:space-between}.set-top h3{margin:0;font-size:18px}.set-x{border:0;background:none;font-size:24px;line-height:1;color:var(--sub);padding:2px 8px;border-radius:8px}.set-x:hover{color:var(--ink);background:var(--bg)}.set-dlg .set-h:first-of-type{margin-top:10px}.set-dlg .rec-etc{margin-top:0}
 .row-break{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:4px 0 14px;padding:12px 16px;border-radius:12px;background:var(--okbg);text-align:left}.row-break b{flex:1 1 100%;color:var(--ok)}.row-break span{flex:1 1 220px;font-size:12px;color:var(--sub)}.row-break .ghost{padding:7px 14px;font-size:12px}
@@ -2171,7 +2172,7 @@ document.addEventListener("click",e=>{
 });
 function acctRow(p){
   const privacy=`<a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a>`;
-  if(IN_CLAUDE)return p==="g"?"":`<div class="pf-acct off"><span>로그인은 하루카나 사이트에서 할 수 있어요.</span><a class="link" href="${SITE_URL}" target="_blank" rel="noopener">사이트 열기</a>${privacy}</div>`;
+  if(IN_CLAUDE)return `<div class="pf-acct off"><span>로그인은 하루카나 사이트에서 할 수 있어요.</span><a class="link" href="${SITE_URL}" target="_blank" rel="noopener">사이트 열기</a>${privacy}</div>`;
   if(!S.account)return `<div class="pf-acct off"><span>지금은 이 브라우저에만 저장돼요.</span>${loginBtns(p+"login")}${privacy}</div>`;
   const k=S.account.kind,pw=k==="id"||k==="email";
   return `<div class="pf-acct"><span class="g">${k==="id"?"ID":k==="email"?"@":"G"}</span><span>${esc(acctLabel(S.account))} · 기록이 계정에 저장돼요</span><button class="link" id="${p}logout">${rk.logoutArmed?"한 번 더 누르면 로그아웃":"로그아웃"}</button>${k==="id"?`<button class="link" id="${p}link">이메일 연결 필요</button>`:""}${pw?`<button class="link" id="${p}pw">비밀번호 바꾸기</button>`:""}<button class="link" id="${p}delete">${rk.deleteArmed?`한 번 더 누르면 삭제 (${pw?"비밀번호":"Google"} 확인)`:"계정 기록 삭제"}</button>${privacy}</div>`;
@@ -2222,7 +2223,6 @@ function renderRank(){
           :!S.account?`<small class="nick-help">로그인하면 이름을 정할 수 있어요</small>`
           :nickLeft()?`<button class="link" id="nick-edit">${nickLeft()===2?"이름 정하기":"이름 바꾸기 (1번 남음)"}</button>`
           :`<small class="nick-help">이름은 더 바꿀 수 없어요</small>`}</div>`}
-      ${acctRow("g")}
       <div class="pf-title">${main?`<span class="title-chip">${esc(main)}</span>`:`<span class="title-none">아직 칭호가 없어요. 문제를 맞히면 첫 칭호를 받아요.</span>`}
         ${titles.length>1?`<label class="pf-pick">대표 칭호 <select id="title-pick">${titles.map(t=>`<option value="${t.id}"${t.title===main?" selected":""}>${esc(t.title)}</option>`).join("")}</select></label>`:""}</div>
       <div class="me-line"><b>${xp} XP</b><span>다음 레벨까지 ${XP_PER_LEVEL-inLv} XP</span></div><div class="bar"><i style="width:${inLv}%"></i></div>
@@ -2280,10 +2280,9 @@ function renderRank(){
   if(!IN_CLAUDE&&rk.fb&&!S.account){
     const stat=(n,l)=>`<span><b>${n}</b>${l}</span>`;
     $("board").innerHTML=`<h3 class="rk-h">랭킹</h3>
-      <div class="rk-join"><p><b>랭킹은 로그인한 사람끼리 겨뤄요.</b><br>Google이나 이메일로 로그인하면 이번 주 리그·전체 랭킹에 참가하고, 다른 사람의 순위도 볼 수 있어요. 1~10등은 매주 보상 XP를 받아요.</p>${loginBtns("glogin-rk")}</div>
+      <p class="rk-note">랭킹에 참가하려면 <button class="link rk-set" type="button" onclick="openSettings()">설정</button>에서 로그인해 주세요.</p>
       <h3 class="rk-h" style="margin-top:14px">내 기록</h3>
       <div class="me-stats rk-guest">${stat(weekXp()," 이번 주 XP")}${stat(S.xp," 전체 XP")}${stat("Lv."+lvOf(S.xp),"")}${stat(streak(),"일 연속")}</div>`;
-    bindLoginBtns("glogin-rk");
   }else
   $("board").innerHTML=`<h3 class="rk-h">랭킹</h3>
     <div class="seg rk-seg" role="group" aria-label="랭킹 종류">${[["week","이번 주 리그"],["last","지난주 리그"],["all","전체 랭킹"]].map(([k,t])=>`<button data-rm="${k}" class="${m===k?"on":""}">${t}</button>`).join("")}</div>
@@ -2291,7 +2290,6 @@ function renderRank(){
   document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{rk.mode=b.dataset.rm;renderRank();loadBoard(rk.mode)});
   renderGrass();
   if($("rk-join"))$("rk-join").onclick=()=>setRankHidden(false);
-  bindAcct("g");
   if($("nick-edit"))$("nick-edit").onclick=()=>{editingNick=true;renderRank();$("nick-in").focus()};
   if($("nick-save")){
     const close=()=>{editingNick=false;rk.nickArmed=false;renderRank()};
