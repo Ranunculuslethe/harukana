@@ -76,6 +76,7 @@
 .set-h{font-size:13px;margin:16px 0 8px;color:var(--sub);font-weight:600}.set-sound{padding:14px 16px;border:1px dashed var(--line);border-radius:14px}.set-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.set-voice{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub);flex:1 1 220px;min-width:0}.set-voice select{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:9px;padding:7px 9px;max-width:100%}.snd-test{display:inline-flex;align-items:center;gap:5px;margin-top:0;align-self:flex-end}.snd-test .icon{width:15px;height:15px}.set-row .slow-tg{align-self:flex-end}.set-note{font-size:12px;color:var(--sub);margin:10px 0 0}.set-warn{font-size:12px;line-height:1.7;margin:0;color:var(--bad)}
 @media(max-width:760px){.pf-card{padding:16px;gap:12px;align-items:flex-start}.pf-avatar{flex-basis:68px;height:68px}.pf-avatar .fox{width:64px;height:68px}}
 .reset-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:22px;padding:12px 14px;border:1px dashed var(--line);border-radius:12px}
+.test-tools{border-style:dashed}.test-btns{display:flex;gap:8px;flex-wrap:wrap}.test-btns .rec-reset{margin-top:0}
 .lvl-pick button small{display:block;font-size:10px;font-weight:400;opacity:.75}.road-sec.adv{border:1px dashed color-mix(in srgb,#c99a5b 55%,var(--line));background:linear-gradient(160deg,color-mix(in srgb,#ffd7a0 22%,var(--card)),var(--card))}.road-sec.adv .road-ic{background:#c99a5b;color:#fff}.adv-tag{font-style:normal;font-size:11px;font-weight:700;padding:1px 6px;border-radius:5px;background:#f3e3c7;color:#7a5524;margin-left:4px;vertical-align:2px}
 .stat-row:nth-child(3) .stat-icon{background:#2e2448;color:#ffd7a0;font-family:"Yu Gothic","Meiryo","Noto Sans JP",sans-serif}
 .rec-more{display:block;margin:12px auto 0}
@@ -2764,6 +2765,16 @@ function bindAcct(p){
   if($(p+"link"))$(p+"link").onclick=async()=>{try{await authHeader();openIdDialog("link",{...rk.auth,email:acctLogin(S.account)})}catch(e){notifyText("다시 로그인해 주세요.")}};
   if($(p+"delete"))$(p+"delete").onclick=()=>{if(rk.deleteArmed){rk.deleteArmed=false;deleteAccount()}else{rk.deleteArmed=true;preloadAuth()?.catch(()=>{});notifyText("계정과 이 기기의 학습 기록이 모두 지워지고 되돌릴 수 없어요.");renderRank();setTimeout(()=>{rk.deleteArmed=false;scheduleRank();renderSettings()},6000)}};
 }
+const TEST_MODE=/(^|[?&])test(=|&|$)/.test(location.search.slice(1))||/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+function testClear(lv){
+  if(S.account)return notifyText("로그인한 상태에서는 쓸 수 없어요.");
+  const done={r:1,w:0,d:1};
+  for(const st of ROAD_STEPS){const map=st.done===cd?S.c:st.done===wd?S.w:S.sx;st.items().forEach(k=>{map[k]={...done};if(map===S.c)S.seen[k]=1})}
+  if(lv==="mid")KANJI.forEach(j=>S.kj[j.k]={...done});
+  updateTitles();checkBadges();save();
+  setLevel(lv==="mid"); // 초급 클리어 = 학습 길 10단계 완료(초급 그대로), 중급 클리어 = 한자까지 완료하고 중급으로
+  notifyText(lv==="mid"?"중급까지 클리어했어요 (테스트).":"초급을 클리어했어요 (테스트). 이제 중급으로 바꿀 수 있어요.");
+}
 function openSettings(){
   let d=$("set-dlg");
   if(!d){d=document.createElement("dialog");d.id="set-dlg";d.className="set-dlg";d.setAttribute("aria-labelledby","set-title");document.body.appendChild(d)}
@@ -2784,9 +2795,12 @@ function renderSettings(force){
       <div><b>XP · 배지</b><small>${S.xp} XP · 배지 ${nb}개를 0으로 되돌려요</small>${resetBtn("reward","XP·배지 초기화")}</div>
       <div><b>모든 학습 기록</b><small>글자·단어·문장·한자·오답노트를 처음부터 다시 해요. 난이도도 초급으로 돌아가요. 쌓은 XP·배지·연속 학습일·프로필은 남아요.</small>${resetBtn("all","모두 초기화")}</div>
       ${IN_CLAUDE||S.account?`<div><b>랭킹 참가</b><small>${S.rankOff?"지금은 랭킹에서 숨겨져 있어요.":"문제를 맞히면 닉네임·레벨·XP가 랭킹에 보여요."}</small><button class="rec-reset" id="rk-hide">${S.rankOff?"다시 참가하기":"랭킹에서 숨기기"}</button></div>`:""}
-    </div>`;
+    </div>${TEST_MODE?`<h4 class="set-h">테스트 도구 <small>(테스트 주소에서만 보여요)</small></h4>
+    <div class="set-sound test-tools">${S.account?`<p class="set-note">로그인한 상태에서는 쓸 수 없어요. 계정 기록과 랭킹에 섞이지 않게, 로그아웃한 뒤 써 주세요.</p>`:`<div class="test-btns"><button type="button" class="rec-reset" data-clear="beg">초급 클리어</button><button type="button" class="rec-reset" data-clear="mid">중급 클리어</button><button type="button" class="rec-reset" disabled title="고급은 준비 중이에요">고급 클리어 (준비 중)</button></div>
+      <p class="set-note">이 브라우저의 학습 기록만 바꿔요. 처음으로 돌리려면 위의 '모두 초기화'를 눌러요.</p>`}</div>`:""}`;
   $("set-close").onclick=()=>d.close();
   d.querySelectorAll("[data-level]:not([disabled])").forEach(b=>b.onclick=()=>setLevel(b.dataset.level==="mid"));
+  d.querySelectorAll("[data-clear]").forEach(b=>b.onclick=()=>testClear(b.dataset.clear));
   if($("rk-hide"))$("rk-hide").onclick=()=>setRankHidden(!S.rankOff);
   bindAcct("s");
   renderSoundSettings();
