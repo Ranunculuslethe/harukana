@@ -291,6 +291,19 @@ body{background:linear-gradient(180deg,var(--bg-top) 0,var(--bg) 560px) no-repea
 .big.kanji-word{font-size:40px}.big.kanji-word .s-ko{display:block;font-size:14px;margin-top:6px}
 .choices.kanji-ch button{font-size:34px}
 @media(max-width:760px){.kj-big{font-size:80px}.kj-exrow{grid-template-columns:auto 1fr auto;gap:8px}.kj-exrow .kj-m{grid-column:2}.kj-grid{grid-template-columns:repeat(auto-fill,minmax(76px,1fr))}.kj-tile b{font-size:30px}}
+.lvl-btn{font-size:12px;background:var(--line);padding:2px 7px;border-radius:5px;font-weight:600;margin-left:1px;border:0;color:var(--ink)}
+.lvl-btn:hover{background:var(--accent-soft);color:var(--accent)}
+.lvl-pick{display:flex;gap:8px}
+.lvl-pick button{flex:1;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-weight:700}
+.lvl-pick button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.lvl-pick button:disabled{opacity:.45;cursor:not-allowed}
+.lvl-pick+.set-note{margin-top:10px}
+.road-fin{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px;padding:16px 18px;border-radius:18px;background:linear-gradient(120deg,var(--accent-soft),var(--card));border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line))}
+.road-fin-ic{font-size:30px;color:var(--accent)}
+.road-fin>div{flex:1 1 200px}.road-fin b{display:block;font-size:15px}.road-fin small{color:var(--sub);font-size:12px}
+.tab-glyph{display:grid;place-items:center;font-size:18px;font-weight:700;stroke:none;font-family:"Yu Gothic","Meiryo","Noto Sans JP",sans-serif}
+.jlpt-seg{margin-bottom:14px;display:flex;width:100%;max-width:420px}.jlpt-seg button{min-width:0;flex:1 1 0;padding-left:4px;padding-right:4px}.jlpt-seg small{display:block;font-size:10px;font-weight:400;opacity:.7;white-space:nowrap}.jlpt-seg button.soon{opacity:.6}
+@media(max-width:760px){.jlpt-seg small{display:none}}
 </style><a class="skip-link" href="#content">학습 내용으로 이동</a><div class="sakura-deco" aria-hidden="true"><svg class="deco-branch tr" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><path d="M230 46q-20 40-60 62M120 96q-10 30-40 46" stroke="var(--trunk)" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="150" y="30" width="100" height="64"/><use href="#hs-bloom" x="60" y="80" width="95" height="61"/><use href="#hs-bloom" x="140" y="96" width="70" height="45"/><use href="#hs-bloom" x="0" y="128" width="70" height="45"/></svg><svg class="deco-branch bl" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="130" y="40" width="100" height="64"/><use href="#hs-bloom" x="30" y="100" width="90" height="58"/></svg><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><svg xmlns="http://www.w3.org/2000/svg" class="svg-library" aria-hidden="true"><defs>
 <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></symbol>
 <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5C9 3 5 3 3 4v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1v15"/></symbol>
@@ -318,8 +331,8 @@ body{background:linear-gradient(180deg,var(--bg-top) 0,var(--bg) 560px) no-repea
 <path d="M61 138q-15-16-23-3t16 20m70-17q15-16 23-3t-16 20" fill="#E99160"/>
 <rect x="59" y="164" width="27" height="13" rx="6" fill="#613F3E"/><rect x="101" y="164" width="27" height="13" rx="6" fill="#613F3E"/>
 </symbol></defs></svg>
-<aside class="sidebar"><a class="brand" href="#" aria-label="하루카나 홈" id="brand-home"><span class="brand-fox"><svg viewBox="0 0 180 190" class="fox " aria-hidden="true"><use href="#fox"/></svg></span><span>하루카나<small>harukana</small></span></a><p class="nav-label">나의 일본어 여행</p><nav class="tabs" role="tablist" aria-label="학습 메뉴" aria-orientation="vertical"><button class="tab on" id="t0" role="tab" aria-selected="true" aria-controls="v0" tabindex="0"><svg class="icon " aria-hidden="true"><use href="#i-home"/></svg><span data-s="홈">학습 길</span></button><button class="tab" id="t1" role="tab" aria-selected="false" aria-controls="v1" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-book"/></svg><span data-s="도감">문자 도감</span></button><button class="tab" id="t2" role="tab" aria-selected="false" aria-controls="v2" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-spark"/></svg><span data-s="퀴즈">글자 퀴즈</span></button><button class="tab" id="t3" role="tab" aria-selected="false" aria-controls="v3" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-cards"/></svg><span data-s="단어">단어 모으기</span></button><button class="tab" id="t4" role="tab" aria-selected="false" aria-controls="v4" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-note"/></svg><span data-s="오답">오답노트</span><span class="badge" id="nbadge" hidden></span></button><button class="tab" id="t5" role="tab" aria-selected="false" aria-controls="v5" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-trophy"/></svg><span data-s="프로필">프로필</span></button></nav><div class="sidebar-bottom"><div class="little-note"><svg class="icon " aria-hidden="true"><use href="#i-flower"/></svg><p>작은 한 걸음이<br>새로운 세상을 열어요.</p><span>一日、一歩。</span></div><button class="utility" id="theme"><svg class="icon " aria-hidden="true"><use href="#i-moon"/></svg><span>밤 모드</span></button><button class="utility" id="reset"><svg class="icon " aria-hidden="true"><use href="#i-gear"/></svg><span>설정</span></button></div></aside>
-<div class="workspace"><header class="topbar"><div class="breadcrumb">나의 배움 <span>/</span> <b id="page-label">학습 길</b></div><div class="top-meta"><span class="language"><i class="japan-flag"></i> 일본어 <small id="level-label" title="한자(N5)를 시작하면 중급이 돼요">초급</small></span><span class="top-divider"></span><span class="top-count"><svg class="icon " aria-hidden="true"><use href="#i-flower"/></svg><b id="header-count">0</b><span>글자</span></span><span class="avatar" aria-label="내 학습 공간">하</span></div></header>
+<aside class="sidebar"><a class="brand" href="#" aria-label="하루카나 홈" id="brand-home"><span class="brand-fox"><svg viewBox="0 0 180 190" class="fox " aria-hidden="true"><use href="#fox"/></svg></span><span>하루카나<small>harukana</small></span></a><p class="nav-label">나의 일본어 여행</p><nav class="tabs" role="tablist" aria-label="학습 메뉴" aria-orientation="vertical"><button class="tab on" id="t0" role="tab" aria-selected="true" aria-controls="v0" tabindex="0"><svg class="icon " aria-hidden="true"><use href="#i-home"/></svg><span data-s="홈">학습 길</span></button><button class="tab" id="t1" role="tab" aria-selected="false" aria-controls="v1" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-book"/></svg><span data-s="도감">문자 도감</span></button><button class="tab" id="t2" role="tab" aria-selected="false" aria-controls="v2" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-spark"/></svg><span data-s="퀴즈">글자 퀴즈</span></button><button class="tab" id="t3" role="tab" aria-selected="false" aria-controls="v3" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-cards"/></svg><span data-s="단어">단어 모으기</span></button><button class="tab" id="t6" role="tab" aria-selected="false" aria-controls="v6" tabindex="-1" hidden><span class="icon tab-glyph" aria-hidden="true">漢</span><span data-s="한자">한자</span></button><button class="tab" id="t4" role="tab" aria-selected="false" aria-controls="v4" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-note"/></svg><span data-s="오답">오답노트</span><span class="badge" id="nbadge" hidden></span></button><button class="tab" id="t5" role="tab" aria-selected="false" aria-controls="v5" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-trophy"/></svg><span data-s="프로필">프로필</span></button></nav><div class="sidebar-bottom"><div class="little-note"><svg class="icon " aria-hidden="true"><use href="#i-flower"/></svg><p>작은 한 걸음이<br>새로운 세상을 열어요.</p><span>一日、一歩。</span></div><button class="utility" id="theme"><svg class="icon " aria-hidden="true"><use href="#i-moon"/></svg><span>밤 모드</span></button><button class="utility" id="reset"><svg class="icon " aria-hidden="true"><use href="#i-gear"/></svg><span>설정</span></button></div></aside>
+<div class="workspace"><header class="topbar"><div class="breadcrumb">나의 배움 <span>/</span> <b id="page-label">학습 길</b></div><div class="top-meta"><span class="language"><i class="japan-flag"></i> 일본어 <button type="button" class="lvl-btn" id="level-label" title="초급">초급</button></span><span class="top-divider"></span><span class="top-count"><svg class="icon " aria-hidden="true"><use href="#i-flower"/></svg><b id="header-count">0</b><span>글자</span></span><span class="avatar" aria-label="내 학습 공간">하</span></div></header>
 <div class="content-layout"><main id="content" tabindex="-1">
 <section id="v0" role="tabpanel" aria-labelledby="t0"><div class="welcome"><p class="eyebrow">조금씩, 매일 더 가까이</p><h1>오늘도, 일본어 한 걸음<span class="heading-flower">✿</span></h1><p>하루와 함께 나만의 속도로 배워요.</p></div>
 <div class="hero"><svg class="hero-scene" viewBox="0 0 800 300" preserveAspectRatio="xMaxYMax slice" role="img" aria-label="벚꽃이 핀 강가와 후지산, 오층탑이 보이는 풍경에서 반기는 여우 하루">
@@ -382,7 +395,7 @@ body{background:linear-gradient(180deg,var(--bg-top) 0,var(--bg) 560px) no-repea
   <div id="quiz-tools"></div>
 </section>
 
-<section id="v3" role="tabpanel" aria-labelledby="t3" hidden><div class="section-intro"><div><p class="section-kicker">VOCABULARY / 03</p><h2>단어 모으기</h2><p class="section-copy">기초 단어를 익히고, 확인 퀴즈로 내 것으로 만들어 보세요.</p></div><div class="section-mark" aria-hidden="true">語</div></div><div id="words"></div></section>
+<section id="v3" role="tabpanel" aria-labelledby="t3" hidden><div class="section-intro"><div><p class="section-kicker">VOCABULARY / 03</p><h2>단어 모으기</h2><p class="section-copy">기초 단어를 익히고, 확인 퀴즈로 내 것으로 만들어 보세요.</p></div><div class="section-mark" aria-hidden="true">語</div></div><div id="words"></div></section><section id="v6" role="tabpanel" aria-labelledby="t6" hidden><div class="section-intro"><div><p class="section-kicker">KANJI / 중급</p><h2>한자</h2><p class="section-copy">JLPT 급수별로 한자를 익혀요. 카드로 뜻과 읽는 법을 보고, 퀴즈로 확인해요.</p></div><div class="section-mark" aria-hidden="true">漢</div></div><div id="kanji"></div></section>
 
 <section id="v4" role="tabpanel" aria-labelledby="t4" hidden><div class="section-intro"><div><p class="section-kicker">REVIEW / 04</p><h2>오답노트</h2><p class="section-copy">틀렸던 문제를 다시 풀어 빈틈을 채워 보세요.</p></div><div class="section-mark" aria-hidden="true">復</div></div><div id="note"></div></section>
 <section id="v5" role="tabpanel" aria-labelledby="t5" hidden><div class="section-intro"><div><p class="section-kicker">PROFILE / 05</p><h2>나의 프로필</h2><p class="section-copy">칭호와 배지를 모으고, 분야마다 기록을 따로 관리해요. 문제를 맞히면 XP가 쌓여요.</p></div><div class="section-mark" aria-hidden="true">賞</div></div><div id="me-card"></div><div id="board"></div><div id="grass"></div><div id="records"></div><div id="badges"></div></section>
@@ -995,8 +1008,7 @@ function refreshSummary(){
   renderMissions();
   $("continue").innerHTML=(S.last||mc?'이어서 학습하기':'학습 시작하기')+' <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>';
   $("continue").title=lastPlace();
-  const mid=!!(S.flags.kanji||Object.keys(S.kj).length);
-  $("level-label").textContent=mid?"중급":"초급";$("level-label").title=mid?"한자 N5를 공부하고 있어요":"한자(N5)를 시작하면 중급이 돼요";
+  applyLevel(); // 상단 초급·중급 표시와 한자 칸
   const back=!!(S.last||mc),st=streak();
   $("hero-title").innerHTML=back?"다시 만나서 반가워요!<br>오늘도 한 걸음 더":"처음 만나는 일본어,<br>설레는 시작!";
   $("hero-sub").innerHTML=back?(st?`${st}일째 이어서 공부하고 있어요.<br>오늘도 조금만 해 볼까요?`:"잠깐 쉬었어도 괜찮아요.<br>오늘 다시 시작해요."):"あ부터 차근차근.<br>오늘의 한 걸음을 함께해요.";
@@ -1318,9 +1330,8 @@ const WSCRIPTS={h:"히라가나",k:"가타카나"}; // 예전 섞어 쓰기는 �
 let wv={view:"list",script:"h"};
 try{const v=JSON.parse(localStorage.getItem("harukana-wsess"));
   if(v&&(v.view==="scard"||v.view==="squiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)&&SENT_UNITS.some(u=>u.id===v.unit)){delete v.t;v.batch=v.batch.filter(id=>SENT_BY_ID[id]);if(v.queue)v.queue=v.queue.filter(id=>SENT_BY_ID[id]);v.wrong=(v.wrong||[]).filter(id=>SENT_BY_ID[id]);if(v.batch.length)wv=v}
-  else if(v&&(v.view==="jcard"||v.view==="jquiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)&&KANJI_CATS.some(c=>c.id===v.cat)){delete v.t;v.batch=v.batch.filter(k=>KANJI_BY[k]);if(v.queue)v.queue=v.queue.filter(k=>KANJI_BY[k]);v.wrong=(v.wrong||[]).filter(k=>KANJI_BY[k]);v.i=Math.min(v.i||0,v.batch.length-1);if(v.batch.length)wv=v}
   else if(v&&(v.view==="card"||v.view==="quiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)){delete v.t;const byId=x=>WORDS.find(w=>w.id===(x&&x.id));v.batch=v.batch.map(byId).filter(Boolean);if(v.queue)v.queue=v.queue.map(byId).filter(Boolean);if(v.batch.length)wv={...v,wrong:new Set(v.wrong||[])}}}catch(e){}
-function saveWSess(){try{if(["card","quiz","scard","squiz","jcard","jquiz"].includes(wv.view))localStorage.setItem("harukana-wsess",JSON.stringify({...wv,wrong:[...(wv.wrong||[])],t:Date.now()}));else localStorage.removeItem("harukana-wsess")}catch(e){}}
+function saveWSess(){try{if(["card","quiz","scard","squiz"].includes(wv.view))localStorage.setItem("harukana-wsess",JSON.stringify({...wv,wrong:[...(wv.wrong||[])],t:Date.now()}));else localStorage.removeItem("harukana-wsess")}catch(e){}}
 const catWords=id=>WORDS.filter(w=>w.category===id);
 const scriptCats=s=>CATS.filter(c=>c.script===s);
 const catDone=id=>catWords(id).every(w=>wd(w.id));
@@ -1367,7 +1378,6 @@ function renderWords(){
   const el=$("words");
   saveWSess(); // 카드·퀴즈 중이면 위치 저장, 목록으로 나왔으면 지움
   if(wv.view&&wv.view[0]==="s")return renderSent(el); // 문장 연습 화면들
-  if(wv.view&&wv.view[0]==="j")return renderKanji(el); // 한자 연습 화면들
   if(wv.view==="list"){
     const s=WSCRIPTS[wv.script]?wv.script:"h",cats=scriptCats(s); // 예전에 저장된 섞어 쓰기(m)는 히라가나로
     setLast({t:"wordlist",s,m:wMode});
@@ -1557,8 +1567,8 @@ function renderSent(el){
   }
 }
 
-const kindTabs=cur=>`<div class="seg kind-seg" role="group" aria-label="단어·문장·한자">${[["w","단어"],["s","문장"],["j","한자"]].map(([k,n])=>`<button data-kind="${k}" class="${k===cur?"on":""}" aria-pressed="${k===cur}">${n}</button>`).join("")}</div>`;
-function bindKindTabs(el){el.querySelectorAll("[data-kind]").forEach(b=>b.onclick=()=>{const k=b.dataset.kind;wv=k==="s"?{view:"slist"}:k==="j"?{view:"jlist"}:{view:"list",script:"h"};wordsHist();renderWords()})}
+const kindTabs=cur=>`<div class="seg kind-seg" role="group" aria-label="단어 또는 문장">${[["w","단어"],["s","문장"]].map(([k,n])=>`<button data-kind="${k}" class="${k===cur?"on":""}" aria-pressed="${k===cur}">${n}</button>`).join("")}</div>`;
+function bindKindTabs(el){el.querySelectorAll("[data-kind]").forEach(b=>b.onclick=()=>{const k=b.dataset.kind;wv=k==="s"?{view:"slist"}:{view:"list",script:"h"};wordsHist();renderWords()})}
 function recordKanji(k,ok){const x=S.kj[k]||(S.kj[k]={r:0,w:0,d:0});if(ok){if(!x.r)dayState().fresh++;x.r++;x.d=1;schedule("j:"+k)}else{x.w++;x.d=0;addNote("j:"+k)}}
 function kanjiQ(j,type){
   type=type||rand(["mean","read","rev"]);
@@ -1575,73 +1585,91 @@ function kanjiQ(j,type){
   if(type==="rev")return{...base,prompt:"이 뜻의 한자는?",big:esc(j.hun),bigCls:"sound",choices:opts.map(x=>`<span class="ja-font" lang="ja">${x.k}</span>`),chCls:"kana kanji-ch",correct:opts.indexOf(j),rev:1};
   return{...base,prompt:"이 한자의 뜻은?",big:`<span class="ja-font" lang="ja">${j.k}</span>`,bigCls:"kanji-big",choices:opts.map(x=>esc(x.hun)),chCls:"text",correct:opts.indexOf(j)};
 }
+const JLPT_LV=["N5","N4","N3","N2","N1"],JLPT_READY={N5:true};
+let jv={view:"jlist",lv:"N5"};
+const JSESS="harukana-jsess";
+try{const v=JSON.parse(localStorage.getItem(JSESS)); // 풀던 한자 카드·퀴즈 이어서
+  if(v&&(v.view==="jcard"||v.view==="jquiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)&&KANJI_CATS.some(c=>c.id===v.cat)){delete v.t;v.batch=v.batch.filter(k=>KANJI_BY[k]);if(v.queue)v.queue=v.queue.filter(k=>KANJI_BY[k]);v.wrong=(v.wrong||[]).filter(k=>KANJI_BY[k]);v.i=Math.min(v.i||0,v.batch.length-1);if(v.batch.length)jv=v}}catch(e){}
+function saveJSess(){try{if(["jcard","jquiz"].includes(jv.view))localStorage.setItem(JSESS,JSON.stringify({...jv,t:Date.now()}));else localStorage.removeItem(JSESS)}catch(e){}}
+const kanjiState=()=>({tab:6,cat:jv.view==="jlist"?null:jv.cat,lv:jv.lv||"N5"});
+function kanjiHist(){if(navPop||tab!==6)return;histPush(kanjiState())}
+function renderKanjiTab(){saveJSess();if(jv.view!=="jlist"||!jv.lv)jv.lv=jv.lv||"N5";setLast({t:"kanji"});renderKanji($("kanji"))}
 function renderKanji(el){
-  const seg=kindTabs("j");
-  if(wv.view==="jlist"){
-    el.innerHTML=seg+`<p class="intro">일본어능력시험 N5 수준의 기초 한자 ${KANJI.length}자예요. 가나와 기초 단어를 먼저 익히면 더 쉬워요.</p>
+  const lv=jv.lv||"N5";
+  const seg=`<div class="seg jlpt-seg" role="group" aria-label="JLPT 급수">${JLPT_LV.map(l=>`<button data-lv="${l}" class="${l===lv?"on":""}${JLPT_READY[l]?"":" soon"}" aria-pressed="${l===lv}"${JLPT_READY[l]?"":` title="${l} 한자는 준비 중이에요"`}>${l}${JLPT_READY[l]?"":"<small>준비 중</small>"}</button>`).join("")}</div>`;
+  const bindLv=()=>el.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>{jv={view:"jlist",lv:b.dataset.lv};kanjiHist();renderKanjiTab()});
+  if(jv.view==="jlist"&&!JLPT_READY[lv]){
+    el.innerHTML=seg+`<div class="empty-note">${lv} 한자는 준비 중이에요.<br>먼저 N5 한자 ${KANJI.length}자를 익혀 두면, ${lv}가 추가됐을 때 바로 이어서 할 수 있어요.</div>`;
+    bindLv();return;
+  }
+  if(jv.view==="jlist"){
+    el.innerHTML=seg+`<p class="intro">일본어능력시험 N5 수준의 기초 한자 ${KANJI.length}자예요. 카테고리를 골라 카드로 익히고 퀴즈로 확인해요.</p>
       <div class="cats">${KANJI_CATS.map(c=>{const ks=kanjiOf(c.id),n=ks.filter(j=>kjd(j.k)).length;
         return `<button class="catcard" data-jc="${c.id}"><div class="cat-top"><b>${c.name}</b>${n===ks.length?'<span class="pill ok">완료</span>':""}</div>
           <div class="desc">${c.desc}</div><div class="kj-peek ja-font" lang="ja">${ks.slice(0,8).map(j=>j.k).join(" ")}</div><div class="bar"><i style="width:${n/ks.length*100}%"></i></div><div class="meta">맞힌 한자 ${n}/${ks.length}</div></button>`}).join("")}</div>`;
-    bindKindTabs(el);
-    el.querySelectorAll("[data-jc]").forEach(b=>b.onclick=()=>{wv={view:"jcat",cat:b.dataset.jc};wordsHist();renderWords()});
+    
+    bindLv();
+    el.querySelectorAll("[data-jc]").forEach(b=>b.onclick=()=>{jv={view:"jcat",cat:b.dataset.jc};kanjiHist();renderKanjiTab()});
     return;
   }
-  const c=KANJI_CATS.find(x=>x.id===wv.cat);
-  if(!c){wv={view:"jlist"};return renderKanji(el)}
-  const ks=kanjiOf(c.id),toCat=()=>{wv={view:"jcat",cat:c.id};renderWords()};
+  const c=KANJI_CATS.find(x=>x.id===jv.cat);
+  if(!c){jv={view:"jlist"};return renderKanji(el)}
+  const ks=kanjiOf(c.id),toCat=()=>{jv={view:"jcat",cat:c.id};renderKanjiTab()};
   const exitJ=`<div style="text-align:left"><button class="back" id="jexit">← 그만하고 나가기</button></div>`;
-  if(wv.view==="jcat"){
+  if(jv.view==="jcat"){
     const todo=ks.filter(j=>!kjd(j.k));
     el.innerHTML=seg+`<button class="back" id="jbk">← 한자 카테고리</button>
       <div class="status qstat"><span>한자 N5 · ${c.name} · 맞힌 한자 ${ks.length-todo.length}/${ks.length}</span>${resetBtn(`kj-${c.id}`,"초기화")}</div>
       <div style="text-align:center"><button class="next" id="jgo">${todo.length?`학습 시작 (${todo.length}자)`:"다시 풀기"}</button></div>
       <p class="intro wpick-hint">한자를 누르면 그 한자부터 볼 수 있어요.</p>
       <div class="kj-grid">${ks.map(j=>`<button class="kj-tile${kjd(j.k)?" ok":""}" data-k="${j.k}"><b class="ja-font" lang="ja">${j.k}</b><small>${esc(j.hun)}</small></button>`).join("")}</div>`;
-    bindKindTabs(el);
-    $("jbk").onclick=()=>{wv={view:"jlist"};wordsHist();renderWords()};
-    const start=first=>{const rest=(todo.length?todo:ks).map(j=>j.k).filter(k=>k!==first);wv={view:"jcard",cat:c.id,batch:first?[first,...rest]:rest,i:0};S.flags.kanji=1;save();refreshSummary();renderWords()};
+    
+    bindLv();
+    $("jbk").onclick=()=>{jv={view:"jlist"};kanjiHist();renderKanjiTab()};
+
+    const start=first=>{const rest=(todo.length?todo:ks).map(j=>j.k).filter(k=>k!==first);jv={view:"jcard",cat:c.id,batch:first?[first,...rest]:rest,i:0};renderKanjiTab()};
     $("jgo").onclick=()=>start(null);
     el.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>start(b.dataset.k));
     return;
   }
-  if(wv.view==="jcard"){
-    const j=KANJI_BY[wv.batch[wv.i]],n=wv.batch.length,last=wv.i===n-1;
-    el.innerHTML=`<div class="panel">${exitJ}<div class="status">한자 · ${c.name} · ${wv.i+1} / ${n}</div>
+  if(jv.view==="jcard"){
+    const j=KANJI_BY[jv.batch[jv.i]],n=jv.batch.length,last=jv.i===n-1;
+    el.innerHTML=`<div class="panel">${exitJ}<div class="status">한자 · ${c.name} · ${jv.i+1} / ${n}</div>
       <div class="kj-card"><div class="kj-big ja-font" lang="ja">${j.k}</div><div class="kj-hun">${esc(j.hun)}</div>
         <div class="kj-read"><span><small>음독</small><b lang="ja">${j.on||"—"}</b></span><span><small>훈독</small><b lang="ja">${j.kun||"—"}</b></span></div></div>
       <div class="kj-ex">${j.ex.map(e=>`<button class="kj-exrow" data-say="${e[1]}"><span class="kj-w ja-font" lang="ja">${esc(e[0])}</span><span class="kj-r"><span lang="ja">${e[1]}</span><small>${autoHangul(e[1])}</small></span><span class="kj-m">${esc(e[2])}</span>${SPK}</button>`).join("")}</div>
       <p class="tip s-note">음독은 주로 한자끼리 붙은 말에서, 훈독은 혼자 쓰거나 히라가나가 붙을 때 읽어요.</p>
       <div class="slow-row" style="justify-content:center">${slowToggle()}</div>
-      <div class="navrow"><button class="ghost" id="pv" ${wv.i?"":"disabled"}>이전</button><button class="next" id="nx">${last?"확인 퀴즈 시작":"다음"}</button></div>
+      <div class="navrow"><button class="ghost" id="pv" ${jv.i?"":"disabled"}>이전</button><button class="next" id="nx">${last?"확인 퀴즈 시작":"다음"}</button></div>
       <button class="link" id="skip">다 아는 한자면 바로 퀴즈</button></div>`;
     speak(j.ex[0][1]);
-    const toQuiz=()=>{wv={view:"jquiz",cat:c.id,batch:wv.batch,queue:shuffle(wv.batch.slice()),wrong:[]};renderWords()};
+    const toQuiz=()=>{jv={view:"jquiz",cat:c.id,batch:jv.batch,queue:shuffle(jv.batch.slice()),wrong:[]};renderKanjiTab()};
     $("jexit").onclick=toCat;
     el.querySelectorAll(".kj-exrow").forEach(b=>b.onclick=()=>speak(b.dataset.say));
-    $("pv").onclick=()=>{wv.i--;renderWords()};$("nx").onclick=()=>{if(last)toQuiz();else{wv.i++;renderWords()}};$("skip").onclick=toQuiz;
+    $("pv").onclick=()=>{jv.i--;renderKanjiTab()};$("nx").onclick=()=>{if(last)toQuiz();else{jv.i++;renderKanjiTab()}};$("skip").onclick=toQuiz;
     return;
   }
-  if(wv.view==="jquiz"){
-    if(!wv.queue.length){wv={view:"jdone",cat:c.id,wrong:wv.wrong||[]};return renderWords()}
-    const j=KANJI_BY[wv.queue[0]],q=kanjiQ(j),retry=(wv.wrong||[]).includes(j.k);
+  if(jv.view==="jquiz"){
+    if(!jv.queue.length){jv={view:"jdone",cat:c.id,wrong:jv.wrong||[]};return renderKanjiTab()}
+    const j=KANJI_BY[jv.queue[0]],q=kanjiQ(j),retry=(jv.wrong||[]).includes(j.k);
     el.innerHTML=`<div class="panel" id="jq"></div>`;
-    mc($("jq"),{...q,head:`${exitJ}<div class="status qstat"><span>한자 · ${c.name} · 남은 문제 ${wv.queue.length}</span></div>${retry?'<span class="pill">다시 나온 한자</span>':""}`,
+    mc($("jq"),{...q,head:`${exitJ}<div class="status qstat"><span>한자 · ${c.name} · 남은 문제 ${jv.queue.length}</span></div>${retry?'<span class="pill">다시 나온 한자</span>':""}`,
       onPick(ok){
-        recordKanji(j.k,ok);speak(q.say);wv.queue.shift();
-        if(!ok){if(!wv.wrong.includes(j.k))wv.wrong.push(j.k);const from=Math.min(RETRY_GAP,wv.queue.length);wv.queue.splice(from+Math.floor(Math.random()*(wv.queue.length-from+1)),0,j.k)}
-        saveWSess();save();refreshSummary();
+        recordKanji(j.k,ok);speak(q.say);jv.queue.shift();
+        if(!ok){if(!jv.wrong.includes(j.k))jv.wrong.push(j.k);const from=Math.min(RETRY_GAP,jv.queue.length);jv.queue.splice(from+Math.floor(Math.random()*(jv.queue.length-from+1)),0,j.k)}
+        saveJSess();save();refreshSummary();
         return q.fb(ok);
       },
-      onNext:()=>renderWords()});
+      onNext:()=>renderKanjiTab()});
     $("jexit").onclick=toCat;
     return;
   }
-  const i=KANJI_CATS.indexOf(c),next=KANJI_CATS[i+1],wrong=(wv.wrong||[]).map(k=>KANJI_BY[k]).filter(Boolean);
+  const i=KANJI_CATS.indexOf(c),next=KANJI_CATS[i+1],wrong=(jv.wrong||[]).map(k=>KANJI_BY[k]).filter(Boolean);
   el.innerHTML=`<div class="panel"><h2>${c.name} 한자를 모두 맞혔어요</h2>
     ${wrong.length?`<p class="intro">처음에 틀린 한자 <b class="ja-font" lang="ja">${wrong.map(j=>j.k).join(" ")}</b>는 오답노트에 있어요.</p>`:'<p class="intro">한 번에 다 맞혔어요.</p>'}
     <div class="navrow"><button class="ghost" id="jbk2">한자 카테고리</button>${next?'<button class="next" id="jnext">다음 카테고리로</button>':""}</div></div>`;
-  $("jbk2").onclick=()=>{wv={view:"jlist"};renderWords()};
-  if($("jnext"))$("jnext").onclick=()=>{wv={view:"jcat",cat:next.id};wordsHist();renderWords()};
+  $("jbk2").onclick=()=>{jv={view:"jlist"};renderKanjiTab()};
+  if($("jnext"))$("jnext").onclick=()=>{jv={view:"jcat",cat:next.id};kanjiHist();renderKanjiTab()};
 }
 
 let nq=null;
@@ -1926,6 +1954,7 @@ function mergeState(L,C){
   R.cf=R.cf||{};for(const k in C.cf||{})R.cf[k]=max(R.cf[k],C.cf[k]);
   R.seen={...(C.seen||{}),...(R.seen||{})};
   R.mix=(R.mix||C.mix)?1:0;
+  if(C.level==="mid")R.level="mid"; // 한 기기에서라도 중급이면 중급
   const wk=x=>Number((x||{}).id)||0;
   if(C.wk){if(wk(C.wk)>wk(R.wk))R.wk=C.wk;else if(wk(C.wk)===wk(R.wk))R.wk={id:R.wk.id,xp:max(R.wk.xp,C.wk.xp)}}
   if(C.day&&(!R.day||C.day.id>R.day.id||(C.day.id===R.day.id&&(C.day.solved||0)>(R.day.solved||0))))R.day=C.day;
@@ -2547,6 +2576,8 @@ function renderSettings(force){
   const d=$("set-dlg");if(!d||(!force&&!d.open))return;
   const nb=Object.keys(S.badges).length;
   d.innerHTML=`<div class="set-top"><h3 id="set-title">설정</h3><button class="set-x" id="set-close" aria-label="설정 닫기">×</button></div>
+    <h4 class="set-h">난이도</h4><div class="set-sound"><div class="lvl-pick" role="group" aria-label="난이도"><button type="button" data-level="beg" class="${isMid()?"":"on"}" aria-pressed="${!isMid()}">초급</button><button type="button" data-level="mid" class="${isMid()?"on":""}" aria-pressed="${isMid()}"${roadDone()||isMid()?"":" disabled"}>중급</button></div>
+      <p class="set-note">${isMid()?"중급에서는 왼쪽 메뉴에 한자 칸이 생겨요. 초급으로 돌아가도 한자 기록은 그대로 남아요.":roadDone()?"학습 길을 모두 마쳤어요. 중급으로 바꾸면 한자 칸이 열려요.":`학습 길 10단계를 모두 마치면 중급(한자)으로 바꿀 수 있어요. 지금 ${ROAD_STEPS.filter(st=>stepProg(st).f>=1).length} / ${ROAD_STEPS.length}단계예요.`}</p></div>
     <h4 class="set-h">계정</h4><div class="set-sound set-acct">${acctRow("s")}</div>
     <h4 class="set-h">소리</h4><div class="set-sound" id="snd-box"></div>
     <h4 class="set-h">학습 기록</h4>
@@ -2556,6 +2587,7 @@ function renderSettings(force){
       ${IN_CLAUDE||S.account?`<div><b>랭킹 참가</b><small>${S.rankOff?"지금은 랭킹에서 숨겨져 있어요.":"문제를 맞히면 닉네임·레벨·XP가 랭킹에 보여요."}</small><button class="rec-reset" id="rk-hide">${S.rankOff?"다시 참가하기":"랭킹에서 숨기기"}</button></div>`:""}
     </div>`;
   $("set-close").onclick=()=>d.close();
+  d.querySelectorAll("[data-level]").forEach(b=>b.onclick=()=>setLevel(b.dataset.level==="mid"));
   if($("rk-hide"))$("rk-hide").onclick=()=>setRankHidden(!S.rankOff);
   bindAcct("s");
   renderSoundSettings();
@@ -2736,19 +2768,19 @@ function renderGrass(){
 }
 
 let tab=0;
-const tabNames=['학습 길','문자 도감','글자 퀴즈','단어 모으기','오답노트','프로필'];
-const TABS=[0,1,2,3,4,5];
-const TAB_SLUG=["home","chart","quiz","words","notes","profile"];
+const tabNames=['학습 길','문자 도감','글자 퀴즈','단어 모으기','오답노트','프로필','한자'];
+const TABS=[0,1,2,3,6,4,5]; // 화면에 보이는 순서 (6 한자는 중급일 때만 보임)
+const TAB_SLUG=["home","chart","quiz","words","notes","profile","kanji"];
 const LOAD_ID=Math.random().toString(36).slice(2); // 이번에 사이트를 연 회차
 let histTab=null,navPop=false,histSeq=0;
 const nextSeq=()=>{let n=0;try{n=Number(sessionStorage.getItem("harukana-hseq"))||0;sessionStorage.setItem("harukana-hseq",++n)}catch(e){n=Date.now()}return n};
 function histPush(st,replace){
   if(IN_CLAUDE)return; // claude.ai 안에서는 바깥 화면의 뒤로 가기와 섞이지 않게 기록하지 않는다
   histSeq=nextSeq();
-  const url=st.tab===0?location.pathname+location.search:"#"+TAB_SLUG[st.tab]+(st.w==="cat"&&st.cat?"/"+st.cat:st.w==="sent"?"/sent"+(st.unit?"/"+st.unit:""):st.w==="kanji"?"/kanji"+(st.cat?"/"+st.cat:""):"");
+  const url=st.tab===0?location.pathname+location.search:"#"+TAB_SLUG[st.tab]+(st.w==="cat"&&st.cat?"/"+st.cat:st.w==="sent"?"/sent"+(st.unit?"/"+st.unit:""):st.tab===6&&st.cat?"/"+st.cat:"");
   try{history[replace?"replaceState":"pushState"]({...st,load:LOAD_ID,seq:histSeq},"",url)}catch(e){} // claude.ai 안에서는 막혀 있을 수 있다
 }
-const wordsState=()=>wv.view[0]==="j"?{tab:3,w:"kanji",cat:wv.view==="jlist"?null:wv.cat}:wv.view[0]==="s"?{tab:3,w:"sent",unit:wv.view==="slist"?null:wv.unit,sg:wv.view==="slist"?(wv.sg||sentGroup):undefined}:wv.view==="list"?{tab:3,w:"list",s:wv.script||"h"}:{tab:3,w:"cat",cat:wv.cat};
+const wordsState=()=>wv.view[0]==="s"?{tab:3,w:"sent",unit:wv.view==="slist"?null:wv.unit,sg:wv.view==="slist"?(wv.sg||sentGroup):undefined}:wv.view==="list"?{tab:3,w:"list",s:wv.script||"h"}:{tab:3,w:"cat",cat:wv.cat};
 function wordsHist(){if(navPop||tab!==3)return;histPush(wordsState())}
 window.addEventListener("popstate",e=>{
   const st=e.state;
@@ -2758,18 +2790,20 @@ window.addEventListener("popstate",e=>{
   navPop=true;
   try{
     const d=document.querySelector("dialog[open]");if(d)d.close();
-    if(st.tab===3&&st.w==="kanji"){
-      if(!(["jcard","jquiz","jdone"].includes(wv.view)&&wv.cat===st.cat))wv=st.cat&&KANJI_CATS.some(c=>c.id===st.cat)?{view:"jcat",cat:st.cat}:{view:"jlist"};
+    if(st.tab===6){
+      if(!(["jcard","jquiz","jdone"].includes(jv.view)&&jv.cat===st.cat))jv=st.cat&&KANJI_CATS.some(c=>c.id===st.cat)?{view:"jcat",cat:st.cat,lv:"N5"}:{view:"jlist",lv:st.lv||"N5"};
     }else if(st.tab===3&&st.w==="sent"){
       if(!(["scard","squiz","sdone"].includes(wv.view)&&wv.unit===st.unit))wv=st.unit&&SENT_UNITS.some(u=>u.id===st.unit)?{view:"sunit",unit:st.unit}:{view:"slist",sg:st.sg};
     }else if(st.tab===3&&st.w&&!((wv.view==="card"||wv.view==="quiz")&&st.w==="cat"&&wv.cat===st.cat))
       wv=st.w==="cat"&&catOf(st.cat)&&catOpen(catOf(st.cat))?{view:"cat",cat:st.cat}:{view:"list",script:st.s||"h"};
     show(st.tab);
     if(st.tab===3)renderWords();
+    if(st.tab===6&&isMid())renderKanjiTab();
   }finally{navPop=false}
 });
 function show(n){
-  if(!navPop&&n!==histTab)histPush(n===3?wordsState():{tab:n},histTab===null);
+  if(n===6&&!isMid())n=0; // 한자 칸은 중급일 때만
+  if(!navPop&&n!==histTab)histPush(n===3?wordsState():n===6?kanjiState():{tab:n},histTab===null);
   histTab=n;
   tab=n;TABS.forEach(i=>{$("v"+i).hidden=i!==n;$("t"+i).classList.toggle("on",i===n);$("t"+i).setAttribute("aria-selected",String(i===n));$("t"+i).tabIndex=i===n?0:-1});
   $("page-label").textContent=tabNames[n];
@@ -2781,9 +2815,10 @@ function show(n){
   if(n===3&&(["list","cat","slist","sunit"].includes(wv.view)||!$("words").innerHTML))renderWords();
   if(n===4&&!nq)renderNote();
   if(n===5){renderRank();loadBoard(rk.mode)}
+  if(n===6)renderKanjiTab();
   window.scrollTo({top:0,behavior:'instant'});
 }
-TABS.forEach(i=>{$("t"+i).onclick=()=>show(i);$("t"+i).onkeydown=e=>{const N=TABS.length;let next;if(['ArrowDown','ArrowRight'].includes(e.key))next=(i+1)%N;else if(['ArrowUp','ArrowLeft'].includes(e.key))next=(i+N-1)%N;else if(e.key==='Home')next=0;else if(e.key==='End')next=N-1;else return;e.preventDefault();show(next);$("t"+next).focus()}});
+TABS.forEach(i=>{$("t"+i).onclick=()=>show(i);$("t"+i).onkeydown=e=>{const vis=TABS.filter(t=>!$("t"+t).hidden),N=vis.length,p=vis.indexOf(i);let next;if(['ArrowDown','ArrowRight'].includes(e.key))next=vis[(p+1)%N];else if(['ArrowUp','ArrowLeft'].includes(e.key))next=vis[(p+N-1)%N];else if(e.key==='Home')next=vis[0];else if(e.key==='End')next=vis[N-1];else return;e.preventDefault();show(next);$("t"+next).focus()}});
 function openLesson(stage,script){qScript=script;startStage(stage);renderStageBar();renderCharQuiz();show(2);$("content").focus({preventScroll:true});fitQuiz($("quiz"))}
 function renderHome(){
   if(!rv)renderReview();
@@ -2805,10 +2840,22 @@ const ROAD=[
   {title:"문장",icon:"文",steps:[
     {id:"sp",mark:"は",name:"조사로 문장 만들기",desc:"は・を・に를 넣어 짧은 문장 읽기",items:()=>groupUnits("p").flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"p"};show(3);renderWords()}},
     {id:"sk",mark:"文",name:"가타카나 넣은 문장",desc:"コーヒーを のみます처럼 가타카나 말이 든 문장",items:()=>groupUnits("k").flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"k"};show(3);renderWords()}}]},
-  {title:"한자 N5",icon:"漢",steps:[
-    {id:"j1",mark:"日",name:"기초 한자 ①",desc:"숫자·날짜·위치·사람 한자",items:()=>KANJI.filter(j=>["kn","kt","kp","kh"].includes(j.cat)).map(j=>j.k),done:kjd,go:()=>{wv={view:"jlist"};show(3);renderWords()}},
-    {id:"j2",mark:"花",name:"기초 한자 ②",desc:"자연·물건·동작·몸 한자",items:()=>KANJI.filter(j=>["kx","ko","kv","kb"].includes(j.cat)).map(j=>j.k),done:kjd,go:()=>{wv={view:"jlist"};show(3);renderWords()}}]}
 ];
+const roadDone=()=>ROAD_STEPS.every(st=>stepProg(st).f>=1);
+const isMid=()=>S.level==="mid";
+function setLevel(mid){
+  if(mid&&!roadDone())return notifyText("학습 길 10단계를 모두 마치면 중급으로 바꿀 수 있어요.");
+  S.level=mid?"mid":"beg";save();applyLevel();
+  if(mid)notifyText("중급이 됐어요! 왼쪽 메뉴에 한자 칸이 생겼어요.");
+  if(!mid&&tab===6)show(0);
+  renderRoad();renderSettings();
+}
+function applyLevel(){
+  const mid=isMid();
+  $("level-label").textContent=mid?"중급":"초급";
+  $("level-label").title=mid?"중급 · 한자 칸이 열려 있어요 (설정에서 바꿀 수 있어요)":"초급 · 학습 길 10단계를 마치면 중급으로 바꿀 수 있어요";
+  $("t6").hidden=!mid;
+}
 const ROAD_STEPS=ROAD.flatMap(sec=>sec.steps);
 const stepProg=st=>{const it=st.items(),n=it.filter(st.done).length;return{n,t:it.length,f:it.length?n/it.length:1}};
 const roadCurrent=()=>ROAD_STEPS.find(st=>stepProg(st).f<1)||null;
@@ -2819,16 +2866,19 @@ function renderRoad(){
   $("road-bar").style.width=pct+"%";
   $("road-sum").textContent=`${ROAD_STEPS.length}단계 중 ${doneN}단계 완료${cur?` · 지금 여기: ${cur.name}`:" · 모든 여정을 마쳤어요!"}`;
   let no=0;
-  el.innerHTML=ROAD.map((sec,si)=>{
+  const fin=!cur?`<div class="road-fin"><span class="road-fin-ic" aria-hidden="true">✿</span><div><b>학습 길을 모두 마쳤어요!</b><small>${isMid()?"지금은 중급이에요. 한자 칸에서 N5 한자를 익혀 보세요.":"이제 중급으로 올라가 한자를 배울 수 있어요."}</small></div><button class="next" id="road-fin-go">${isMid()?"한자 칸으로 가기":"중급으로 바꾸기"}</button></div>`:"";
+  el.innerHTML=fin+ROAD.map((sec,si)=>{
     const sp=sec.steps.map(stepProg),secDone=sp.every(p=>p.f>=1),here=sec.steps.includes(cur);
     return `<details class="road-sec${secDone?" done":""}${here?" here":""}"${here?" open":""}><summary><span class="road-ic">${sec.icon}</span><span class="road-title"><b>${si+1}구간 · ${sec.title}</b><small>${sp.filter(p=>p.f>=1).length} / ${sec.steps.length}단계 완료</small></span><span class="road-state">${secDone?"✿ 완료":here?"지금 여기":""}</span></summary><div class="journey">${sec.steps.map((st,i)=>{
       no++;const p=sp[i],complete=p.f>=1,active=st===cur;
       return `<div class="lesson ${active?"current":complete?"complete":"upcoming"}"><div class="lesson-track"><button class="lesson-node" data-step="${st.id}" aria-label="${st.name} 열기">${complete?"✿":st.mark}</button>${active?'<svg class="here-fox" viewBox="0 0 180 190" aria-hidden="true"><use href="#fox"/></svg>':""}</div><button class="lesson-info" data-step="${st.id}"><span class="lesson-eyebrow">STEP ${String(no).padStart(2,"0")}${active?" <em>지금 여기</em>":complete?" <em>완료</em>":""}</span><h3>${st.name}</h3><p>${st.desc}</p><span class="lesson-meta">${p.n} / ${p.t} 완료</span>${active||(p.n&&!complete)?`<div class="bar"><i style="width:${p.f*100}%"></i></div>`:""}</button><span class="lesson-chevron" aria-hidden="true">›</span></div>`}).join("")}</div></details>`}).join("");
   el.querySelectorAll("[data-step]").forEach(b=>b.onclick=()=>ROAD_STEPS.find(s=>s.id===b.dataset.step).go());
+  if($("road-fin-go"))$("road-fin-go").onclick=()=>{if(isMid())show(6);else setLevel(true)};
 }
 function setLast(o){if(JSON.stringify(S.last)!==JSON.stringify(o)){S.last=o;save()}}
 function lastPlace(){const L=S.last;if(!L)return"";
   if(L.t==="note")return"오답노트";
+  if(L.t==="kanji")return"한자";
   if(L.t==="review")return"오늘의 복습";
   if(L.t==="table")return`문자 도감 · ${L.kata?"가타카나":"히라가나"}`;
   if(L.t==="profile")return"프로필";
@@ -2838,6 +2888,7 @@ function lastPlace(){const L=S.last;if(!L)return"";
 function continueStudy(){
   const L=S.last;
   if(L&&L.t==="note"){show(4);return}
+  if(L&&L.t==="kanji"&&isMid()){show(6);return}
   if(L&&L.t==="table"){kataMode=!!L.kata;$("s1").classList.toggle("on",!kataMode);$("s2").classList.toggle("on",kataMode);show(1);return}
   if(L&&L.t==="wordlist"){wMode=L.m==="rev"?"rev":"fwd";wv={view:"list",script:WSCRIPTS[L.s]?L.s:"h"};show(3);return}
   if(L&&L.t==="review"){if(!rv&&dueKeys().length)$("rv-start").click();$("review").scrollIntoView({block:"start"});return}
@@ -2886,6 +2937,7 @@ $("s2").onclick=()=>{kataMode=true;$("s2").classList.add("on");$("s1").classList
 const goRecords=openSettings;
 $("brand-home").onclick=e=>{e.preventDefault();show(0)};
 $("reset").onclick=goRecords;$("mobile-reset").onclick=goRecords;
+$("level-label").onclick=openSettings; // 초급·중급은 설정에서 바꾼다
 $("mobile-theme").onclick=()=>$("theme").onclick();const mobileNav=matchMedia('(max-width:760px)');
 const orientNav=()=>document.querySelector('.tabs').setAttribute('aria-orientation',mobileNav.matches?'horizontal':'vertical');
 mobileNav.addEventListener('change',orientNav);orientNav();
