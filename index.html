@@ -245,6 +245,26 @@ body{background:linear-gradient(180deg,var(--bg-top) 0,var(--bg) 560px) no-repea
   .hero-content{width:100%;padding:22px 20px 20px;background:var(--hero-fade)}
   .deco-branch{width:220px}.deco-branch.bl{display:none}
 }
+.road-overall{margin:-6px 0 16px}.road-overall .bar{height:8px}.road-overall .bar i{background:linear-gradient(90deg,var(--bl2),var(--accent))}
+.road-overall small{display:block;margin-top:7px;color:var(--sub);font-size:12px}
+.road-sec{margin-bottom:12px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--card) 82%,transparent)}
+.road-sec.here{border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+.road-sec summary{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;list-style:none;border-radius:18px}
+.road-sec summary::-webkit-details-marker{display:none}
+.road-sec summary:after{content:"›";margin-left:6px;font-size:22px;color:var(--sub);transform:rotate(90deg);transition:transform .2s;font-family:sans-serif}
+.road-sec:not([open]) summary:after{transform:rotate(0)}
+.road-ic{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--accent-soft);color:var(--accent);font-size:19px;font-weight:700;flex-shrink:0}
+.road-sec.done .road-ic{background:var(--okbg);color:var(--ok)}
+.road-title{flex:1;min-width:0}.road-title b{display:block;font-size:15px}.road-title small{color:var(--sub)}
+.road-state{font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap}
+.road-sec.done .road-state{color:var(--ok)}
+.road-sec .journey{padding:0 10px 6px}
+.road-sec .lesson{margin-bottom:8px;min-height:104px}
+.road-sec .journey:before{top:46px;bottom:56px;left:47px}
+.lesson.complete .lesson-node{background:var(--accent-soft);color:var(--accent);box-shadow:0 5px 0 color-mix(in srgb,var(--accent) 30%,var(--line));font-size:26px}
+.lesson-track{position:relative}
+.here-fox{position:absolute;width:40px;height:42px;left:-6px;bottom:-14px;filter:drop-shadow(0 2px 2px #0002);pointer-events:none}
+@media(max-width:760px){.road-sec summary{padding:12px}.road-sec .journey{padding:0 4px 4px}.road-sec .journey:before{left:41px}.here-fox{width:34px;height:36px;left:-4px}}
 </style><a class="skip-link" href="#content">학습 내용으로 이동</a><div class="sakura-deco" aria-hidden="true"><svg class="deco-branch tr" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><path d="M230 46q-20 40-60 62M120 96q-10 30-40 46" stroke="var(--trunk)" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="150" y="30" width="100" height="64"/><use href="#hs-bloom" x="60" y="80" width="95" height="61"/><use href="#hs-bloom" x="140" y="96" width="70" height="45"/><use href="#hs-bloom" x="0" y="128" width="70" height="45"/></svg><svg class="deco-branch bl" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="130" y="40" width="100" height="64"/><use href="#hs-bloom" x="30" y="100" width="90" height="58"/></svg><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><svg xmlns="http://www.w3.org/2000/svg" class="svg-library" aria-hidden="true"><defs>
 <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></symbol>
 <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5C9 3 5 3 3 4v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1v15"/></symbol>
@@ -315,11 +335,9 @@ body{background:linear-gradient(180deg,var(--bg-top) 0,var(--bg) 560px) no-repea
 
 <div class="goal-card home-goal" id="home-goal" aria-label="오늘의 작은 목표"></div>
 <div id="review"></div>
-<div class="journey-heading"><div><span class="section-kicker">LEARNING PATH</span><h2>나의 학습 길</h2></div><span class="journey-badge">입문 · 첫 번째 여정</span></div>
-<div class="path-tabs" role="group" aria-label="학습 길 문자 종류"><button id="path-h" class="on" aria-pressed="true">ひ <span>히라가나</span></button><button id="path-k" aria-pressed="false">カ <span>가타카나</span></button></div>
-<div class="journey" id="journey"></div>
-<button class="vocab-banner" id="home-words"><span class="vocab-symbol">語</span><span><b>글자에서 단어로, 한 걸음 더</b><small>히라가나·가타카나 기초 단어 156개</small></span><svg class="icon " aria-hidden="true"><use href="#i-arrow"/></svg></button>
-<button class="vocab-banner" id="home-sents"><span class="vocab-symbol">文</span><span><b>단어에서 문장으로</b><small>は·を·に 같은 조사로 짧은 문장 만들기 · 가타카나 넣은 문장 · 13단원 62문장</small></span><svg class="icon " aria-hidden="true"><use href="#i-arrow"/></svg></button>
+<div class="journey-heading"><div><span class="section-kicker">LEARNING PATH</span><h2>나의 학습 길</h2></div><span class="journey-badge" id="road-pct">전체 여정 0%</span></div>
+<div class="road-overall"><div class="bar"><i id="road-bar"></i></div><small id="road-sum"></small></div>
+<div class="road" id="road"></div>
 <p class="path-footer">한 글자씩 쌓이는 나의 일본어 <span>·</span> 一日、一歩。</p></section>
 <section id="v1" role="tabpanel" aria-labelledby="t1" hidden>
   <div class="section-intro"><div><p class="section-kicker">REFERENCE / 01</p><h2>나의 문자 도감</h2><p class="section-copy">글자를 눌러 발음을 듣고, 색상으로 익힌 정도를 확인하세요.</p></div><div class="section-mark" aria-hidden="true">あ</div></div>
@@ -2462,7 +2480,7 @@ function renderGrass(){
   $("cal-next").onclick=()=>{grassOff++;renderGrass()};
 }
 
-let tab=0, pathScript='h';
+let tab=0;
 const tabNames=['학습 길','문자 도감','글자 퀴즈','단어 모으기','오답노트','프로필'];
 const TABS=[0,1,2,3,4,5];
 const TAB_SLUG=["home","chart","quiz","words","notes","profile"];
@@ -2513,15 +2531,41 @@ function openLesson(stage,script){qScript=script;startStage(stage);renderStageBa
 function renderHome(){
   if(!rv)renderReview();
   $("continue").title=lastPlace();
-  const labels=['첫 글자, 설레는 시작','소리에 작은 변화','조금 더 풍부한 발음'];
-  const descriptions=[(pathScript==='h'?'あ・い・う・え・お':'ア・イ・ウ・エ・オ')+'부터 차근차근','탁음과 반탁음의 차이를 익혀요','촉음 · 요음 · 장음으로 한 단계 더'];
-  const marks=pathScript==='h'?['あ','が','きゃ']:['ア','ガ','キャ'];
-  const current=firstOpenCat(pathScript);
-  $("journey").innerHTML=[1,2,3].map((n)=>{const chars=catChars(pathScript,n),done=chars.filter(c=>cd(c.k)).length,complete=done===chars.length,active=!complete&&n===current;return '<div class="lesson '+(active?'current':complete?'complete':'upcoming')+'"><div class="lesson-track"><button class="lesson-node" data-stage="'+n+'" aria-label="'+catLabel(n,pathScript)+' 퀴즈 열기">'+(complete?'✓':marks[n-1])+'</button></div><button class="lesson-info" data-stage="'+n+'"><span class="lesson-eyebrow">STEP 0'+n+(active?' <em>지금 시작</em>':complete?' <em>학습 완료</em>':'')+'</span><h3>'+labels[n-1]+'</h3><p>'+descriptions[n-1]+'</p><span class="lesson-meta">'+catLabel(n,pathScript)+' <i>·</i> '+done+'/'+chars.length+' 완료</span>'+(active?'<div class="bar"><i style="width:'+done/chars.length*100+'%"></i></div>':'')+'</button><span class="lesson-chevron" aria-hidden="true">›</span></div>'}).join('');
-  $("journey").querySelectorAll('[data-stage]').forEach(b=>b.onclick=()=>openLesson(+b.dataset.stage,pathScript));
-  ['h','k'].forEach(s=>{$('path-'+s).classList.toggle('on',pathScript===s);$('path-'+s).setAttribute('aria-pressed',String(pathScript===s))});
+  renderRoad();
 }
-['h','k'].forEach(s=>$('path-'+s).onclick=()=>{pathScript=s;renderHome()});
+const ROAD=[
+  {title:"히라가나",icon:"ひ",steps:[
+    {id:"h1",mark:"あ",name:"첫 글자, 설레는 시작",desc:"あ・い・う・え・お부터 기본 46자",items:()=>catChars("h",1).map(c=>c.k),done:cd,go:()=>openLesson(1,"h")},
+    {id:"h2",mark:"が",name:"소리에 작은 변화",desc:"が・ぱ처럼 점과 동그라미가 붙은 글자",items:()=>catChars("h",2).map(c=>c.k),done:cd,go:()=>openLesson(2,"h")},
+    {id:"h3",mark:"きゃ",name:"조금 더 풍부한 발음",desc:"きゃ 같은 요음, 작은 っ, 길게 읽는 소리",items:()=>catChars("h",3).map(c=>c.k),done:cd,go:()=>openLesson(3,"h")}]},
+  {title:"가타카나",icon:"カ",steps:[
+    {id:"k1",mark:"ア",name:"가타카나 첫걸음",desc:"ア・イ・ウ・エ・オ부터 기본 46자",items:()=>catChars("k",1).map(c=>c.k),done:cd,go:()=>openLesson(1,"k")},
+    {id:"k2",mark:"ガ",name:"가타카나 탁음",desc:"ガ・パ처럼 점과 동그라미가 붙은 글자",items:()=>catChars("k",2).map(c=>c.k),done:cd,go:()=>openLesson(2,"k")},
+    {id:"k3",mark:"キャ",name:"가타카나 요음·장음",desc:"キャ, 작은 ッ, 길게 읽는 ー까지",items:()=>catChars("k",3).map(c=>c.k),done:cd,go:()=>openLesson(3,"k")}]},
+  {title:"단어",icon:"語",steps:[
+    {id:"wh",mark:"ねこ",name:"히라가나 단어",desc:"학교·일상·가족처럼 매일 쓰는 기초 단어",items:()=>wordIdsOf("h"),done:wd,go:()=>{wv={view:"list",script:"h"};show(3)}},
+    {id:"wk",mark:"パン",name:"가타카나 단어",desc:"커피·버스처럼 외국에서 온 말",items:()=>wordIdsOf("k"),done:wd,go:()=>{wv={view:"list",script:"k"};show(3)}}]},
+  {title:"문장",icon:"文",steps:[
+    {id:"sp",mark:"は",name:"조사로 문장 만들기",desc:"は・を・に를 넣어 짧은 문장 읽기",items:()=>groupUnits("p").flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"p"};show(3);renderWords()}},
+    {id:"sk",mark:"文",name:"가타카나 넣은 문장",desc:"コーヒーを のみます처럼 가타카나 말이 든 문장",items:()=>groupUnits("k").flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"k"};show(3);renderWords()}}]}
+];
+const ROAD_STEPS=ROAD.flatMap(sec=>sec.steps);
+const stepProg=st=>{const it=st.items(),n=it.filter(st.done).length;return{n,t:it.length,f:it.length?n/it.length:1}};
+const roadCurrent=()=>ROAD_STEPS.find(st=>stepProg(st).f<1)||null;
+function renderRoad(){
+  const el=$("road");if(!el)return;
+  const cur=roadCurrent(),ps=ROAD_STEPS.map(stepProg),pct=Math.floor(ps.reduce((a,p)=>a+p.f,0)/ps.length*100),doneN=ps.filter(p=>p.f>=1).length;
+  $("road-pct").textContent=`전체 여정 ${pct}%`;
+  $("road-bar").style.width=pct+"%";
+  $("road-sum").textContent=`${ROAD_STEPS.length}단계 중 ${doneN}단계 완료${cur?` · 지금 여기: ${cur.name}`:" · 모든 여정을 마쳤어요!"}`;
+  let no=0;
+  el.innerHTML=ROAD.map((sec,si)=>{
+    const sp=sec.steps.map(stepProg),secDone=sp.every(p=>p.f>=1),here=sec.steps.includes(cur);
+    return `<details class="road-sec${secDone?" done":""}${here?" here":""}"${here?" open":""}><summary><span class="road-ic">${sec.icon}</span><span class="road-title"><b>${si+1}구간 · ${sec.title}</b><small>${sp.filter(p=>p.f>=1).length} / ${sec.steps.length}단계 완료</small></span><span class="road-state">${secDone?"✿ 완료":here?"지금 여기":""}</span></summary><div class="journey">${sec.steps.map((st,i)=>{
+      no++;const p=sp[i],complete=p.f>=1,active=st===cur;
+      return `<div class="lesson ${active?"current":complete?"complete":"upcoming"}"><div class="lesson-track"><button class="lesson-node" data-step="${st.id}" aria-label="${st.name} 열기">${complete?"✿":st.mark}</button>${active?'<svg class="here-fox" viewBox="0 0 180 190" aria-hidden="true"><use href="#fox"/></svg>':""}</div><button class="lesson-info" data-step="${st.id}"><span class="lesson-eyebrow">STEP ${String(no).padStart(2,"0")}${active?" <em>지금 여기</em>":complete?" <em>완료</em>":""}</span><h3>${st.name}</h3><p>${st.desc}</p><span class="lesson-meta">${p.n} / ${p.t} 완료</span>${active||(p.n&&!complete)?`<div class="bar"><i style="width:${p.f*100}%"></i></div>`:""}</button><span class="lesson-chevron" aria-hidden="true">›</span></div>`}).join("")}</div></details>`}).join("");
+  el.querySelectorAll("[data-step]").forEach(b=>b.onclick=()=>ROAD_STEPS.find(s=>s.id===b.dataset.step).go());
+}
 function setLast(o){if(JSON.stringify(S.last)!==JSON.stringify(o)){S.last=o;save()}}
 function lastPlace(){const L=S.last;if(!L)return"";
   if(L.t==="note")return"오답노트";
@@ -2539,11 +2583,9 @@ function continueStudy(){
   if(L&&L.t==="review"){if(!rv&&dueKeys().length)$("rv-start").click();$("review").scrollIntoView({block:"start"});return}
   if(L&&L.t==="char"&&SCRIPTS[L.s]){qMode=MODE_NAMES[L.m]?L.m:"fwd";openLesson(L.n||1,L.s);return}
   if(L&&L.t==="word"&&catOf(L.cat)&&catOpen(catOf(L.cat))){wMode=L.m==="rev"?"rev":"fwd";wv={view:"cat",cat:L.cat};show(3);return}
-  openLesson(firstOpenCat(pathScript),pathScript);
+  const c=roadCurrent();if(c)c.go();else openLesson(1,"h"); // 아직 안 끝낸 첫 단계로
 }
 $("continue").onclick=continueStudy;
-$("home-words").onclick=()=>{if(wv.view[0]==="s")wv={view:"list",script:"h"};show(3)};
-$("home-sents").onclick=()=>{if(wv.view[0]!=="s")wv={view:"slist"};show(3);renderWords()};
 document.querySelector('.brand').onclick=e=>{e.preventDefault();show(0)};
 let toastTimer;
 let toastAt=0;
