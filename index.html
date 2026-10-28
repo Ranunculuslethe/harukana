@@ -266,6 +266,31 @@ body{background:linear-gradient(180deg,var(--bg-top) 0,var(--bg) 560px) no-repea
 .lesson-track{position:relative}
 .here-fox{position:absolute;width:40px;height:42px;left:-6px;bottom:-14px;filter:drop-shadow(0 2px 2px #0002);pointer-events:none}
 @media(max-width:760px){.road-sec summary{padding:12px}.road-sec .journey{padding:0 4px 4px}.road-sec .journey:before{left:41px}.here-fox{width:34px;height:36px;left:-4px}}
+.ja-font{font-family:"Yu Gothic","YuGothic","Hiragino Sans","Hiragino Kaku Gothic ProN","Meiryo","Noto Sans JP","Noto Sans CJK JP",sans-serif}
+.kj-peek{font-size:16px;letter-spacing:.18em;color:var(--ink);margin:6px 0 2px;opacity:.8}
+.kj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px;margin-top:10px}
+.kj-tile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 6px 12px;border:1px solid var(--line);border-bottom-width:3px;border-radius:14px;background:var(--card)}
+.kj-tile b{font-size:34px;line-height:1.1;font-weight:600}
+.kj-tile small{font-size:12px;color:var(--sub)}
+.kj-tile.ok{border-color:color-mix(in srgb,var(--ok) 40%,var(--line));background:var(--okbg)}
+.kj-tile:hover{border-color:var(--accent);transform:translateY(-2px)}
+.kj-card{text-align:center;margin:8px 0 14px}
+.kj-big{font-size:96px;line-height:1.1;font-weight:600;color:var(--ink)}
+.kj-hun{font-size:20px;font-weight:700;color:var(--accent);margin-top:4px}
+.kj-read{display:flex;justify-content:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+.kj-read span{display:flex;flex-direction:column;align-items:center;min-width:120px;padding:8px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.kj-read small{font-size:11px;color:var(--sub)}.kj-read b{font-size:17px}
+.kj-ex{display:grid;gap:8px;margin:6px 0 10px}
+.kj-exrow{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);text-align:left}
+.kj-exrow:hover{border-color:var(--accent)}
+.kj-w{font-size:22px;font-weight:600}
+.kj-r{display:flex;flex-direction:column;font-size:14px}.kj-r small{color:var(--sub);font-size:12px}
+.kj-m{font-size:13px;color:var(--sub)}
+.kj-exrow .icon{width:18px;height:18px;color:var(--accent)}
+.big.kanji-big{font-size:84px;font-weight:600}
+.big.kanji-word{font-size:40px}.big.kanji-word .s-ko{display:block;font-size:14px;margin-top:6px}
+.choices.kanji-ch button{font-size:34px}
+@media(max-width:760px){.kj-big{font-size:80px}.kj-exrow{grid-template-columns:auto 1fr auto;gap:8px}.kj-exrow .kj-m{grid-column:2}.kj-grid{grid-template-columns:repeat(auto-fill,minmax(76px,1fr))}.kj-tile b{font-size:30px}}
 </style><a class="skip-link" href="#content">학습 내용으로 이동</a><div class="sakura-deco" aria-hidden="true"><svg class="deco-branch tr" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><path d="M230 46q-20 40-60 62M120 96q-10 30-40 46" stroke="var(--trunk)" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="150" y="30" width="100" height="64"/><use href="#hs-bloom" x="60" y="80" width="95" height="61"/><use href="#hs-bloom" x="140" y="96" width="70" height="45"/><use href="#hs-bloom" x="0" y="128" width="70" height="45"/></svg><svg class="deco-branch bl" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="130" y="40" width="100" height="64"/><use href="#hs-bloom" x="30" y="100" width="90" height="58"/></svg><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><svg xmlns="http://www.w3.org/2000/svg" class="svg-library" aria-hidden="true"><defs>
 <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></symbol>
 <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5C9 3 5 3 3 4v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1v15"/></symbol>
@@ -660,6 +685,121 @@ const SENT_UNITS=[
 ];
 const SENTS=SENT_UNITS.flatMap(u=>u.items.map(s=>({...s,unit:u.id})));
 const SENT_BY_ID=Object.fromEntries(SENTS.map(s=>[s.id,s]));
+const KANJI_CATS=[
+  {id:"kn",name:"숫자·돈",desc:"一부터 万까지, 일본 돈 円"},
+  {id:"kt",name:"날짜·시간",desc:"요일, 해·주, 지금·오전·오후"},
+  {id:"kp",name:"위치·방향",desc:"위아래, 안팎, 동서남북"},
+  {id:"kh",name:"사람·학교",desc:"사람, 가족, 친구, 학교"},
+  {id:"kx",name:"자연·장소",desc:"산, 강, 날씨, 꽃, 역과 가게"},
+  {id:"ko",name:"물건·모양",desc:"책, 차, 크다·작다, 새것·헌것"},
+  {id:"kv",name:"동작",desc:"가다·오다, 보다·듣다, 먹다·마시다"},
+  {id:"kb",name:"몸·느낌",desc:"손, 눈, 귀, 입, 많다·적다"}
+];
+const KANJI=[
+  ["一","한 일","イチ","ひと(つ)",[["一つ","ひとつ","하나"],["一月","いちがつ","1월"]],"kn"],
+  ["二","두 이","ニ","ふた(つ)",[["二つ","ふたつ","둘"],["二月","にがつ","2월"]],"kn"],
+  ["三","석 삼","サン","みっ(つ)",[["三つ","みっつ","셋"],["三月","さんがつ","3월"]],"kn"],
+  ["四","넉 사","シ","よ・よん",[["四つ","よっつ","넷"],["四月","しがつ","4월"]],"kn"],
+  ["五","다섯 오","ゴ","いつ(つ)",[["五つ","いつつ","다섯"],["五月","ごがつ","5월"]],"kn"],
+  ["六","여섯 육","ロク","むっ(つ)",[["六つ","むっつ","여섯"],["六月","ろくがつ","6월"]],"kn"],
+  ["七","일곱 칠","シチ","なな(つ)",[["七つ","ななつ","일곱"],["七月","しちがつ","7월"]],"kn"],
+  ["八","여덟 팔","ハチ","やっ(つ)",[["八つ","やっつ","여덟"],["八月","はちがつ","8월"]],"kn"],
+  ["九","아홉 구","キュウ・ク","ここの(つ)",[["九つ","ここのつ","아홉"],["九月","くがつ","9월"]],"kn"],
+  ["十","열 십","ジュウ","とお",[["十","とお","열"],["十月","じゅうがつ","10월"]],"kn"],
+  ["百","일백 백","ヒャク","",[["百","ひゃく","백"],["三百","さんびゃく","삼백"]],"kn"],
+  ["千","일천 천","セン","ち",[["千","せん","천"],["三千","さんぜん","삼천"]],"kn"],
+  ["万","일만 만","マン","",[["一万","いちまん","만"],["百万","ひゃくまん","백만"]],"kn"],
+  ["円","둥글 원","エン","まる(い)",[["百円","ひゃくえん","100엔"],["千円","せんえん","1000엔"]],"kn"],
+  ["日","날 일","ニチ・ジツ","ひ・か",[["日よう日","にちようび","일요일"],["毎日","まいにち","매일"]],"kt"],
+  ["月","달 월","ゲツ・ガツ","つき",[["月","つき","달"],["月よう日","げつようび","월요일"]],"kt"],
+  ["火","불 화","カ","ひ",[["火","ひ","불"],["火よう日","かようび","화요일"]],"kt"],
+  ["水","물 수","スイ","みず",[["水","みず","물"],["水よう日","すいようび","수요일"]],"kt"],
+  ["木","나무 목","モク","き",[["木","き","나무"],["木よう日","もくようび","목요일"]],"kt"],
+  ["金","쇠 금","キン","かね",[["お金","おかね","돈"],["金よう日","きんようび","금요일"]],"kt"],
+  ["土","흙 토","ド","つち",[["土","つち","흙"],["土よう日","どようび","토요일"]],"kt"],
+  ["曜","빛날 요","ヨウ","",[["曜日","ようび","요일"],["日曜日","にちようび","일요일"]],"kt"],
+  ["年","해 년","ネン","とし",[["今年","ことし","올해"],["来年","らいねん","내년"]],"kt"],
+  ["週","주일 주","シュウ","",[["今週","こんしゅう","이번 주"],["来週","らいしゅう","다음 주"]],"kt"],
+  ["時","때 시","ジ","とき",[["一時","いちじ","1시"],["時間","じかん","시간"]],"kt"],
+  ["分","나눌 분","フン・ブン","わ(かる)",[["五分","ごふん","5분"],["分かる","わかる","알다"]],"kt"],
+  ["半","반 반","ハン","",[["三時半","さんじはん","3시 반"],["半分","はんぶん","절반"]],"kt"],
+  ["午","낮 오","ゴ","",[["午前","ごぜん","오전"],["午後","ごご","오후"]],"kt"],
+  ["今","이제 금","コン","いま",[["今","いま","지금"],["今日","きょう","오늘"]],"kt"],
+  ["上","위 상","ジョウ","うえ",[["上","うえ","위"],["上手","じょうず","잘함"]],"kp"],
+  ["下","아래 하","カ・ゲ","した",[["下","した","아래"],["地下","ちか","지하"]],"kp"],
+  ["中","가운데 중","チュウ","なか",[["中","なか","안·속"],["中国","ちゅうごく","중국"]],"kp"],
+  ["外","바깥 외","ガイ","そと",[["外","そと","밖"],["外国","がいこく","외국"]],"kp"],
+  ["右","오른쪽 우","ウ","みぎ",[["右","みぎ","오른쪽"],["右手","みぎて","오른손"]],"kp"],
+  ["左","왼 좌","サ","ひだり",[["左","ひだり","왼쪽"],["左手","ひだりて","왼손"]],"kp"],
+  ["前","앞 전","ゼン","まえ",[["前","まえ","앞"],["午前","ごぜん","오전"]],"kp"],
+  ["後","뒤 후","ゴ","うし(ろ)・あと",[["後ろ","うしろ","뒤"],["午後","ごご","오후"]],"kp"],
+  ["東","동녘 동","トウ","ひがし",[["東","ひがし","동쪽"],["東京","とうきょう","도쿄"]],"kp"],
+  ["西","서녘 서","セイ・サイ","にし",[["西","にし","서쪽"],["関西","かんさい","간사이"]],"kp"],
+  ["南","남녘 남","ナン","みなみ",[["南","みなみ","남쪽"],["南口","みなみぐち","남쪽 출구"]],"kp"],
+  ["北","북녘 북","ホク","きた",[["北","きた","북쪽"],["北口","きたぐち","북쪽 출구"]],"kp"],
+  ["間","사이 간","カン","あいだ",[["間","あいだ","사이"],["時間","じかん","시간"]],"kp"],
+  ["人","사람 인","ジン・ニン","ひと",[["人","ひと","사람"],["日本人","にほんじん","일본인"]],"kh"],
+  ["男","사내 남","ダン","おとこ",[["男の人","おとこのひと","남자"],["男の子","おとこのこ","남자아이"]],"kh"],
+  ["女","여자 녀","ジョ","おんな",[["女の人","おんなのひと","여자"],["女の子","おんなのこ","여자아이"]],"kh"],
+  ["子","아들 자","シ","こ",[["子ども","こども","아이"],["男の子","おとこのこ","남자아이"]],"kh"],
+  ["父","아비 부","フ","ちち",[["父","ちち","(우리) 아버지"],["お父さん","おとうさん","아버지"]],"kh"],
+  ["母","어미 모","ボ","はは",[["母","はは","(우리) 어머니"],["お母さん","おかあさん","어머니"]],"kh"],
+  ["友","벗 우","ユウ","とも",[["友だち","ともだち","친구"],["友人","ゆうじん","친구·벗"]],"kh"],
+  ["名","이름 명","メイ","な",[["名前","なまえ","이름"],["有名","ゆうめい","유명함"]],"kh"],
+  ["先","먼저 선","セン","さき",[["先生","せんせい","선생님"],["先週","せんしゅう","지난주"]],"kh"],
+  ["生","날 생","セイ","い(きる)・う(まれる)",[["学生","がくせい","학생"],["生まれる","うまれる","태어나다"]],"kh"],
+  ["学","배울 학","ガク","まな(ぶ)",[["大学","だいがく","대학"],["学生","がくせい","학생"]],"kh"],
+  ["校","학교 교","コウ","",[["学校","がっこう","학교"],["高校","こうこう","고등학교"]],"kh"],
+  ["山","메 산","サン","やま",[["山","やま","산"],["富士山","ふじさん","후지산"]],"kx"],
+  ["川","내 천","セン","かわ",[["川","かわ","강·내"],["小川","おがわ","시내"]],"kx"],
+  ["田","밭 전","デン","た",[["田んぼ","たんぼ","논"],["田中さん","たなかさん","다나카 씨"]],"kx"],
+  ["天","하늘 천","テン","",[["天気","てんき","날씨"],["天ぷら","てんぷら","튀김"]],"kx"],
+  ["気","기운 기","キ","",[["元気","げんき","건강함"],["天気","てんき","날씨"]],"kx"],
+  ["雨","비 우","ウ","あめ",[["雨","あめ","비"],["大雨","おおあめ","큰비"]],"kx"],
+  ["花","꽃 화","カ","はな",[["花","はな","꽃"],["花見","はなみ","꽃구경"]],"kx"],
+  ["空","빌 공","クウ","そら",[["空","そら","하늘"],["空港","くうこう","공항"]],"kx"],
+  ["国","나라 국","コク","くに",[["国","くに","나라"],["外国","がいこく","외국"]],"kx"],
+  ["道","길 도","ドウ","みち",[["道","みち","길"],["北海道","ほっかいどう","홋카이도"]],"kx"],
+  ["駅","역 역","エキ","",[["駅","えき","역"],["駅前","えきまえ","역 앞"]],"kx"],
+  ["店","가게 점","テン","みせ",[["店","みせ","가게"],["店員","てんいん","점원"]],"kx"],
+  ["本","근본 본","ホン","もと",[["本","ほん","책"],["日本","にほん","일본"]],"ko"],
+  ["車","수레 차","シャ","くるま",[["車","くるま","자동차"],["電車","でんしゃ","전철"]],"ko"],
+  ["電","번개 전","デン","",[["電車","でんしゃ","전철"],["電話","でんわ","전화"]],"ko"],
+  ["語","말씀 어","ゴ","かた(る)",[["日本語","にほんご","일본어"],["英語","えいご","영어"]],"ko"],
+  ["社","모일 사","シャ","",[["会社","かいしゃ","회사"],["社長","しゃちょう","사장"]],"ko"],
+  ["大","큰 대","ダイ・タイ","おお(きい)",[["大きい","おおきい","크다"],["大学","だいがく","대학"]],"ko"],
+  ["小","작을 소","ショウ","ちい(さい)・こ",[["小さい","ちいさい","작다"],["小学生","しょうがくせい","초등학생"]],"ko"],
+  ["長","길 장","チョウ","なが(い)",[["長い","ながい","길다"],["社長","しゃちょう","사장"]],"ko"],
+  ["高","높을 고","コウ","たか(い)",[["高い","たかい","높다·비싸다"],["高校","こうこう","고등학교"]],"ko"],
+  ["安","편안 안","アン","やす(い)",[["安い","やすい","싸다"],["安心","あんしん","안심"]],"ko"],
+  ["新","새 신","シン","あたら(しい)",[["新しい","あたらしい","새롭다"],["新聞","しんぶん","신문"]],"ko"],
+  ["古","옛 고","コ","ふる(い)",[["古い","ふるい","오래되다"],["中古","ちゅうこ","중고"]],"ko"],
+  ["行","다닐 행","コウ","い(く)",[["行く","いく","가다"],["旅行","りょこう","여행"]],"kv"],
+  ["来","올 래","ライ","く(る)",[["来る","くる","오다"],["来年","らいねん","내년"]],"kv"],
+  ["見","볼 견","ケン","み(る)",[["見る","みる","보다"],["花見","はなみ","꽃구경"]],"kv"],
+  ["聞","들을 문","ブン","き(く)",[["聞く","きく","듣다"],["新聞","しんぶん","신문"]],"kv"],
+  ["読","읽을 독","ドク","よ(む)",[["読む","よむ","읽다"],["読書","どくしょ","독서"]],"kv"],
+  ["書","글 서","ショ","か(く)",[["書く","かく","쓰다"],["読書","どくしょ","독서"]],"kv"],
+  ["話","말씀 화","ワ","はな(す)",[["話す","はなす","이야기하다"],["電話","でんわ","전화"]],"kv"],
+  ["言","말씀 언","ゲン","い(う)",[["言う","いう","말하다"],["言語","げんご","언어"]],"kv"],
+  ["食","밥 식","ショク","た(べる)",[["食べる","たべる","먹다"],["食堂","しょくどう","식당"]],"kv"],
+  ["飲","마실 음","イン","の(む)",[["飲む","のむ","마시다"],["飲み物","のみもの","음료"]],"kv"],
+  ["買","살 매","バイ","か(う)",[["買う","かう","사다"],["買い物","かいもの","쇼핑"]],"kv"],
+  ["休","쉴 휴","キュウ","やす(む)",[["休む","やすむ","쉬다"],["休み","やすみ","휴일·쉬는 시간"]],"kv"],
+  ["入","들 입","ニュウ","はい(る)・い(れる)",[["入る","はいる","들어가다"],["入口","いりぐち","입구"]],"kv"],
+  ["出","날 출","シュツ","で(る)・だ(す)",[["出る","でる","나가다"],["出口","でぐち","출구"]],"kv"],
+  ["手","손 수","シュ","て",[["手","て","손"],["上手","じょうず","잘함"]],"kb"],
+  ["目","눈 목","モク","め",[["目","め","눈"],["一つ目","ひとつめ","첫 번째"]],"kb"],
+  ["耳","귀 이","ジ","みみ",[["耳","みみ","귀"],["耳鼻科","じびか","이비인후과"]],"kb"],
+  ["口","입 구","コウ","くち",[["口","くち","입"],["出口","でぐち","출구"]],"kb"],
+  ["足","발 족","ソク","あし",[["足","あし","발·다리"],["一足","いっそく","(신발) 한 켤레"]],"kb"],
+  ["白","흰 백","ハク","しろ",[["白い","しろい","하얗다"],["白","しろ","흰색"]],"kb"],
+  ["多","많을 다","タ","おお(い)",[["多い","おおい","많다"],["多分","たぶん","아마"]],"kb"],
+  ["少","적을 소","ショウ","すく(ない)・すこ(し)",[["少し","すこし","조금"],["少ない","すくない","적다"]],"kb"]
+].map(([k,hun,on,kun,ex,cat])=>({k,hun,on,kun,ex,cat}));
+const KANJI_BY=Object.fromEntries(KANJI.map(j=>[j.k,j]));
+const kanjiOf=cat=>KANJI.filter(j=>j.cat===cat);
+const kjd=k=>!!(S.kj[k]&&S.kj[k].d);
 function units(kana){const out=[];for(let i=0;i<kana.length;i++){const n=kana[i+1];if(n&&"ゃゅょャュョ".includes(n)){out.push(kana[i]+n);i++}else out.push(kana[i])}return out}
 function autoHangul(kana){
   let s="";
@@ -703,7 +843,7 @@ if(/^(localhost|127\.0\.0\.1|)$/.test(location.hostname))(function validate(){
 })();
 
 const KEY="kana-v1";
-const fresh=()=>({c:{},w:{},n:{},co:{h:1,k:1},mix:0,daily:{},xp:0,badges:{},flags:{},rank:1,titles:{},sr:{},wk:{id:"",xp:0},cr:{},wr:{},claimed:{},ca:{},cf:{},seen:{},sx:{}});
+const fresh=()=>({c:{},w:{},n:{},co:{h:1,k:1},mix:0,daily:{},xp:0,badges:{},flags:{},rank:1,titles:{},sr:{},wk:{id:"",xp:0},cr:{},wr:{},claimed:{},ca:{},cf:{},seen:{},sx:{},kj:{}});
 let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||typeof S!=="object")S=fresh();
 S.c=S.c||{};S.w=S.w||{};S.n=S.n||{};S.daily=S.daily||{};delete S.u;
@@ -711,7 +851,7 @@ if(!S.co){S.co={h:S.cu||1,k:1}}delete S.cu; // 예전 저장분: 히라가나 �
 S.mix=S.mix||0;S.xp=S.xp||0;S.badges=S.badges||{};S.flags=S.flags||{};// 랭킹은 기본으로 참가한다 (프로필에서 "랭킹에서 숨기기"를 누른 사람만 rankOff). 닉네임이 없으면 "학습자1234" 같은 가명을 한 번 만든다
 if(!S.rankOff)S.rank=1;
 if(!S.nick)S.nick="학습자"+String(Math.floor(1000+Math.random()*9000));
-S.titles=S.titles||{};delete S.ro;S.sr=S.sr||{};S.wk=S.wk||{id:"",xp:0};S.cr=S.cr||{};S.wr=S.wr||{};S.claimed=S.claimed||{};S.ca=S.ca||{};S.cf=S.cf||{};S.seen=S.seen||{};S.sx=S.sx||{}; // sx: 문장 연습 진도 {문장id:{r,w,d}} // seen: 글자 퀴즈 전에 "새 글자 만나기"로 본 글자
+S.titles=S.titles||{};delete S.ro;S.sr=S.sr||{};S.wk=S.wk||{id:"",xp:0};S.cr=S.cr||{};S.wr=S.wr||{};S.claimed=S.claimed||{};S.ca=S.ca||{};S.cf=S.cf||{};S.seen=S.seen||{};S.sx=S.sx||{};S.kj=S.kj||{}; // sx: 문장 연습 진도 {문장id:{r,w,d}}, kj: 한자 진도 {한자:{r,w,d}} // seen: 글자 퀴즈 전에 "새 글자 만나기"로 본 글자
 for(const k in S.c)if(S.c[k].d===undefined)S.c[k].d=S.c[k].s>=1?1:0;
 for(const k in S.w)if(S.w[k].d===undefined)S.w[k].d=S.w[k].s>=1?1:0;
 for(const k in S.n)S.n[k].s=0;
@@ -855,6 +995,8 @@ function refreshSummary(){
   renderMissions();
   $("continue").innerHTML=(S.last||mc?'이어서 학습하기':'학습 시작하기')+' <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>';
   $("continue").title=lastPlace();
+  const mid=!!(S.flags.kanji||Object.keys(S.kj).length);
+  $("level-label").textContent=mid?"중급":"초급";$("level-label").title=mid?"한자 N5를 공부하고 있어요":"한자(N5)를 시작하면 중급이 돼요";
   const back=!!(S.last||mc),st=streak();
   $("hero-title").innerHTML=back?"다시 만나서 반가워요!<br>오늘도 한 걸음 더":"처음 만나는 일본어,<br>설레는 시작!";
   $("hero-sub").innerHTML=back?(st?`${st}일째 이어서 공부하고 있어요.<br>오늘도 조금만 해 볼까요?`:"잠깐 쉬었어도 괜찮아요.<br>오늘 다시 시작해요."):"あ부터 차근차근.<br>오늘의 한 걸음을 함께해요.";
@@ -1176,8 +1318,9 @@ const WSCRIPTS={h:"히라가나",k:"가타카나"}; // 예전 섞어 쓰기는 �
 let wv={view:"list",script:"h"};
 try{const v=JSON.parse(localStorage.getItem("harukana-wsess"));
   if(v&&(v.view==="scard"||v.view==="squiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)&&SENT_UNITS.some(u=>u.id===v.unit)){delete v.t;v.batch=v.batch.filter(id=>SENT_BY_ID[id]);if(v.queue)v.queue=v.queue.filter(id=>SENT_BY_ID[id]);v.wrong=(v.wrong||[]).filter(id=>SENT_BY_ID[id]);if(v.batch.length)wv=v}
+  else if(v&&(v.view==="jcard"||v.view==="jquiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)&&KANJI_CATS.some(c=>c.id===v.cat)){delete v.t;v.batch=v.batch.filter(k=>KANJI_BY[k]);if(v.queue)v.queue=v.queue.filter(k=>KANJI_BY[k]);v.wrong=(v.wrong||[]).filter(k=>KANJI_BY[k]);v.i=Math.min(v.i||0,v.batch.length-1);if(v.batch.length)wv=v}
   else if(v&&(v.view==="card"||v.view==="quiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)){delete v.t;const byId=x=>WORDS.find(w=>w.id===(x&&x.id));v.batch=v.batch.map(byId).filter(Boolean);if(v.queue)v.queue=v.queue.map(byId).filter(Boolean);if(v.batch.length)wv={...v,wrong:new Set(v.wrong||[])}}}catch(e){}
-function saveWSess(){try{if(["card","quiz","scard","squiz"].includes(wv.view))localStorage.setItem("harukana-wsess",JSON.stringify({...wv,wrong:[...(wv.wrong||[])],t:Date.now()}));else localStorage.removeItem("harukana-wsess")}catch(e){}}
+function saveWSess(){try{if(["card","quiz","scard","squiz","jcard","jquiz"].includes(wv.view))localStorage.setItem("harukana-wsess",JSON.stringify({...wv,wrong:[...(wv.wrong||[])],t:Date.now()}));else localStorage.removeItem("harukana-wsess")}catch(e){}}
 const catWords=id=>WORDS.filter(w=>w.category===id);
 const scriptCats=s=>CATS.filter(c=>c.script===s);
 const catDone=id=>catWords(id).every(w=>wd(w.id));
@@ -1224,6 +1367,7 @@ function renderWords(){
   const el=$("words");
   saveWSess(); // 카드·퀴즈 중이면 위치 저장, 목록으로 나왔으면 지움
   if(wv.view&&wv.view[0]==="s")return renderSent(el); // 문장 연습 화면들
+  if(wv.view&&wv.view[0]==="j")return renderKanji(el); // 한자 연습 화면들
   if(wv.view==="list"){
     const s=WSCRIPTS[wv.script]?wv.script:"h",cats=scriptCats(s); // 예전에 저장된 섞어 쓰기(m)는 히라가나로
     setLast({t:"wordlist",s,m:wMode});
@@ -1235,9 +1379,9 @@ function renderWords(){
         return `<button class="catcard" data-id="${c.id}" ${open?"":"disabled"}><div class="cat-top"><b>${c.name}</b>${c.recommended&&open&&mw<ws.length?'<span class="pill">처음 추천</span>':""}${open&&mw===ws.length?'<span class="pill ok">완료</span>':""}${open?"":'<span class="pill lockp">잠김</span>'}</div>
           <div class="desc">${open?c.desc:`${josa(cats[i-1].name,"을","를")} 끝내면 열려요`}</div><div class="bar"><i style="width:${ws.length?mw/ws.length*100:0}%"></i></div>
           <div class="meta">맞힌 단어 ${mw}/${ws.length}${(()=>{const n=ws.filter(w=>!wdm(w.id)&&wordUnknown(w).length).length;return open&&n?` · 처음 보는 글자가 든 단어 ${n}개`:""})()}</div></button>`}).join("")}</div>`;
-    const kindSeg=`<div class="seg kind-seg" role="group" aria-label="단어 또는 문장"><button class="on" aria-pressed="true">단어</button><button id="to-sent">문장</button></div>`;
+    const kindSeg=kindTabs("w");
     el.innerHTML=kindSeg+seg+body;
-    $("to-sent").onclick=()=>{wv={view:"slist"};wordsHist();renderWords()};
+    bindKindTabs(el);
     el.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{wv={view:"list",script:b.dataset.s};renderWords()});
     el.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{wMode=b.dataset.wm;renderWords()});
     el.querySelectorAll(".catcard").forEach(b=>b.onclick=()=>{wv={view:"cat",cat:b.dataset.id};wordsHist();renderWords()});
@@ -1338,8 +1482,8 @@ const groupUnits=g=>SENT_UNITS.filter(u=>sgOf(u)===g);
 const sLabel=u=>u.mix?`${SGROUPS.k} · ${u.title}`:`문장 · ${u.title}`; // 상태 줄·초기화 알림에 쓰는 이름
 let sentGroup="p"; // 마지막으로 본 탭 (단원에서 목록으로 돌아올 때 그 탭으로)
 function renderSent(el){
-  const seg=`<div class="seg kind-seg" role="group" aria-label="단어 또는 문장"><button id="to-words">단어</button><button class="on" aria-pressed="true">문장</button></div>`;
-  const toWords=()=>{if($("to-words"))$("to-words").onclick=()=>{wv={view:"list",script:"h"};wordsHist();renderWords()}};
+  const seg=kindTabs("s");
+  const toWords=()=>bindKindTabs(el);
   if(wv.view==="slist"){
     if(SGROUPS[wv.sg])sentGroup=wv.sg;
     const g=sentGroup,units=groupUnits(g),nx=units.findIndex(u=>!unitDone(u));
@@ -1413,14 +1557,102 @@ function renderSent(el){
   }
 }
 
+const kindTabs=cur=>`<div class="seg kind-seg" role="group" aria-label="단어·문장·한자">${[["w","단어"],["s","문장"],["j","한자"]].map(([k,n])=>`<button data-kind="${k}" class="${k===cur?"on":""}" aria-pressed="${k===cur}">${n}</button>`).join("")}</div>`;
+function bindKindTabs(el){el.querySelectorAll("[data-kind]").forEach(b=>b.onclick=()=>{const k=b.dataset.kind;wv=k==="s"?{view:"slist"}:k==="j"?{view:"jlist"}:{view:"list",script:"h"};wordsHist();renderWords()})}
+function recordKanji(k,ok){const x=S.kj[k]||(S.kj[k]={r:0,w:0,d:0});if(ok){if(!x.r)dayState().fresh++;x.r++;x.d=1;schedule("j:"+k)}else{x.w++;x.d=0;addNote("j:"+k)}}
+function kanjiQ(j,type){
+  type=type||rand(["mean","read","rev"]);
+  const ex=rand(j.ex),pool=[...shuffle(KANJI.filter(x=>x.k!==j.k&&x.cat===j.cat)),...shuffle(KANJI.filter(x=>x.k!==j.k&&x.cat!==j.cat))];
+  const fb=ok=>`${ok?"정답!":"아쉬워요."} ${j.k} = ${esc(j.hun)}<span class="tip">${esc(ex[0])} (${ex[1]} · ${autoHangul(ex[1])}) ${esc(ex[2])}</span>`;
+  const base={say:ex[1],fb,kind:"kanji"};
+  if(type==="read"){
+    const used=new Set([ex[1]]),opts=[ex[1]];
+    for(const x of pool){const r=rand(x.ex)[1];if(!used.has(r)){used.add(r);opts.push(r)}if(opts.length===4)break}
+    const o=shuffle(opts);
+    return{...base,prompt:"이 말은 어떻게 읽을까요?",big:`<span class="ja-font" lang="ja">${esc(ex[0])}</span><small class="s-ko">${esc(ex[2])}</small>`,bigCls:"kanji-word",choices:o,chCls:"kana",correct:o.indexOf(ex[1])};
+  }
+  const opts=shuffle([j,...pool.slice(0,3)]);
+  if(type==="rev")return{...base,prompt:"이 뜻의 한자는?",big:esc(j.hun),bigCls:"sound",choices:opts.map(x=>`<span class="ja-font" lang="ja">${x.k}</span>`),chCls:"kana kanji-ch",correct:opts.indexOf(j),rev:1};
+  return{...base,prompt:"이 한자의 뜻은?",big:`<span class="ja-font" lang="ja">${j.k}</span>`,bigCls:"kanji-big",choices:opts.map(x=>esc(x.hun)),chCls:"text",correct:opts.indexOf(j)};
+}
+function renderKanji(el){
+  const seg=kindTabs("j");
+  if(wv.view==="jlist"){
+    el.innerHTML=seg+`<p class="intro">일본어능력시험 N5 수준의 기초 한자 ${KANJI.length}자예요. 가나와 기초 단어를 먼저 익히면 더 쉬워요.</p>
+      <div class="cats">${KANJI_CATS.map(c=>{const ks=kanjiOf(c.id),n=ks.filter(j=>kjd(j.k)).length;
+        return `<button class="catcard" data-jc="${c.id}"><div class="cat-top"><b>${c.name}</b>${n===ks.length?'<span class="pill ok">완료</span>':""}</div>
+          <div class="desc">${c.desc}</div><div class="kj-peek ja-font" lang="ja">${ks.slice(0,8).map(j=>j.k).join(" ")}</div><div class="bar"><i style="width:${n/ks.length*100}%"></i></div><div class="meta">맞힌 한자 ${n}/${ks.length}</div></button>`}).join("")}</div>`;
+    bindKindTabs(el);
+    el.querySelectorAll("[data-jc]").forEach(b=>b.onclick=()=>{wv={view:"jcat",cat:b.dataset.jc};wordsHist();renderWords()});
+    return;
+  }
+  const c=KANJI_CATS.find(x=>x.id===wv.cat);
+  if(!c){wv={view:"jlist"};return renderKanji(el)}
+  const ks=kanjiOf(c.id),toCat=()=>{wv={view:"jcat",cat:c.id};renderWords()};
+  const exitJ=`<div style="text-align:left"><button class="back" id="jexit">← 그만하고 나가기</button></div>`;
+  if(wv.view==="jcat"){
+    const todo=ks.filter(j=>!kjd(j.k));
+    el.innerHTML=seg+`<button class="back" id="jbk">← 한자 카테고리</button>
+      <div class="status qstat"><span>한자 N5 · ${c.name} · 맞힌 한자 ${ks.length-todo.length}/${ks.length}</span>${resetBtn(`kj-${c.id}`,"초기화")}</div>
+      <div style="text-align:center"><button class="next" id="jgo">${todo.length?`학습 시작 (${todo.length}자)`:"다시 풀기"}</button></div>
+      <p class="intro wpick-hint">한자를 누르면 그 한자부터 볼 수 있어요.</p>
+      <div class="kj-grid">${ks.map(j=>`<button class="kj-tile${kjd(j.k)?" ok":""}" data-k="${j.k}"><b class="ja-font" lang="ja">${j.k}</b><small>${esc(j.hun)}</small></button>`).join("")}</div>`;
+    bindKindTabs(el);
+    $("jbk").onclick=()=>{wv={view:"jlist"};wordsHist();renderWords()};
+    const start=first=>{const rest=(todo.length?todo:ks).map(j=>j.k).filter(k=>k!==first);wv={view:"jcard",cat:c.id,batch:first?[first,...rest]:rest,i:0};S.flags.kanji=1;save();refreshSummary();renderWords()};
+    $("jgo").onclick=()=>start(null);
+    el.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>start(b.dataset.k));
+    return;
+  }
+  if(wv.view==="jcard"){
+    const j=KANJI_BY[wv.batch[wv.i]],n=wv.batch.length,last=wv.i===n-1;
+    el.innerHTML=`<div class="panel">${exitJ}<div class="status">한자 · ${c.name} · ${wv.i+1} / ${n}</div>
+      <div class="kj-card"><div class="kj-big ja-font" lang="ja">${j.k}</div><div class="kj-hun">${esc(j.hun)}</div>
+        <div class="kj-read"><span><small>음독</small><b lang="ja">${j.on||"—"}</b></span><span><small>훈독</small><b lang="ja">${j.kun||"—"}</b></span></div></div>
+      <div class="kj-ex">${j.ex.map(e=>`<button class="kj-exrow" data-say="${e[1]}"><span class="kj-w ja-font" lang="ja">${esc(e[0])}</span><span class="kj-r"><span lang="ja">${e[1]}</span><small>${autoHangul(e[1])}</small></span><span class="kj-m">${esc(e[2])}</span>${SPK}</button>`).join("")}</div>
+      <p class="tip s-note">음독은 주로 한자끼리 붙은 말에서, 훈독은 혼자 쓰거나 히라가나가 붙을 때 읽어요.</p>
+      <div class="slow-row" style="justify-content:center">${slowToggle()}</div>
+      <div class="navrow"><button class="ghost" id="pv" ${wv.i?"":"disabled"}>이전</button><button class="next" id="nx">${last?"확인 퀴즈 시작":"다음"}</button></div>
+      <button class="link" id="skip">다 아는 한자면 바로 퀴즈</button></div>`;
+    speak(j.ex[0][1]);
+    const toQuiz=()=>{wv={view:"jquiz",cat:c.id,batch:wv.batch,queue:shuffle(wv.batch.slice()),wrong:[]};renderWords()};
+    $("jexit").onclick=toCat;
+    el.querySelectorAll(".kj-exrow").forEach(b=>b.onclick=()=>speak(b.dataset.say));
+    $("pv").onclick=()=>{wv.i--;renderWords()};$("nx").onclick=()=>{if(last)toQuiz();else{wv.i++;renderWords()}};$("skip").onclick=toQuiz;
+    return;
+  }
+  if(wv.view==="jquiz"){
+    if(!wv.queue.length){wv={view:"jdone",cat:c.id,wrong:wv.wrong||[]};return renderWords()}
+    const j=KANJI_BY[wv.queue[0]],q=kanjiQ(j),retry=(wv.wrong||[]).includes(j.k);
+    el.innerHTML=`<div class="panel" id="jq"></div>`;
+    mc($("jq"),{...q,head:`${exitJ}<div class="status qstat"><span>한자 · ${c.name} · 남은 문제 ${wv.queue.length}</span></div>${retry?'<span class="pill">다시 나온 한자</span>':""}`,
+      onPick(ok){
+        recordKanji(j.k,ok);speak(q.say);wv.queue.shift();
+        if(!ok){if(!wv.wrong.includes(j.k))wv.wrong.push(j.k);const from=Math.min(RETRY_GAP,wv.queue.length);wv.queue.splice(from+Math.floor(Math.random()*(wv.queue.length-from+1)),0,j.k)}
+        saveWSess();save();refreshSummary();
+        return q.fb(ok);
+      },
+      onNext:()=>renderWords()});
+    $("jexit").onclick=toCat;
+    return;
+  }
+  const i=KANJI_CATS.indexOf(c),next=KANJI_CATS[i+1],wrong=(wv.wrong||[]).map(k=>KANJI_BY[k]).filter(Boolean);
+  el.innerHTML=`<div class="panel"><h2>${c.name} 한자를 모두 맞혔어요</h2>
+    ${wrong.length?`<p class="intro">처음에 틀린 한자 <b class="ja-font" lang="ja">${wrong.map(j=>j.k).join(" ")}</b>는 오답노트에 있어요.</p>`:'<p class="intro">한 번에 다 맞혔어요.</p>'}
+    <div class="navrow"><button class="ghost" id="jbk2">한자 카테고리</button>${next?'<button class="next" id="jnext">다음 카테고리로</button>':""}</div></div>`;
+  $("jbk2").onclick=()=>{wv={view:"jlist"};renderWords()};
+  if($("jnext"))$("jnext").onclick=()=>{wv={view:"jcat",cat:next.id};wordsHist();renderWords()};
+}
+
 let nq=null;
 function noteItem(key){
   const [t,id]=[key.slice(0,1),key.slice(2)];
   if(t==="c"){const c=CH[id];return c&&{key,jp:c.sp?c.disp:c.k,pr:c.h,mean:c.sp?c.r:(c.kata?"가타카나":"히라가나"),c}}
   if(t==="s"){const s=SENT_BY_ID[id];return s&&{key,jp:sjPlain(s),pr:s.hg,mean:s.ko,s}}
+  if(t==="j"){const j=KANJI_BY[id];return j&&{key,jp:`<span class="ja-font" lang="ja">${j.k}</span>`,pr:`${j.ex[0][1]} (${esc(j.ex[0][0])})`,mean:esc(j.hun),j}}
   const w=WORDS.find(x=>x.id===id);return w&&{key,jp:w.kana,pr:w.hangul,mean:w.meaning,w};
 }
-const NOTE_KINDS={a:"전체",c:"글자",w:"단어",s:"문장"},NOTE_SHOW=8,NOTE_BATCH=10;
+const NOTE_KINDS={a:"전체",c:"글자",w:"단어",s:"문장",j:"한자"},NOTE_SHOW=8,NOTE_BATCH=10;
 let noteKind="a",noteAll=false;
 function renderNote(){
   const el=$("note"),all=Object.keys(S.n).map(noteItem).filter(Boolean).sort((a,b)=>S.n[b.key].wr-S.n[a.key].wr);
@@ -1453,7 +1685,7 @@ function renderNoteQuiz(){
     el.innerHTML=`<div class="panel"><h2>이번 묶음을 모두 맞혔어요</h2><p class="intro">오답노트에 ${left}개가 남아 있어요.</p><div class="navrow"><button class="ghost" id="nback">목록 보기</button><button class="next" id="nnext">다음 ${Math.min(NOTE_BATCH,left)}문제</button></div></div>`;
     $("nback").onclick=renderNote;$("nnext").onclick=()=>{$("note").innerHTML="";renderNote();$("nstart").click()};
     return}
-  const key=nq.queue[0],it=noteItem(key),q=it.c?charQ(it.c):it.s?sentQ(it.s):wordQ(it.w);
+  const key=nq.queue[0],it=noteItem(key),q=it.c?charQ(it.c):it.s?sentQ(it.s):it.j?kanjiQ(it.j):wordQ(it.w);
   el.innerHTML=`<div class="panel" id="nqp"></div><div style="text-align:center"><button class="link" id="nstop">그만하고 목록 보기</button></div>`;
   mc($("nqp"),{...q,note:1,head:`<div class="status">남은 오답 ${nq.queue.length}개</div>`,
     onPick(ok){
@@ -1680,7 +1912,7 @@ const IN_APP_BROWSER=/KAKAOTALK|NAVER\(|Instagram|FBAN|FBAV|Line\/|DaumApps/i.te
 function mergeState(L,C){
   const R=JSON.parse(JSON.stringify(L||{}));C=C||{};
   const max=(a,b)=>Math.max(Number(a)||0,Number(b)||0);
-  for(const k of ["c","w","cr","wr","ca","sx"]){R[k]=R[k]||{};
+  for(const k of ["c","w","cr","wr","ca","sx","kj"]){R[k]=R[k]||{};
     for(const id in C[k]||{}){const a=R[k][id],b=C[k][id];
       R[k][id]=!a?b:{...a,...b,r:max(a.r,b.r),w:max(a.w,b.w),d:(a.d||b.d)?1:0,v:(a.v||b.v)?1:0}}}
   R.n={...(C.n||{}),...(R.n||{})};
@@ -1702,7 +1934,7 @@ function mergeState(L,C){
   return R;
 }
 const SYNC_KEY="harukana-sync";
-const SYNC_MAPS=new Set(["c","w","cr","wr","ca","cf","seen","sx","n","sr","daily","badges","flags","claimed","titles","co"]);
+const SYNC_MAPS=new Set(["c","w","cr","wr","ca","cf","seen","sx","kj","n","sr","daily","badges","flags","claimed","titles","co"]);
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const isObj=x=>x&&typeof x==="object"&&!Array.isArray(x);
 function pick3(path,b,l,c){
@@ -1718,7 +1950,7 @@ function pick3(path,b,l,c){
     for(const k of new Set([...Object.keys(bb),...Object.keys(l),...Object.keys(c)])){const v=pick3(path+"."+k,bb[k],l[k],c[k]);if(v!==undefined)o[k]=v}
     return o;
   }
-  if(/^(c|w|cr|wr|ca|sx)\./.test(path)&&isObj(l)&&isObj(c))return{...c,...l,r:Math.max(l.r||0,c.r||0),w:Math.max(l.w||0,c.w||0)};
+  if(/^(c|w|cr|wr|ca|sx|kj)./.test(path)&&isObj(l)&&isObj(c))return{...c,...l,r:Math.max(l.r||0,c.r||0),w:Math.max(l.w||0,c.w||0)};
   return l; // 닉네임 같은 나머지는 이 기기 쪽
 }
 function merge3(B,L,C){
@@ -2222,7 +2454,8 @@ const RECORDS=[
   {id:"kc",name:"가타카나 글자",short:"가타카나",icon:"ア",items:()=>ALL_K.map(c=>c.k),done:cd,tiers:["새싹","수련생","달인"],kind:"char"},
   {id:"hw",name:"히라가나 단어",short:"히라가나 단어",icon:"ことば",items:()=>wordIdsOf("h"),done:wd,tiers:["새싹","수집가","박사"],kind:"word",script:"h"},
   {id:"kw",name:"가타카나 단어",short:"가타카나 단어",icon:"コトバ",items:()=>wordIdsOf("k"),done:wd,tiers:["새싹","수집가","박사"],kind:"word",script:"k"},
-  {id:"st",name:"문장",short:"문장",icon:"文",items:()=>SENTS.map(s=>s.id),done:sxd,tiers:["새싹","수집가","박사"],kind:"sent"}
+  {id:"st",name:"문장",short:"문장",icon:"文",items:()=>SENTS.map(s=>s.id),done:sxd,tiers:["새싹","수집가","박사"],kind:"sent"},
+  {id:"kj",name:"한자 N5",short:"한자",icon:"漢",items:()=>KANJI.map(j=>j.k),done:kjd,tiers:["새싹","수련생","달인"],kind:"kanji"}
 ];
 function curTier(r){const it=r.items(),n=it.filter(r.done).length,t=it.length;return n===0?-1:n===t?2:n/t>=.5?1:0}
 function updateTitles(){RECORDS.forEach(r=>{const c=curTier(r);if(c>(S.titles[r.id]??-1))S.titles[r.id]=c})}
@@ -2261,7 +2494,10 @@ function resetRecord(id){
     wv={view:"cat",cat:c.id};label=`${c.name} 단어`+(m==="rev"?` (${WMODE_NAMES.rev})`:"")}
   else if(id.startsWith("sx-")){const u=SENT_UNITS.find(x=>x.id===id.slice(3));if(!u)return;
     u.items.forEach(s=>{delete S.sx[s.id];delete S.n["s:"+s.id];delete S.sr["s:"+s.id]});wv={view:"sunit",unit:u.id};label=sLabel(u)}
+  else if(id.startsWith("kj-")){const c=KANJI_CATS.find(x=>x.id===id.slice(3));if(!c)return;
+    kanjiOf(c.id).forEach(j=>{delete S.kj[j.k];delete S.n["j:"+j.k];delete S.sr["j:"+j.k]});wv={view:"jcat",cat:c.id};label=`한자 ${c.name}`}
   else if(r&&r.kind==="char"){r.items().forEach(k=>{delete S.c[k];delete S.n["c:"+k]});cq=null;label=r.name}
+  else if(r&&r.kind==="kanji"){r.items().forEach(k=>{delete S.kj[k];delete S.n["j:"+k];delete S.sr["j:"+k]});wv={view:"jlist"};label=r.name}
   else if(r&&r.kind==="sent"){r.items().forEach(id=>{delete S.sx[id];delete S.n["s:"+id];delete S.sr["s:"+id]});wv={view:"slist"};label=r.name}
   else if(r){r.items().forEach(w=>{delete S.w[w];delete S.n["w:"+w]});S.co[r.script]=1;wv={view:"list",script:r.script};label=r.name}
   else if(id==="note"){S.n={};nq=null;label="오답노트"}
@@ -2453,7 +2689,7 @@ function renderReview(){
     el.innerHTML=`<div class="panel"><h2>복습 완료!</h2><p class="intro">${rv.total}개를 복습했어요 · 정확도 ${acc}%. 맞힌 문제는 다음 복습 날짜가 뒤로 밀려요.</p><button class="next" id="rv-close">닫기</button></div>`;
     $("rv-close").onclick=()=>{rv=null;renderReview()};return;
   }
-  const key=rv.queue[0],it=noteItem(key),q=it.c?charQ(it.c):it.s?sentQ(it.s):wordQ(it.w),s=S.sr[key];
+  const key=rv.queue[0],it=noteItem(key),q=it.c?charQ(it.c):it.s?sentQ(it.s):it.j?kanjiQ(it.j):wordQ(it.w),s=S.sr[key];
   el.innerHTML=`<div class="panel" id="rvp"></div>`;
   mc($("rvp"),{...q,head:`<div class="status qstat"><span>오늘의 복습 · ${it.c?(it.c.kata?"가타카나":"히라가나"):it.s?"문장":"단어"} · 남은 문제 ${rv.queue.length}</span><button class="link" id="rv-stop" style="margin:0">그만하기</button></div>`,
     onPick(ok){
@@ -2509,10 +2745,10 @@ const nextSeq=()=>{let n=0;try{n=Number(sessionStorage.getItem("harukana-hseq"))
 function histPush(st,replace){
   if(IN_CLAUDE)return; // claude.ai 안에서는 바깥 화면의 뒤로 가기와 섞이지 않게 기록하지 않는다
   histSeq=nextSeq();
-  const url=st.tab===0?location.pathname+location.search:"#"+TAB_SLUG[st.tab]+(st.w==="cat"&&st.cat?"/"+st.cat:st.w==="sent"?"/sent"+(st.unit?"/"+st.unit:""):"");
+  const url=st.tab===0?location.pathname+location.search:"#"+TAB_SLUG[st.tab]+(st.w==="cat"&&st.cat?"/"+st.cat:st.w==="sent"?"/sent"+(st.unit?"/"+st.unit:""):st.w==="kanji"?"/kanji"+(st.cat?"/"+st.cat:""):"");
   try{history[replace?"replaceState":"pushState"]({...st,load:LOAD_ID,seq:histSeq},"",url)}catch(e){} // claude.ai 안에서는 막혀 있을 수 있다
 }
-const wordsState=()=>wv.view[0]==="s"?{tab:3,w:"sent",unit:wv.view==="slist"?null:wv.unit,sg:wv.view==="slist"?(wv.sg||sentGroup):undefined}:wv.view==="list"?{tab:3,w:"list",s:wv.script||"h"}:{tab:3,w:"cat",cat:wv.cat};
+const wordsState=()=>wv.view[0]==="j"?{tab:3,w:"kanji",cat:wv.view==="jlist"?null:wv.cat}:wv.view[0]==="s"?{tab:3,w:"sent",unit:wv.view==="slist"?null:wv.unit,sg:wv.view==="slist"?(wv.sg||sentGroup):undefined}:wv.view==="list"?{tab:3,w:"list",s:wv.script||"h"}:{tab:3,w:"cat",cat:wv.cat};
 function wordsHist(){if(navPop||tab!==3)return;histPush(wordsState())}
 window.addEventListener("popstate",e=>{
   const st=e.state;
@@ -2522,7 +2758,9 @@ window.addEventListener("popstate",e=>{
   navPop=true;
   try{
     const d=document.querySelector("dialog[open]");if(d)d.close();
-    if(st.tab===3&&st.w==="sent"){
+    if(st.tab===3&&st.w==="kanji"){
+      if(!(["jcard","jquiz","jdone"].includes(wv.view)&&wv.cat===st.cat))wv=st.cat&&KANJI_CATS.some(c=>c.id===st.cat)?{view:"jcat",cat:st.cat}:{view:"jlist"};
+    }else if(st.tab===3&&st.w==="sent"){
       if(!(["scard","squiz","sdone"].includes(wv.view)&&wv.unit===st.unit))wv=st.unit&&SENT_UNITS.some(u=>u.id===st.unit)?{view:"sunit",unit:st.unit}:{view:"slist",sg:st.sg};
     }else if(st.tab===3&&st.w&&!((wv.view==="card"||wv.view==="quiz")&&st.w==="cat"&&wv.cat===st.cat))
       wv=st.w==="cat"&&catOf(st.cat)&&catOpen(catOf(st.cat))?{view:"cat",cat:st.cat}:{view:"list",script:st.s||"h"};
@@ -2566,7 +2804,10 @@ const ROAD=[
     {id:"wk",mark:"パン",name:"가타카나 단어",desc:"커피·버스처럼 외국에서 온 말",items:()=>wordIdsOf("k"),done:wd,go:()=>{wv={view:"list",script:"k"};show(3)}}]},
   {title:"문장",icon:"文",steps:[
     {id:"sp",mark:"は",name:"조사로 문장 만들기",desc:"は・を・に를 넣어 짧은 문장 읽기",items:()=>groupUnits("p").flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"p"};show(3);renderWords()}},
-    {id:"sk",mark:"文",name:"가타카나 넣은 문장",desc:"コーヒーを のみます처럼 가타카나 말이 든 문장",items:()=>groupUnits("k").flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"k"};show(3);renderWords()}}]}
+    {id:"sk",mark:"文",name:"가타카나 넣은 문장",desc:"コーヒーを のみます처럼 가타카나 말이 든 문장",items:()=>groupUnits("k").flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"k"};show(3);renderWords()}}]},
+  {title:"한자 N5",icon:"漢",steps:[
+    {id:"j1",mark:"日",name:"기초 한자 ①",desc:"숫자·날짜·위치·사람 한자",items:()=>KANJI.filter(j=>["kn","kt","kp","kh"].includes(j.cat)).map(j=>j.k),done:kjd,go:()=>{wv={view:"jlist"};show(3);renderWords()}},
+    {id:"j2",mark:"花",name:"기초 한자 ②",desc:"자연·물건·동작·몸 한자",items:()=>KANJI.filter(j=>["kx","ko","kv","kb"].includes(j.cat)).map(j=>j.k),done:kjd,go:()=>{wv={view:"jlist"};show(3);renderWords()}}]}
 ];
 const ROAD_STEPS=ROAD.flatMap(sec=>sec.steps);
 const stepProg=st=>{const it=st.items(),n=it.filter(st.done).length;return{n,t:it.length,f:it.length?n/it.length:1}};
