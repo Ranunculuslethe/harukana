@@ -76,6 +76,7 @@
 .set-h{font-size:13px;margin:16px 0 8px;color:var(--sub);font-weight:600}.set-sound{padding:14px 16px;border:1px dashed var(--line);border-radius:14px}.set-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.set-voice{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub);flex:1 1 220px;min-width:0}.set-voice select{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:9px;padding:7px 9px;max-width:100%}.snd-test{display:inline-flex;align-items:center;gap:5px;margin-top:0;align-self:flex-end}.snd-test .icon{width:15px;height:15px}.set-row .slow-tg{align-self:flex-end}.set-note{font-size:12px;color:var(--sub);margin:10px 0 0}.set-warn{font-size:12px;line-height:1.7;margin:0;color:var(--bad)}
 @media(max-width:760px){.pf-card{padding:16px;gap:12px;align-items:flex-start}.pf-avatar{flex-basis:68px;height:68px}.pf-avatar .fox{width:64px;height:68px}}
 .reset-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:22px;padding:12px 14px;border:1px dashed var(--line);border-radius:12px}
+.note-seg{margin-bottom:14px}.note-seg small{opacity:.7;margin-left:2px}.note-start{text-align:center}.note-start .intro{margin-top:8px}.note-start .link{display:block;margin:8px auto 0}.note-h{margin-top:18px}.note-more{display:block;margin:12px auto 0}
 .acct-why{font-size:12px;color:var(--sub);line-height:1.7;margin:0 0 10px}.acct-why b{color:var(--ink)}
 .set-vol{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12px;color:var(--sub)}.set-vol input{flex:1;min-width:0;accent-color:var(--accent)}.set-vol output{min-width:38px;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
 .rk-note .rk-set{margin:0;padding:0;font-size:inherit;vertical-align:baseline}
@@ -1419,21 +1420,39 @@ function noteItem(key){
   if(t==="s"){const s=SENT_BY_ID[id];return s&&{key,jp:sjPlain(s),pr:s.hg,mean:s.ko,s}}
   const w=WORDS.find(x=>x.id===id);return w&&{key,jp:w.kana,pr:w.hangul,mean:w.meaning,w};
 }
+const NOTE_KINDS={a:"전체",c:"글자",w:"단어",s:"문장"},NOTE_SHOW=8,NOTE_BATCH=10;
+let noteKind="a",noteAll=false;
 function renderNote(){
-  const el=$("note"),items=Object.keys(S.n).map(noteItem).filter(Boolean).sort((a,b)=>S.n[b.key].wr-S.n[a.key].wr);
+  const el=$("note"),all=Object.keys(S.n).map(noteItem).filter(Boolean).sort((a,b)=>S.n[b.key].wr-S.n[a.key].wr);
   if(nq){renderNoteQuiz();return}
-  if(!items.length){el.innerHTML=`<div class="empty-note">오답노트가 비어 있어요. 글자·단어·문장 퀴즈에서 틀린 문제가 여기에 모여요.</div>`;return}
-  el.innerHTML=`<div style="text-align:center"><button class="next" id="nstart">오답노트 퀴즈 (${items.length}개)</button>
-    <p class="intro" style="margin-top:8px">맞히면 노트에서 빠지고, 틀리면 다시 나와요.</p></div>
+  if(!all.length){el.innerHTML=`<div class="empty-note">오답노트가 비어 있어요. 글자·단어·문장 퀴즈에서 틀린 문제가 여기에 모여요.</div>`;return}
+  const cnt=k=>k==="a"?all.length:all.filter(i=>i.key[0]===k).length;
+  if(!cnt(noteKind))noteKind="a";
+  const items=noteKind==="a"?all:all.filter(i=>i.key[0]===noteKind),shown=noteAll?items:items.slice(0,NOTE_SHOW),more=items.length-shown.length;
+  const kinds=Object.keys(NOTE_KINDS).filter(k=>cnt(k));
+  el.innerHTML=`${kinds.length>2?`<div class="seg note-seg" role="group" aria-label="오답 종류">${kinds.map(k=>`<button data-nk="${k}" class="${k===noteKind?"on":""}" aria-pressed="${k===noteKind}">${NOTE_KINDS[k]} <small>${cnt(k)}</small></button>`).join("")}</div>`:""}
+    <div class="note-start"><button class="next" id="nstart">${items.length>NOTE_BATCH?`${NOTE_BATCH}문제 풀기`:`모두 풀기 (${items.length}개)`}</button>${items.length>NOTE_BATCH?`<button class="link" id="nstart-all">${items.length}개 모두 풀기</button>`:""}
+      <p class="intro">${items.length>NOTE_BATCH?"자주 틀린 것부터 10문제씩 풀어요. ":""}맞히면 노트에서 빠지고, 틀리면 다시 나와요.</p></div>
+    <h3 class="rk-h note-h">${noteKind==="a"?"틀린 문제":NOTE_KINDS[noteKind]} ${items.length}개 <small>자주 틀린 순</small></h3>
     <div class="tablewrap"><table><thead><tr><th>일본어</th><th>발음</th><th>뜻</th><th style="text-align:right">틀린 횟수</th></tr></thead>
-    <tbody>${items.map(i=>`<tr><td class="jp">${i.jp}</td><td>${i.pr}</td><td>${i.mean}</td><td class="n">${S.n[i.key].wr}</td></tr>`).join("")}</tbody></table></div>
+    <tbody>${shown.map(i=>`<tr><td class="jp">${i.jp}</td><td>${i.pr}</td><td>${i.mean}</td><td class="n">${S.n[i.key].wr}</td></tr>`).join("")}</tbody></table></div>
+    ${more>0?`<button class="ghost note-more" id="nmore">${more}개 더 보기</button>`:noteAll&&items.length>NOTE_SHOW?`<button class="ghost note-more" id="nless">접기</button>`:""}
     ${resetBar("note","오답노트 비우기","풀지 않고 오답노트를 한 번에 비워요. 글자·단어 기록은 그대로예요.")}`;
-  $("nstart").onclick=()=>{nq={queue:shuffle(Object.keys(S.n).filter(noteItem))};renderNoteQuiz()};
+  el.querySelectorAll("[data-nk]").forEach(b=>b.onclick=()=>{noteKind=b.dataset.nk;noteAll=false;renderNote()});
+  if($("nmore"))$("nmore").onclick=()=>{noteAll=true;renderNote()};
+  if($("nless"))$("nless").onclick=()=>{noteAll=false;renderNote();$("note").scrollIntoView({block:"start"})};
+  const keys=items.map(i=>i.key); // 이미 자주 틀린 순
+  $("nstart").onclick=()=>{nq={queue:shuffle(keys.slice(0,NOTE_BATCH))};renderNoteQuiz()};
+  if($("nstart-all"))$("nstart-all").onclick=()=>{nq={queue:shuffle(keys.slice())};renderNoteQuiz()};
 }
 function renderNoteQuiz(){
   const el=$("note");
   nq.queue=nq.queue.filter(k=>S.n[k]);
-  if(!nq.queue.length){nq=null;if(!Object.keys(S.n).length){S.flags.noteClear=1;checkBadges();save()}el.innerHTML=`<div class="panel"><h2>오답노트를 모두 비웠어요</h2><p class="intro">틀렸던 문제를 전부 다시 맞혔어요.</p></div>`;return}
+  if(!nq.queue.length){nq=null;const left=Object.keys(S.n).filter(noteItem).length;
+    if(!left){S.flags.noteClear=1;checkBadges();save();el.innerHTML=`<div class="panel"><h2>오답노트를 모두 비웠어요</h2><p class="intro">틀렸던 문제를 전부 다시 맞혔어요.</p></div>`;return}
+    el.innerHTML=`<div class="panel"><h2>이번 묶음을 모두 맞혔어요</h2><p class="intro">오답노트에 ${left}개가 남아 있어요.</p><div class="navrow"><button class="ghost" id="nback">목록 보기</button><button class="next" id="nnext">다음 ${Math.min(NOTE_BATCH,left)}문제</button></div></div>`;
+    $("nback").onclick=renderNote;$("nnext").onclick=()=>{$("note").innerHTML="";renderNote();$("nstart").click()};
+    return}
   const key=nq.queue[0],it=noteItem(key),q=it.c?charQ(it.c):it.s?sentQ(it.s):wordQ(it.w);
   el.innerHTML=`<div class="panel" id="nqp"></div><div style="text-align:center"><button class="link" id="nstop">그만하고 목록 보기</button></div>`;
   mc($("nqp"),{...q,note:1,head:`<div class="status">남은 오답 ${nq.queue.length}개</div>`,
