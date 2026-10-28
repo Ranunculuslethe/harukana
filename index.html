@@ -668,7 +668,7 @@ function soundSettings(){
   if(!vs.length)return `<p class="set-warn">이 기기에 일본어 음성이 없어서 소리가 나지 않아요.<br>윈도우: 설정 → 시간 및 언어 → 음성 → 음성 추가 → 일본어<br>휴대폰: 설정의 '텍스트 음성 변환'에서 일본어 추가<br>크롬에서 열면 Google 일본어 음성을 바로 쓸 수 있어요.</p>`;
   return `<div class="set-row"><label class="set-voice"><span>일본어 음성</span><select id="snd-voice">${vs.map(v=>`<option value="${esc(v.name)}"${cur&&v.name===cur.name?" selected":""}>${esc(v.name)}${v.localService?"":" (인터넷)"}</option>`).join("")}</select></label>
       <button type="button" class="rec-reset snd-test" id="snd-test">${SPK} 들어 보기</button>${slowToggle()}</div>
-    <label class="set-vol"><span>볼륨</span><input type="range" id="snd-vol" min="0" max="100" step="5" value="${sndVol()}" aria-label="읽어 주는 소리 볼륨"><output id="snd-vol-n">${sndVol()}%</output></label>
+    <label class="set-vol"><span>볼륨</span><input type="range" id="snd-vol" min="0" max="100" step="1" value="${sndVol()}" aria-label="읽어 주는 소리 볼륨"><output id="snd-vol-n">${sndVol()}%</output></label>
     <p class="set-note" id="snd-state" role="status">「あいうえお」를 읽어 줘요. 소리가 나는지 확인해 보세요.</p>
     <p class="set-note">소리가 안 나면: ① 기기 볼륨·무음 모드 ② 소리가 나오는 장치(스피커·이어폰) ③ 다른 음성을 골라 다시 들어 보기 ④ 크롬에서 열어 보기</p>`;
 }
