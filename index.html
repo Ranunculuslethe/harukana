@@ -1079,7 +1079,6 @@ function renderConf(){
 }
 
 const WSCRIPTS={h:"히라가나",k:"가타카나",m:"섞어 쓰기"};
-const MIX_NEED=2;
 let wv={view:"list",script:"h"};
 try{const v=JSON.parse(localStorage.getItem("harukana-wsess"));
   if(v&&(v.view==="scard"||v.view==="squiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)&&SENT_UNITS.some(u=>u.id===v.unit)){delete v.t;v.batch=v.batch.filter(id=>SENT_BY_ID[id]);if(v.queue)v.queue=v.queue.filter(id=>SENT_BY_ID[id]);v.wrong=(v.wrong||[]).filter(id=>SENT_BY_ID[id]);if(v.batch.length)wv=v}
@@ -1088,9 +1087,7 @@ function saveWSess(){try{if(["card","quiz","scard","squiz"].includes(wv.view))lo
 const catWords=id=>WORDS.filter(w=>w.category===id);
 const scriptCats=s=>CATS.filter(c=>c.script===s);
 const catDone=id=>catWords(id).every(w=>wd(w.id));
-const doneHK=()=>CATS.filter(c=>c.script!=="m"&&catDone(c.id)).length;
-const scriptOpen=s=>s!=="m"||!!S.mix;
-const catOpen=c=>scriptOpen(c.script);
+const catOpen=()=>true;
 const josa=(s,a,b)=>{const c=s.charCodeAt(s.length-1)-0xAC00;return s+(c>=0&&c<11172&&c%28?a:b)};
 let wMode="fwd";
 const WMODE_NAMES={fwd:"일본어 → 뜻",rev:"뜻 → 일본어"};
@@ -1114,11 +1111,6 @@ function unknownNote(w){
   return `<p class="tip wnew-tip">처음 보는 글자: <b>${u.map(k=>CH[k].disp||k).join(" ")}</b> · 글자 퀴즈 ${steps}에서 배워요.${small}${tsu}</p>`;
 }
 const batchCands=id=>catWords(id).filter(w=>!wdm(w.id)).sort((a,b)=>wordUnknown(a).length-wordUnknown(b).length||(b.koreanSimilar?1:0)-(a.koreanSimilar?1:0));
-function checkUnlocks(){
-  const opened=[];
-  if(!S.mix&&doneHK()>=MIX_NEED){S.mix=1;opened.push("섞어 쓰기 단어")}
-  return opened;
-}
 function wordQ(w,mode){
   const pool=[...shuffle(WORDS.filter(x=>x.category===w.category)),...shuffle(WORDS.filter(x=>x.category!==w.category))];
   const used=new Set([w.meaning]),picks=[];
@@ -1144,16 +1136,11 @@ function renderWords(){
     const seg=`<div class="seg" role="group" aria-label="단어 글자 종류">${Object.keys(WSCRIPTS).map(k=>`<button data-s="${k}" class="${k===s?"on":""}" aria-pressed="${k===s}">${WSCRIPTS[k]}</button>`).join("")}</div>
       <div class="seg mode-seg" role="group" aria-label="문제 방향">${Object.keys(WMODE_NAMES).map(m=>`<button data-wm="${m}" class="${m===wMode?"on":""}" aria-pressed="${m===wMode}">${WMODE_NAMES[m]}</button>`).join("")}</div>`;
     let body;
-    if(!scriptOpen(s)){
-      const n=doneHK();
-      body=`<div class="empty-note">히라가나·가타카나 단어 카테고리 중 ${MIX_NEED}개를 끝내면 열려요.<br>지금 ${n} / ${MIX_NEED}개 끝냈어요.</div>`;
-    }else{
       body=`<p class="intro">${s==="m"?"가타카나와 히라가나가 함께 나오는 단어와 짧은 표현이에요.":"N5 수준 기초 단어예요. 원하는 카테고리부터 골라서 풀어요."}</p><div class="cats">${cats.map((c,i)=>{
         const ws=catWords(c.id),mw=ws.filter(w=>wdm(w.id)).length,open=catOpen(c);
         return `<button class="catcard" data-id="${c.id}" ${open?"":"disabled"}><div class="cat-top"><b>${c.name}</b>${c.recommended&&open&&mw<ws.length?'<span class="pill">처음 추천</span>':""}${open&&mw===ws.length?'<span class="pill ok">완료</span>':""}${open?"":'<span class="pill lockp">잠김</span>'}</div>
           <div class="desc">${open?c.desc:`${josa(cats[i-1].name,"을","를")} 끝내면 열려요`}</div><div class="bar"><i style="width:${ws.length?mw/ws.length*100:0}%"></i></div>
           <div class="meta">맞힌 단어 ${mw}/${ws.length}${(()=>{const n=ws.filter(w=>!wdm(w.id)&&wordUnknown(w).length).length;return open&&n?` · 처음 보는 글자가 든 단어 ${n}개`:""})()}</div></button>`}).join("")}</div>`;
-    }
     const kindSeg=`<div class="seg kind-seg" role="group" aria-label="단어 또는 문장"><button class="on" aria-pressed="true">단어</button><button id="to-sent">문장</button></div>`;
     el.innerHTML=kindSeg+seg+body;
     $("to-sent").onclick=()=>{wv={view:"slist"};wordsHist();renderWords()};
@@ -1209,7 +1196,6 @@ function renderWords(){
         speak(w.kana);
         wv.queue.shift();saveWSess();
         if(!ok){wv.wrong.add(w.id);wv.queue.push(w)}
-        else wv.opened.push(...checkUnlocks(cat));
         save();refreshSummary();this.nextLabel=wv.queue.length?"다음 문제":"결과 보기";
         return q.fb(ok)+(ok?"":'<span class="tip">오답노트에 넣었어요. 이번 퀴즈 끝에 다시 나와요.</span>');
       },
@@ -1372,7 +1358,7 @@ const BADGES=[
   ["hiraAll","히라가나 마스터","히라가나 문제를 모두 맞혔어요","ひ",()=>allCd(ALL)],
   ["kataAll","가타카나 마스터","가타카나 문제를 모두 맞혔어요","カ",()=>allCd(ALL_K)],
   ["cat1","첫 단어 카테고리","단어 카테고리를 하나 끝냈어요","語",()=>CATS.some(c=>catDone(c.id))],
-  ["mix","섞어 쓰기 개방","섞어 쓰기 단어를 열었어요","あア",()=>!!S.mix],
+  ["mix","섞어 쓰기 첫걸음","섞어 쓰기 단어를 처음 맞혔어요","あア",()=>!!S.mix||WORDS.some(w=>catOf(w.category)?.script==="m"&&wd(w.id))],
   ["w50","단어 50개","단어 50개를 맞혔어요","50",()=>WORDS.filter(w=>wd(w.id)).length>=50],
   ["s3","3일 연속","3일 연속으로 공부했어요","3",()=>streak()>=3],
   ["s7","7일 연속","7일 연속으로 공부했어요","7",()=>streak()>=7],
