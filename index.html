@@ -76,6 +76,7 @@
 .set-h{font-size:13px;margin:16px 0 8px;color:var(--sub);font-weight:600}.set-sound{padding:14px 16px;border:1px dashed var(--line);border-radius:14px}.set-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.set-voice{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub);flex:1 1 220px;min-width:0}.set-voice select{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:9px;padding:7px 9px;max-width:100%}.snd-test{display:inline-flex;align-items:center;gap:5px;margin-top:0;align-self:flex-end}.snd-test .icon{width:15px;height:15px}.set-row .slow-tg{align-self:flex-end}.set-note{font-size:12px;color:var(--sub);margin:10px 0 0}.set-warn{font-size:12px;line-height:1.7;margin:0;color:var(--bad)}
 @media(max-width:760px){.pf-card{padding:16px;gap:12px;align-items:flex-start}.pf-avatar{flex-basis:68px;height:68px}.pf-avatar .fox{width:64px;height:68px}}
 .reset-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:22px;padding:12px 14px;border:1px dashed var(--line);border-radius:12px}
+.rec-more{display:block;margin:12px auto 0}
 .note-seg{margin-bottom:14px}.note-seg small{opacity:.7;margin-left:2px}.note-start{text-align:center}.note-start .intro{margin-top:8px}.note-start .link{display:block;margin:8px auto 0}.note-h{margin-top:18px}.note-more{display:block;margin:12px auto 0}
 .acct-why{font-size:12px;color:var(--sub);line-height:1.7;margin:0 0 10px}.acct-why b{color:var(--ink)}
 .set-vol{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12px;color:var(--sub)}.set-vol input{flex:1;min-width:0;accent-color:var(--accent)}.set-vol output{min-width:38px;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
@@ -2731,7 +2732,7 @@ function resetRecord(id){
   renderSettings();
   notifyText(`${label} 기록을 초기화했어요.`);
 }
-let editingNick=false;
+let editingNick=false,recAll=false; // recAll: 분야별 칭호 모두 보기
 function resetBtn(id,label){return `<button class="rec-reset" data-reset="${id}" data-label="${label}">${label}</button>`}
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-reset]");
@@ -2804,12 +2805,17 @@ function renderRank(){
     </div></div>
     ${pickingAv?`<div class="av-pick" role="group" aria-label="프로필 사진 고르기">${AVATARS.map(a=>`<button class="av-opt${a.id===avatarOf(S.avatar).id?" on":""}" data-av="${a.id}" aria-pressed="${a.id===avatarOf(S.avatar).id}"><span class="av-c">${avatarSvg(a.id)}</span><small>${a.name}</small></button>`).join("")}</div>`:""}`;
   if($("pf-nick"))$("pf-nick").textContent=nickName();
-  $("records").innerHTML=`<h3 class="rk-h">분야별 칭호 <small>분야 기록 초기화는 글자 퀴즈·단어 모으기 화면에 있어요</small></h3>
-    <div class="rec-grid">${RECORDS.map(r=>{const p=recProgress(r);
+  const recs=RECORDS.filter(r=>r.kind!=="kanji"||isMid()||recProgress(r).n>0);
+  const rank=r=>{const p=recProgress(r),f=p.t?p.n/p.t:1;return f>0&&f<1?2-f:f===0?3:4};
+  const shownRecs=recAll?recs:recs.slice().sort((a,b)=>rank(a)-rank(b)).slice(0,2);
+  $("records").innerHTML=`<h3 class="rk-h">분야별 칭호 <small>${recAll?"분야 기록 초기화는 글자 퀴즈·단어 모으기 화면에 있어요":"지금 공부 중인 분야부터 보여요"}</small></h3>
+    <div class="rec-grid">${shownRecs.map(r=>{const p=recProgress(r);
       return `<div class="rec${p.tier>=0?" got t"+p.tier:""}"><div class="rec-top"><span class="rec-ic">${r.icon}</span><div><b>${r.name}</b><small>${p.n} / ${p.t} 맞힘</small></div></div>
         <div class="bar"><i style="width:${p.t?p.n/p.t*100:0}%"></i></div>
         <div class="rec-title">${p.tier>=0?`<span class="title-chip sm">${esc(p.title)}</span>`:`<span class="title-none">칭호 없음</span>`}</div>
-        <p class="rec-next">${p.tier<2?`${p.left}개 더 맞히면 「${p.nextName}」`:"최고 칭호를 받았어요"}</p></div>`}).join("")}</div>`;
+        <p class="rec-next">${p.tier<2?`${p.left}개 더 맞히면 「${p.nextName}」`:"최고 칭호를 받았어요"}</p></div>`}).join("")}</div>
+    ${recs.length>2?`<button class="ghost rec-more" id="rec-more" aria-expanded="${recAll}">${recAll?"접기":`모두 보기 (${recs.length-2}개 더)`}</button>`:""}`;
+  if($("rec-more"))$("rec-more").onclick=()=>{recAll=!recAll;renderRank();if(!recAll)$("records").scrollIntoView({block:"start"})};
   renderSettings();
   $("badges").innerHTML=`<h3 class="rk-h">배지</h3><div class="badge-grid">${BADGES.map(([id,name,desc,icon])=>{const on=!!S.badges[id];
     return `<div class="bdg${on?" on":""}" title="${esc(desc)}"><span class="bi">${on?icon:"?"}</span><b>${name}</b><small>${on?desc:"아직 못 받았어요 · "+desc}</small></div>`}).join("")}</div>`;
