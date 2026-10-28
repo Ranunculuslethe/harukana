@@ -76,6 +76,7 @@
 .set-h{font-size:13px;margin:16px 0 8px;color:var(--sub);font-weight:600}.set-sound{padding:14px 16px;border:1px dashed var(--line);border-radius:14px}.set-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.set-voice{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub);flex:1 1 220px;min-width:0}.set-voice select{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:9px;padding:7px 9px;max-width:100%}.snd-test{display:inline-flex;align-items:center;gap:5px;margin-top:0;align-self:flex-end}.snd-test .icon{width:15px;height:15px}.set-row .slow-tg{align-self:flex-end}.set-note{font-size:12px;color:var(--sub);margin:10px 0 0}.set-warn{font-size:12px;line-height:1.7;margin:0;color:var(--bad)}
 @media(max-width:760px){.pf-card{padding:16px;gap:12px;align-items:flex-start}.pf-avatar{flex-basis:68px;height:68px}.pf-avatar .fox{width:64px;height:68px}}
 .reset-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:22px;padding:12px 14px;border:1px dashed var(--line);border-radius:12px}
+.s-group{grid-column:1/-1;margin:14px 0 0;font-size:14px}.s-group:first-child{margin-top:0}.s-group small{font-weight:400;color:var(--sub);font-size:12px;margin-left:6px}
 .set-vol{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12px;color:var(--sub)}.set-vol input{flex:1;min-width:0;accent-color:var(--accent)}.set-vol output{min-width:38px;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
 .rk-note .rk-set{margin:0;padding:0;font-size:inherit;vertical-align:baseline}
 .set-acct .pf-acct{margin:0}
@@ -258,8 +259,8 @@ button.wpick:hover,button.wpick:focus-visible{background:var(--accent-soft)}
 <div class="journey-heading"><div><span class="section-kicker">LEARNING PATH</span><h2>나의 학습 길</h2></div><span class="journey-badge">입문 · 첫 번째 여정</span></div>
 <div class="path-tabs" role="group" aria-label="학습 길 문자 종류"><button id="path-h" class="on" aria-pressed="true">ひ <span>히라가나</span></button><button id="path-k" aria-pressed="false">カ <span>가타카나</span></button></div>
 <div class="journey" id="journey"></div>
-<button class="vocab-banner" id="home-words"><span class="vocab-symbol">語</span><span><b>글자에서 단어로, 한 걸음 더</b><small>히라가나·가타카나 기초 단어 156개와 섞어 쓰기 20개</small></span><svg class="icon " aria-hidden="true"><use href="#i-arrow"/></svg></button>
-<button class="vocab-banner" id="home-sents"><span class="vocab-symbol">文</span><span><b>단어에서 문장으로</b><small>は·を·に 같은 조사로 짧은 문장 만들기 · 8단원 32문장</small></span><svg class="icon " aria-hidden="true"><use href="#i-arrow"/></svg></button>
+<button class="vocab-banner" id="home-words"><span class="vocab-symbol">語</span><span><b>글자에서 단어로, 한 걸음 더</b><small>히라가나·가타카나 기초 단어 156개</small></span><svg class="icon " aria-hidden="true"><use href="#i-arrow"/></svg></button>
+<button class="vocab-banner" id="home-sents"><span class="vocab-symbol">文</span><span><b>단어에서 문장으로</b><small>は·を·に 같은 조사로 짧은 문장 만들기 · 가타카나 섞어 쓰기 · 13단원 62문장</small></span><svg class="icon " aria-hidden="true"><use href="#i-arrow"/></svg></button>
 <p class="path-footer">한 글자씩 쌓이는 나의 일본어 <span>·</span> 一日、一歩。</p></section>
 <section id="v1" role="tabpanel" aria-labelledby="t1" hidden>
   <div class="section-intro"><div><p class="section-kicker">REFERENCE / 01</p><h2>나의 문자 도감</h2><p class="section-copy">글자를 눌러 발음을 듣고, 색상으로 익힌 정도를 확인하세요.</p></div><div class="section-mark" aria-hidden="true">あ</div></div>
@@ -303,9 +304,7 @@ button.wpick:hover,button.wpick:focus-visible{background:var(--accent-soft)}
     {"id": "kata_world", "script": "k", "name": "나라·스포츠", "desc": "아메리카, 프랑스, 축구, 테니스"},
     {"id": "kata_clothes", "script": "k", "name": "옷·패션", "desc": "치마, 넥타이, 재킷, 가방"},
     {"id": "kata_places", "script": "k", "name": "장소·건물", "desc": "레스토랑, 백화점, 편의점, 엘리베이터"},
-    {"id": "kata_hobby", "script": "k", "name": "동물·취미", "desc": "판다, 펭귄, 기타, 만화, 춤"},
-    {"id": "mix_words", "script": "m", "name": "섞어 쓰는 단어", "desc": "가타카나와 히라가나가 한 단어에 같이 나와요"},
-    {"id": "mix_phrases", "script": "m", "name": "짧은 표현", "desc": "'커피를 마시다'처럼 단어 + 동사"}
+    {"id": "kata_hobby", "script": "k", "name": "동물·취미", "desc": "판다, 펭귄, 기타, 만화, 춤"}
   ],
   "words": [
     {"id": "w001", "kana": "がくせい", "hangul": "가쿠세이", "meaning": "학생", "category": "school_people", "koreanSimilar": true},
@@ -386,27 +385,7 @@ button.wpick:hover,button.wpick:focus-visible{background:var(--accent-soft)}
     {"id": "w071", "kana": "ピアノ", "hangul": "피아노", "meaning": "피아노", "category": "kata_world", "koreanSimilar": true},
     {"id": "w072", "kana": "ゲーム", "hangul": "게-무", "meaning": "게임", "category": "kata_world", "koreanSimilar": true},
 
-    {"id": "w073", "kana": "パンや", "hangul": "판야", "meaning": "빵집", "category": "mix_words", "koreanSimilar": false},
-    {"id": "w074", "kana": "はブラシ", "hangul": "하부라시", "meaning": "칫솔", "category": "mix_words", "koreanSimilar": false},
-    {"id": "w075", "kana": "ゴミばこ", "hangul": "고미바코", "meaning": "쓰레기통", "category": "mix_words", "koreanSimilar": false},
-    {"id": "w076", "kana": "テレビばんぐみ", "hangul": "테레비반구미", "meaning": "텔레비전 프로그램", "category": "mix_words", "koreanSimilar": false},
-    {"id": "w077", "kana": "ガラスまど", "hangul": "가라스마도", "meaning": "유리창", "category": "mix_words", "koreanSimilar": false},
-    {"id": "w078", "kana": "コンビニべんとう", "hangul": "콘비니벤토우", "meaning": "편의점 도시락", "category": "mix_words", "koreanSimilar": false},
-    {"id": "w079", "kana": "アニメえいが", "hangul": "아니메에이가", "meaning": "애니메이션 영화", "category": "mix_words", "koreanSimilar": false},
-    {"id": "w080", "kana": "ボールあそび", "hangul": "보-루아소비", "meaning": "공놀이", "category": "mix_words", "koreanSimilar": false},
-    {"id": "w081", "kana": "バスてい", "hangul": "바스테이", "meaning": "버스 정류장", "category": "mix_words", "koreanSimilar": false},
-    {"id": "w082", "kana": "タクシーのりば", "hangul": "타쿠시-노리바", "meaning": "택시 타는 곳", "category": "mix_words", "koreanSimilar": false},
 
-    {"id": "w083", "kana": "コーヒーをのむ", "hangul": "코-히-오노무", "meaning": "커피를 마시다", "category": "mix_phrases", "koreanSimilar": false},
-    {"id": "w084", "kana": "テレビをみる", "hangul": "테레비오미루", "meaning": "텔레비전을 보다", "category": "mix_phrases", "koreanSimilar": false},
-    {"id": "w085", "kana": "パンをたべる", "hangul": "판오타베루", "meaning": "빵을 먹다", "category": "mix_phrases", "koreanSimilar": false},
-    {"id": "w086", "kana": "バスにのる", "hangul": "바스니노루", "meaning": "버스를 타다", "category": "mix_phrases", "koreanSimilar": false},
-    {"id": "w087", "kana": "メールをかく", "hangul": "메-루오카쿠", "meaning": "메일을 쓰다", "category": "mix_phrases", "koreanSimilar": false},
-    {"id": "w088", "kana": "ゲームをする", "hangul": "게-무오스루", "meaning": "게임을 하다", "category": "mix_phrases", "koreanSimilar": false},
-    {"id": "w089", "kana": "シャワーをあびる", "hangul": "샤와-오아비루", "meaning": "샤워를 하다", "category": "mix_phrases", "koreanSimilar": false},
-    {"id": "w090", "kana": "ピアノをひく", "hangul": "피아노오히쿠", "meaning": "피아노를 치다", "category": "mix_phrases", "koreanSimilar": false},
-    {"id": "w091", "kana": "カメラをかう", "hangul": "카메라오카우", "meaning": "카메라를 사다", "category": "mix_phrases", "koreanSimilar": false},
-    {"id": "w092", "kana": "ラジオをきく", "hangul": "라지오오키쿠", "meaning": "라디오를 듣다", "category": "mix_phrases", "koreanSimilar": false},
     {"id": "w093", "kana": "あに", "hangul": "아니", "meaning": "형·오빠", "category": "family_body", "koreanSimilar": false},
     {"id": "w094", "kana": "あね", "hangul": "아네", "meaning": "누나·언니", "category": "family_body", "koreanSimilar": false},
     {"id": "w095", "kana": "いもうと", "hangul": "이모우토", "meaning": "여동생", "category": "family_body", "koreanSimilar": false},
@@ -564,7 +543,42 @@ const SENT_UNITS=[
     {id:"s801",ja:"この りんご[は] おいしいです。",hg:"코노 린고와 오이시이데스",ko:"이 사과는 맛있습니다."},
     {id:"s802",ja:"きょう[は] さむいです。",hg:"쿄우와 사무이데스",ko:"오늘은 춥습니다."},
     {id:"s803",ja:"この へや[は] ひろいです。",hg:"코노 헤야와 히로이데스",ko:"이 방은 넓습니다."},
-    {id:"s804",ja:"にほんご[は] たのしいです。",hg:"니혼고와 타노시이데스",ko:"일본어는 즐겁습니다."}]}
+    {id:"s804",ja:"にほんご[は] たのしいです。",hg:"니혼고와 타노시이데스",ko:"일본어는 즐겁습니다."}]},
+  {id:"u9",mix:1,title:"섞어 쓰기 ① 생활",ko:"가타카나 말 + を + ~ます",tip:"コーヒー·テレビ 같은 가타카나 말에도 히라가나 조사와 동사를 그대로 이어요. 장음 ー는 앞 소리를 길게 읽어요.",items:[
+    {id:"s901",ja:"コーヒー[を] のみます。",hg:"코-히-오 노미마스",ko:"커피를 마십니다."},
+    {id:"s902",ja:"まいにち テレビ[を] みます。",hg:"마이니치 테레비오 미마스",ko:"매일 텔레비전을 봅니다."},
+    {id:"s903",ja:"パン[を] たべます。",hg:"판오 타베마스",ko:"빵을 먹습니다."},
+    {id:"s904",ja:"メール[を] かきます。",hg:"메-루오 카키마스",ko:"메일을 씁니다."},
+    {id:"s905",ja:"シャワー[を] あびます。",hg:"샤와-오 아비마스",ko:"샤워를 합니다."},
+    {id:"s906",ja:"コンビニべんとう[を] たべます。",hg:"콘비니벤토우오 타베마스",ko:"편의점 도시락을 먹습니다."}]},
+  {id:"u10",mix:1,title:"섞어 쓰기 ② 취미",ko:"~を します / ひきます / ききます",tip:"ゲーム·ボールあそび처럼 '하다'는 します. 피아노는 ひきます(치다), 라디오는 ききます(듣다)예요.",items:[
+    {id:"s1001",ja:"ゲーム[を] します。",hg:"게-무오 시마스",ko:"게임을 합니다."},
+    {id:"s1002",ja:"ピアノ[を] ひきます。",hg:"피아노오 히키마스",ko:"피아노를 칩니다."},
+    {id:"s1003",ja:"ラジオ[を] ききます。",hg:"라지오오 키키마스",ko:"라디오를 듣습니다."},
+    {id:"s1004",ja:"アニメえいが[を] みます。",hg:"아니메에이가오 미마스",ko:"애니메이션 영화를 봅니다."},
+    {id:"s1005",ja:"こうえんで ボールあそび[を] します。",hg:"코우엔데 보-루아소비오 시마스",ko:"공원에서 공놀이를 합니다."},
+    {id:"s1006",ja:"テレビばんぐみ[は] おもしろいです。",hg:"테레비반구미와 오모시로이데스",ko:"텔레비전 프로그램은 재미있습니다."}]},
+  {id:"u11",mix:1,title:"섞어 쓰기 ③ 장소·교통",ko:"~に のります / ~で ~ます",tip:"탈것에는 に를 써요: バスに のります(버스를 탑니다). 무엇을 하는 장소는 で, 가는 곳은 に예요.",items:[
+    {id:"s1101",ja:"バス[に] のります。",hg:"바스니 노리마스",ko:"버스를 탑니다.",no:["へ"]},
+    {id:"s1102",ja:"バスてい[で] まちます。",hg:"바스테이데 마치마스",ko:"버스 정류장에서 기다립니다."},
+    {id:"s1103",ja:"タクシーのりば[は] あそこです。",hg:"타쿠시-노리바와 아소코데스",ko:"택시 타는 곳은 저기입니다.",no:["が"]},
+    {id:"s1104",ja:"パンや[で] パン{を} かいます。",hg:"판야데 판오 카이마스",ko:"빵집에서 빵을 삽니다."},
+    {id:"s1105",ja:"デパート[に] いきます。",hg:"데파-토니 이키마스",ko:"백화점에 갑니다.",no:["へ"]},
+    {id:"s1106",ja:"レストラン[で] ごはん{を} たべます。",hg:"레스토란데 고한오 타베마스",ko:"레스토랑에서 밥을 먹습니다."}]},
+  {id:"u12",mix:1,title:"섞어 쓰기 ④ 집·물건",ko:"これ·~の·~は",tip:"はブラシ(칫솔)처럼 한 단어 안에 히라가나와 가타카나가 같이 나오기도 해요. 이 は는 단어의 일부라 '하'로 읽어요.",items:[
+    {id:"s1201",ja:"これ[は] はブラシです。",hg:"코레와 하부라시데스",ko:"이것은 칫솔입니다."},
+    {id:"s1202",ja:"ゴミばこ[は] どこですか。",hg:"고미바코와 도코데스카",ko:"쓰레기통은 어디입니까?",no:["が"]},
+    {id:"s1203",ja:"ガラスまど[を] あけます。",hg:"가라스마도오 아케마스",ko:"유리창을 엽니다."},
+    {id:"s1204",ja:"わたし[の] カメラです。",hg:"와타시노 카메라데스",ko:"제 카메라입니다."},
+    {id:"s1205",ja:"それ{は} ともだち[の] ノートです。",hg:"소레와 토모다치노 노-토데스",ko:"그것은 친구의 노트입니다."},
+    {id:"s1206",ja:"この ケーキ[は] おいしいです。",hg:"코노 케-키와 오이시이데스",ko:"이 케이크는 맛있습니다."}]},
+  {id:"u13",mix:1,title:"섞어 쓰기 ⑤ 함께·~도",ko:"~と / ~も",tip:"と는 \"~와/과\", も는 \"~도\"예요. 가타카나 말 뒤에도 똑같이 붙여요.",items:[
+    {id:"s1301",ja:"コーヒー[と] ケーキ{を} たのみます。",hg:"코-히-토 케-키오 타노미마스",ko:"커피와 케이크를 주문합니다."},
+    {id:"s1302",ja:"ジュース[も] のみます。",hg:"주-스모 노미마스",ko:"주스도 마십니다."},
+    {id:"s1303",ja:"ともだち[と] カラオケ{に} いきます。",hg:"토모다치토 카라오케니 이키마스",ko:"친구와 노래방에 갑니다."},
+    {id:"s1304",ja:"テニス[も] します。",hg:"테니스모 시마스",ko:"테니스도 합니다."},
+    {id:"s1305",ja:"カメラ[と] ラジオ{を} かいます。",hg:"카메라토 라지오오 카이마스",ko:"카메라와 라디오를 삽니다."},
+    {id:"s1306",ja:"あした[も] プール{に} いきます。",hg:"아시타모 푸-루니 이키마스",ko:"내일도 수영장에 갑니다."}]}
 ];
 const SENTS=SENT_UNITS.flatMap(u=>u.items.map(s=>({...s,unit:u.id})));
 const SENT_BY_ID=Object.fromEntries(SENTS.map(s=>[s.id,s]));
@@ -590,7 +604,6 @@ if(/^(localhost|127\.0\.0\.1|)$/.test(location.hostname))(function validate(){
     if(!/^[ぁ-ゖァ-ヶー]+$/.test(w.kana))p.push(`${w.id} ${w.kana}: 가나가 아닌 글자가 있어요`);
     else if(c&&c.script==="h"&&KATA.test(w.kana))p.push(`${w.id} ${w.kana}: 히라가나 카테고리에 가타카나가 있어요`);
     else if(c&&c.script==="k"&&HIRA.test(w.kana))p.push(`${w.id} ${w.kana}: 가타카나 카테고리에 히라가나가 있어요`);
-    else if(c&&c.script==="m"&&!(HIRA.test(w.kana)&&KATA.test(w.kana)))p.push(`${w.id} ${w.kana}: 섞어 쓰기 단어인데 한 종류 글자만 있어요`);
     const bad=units(w.kana).filter(u=>!CH[u]);if(bad.length)p.push(`${w.id} ${w.kana}: 표에 없는 글자 ${bad.join(",")}`);
     const a=autoHangul(w.kana);if(a!==w.hangul)p.push(`${w.id} ${w.kana}: 한글 발음 "${w.hangul}" → 규칙대로면 "${a}"`);
     if(!c)p.push(`${w.id}: 없는 카테고리 ${w.category}`);
@@ -612,11 +625,11 @@ if(/^(localhost|127\.0\.0\.1|)$/.test(location.hostname))(function validate(){
 })();
 
 const KEY="kana-v1";
-const fresh=()=>({c:{},w:{},n:{},co:{h:1,k:1,m:1},mix:0,daily:{},xp:0,badges:{},flags:{},rank:1,titles:{},sr:{},wk:{id:"",xp:0},cr:{},wr:{},claimed:{},ca:{},cf:{},seen:{},sx:{}});
+const fresh=()=>({c:{},w:{},n:{},co:{h:1,k:1},mix:0,daily:{},xp:0,badges:{},flags:{},rank:1,titles:{},sr:{},wk:{id:"",xp:0},cr:{},wr:{},claimed:{},ca:{},cf:{},seen:{},sx:{}});
 let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||typeof S!=="object")S=fresh();
 S.c=S.c||{};S.w=S.w||{};S.n=S.n||{};S.daily=S.daily||{};delete S.u;
-if(!S.co){S.co={h:S.cu||1,k:1,m:1}}delete S.cu; // 예전 저장분: 히라가나 카테고리 진도 옮기기
+if(!S.co){S.co={h:S.cu||1,k:1}}delete S.cu; // 예전 저장분: 히라가나 카테고리 진도 옮기기
 S.mix=S.mix||0;S.xp=S.xp||0;S.badges=S.badges||{};S.flags=S.flags||{};// 랭킹은 기본으로 참가한다 (프로필에서 "랭킹에서 숨기기"를 누른 사람만 rankOff). 닉네임이 없으면 "학습자1234" 같은 가명을 한 번 만든다
 if(!S.rankOff)S.rank=1;
 if(!S.nick)S.nick="학습자"+String(Math.floor(1000+Math.random()*9000));
@@ -1078,7 +1091,7 @@ function renderConf(){
   $("cf-quit").onclick=()=>{cfq=null;renderCharQuiz();renderConfTools()};
 }
 
-const WSCRIPTS={h:"히라가나",k:"가타카나",m:"섞어 쓰기"};
+const WSCRIPTS={h:"히라가나",k:"가타카나"}; // 섞어 쓰기는 문장 쪽 단원(u9~)으로 옮김
 let wv={view:"list",script:"h"};
 try{const v=JSON.parse(localStorage.getItem("harukana-wsess"));
   if(v&&(v.view==="scard"||v.view==="squiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)&&SENT_UNITS.some(u=>u.id===v.unit)){delete v.t;v.batch=v.batch.filter(id=>SENT_BY_ID[id]);if(v.queue)v.queue=v.queue.filter(id=>SENT_BY_ID[id]);v.wrong=(v.wrong||[]).filter(id=>SENT_BY_ID[id]);if(v.batch.length)wv=v}
@@ -1131,7 +1144,7 @@ function renderWords(){
   saveWSess(); // 카드·퀴즈 중이면 위치 저장, 목록으로 나왔으면 지움
   if(wv.view&&wv.view[0]==="s")return renderSent(el); // 문장 연습 화면들
   if(wv.view==="list"){
-    const s=wv.script||"h",cats=scriptCats(s);
+    const s=WSCRIPTS[wv.script]?wv.script:"h",cats=scriptCats(s); // 예전에 저장된 섞어 쓰기(m)는 히라가나로
     setLast({t:"wordlist",s,m:wMode});
     const seg=`<div class="seg" role="group" aria-label="단어 글자 종류">${Object.keys(WSCRIPTS).map(k=>`<button data-s="${k}" class="${k===s?"on":""}" aria-pressed="${k===s}">${WSCRIPTS[k]}</button>`).join("")}</div>
       <div class="seg mode-seg" role="group" aria-label="문제 방향">${Object.keys(WMODE_NAMES).map(m=>`<button data-wm="${m}" class="${m===wMode?"on":""}" aria-pressed="${m===wMode}">${WMODE_NAMES[m]}</button>`).join("")}</div>`;
@@ -1246,7 +1259,8 @@ function renderSent(el){
     const nx=firstOpenUnit();
     el.innerHTML=seg+`<p class="intro">단어를 이어 짧은 문장을 만들어요. 조사(は·を·に…)를 하나씩, 위에서부터 차례로 익히면 좋아요.</p>
       <div class="cats">${SENT_UNITS.map((u,i)=>{const n=u.items.filter(s=>sxd(s.id)).length;
-        return `<button class="catcard" data-u="${u.id}"><div class="cat-top"><b>${i+1}. ${esc(u.title)}</b>${n===u.items.length?'<span class="pill ok">완료</span>':i===nx?'<span class="pill">다음 추천</span>':""}</div>
+        const head=!i?`<h3 class="s-group">조사로 문장 만들기</h3>`:u.mix&&!SENT_UNITS[i-1].mix?`<h3 class="s-group">섞어 쓰기 <small>히라가나 + 가타카나가 한 문장에</small></h3>`:"";
+        return `${head}<button class="catcard" data-u="${u.id}"><div class="cat-top"><b>${i+1}. ${esc(u.title)}</b>${n===u.items.length?'<span class="pill ok">완료</span>':i===nx?'<span class="pill">다음 추천</span>':""}</div>
           <div class="desc">${esc(u.ko)}</div><div class="bar"><i style="width:${n/u.items.length*100}%"></i></div><div class="meta">맞힌 문장 ${n}/${u.items.length}</div></button>`}).join("")}</div>`;
     toWords();
     el.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{wv={view:"sunit",unit:b.dataset.u};wordsHist();renderWords()});
@@ -1358,7 +1372,7 @@ const BADGES=[
   ["hiraAll","히라가나 마스터","히라가나 문제를 모두 맞혔어요","ひ",()=>allCd(ALL)],
   ["kataAll","가타카나 마스터","가타카나 문제를 모두 맞혔어요","カ",()=>allCd(ALL_K)],
   ["cat1","첫 단어 카테고리","단어 카테고리를 하나 끝냈어요","語",()=>CATS.some(c=>catDone(c.id))],
-  ["mix","섞어 쓰기 첫걸음","섞어 쓰기 단어를 처음 맞혔어요","あア",()=>!!S.mix||WORDS.some(w=>catOf(w.category)?.script==="m"&&wd(w.id))],
+  ["mix","섞어 쓰기 첫걸음","섞어 쓰기 문장을 처음 맞혔어요","あア",()=>!!S.mix||SENT_UNITS.some(u=>u.mix&&u.items.some(s=>sxd(s.id)))],
   ["w50","단어 50개","단어 50개를 맞혔어요","50",()=>WORDS.filter(w=>wd(w.id)).length>=50],
   ["s3","3일 연속","3일 연속으로 공부했어요","3",()=>streak()>=3],
   ["s7","7일 연속","7일 연속으로 공부했어요","7",()=>streak()>=7],
@@ -2100,7 +2114,7 @@ const RECORDS=[
   {id:"kc",name:"가타카나 글자",short:"가타카나",icon:"ア",items:()=>ALL_K.map(c=>c.k),done:cd,tiers:["새싹","수련생","달인"],kind:"char"},
   {id:"hw",name:"히라가나 단어",short:"히라가나 단어",icon:"ことば",items:()=>wordIdsOf("h"),done:wd,tiers:["새싹","수집가","박사"],kind:"word",script:"h"},
   {id:"kw",name:"가타카나 단어",short:"가타카나 단어",icon:"コトバ",items:()=>wordIdsOf("k"),done:wd,tiers:["새싹","수집가","박사"],kind:"word",script:"k"},
-  {id:"mw",name:"섞어 쓰기 단어",short:"섞어 쓰기",icon:"あア",items:()=>wordIdsOf("m"),done:wd,tiers:["새싹","수집가","박사"],kind:"word",script:"m"}
+  {id:"st",name:"문장",short:"문장",icon:"文",items:()=>SENTS.map(s=>s.id),done:sxd,tiers:["새싹","수집가","박사"],kind:"sent"}
 ];
 function curTier(r){const it=r.items(),n=it.filter(r.done).length,t=it.length;return n===0?-1:n===t?2:n/t>=.5?1:0}
 function updateTitles(){RECORDS.forEach(r=>{const c=curTier(r);if(c>(S.titles[r.id]??-1))S.titles[r.id]=c})}
@@ -2140,6 +2154,7 @@ function resetRecord(id){
   else if(id.startsWith("sx-")){const u=SENT_UNITS.find(x=>x.id===id.slice(3));if(!u)return;
     u.items.forEach(s=>{delete S.sx[s.id];delete S.n["s:"+s.id];delete S.sr["s:"+s.id]});wv={view:"sunit",unit:u.id};label=`문장 ${u.title}`}
   else if(r&&r.kind==="char"){r.items().forEach(k=>{delete S.c[k];delete S.n["c:"+k]});cq=null;label=r.name}
+  else if(r&&r.kind==="sent"){r.items().forEach(id=>{delete S.sx[id];delete S.n["s:"+id];delete S.sr["s:"+id]});wv={view:"slist"};label=r.name}
   else if(r){r.items().forEach(w=>{delete S.w[w];delete S.n["w:"+w]});S.co[r.script]=1;wv={view:"list",script:r.script};label=r.name}
   else if(id==="note"){S.n={};nq=null;label="오답노트"}
   else if(id==="reward"){S.xp=0;S.badges={};S.flags={};label="XP·배지"}
@@ -2303,6 +2318,10 @@ function renderRank(){
 }
 
 const INTERVALS=[1,3,7,14,30],REVIEW_MAX=20;
+function dropGone(){
+  for(const m of [S.n,S.sr])for(const k in m)if(!noteItem(k))delete m[k];
+  const ids=new Set(WORDS.map(w=>w.id));for(const m of [S.w,S.wr])for(const k in m)if(!ids.has(k))delete m[k];
+}
 function migrateSr(){let i=0;const add=k=>{if(!S.sr[k])S.sr[k]={lv:0,due:today()+1+(i++%7)}};
   [...ALL,...ALL_K].forEach(c=>{if(cd(c.k))add("c:"+c.k)});WORDS.forEach(w=>{if(wd(w.id))add("w:"+w.id)})}
 const dueKeys=()=>Object.keys(S.sr).filter(k=>S.sr[k].due<=today()&&noteItem(k)).sort((a,b)=>S.sr[a].due-S.sr[b].due);
@@ -2498,7 +2517,7 @@ $("reset").onclick=goRecords;$("mobile-reset").onclick=goRecords;
 $("mobile-theme").onclick=()=>$("theme").onclick();const mobileNav=matchMedia('(max-width:760px)');
 const orientNav=()=>document.querySelector('.tabs').setAttribute('aria-orientation',mobileNav.matches?'horizontal':'vertical');
 mobileNav.addEventListener('change',orientNav);orientNav();
-updateTitles();migrateSr();save();refreshSummary();renderHome();initRank();
+dropGone();updateTitles();migrateSr();save();refreshSummary();renderHome();initRank();
 {histPush({tab:0},true);histTab=0} // 늘 홈에서 시작하고, 지금 칸을 이번 회차의 첫 기록으로 둔다
 </script>
 
