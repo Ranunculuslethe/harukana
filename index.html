@@ -76,6 +76,7 @@
 .set-h{font-size:13px;margin:16px 0 8px;color:var(--sub);font-weight:600}.set-sound{padding:14px 16px;border:1px dashed var(--line);border-radius:14px}.set-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.set-voice{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub);flex:1 1 220px;min-width:0}.set-voice select{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:9px;padding:7px 9px;max-width:100%}.snd-test{display:inline-flex;align-items:center;gap:5px;margin-top:0;align-self:flex-end}.snd-test .icon{width:15px;height:15px}.set-row .slow-tg{align-self:flex-end}.set-note{font-size:12px;color:var(--sub);margin:10px 0 0}.set-warn{font-size:12px;line-height:1.7;margin:0;color:var(--bad)}
 @media(max-width:760px){.pf-card{padding:16px;gap:12px;align-items:flex-start}.pf-avatar{flex-basis:68px;height:68px}.pf-avatar .fox{width:64px;height:68px}}
 .reset-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:22px;padding:12px 14px;border:1px dashed var(--line);border-radius:12px}
+.stat-row:nth-child(3) .stat-icon{background:#2e2448;color:#ffd7a0;font-family:"Yu Gothic","Meiryo","Noto Sans JP",sans-serif}
 .rec-more{display:block;margin:12px auto 0}
 .note-seg{margin-bottom:14px}.note-seg small{opacity:.7;margin-left:2px}.note-start{text-align:center}.note-start .intro{margin-top:8px}.note-start .link{display:block;margin:8px auto 0}.note-h{margin-top:18px}.note-more{display:block;margin:12px auto 0}
 .acct-why{font-size:12px;color:var(--sub);line-height:1.7;margin:0 0 10px}.acct-why b{color:var(--ink)}
@@ -1155,7 +1156,9 @@ const MISSIONS={
   kata:{t:"가타카나 문제 8개 맞히기",need:8,xp:20,v:d=>d.kata},
   reverse:{t:"거꾸로 문제 5개 맞히기",need:5,xp:25,v:d=>d.rev},
   note:{t:"오답노트 문제 3개 다시 맞히기",need:3,xp:20,v:d=>d.note},
-  review:{t:"오늘의 복습 끝내기",need:1,xp:30,v:d=>d.review}
+  review:{t:"오늘의 복습 끝내기",need:1,xp:30,v:d=>d.review},
+  kanji:{t:"한자 문제 5개 맞히기",need:5,xp:25,v:d=>d.kanji||0},
+  kanjiNew:{t:"새 한자 3개 익히기",need:3,xp:30,v:d=>d.kfresh||0}
 };
 function dayState(){
   const t=today();
@@ -1164,13 +1167,14 @@ function dayState(){
     let seed=t%233280;const rnd=()=>(seed=(seed*9301+49297)%233280)/233280;
     const picked=pool.map(x=>[rnd(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
     const due=typeof dueKeys==="function"&&dueKeys().length>0;
-    S.day={id:t,m:["solve",...(due?["review"]:[]),...picked].slice(0,3),solved:0,right:0,combo:0,best:0,fresh:0,word:0,kata:0,rev:0,note:0,review:0,got:{}};
+    const kj=S.level==="mid"?[rnd()<.5?"kanji":"kanjiNew"]:[];
+    S.day={id:t,m:["solve",...(due?["review"]:[]),...kj,...picked].slice(0,3),solved:0,right:0,combo:0,best:0,fresh:0,word:0,kata:0,rev:0,note:0,review:0,got:{}};
   }
   return S.day;
 }
 function trackAnswer(ok,o){
   const d=dayState();d.solved++;
-  if(ok){d.right++;d.combo++;d.best=Math.max(d.best,d.combo);if(o.kind==="word")d.word++;if(o.kata)d.kata++;if(o.rev)d.rev++;if(o.note)d.note++}
+  if(ok){d.right++;d.combo++;d.best=Math.max(d.best,d.combo);if(o.kind==="word")d.word++;if(o.kind==="kanji")d.kanji=(d.kanji||0)+1;if(o.kata)d.kata++;if(o.rev)d.rev++;if(o.note)d.note++}
   else d.combo=0;
   checkMissions();
 }
@@ -1191,7 +1195,8 @@ function renderMissions(){
 function refreshSummary(){
   const chars=[...ALL,...ALL_K], mc=chars.filter(c=>cd(c.k)).length;
   const mw=WORDS.filter(w=>wd(w.id)).length, nn=Object.keys(S.n).length;
-  $("summary").innerHTML=[['익힌 글자',mc,chars.length,'あ'],['모은 단어',mw,WORDS.length,'語']].map(([label,n,total,mark])=>'<div class="stat-row"><span class="stat-icon">'+mark+'</span><div class="stat-details"><div><span>'+label+'</span><b>'+n+'<small> / '+total+'</small></b></div><div class="bar"><i style="width:'+n/total*100+'%"></i></div></div></div>').join('')+'<button class="review-link" id="review-link">다시 연습할 오답 <b>'+nn+'개 <span>→</span></b></button>';
+  const kjN=KANJI.filter(j=>kjd(j.k)).length;
+  $("summary").innerHTML=[['익힌 글자',mc,chars.length,'あ'],['모은 단어',mw,WORDS.length,'語'],...(S.level==="mid"?[['익힌 한자',kjN,KANJI.length,'漢']]:[])].map(([label,n,total,mark])=>'<div class="stat-row"><span class="stat-icon">'+mark+'</span><div class="stat-details"><div><span>'+label+'</span><b>'+n+'<small> / '+total+'</small></b></div><div class="bar"><i style="width:'+n/total*100+'%"></i></div></div></div>').join('')+'<button class="review-link" id="review-link">다시 연습할 오답 <b>'+nn+'개 <span>→</span></b></button>';
   $("review-link").onclick=()=>show(4);
   $("header-count").textContent=mc;
   $("nbadge").hidden=!nn;$("nbadge").textContent=nn;
@@ -1759,7 +1764,7 @@ function renderSent(el){
 
 const kindTabs=cur=>`<div class="seg kind-seg" role="group" aria-label="단어 또는 문장">${[["w","단어"],["s","문장"]].map(([k,n])=>`<button data-kind="${k}" class="${k===cur?"on":""}" aria-pressed="${k===cur}">${n}</button>`).join("")}</div>`;
 function bindKindTabs(el){el.querySelectorAll("[data-kind]").forEach(b=>b.onclick=()=>{const k=b.dataset.kind;wv=k==="s"?{view:"slist"}:{view:"list",script:"h"};wordsHist();renderWords()})}
-function recordKanji(k,ok){const x=S.kj[k]||(S.kj[k]={r:0,w:0,d:0});if(ok){if(!x.r)dayState().fresh++;x.r++;x.d=1;schedule("j:"+k)}else{x.w++;x.d=0;addNote("j:"+k)}}
+function recordKanji(k,ok){const x=S.kj[k]||(S.kj[k]={r:0,w:0,d:0});if(ok){if(!x.r){const d=dayState();d.fresh++;d.kfresh=(d.kfresh||0)+1}x.r++;x.d=1;schedule("j:"+k)}else{x.w++;x.d=0;addNote("j:"+k)}}
 function kanjiQ(j,type){
   type=type||rand(["mean","read","rev"]);
   const ex=rand(j.ex),pool=[...shuffle(KANJI.filter(x=>x.k!==j.k&&x.cat===j.cat)),...shuffle(KANJI.filter(x=>x.k!==j.k&&x.cat!==j.cat&&x.lv===j.lv)),...shuffle(KANJI.filter(x=>x.lv!==j.lv))]; // 보기는 같은 카테고리 → 같은 급수 순
@@ -3041,7 +3046,9 @@ const roadDone=()=>ROAD_STEPS.every(st=>stepProg(st).f>=1);
 const isMid=()=>S.level==="mid";
 function setLevel(mid){
   if(mid&&!roadDone())return notifyText("학습 길 10단계를 모두 마치면 중급으로 바꿀 수 있어요.");
-  S.level=mid?"mid":"beg";save();applyLevel();
+  S.level=mid?"mid":"beg";
+  if(mid){const d=dayState();if(!d.m.some(id=>id==="kanji"||id==="kanjiNew")){const i=d.m.map((id,k)=>k).reverse().find(k=>!d.got[d.m[k]]&&!["solve","review"].includes(d.m[k]));if(i!==undefined)d.m[i]="kanji";else d.m.push("kanji")}}
+  save();applyLevel();refreshSummary();
   if(mid)notifyText("중급이 됐어요! 왼쪽 메뉴에 한자 칸이 생겼어요.");
   if(!mid&&tab===6)show(0);
   renderRoad();renderSettings();
