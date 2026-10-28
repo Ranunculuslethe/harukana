@@ -2064,7 +2064,7 @@ async function loadBoard(mode,force){
   scheduleRank();
   await refreshMine(mode);
 }
-const rankIn=async(rows,parent,col,field,v)=>{const i=(rows||[]).findIndex(r=>r.id===rk.me);return i>=0?i+1:(await restCountAbove(parent,col,field,v))+1};
+const rankIn=async(rows,parent,col,field,v)=>{const i=(rows||[]).findIndex(r=>r.id===rk.me);return i>=0?rows.filter(r=>(Number(r[field])||0)>v).length+1:(await restCountAbove(parent,col,field,v))+1};
 async function refreshMine(mode){
   if(!rk.me)return;
   const on=S.rank&&!S.rankOff;
@@ -2571,7 +2571,7 @@ function leagueRewards(n){
   n=Number(n)||0;const places=Math.min(WEEK_REWARDS.length,Math.floor(n/2)),scale=Math.min(1,n/20);
   return WEEK_REWARDS.slice(0,places).map(x=>Math.max(10,Math.round(x*scale/10)*10));
 }
-const rewardText=n=>{const r=leagueRewards(n);return r.length?`1~${r.length}등 보상 (1등 ${r[0]}${r.length>1?` · ${r.length}등 ${r[r.length-1]}`:""} XP)`:"참가자가 2명 이상이면 보상이 생겨요"};
+const rewardText=n=>{const r=leagueRewards(n);return r.length>1?`1~${r.length}등 보상 (1등 ${r[0]} · ${r.length}등 ${r[r.length-1]} XP)`:r.length?`1등 보상 ${r[0]} XP`:"참가자가 2명 이상이면 보상이 생겨요"};
 function claimWeekReward(){
   const r=rk.myRank.last,key=String(rk.lastWn),list=leagueRewards(rk.count.last);
   if(!r||r>list.length||S.claimed[key]||rk.banned)return;
@@ -2840,6 +2840,7 @@ function renderRank(){
       :(rk.blocked||rk.canWrite===false)?`<p class="rk-note">${rk.fb?`내 기록을 랭킹에 올리지 못했어요 (오류 ${esc(rk.syncErr||"")}). 잠시 뒤 다시 시도해 주세요.`:"순위는 볼 수 있지만, 내 기록을 올리려면 이 페이지의 편집 권한이 필요해요."}</p>`
       :rk.syncErr?`<p class="rk-note">내 기록을 올리는 중 연결 문제가 있었어요 (오류 ${esc(rk.syncErr)}). 15초 뒤 자동으로 다시 시도해요.</p>`:"";
     const mode=rk.mode||"week",league=mode!=="all";
+    const tieRank=(list,i,f)=>{const v=Number(list[i][f])||0;let r=i;while(r>0&&(Number(list[r-1][f])||0)===v)r--;return r+1};
     const meRow={id:rk.me,nick:S.nick,title:mainTitle(),avatar:S.avatar,level:lvOf(S.xp),xp:S.xp,weekXp:weekXp(),streak:streak()};
     const src=mode==="all"?rk.rows:mode==="week"?rk.weekRows:rk.lastRows,rows=src||[];
     const mine=mode==="all"?(S.rank?meRow:null):mode==="week"?(S.rank&&weekXp()>0?meRow:null):rk.myLast;
@@ -2852,7 +2853,7 @@ function renderRank(){
     if(mode==="last"&&!rk.fb)list=`<p class="rk-note">지난주 리그는 GitHub 사이트(ranunculuslethe.github.io/harukana)에서 볼 수 있어요.</p>`;
     else if(!src)list=`<p class="rk-note">랭킹을 불러오는 중이에요…</p>`;
     else if(!rows.length&&!mine)list=`<p class="rk-note">${emptyMsg}</p>`;
-    else list=`<ol class="rk-list">${rows.map((r,i)=>row(r,i+1)).join("")}${mine&&myRank&&!rows.some(r=>r.id===rk.me)?`<li class="rk-gap" aria-hidden="true">⋯</li>${row(mine,myRank)}`:""}</ol>`
+    else list=`<ol class="rk-list">${rows.map((r,i)=>row(r,tieRank(rows,i,league?"weekXp":"xp"))).join("")}${mine&&myRank&&!rows.some(r=>r.id===rk.me)?`<li class="rk-gap" aria-hidden="true">⋯</li>${row(mine,myRank)}`:""}</ol>`
       +(mode==="last"&&rk.fb&&!rk.myLast&&S.rank?`<p class="rk-note" style="margin-top:10px">지난주에는 내 리그 기록이 없어요.</p>`:"");
     body=(mode==="last"?"":join)+list;
   }
