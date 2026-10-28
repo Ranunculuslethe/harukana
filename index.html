@@ -76,6 +76,7 @@
 .set-h{font-size:13px;margin:16px 0 8px;color:var(--sub);font-weight:600}.set-sound{padding:14px 16px;border:1px dashed var(--line);border-radius:14px}.set-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.set-voice{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub);flex:1 1 220px;min-width:0}.set-voice select{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:9px;padding:7px 9px;max-width:100%}.snd-test{display:inline-flex;align-items:center;gap:5px;margin-top:0;align-self:flex-end}.snd-test .icon{width:15px;height:15px}.set-row .slow-tg{align-self:flex-end}.set-note{font-size:12px;color:var(--sub);margin:10px 0 0}.set-warn{font-size:12px;line-height:1.7;margin:0;color:var(--bad)}
 @media(max-width:760px){.pf-card{padding:16px;gap:12px;align-items:flex-start}.pf-avatar{flex-basis:68px;height:68px}.pf-avatar .fox{width:64px;height:68px}}
 .reset-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:22px;padding:12px 14px;border:1px dashed var(--line);border-radius:12px}
+.lvl-pick button small{display:block;font-size:10px;font-weight:400;opacity:.75}.road-sec.adv{border:1px dashed color-mix(in srgb,#c99a5b 55%,var(--line));background:linear-gradient(160deg,color-mix(in srgb,#ffd7a0 22%,var(--card)),var(--card))}.road-sec.adv .road-ic{background:#c99a5b;color:#fff}.adv-tag{font-style:normal;font-size:11px;font-weight:700;padding:1px 6px;border-radius:5px;background:#f3e3c7;color:#7a5524;margin-left:4px;vertical-align:2px}
 .stat-row:nth-child(3) .stat-icon{background:#2e2448;color:#ffd7a0;font-family:"Yu Gothic","Meiryo","Noto Sans JP",sans-serif}
 .rec-more{display:block;margin:12px auto 0}
 .note-seg{margin-bottom:14px}.note-seg small{opacity:.7;margin-left:2px}.note-start{text-align:center}.note-start .intro{margin-top:8px}.note-start .link{display:block;margin:8px auto 0}.note-h{margin-top:18px}.note-more{display:block;margin:12px auto 0}
@@ -2774,7 +2775,7 @@ function renderSettings(force){
   const d=$("set-dlg");if(!d||(!force&&!d.open))return;
   const nb=Object.keys(S.badges).length;
   d.innerHTML=`<div class="set-top"><h3 id="set-title">설정</h3><button class="set-x" id="set-close" aria-label="설정 닫기">×</button></div>
-    <h4 class="set-h">난이도</h4><div class="set-sound"><div class="lvl-pick" role="group" aria-label="난이도"><button type="button" data-level="beg" class="${isMid()?"":"on"}" aria-pressed="${!isMid()}">초급</button><button type="button" data-level="mid" class="${isMid()?"on":""}" aria-pressed="${isMid()}"${roadDone()||isMid()?"":" disabled"}>중급</button></div>
+    <h4 class="set-h">난이도</h4><div class="set-sound"><div class="lvl-pick" role="group" aria-label="난이도"><button type="button" data-level="beg" class="${isMid()?"":"on"}" aria-pressed="${!isMid()}">초급</button><button type="button" data-level="mid" class="${isMid()?"on":""}" aria-pressed="${isMid()}"${roadDone()||isMid()?"":" disabled"}>중급</button><button type="button" data-level="adv" disabled title="고급은 준비 중이에요">고급<small>준비 중</small></button></div>
       <p class="set-note">${isMid()?"중급에서는 왼쪽 메뉴에 한자 칸이 생겨요. 초급으로 돌아가도 한자 기록은 그대로 남아요.":roadDone()?"학습 길을 모두 마쳤어요. 중급으로 바꾸면 한자 칸이 열려요.":`학습 길 10단계를 모두 마치면 중급(한자)으로 바꿀 수 있어요. 지금 ${ROAD_STEPS.filter(st=>stepProg(st).f>=1).length} / ${ROAD_STEPS.length}단계예요.`}</p></div>
     <h4 class="set-h">계정</h4><div class="set-sound set-acct">${acctRow("s")}</div>
     <h4 class="set-h">소리</h4><div class="set-sound" id="snd-box"></div>
@@ -2785,7 +2786,7 @@ function renderSettings(force){
       ${IN_CLAUDE||S.account?`<div><b>랭킹 참가</b><small>${S.rankOff?"지금은 랭킹에서 숨겨져 있어요.":"문제를 맞히면 닉네임·레벨·XP가 랭킹에 보여요."}</small><button class="rec-reset" id="rk-hide">${S.rankOff?"다시 참가하기":"랭킹에서 숨기기"}</button></div>`:""}
     </div>`;
   $("set-close").onclick=()=>d.close();
-  d.querySelectorAll("[data-level]").forEach(b=>b.onclick=()=>setLevel(b.dataset.level==="mid"));
+  d.querySelectorAll("[data-level]:not([disabled])").forEach(b=>b.onclick=()=>setLevel(b.dataset.level==="mid"));
   if($("rk-hide"))$("rk-hide").onclick=()=>setRankHidden(!S.rankOff);
   bindAcct("s");
   renderSoundSettings();
@@ -3072,7 +3073,13 @@ const ROAD_MID={title:"한자",icon:"漢",mid:true,steps:[
   kanjiStep("N3","題","N3 한자","신문 제목과 안내문에 나오는 한자"),
   kanjiStep("N2","経","N2 한자","뉴스·업무에서 쓰는 한자"),
   kanjiStep("N1","議","N1 한자","상용한자를 거의 모두 읽는 단계")]};
-const roadSecs=()=>isMid()?[...ROAD,ROAD_MID]:ROAD;
+const advStep=(id,mark,name,desc)=>({id,mark,name,desc,soon:true,items:()=>[],done:()=>false,go:()=>notifyText("고급은 준비 중이에요. 곧 추가될 예정이에요.")});
+const ROAD_ADV={title:"고급",icon:"上",adv:true,steps:[
+  advStep("a1","食","동사·형용사 활용","食べる → 食べます・食べた・食べて・食べない로 바꾸기"),
+  advStep("a2","読","짧은 글 읽기","메뉴판·안내문·짧은 일기 읽기, 후리가나 켜고 끄기"),
+  advStep("a3","聞","듣기","실제 속도의 문장을 듣고 뜻 고르기·받아쓰기"),
+  advStep("a4","話","문법·상황 회화","〜ている・〜たい 같은 표현, 식당·길 묻기 대화")]};
+const roadSecs=()=>isMid()?[...ROAD,ROAD_MID,ROAD_ADV]:ROAD;
 const roadSteps=()=>roadSecs().flatMap(sec=>sec.steps);
 const roadCurrent=()=>roadSteps().find(st=>!st.soon&&stepProg(st).f<1)||null;
 function renderRoad(){
@@ -3090,13 +3097,13 @@ function renderRoad(){
   const fin=!mid&&!cur?`<div class="road-fin"><span class="road-fin-ic" aria-hidden="true">✿</span><div><b>학습 길을 모두 마쳤어요!</b><small>이제 중급으로 올라가 한자를 배울 수 있어요. 학습 길에 한자 구간이 생겨요.</small></div><button class="next" id="road-fin-go">중급으로 바꾸기</button></div>`:"";
   let no=0;
   const secHtml=(sec,si)=>{
-    const sp=sec.steps.map(stepProg),real=sec.steps.filter(st=>!st.soon),secDone=real.every(st=>stepProg(st).f>=1),here=sec.steps.includes(cur);
-    return `<details class="road-sec${secDone?" done":""}${here?" here":""}${sec.mid?" mid":""}"${here||(sec.mid&&!cur)?" open":""}><summary><span class="road-ic">${sec.icon}</span><span class="road-title"><b>${si+1}구간 · ${sec.title}${sec.mid?' <em class="mid-tag">중급</em>':""}</b><small>${real.filter(st=>stepProg(st).f>=1).length} / ${real.length}단계 완료${sec.steps.length>real.length?` · ${sec.steps.length-real.length}단계 준비 중`:""}</small></span><span class="road-state">${secDone?"✿ 완료":here?"지금 여기":""}</span></summary><div class="journey">${sec.steps.map((st,i)=>{
+    const sp=sec.steps.map(stepProg),real=sec.steps.filter(st=>!st.soon),secDone=real.length>0&&real.every(st=>stepProg(st).f>=1),here=sec.steps.includes(cur);
+    return `<details class="road-sec${secDone?" done":""}${here?" here":""}${sec.mid?" mid":""}${sec.adv?" adv":""}"${here||(sec.mid&&!cur)?" open":""}><summary><span class="road-ic">${sec.icon}</span><span class="road-title"><b>${si+1}구간 · ${sec.title}${sec.mid?' <em class="mid-tag">중급</em>':sec.adv?' <em class="adv-tag">고급 · 준비 중</em>':""}</b><small>${real.length?`${real.filter(st=>stepProg(st).f>=1).length} / ${real.length}단계 완료`:"곧 추가돼요"}${sec.steps.length>real.length?` · ${sec.steps.length-real.length}단계 준비 중`:""}</small></span><span class="road-state">${secDone?"✿ 완료":here?"지금 여기":""}</span></summary><div class="journey">${sec.steps.map((st,i)=>{
       no++;const p=sp[i],complete=!st.soon&&p.f>=1,active=st===cur,cls=st.soon?"soon":active?"current":complete?"complete":"upcoming";
       return `<div class="lesson ${cls}"><div class="lesson-track"><button class="lesson-node" data-step="${st.id}" aria-label="${st.name} 열기">${complete?"✿":st.mark}</button>${active?'<svg class="here-fox" viewBox="0 0 180 190" aria-hidden="true"><use href="#fox"/></svg>':""}</div><button class="lesson-info" data-step="${st.id}"><span class="lesson-eyebrow">STEP ${String(no).padStart(2,"0")}${st.soon?" <em>준비 중</em>":active?" <em>지금 여기</em>":complete?" <em>완료</em>":""}</span><h3>${st.name}</h3><p>${st.desc}</p><span class="lesson-meta">${st.soon?"곧 추가돼요":`${p.n} / ${p.t} 완료`}</span>${!st.soon&&(active||(p.n&&!complete))?`<div class="bar"><i style="width:${p.f*100}%"></i></div>`:""}</button><span class="lesson-chevron" aria-hidden="true">›</span></div>`}).join("")}</div></details>`};
   const begDone=ROAD_STEPS.filter(st=>stepProg(st).f>=1).length;
   el.innerHTML=fin+(mid
-    ?`<details class="road-group"><summary><span class="road-ic">初</span><span class="road-title"><b>초급 여정 · 1~4구간</b><small>${begDone} / ${ROAD_STEPS.length}단계 완료 · 가나·단어·문장</small></span><span class="road-state">${begDone===ROAD_STEPS.length?"✿ 완료":""}</span></summary>${ROAD.map(secHtml).join("")}</details>${secHtml(ROAD_MID,ROAD.length)}`
+    ?`<details class="road-group"><summary><span class="road-ic">初</span><span class="road-title"><b>초급 여정 · 1~4구간</b><small>${begDone} / ${ROAD_STEPS.length}단계 완료 · 가나·단어·문장</small></span><span class="road-state">${begDone===ROAD_STEPS.length?"✿ 완료":""}</span></summary>${ROAD.map(secHtml).join("")}</details>${secHtml(ROAD_MID,ROAD.length)}${secHtml(ROAD_ADV,ROAD.length+1)}`
     :ROAD.map(secHtml).join(""));
   el.querySelectorAll("[data-step]").forEach(b=>b.onclick=()=>roadSteps().find(s=>s.id===b.dataset.step).go());
   if($("road-fin-go"))$("road-fin-go").onclick=()=>setLevel(true);
