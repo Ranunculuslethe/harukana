@@ -136,7 +136,7 @@
 .scene-caption small{display:block;font-size:10px;letter-spacing:0;opacity:.85;margin-top:1px}
 .hint-list{list-style:none;margin:4px 0 12px;padding:12px 14px;border-radius:12px;background:var(--midbg);font-size:13px;line-height:1.7;text-align:left}
 .hint-list b{display:inline-block;min-width:26px;font-size:16px;margin-right:6px}
-.memo{display:flex;align-items:center;gap:12px;margin:10px auto 0;padding:10px 14px;max-width:420px;border-radius:14px;background:var(--card,#fff);border:1px solid var(--line);text-align:left;color:var(--ink)}.memo-k{font-size:34px;line-height:1;font-family:"Noto Sans JP",sans-serif;color:var(--accent)}.memo-pic{font-size:30px;line-height:1}.memo-t{display:flex;flex-direction:column;font-size:13.5px;line-height:1.45}.memo-t small{font-size:11px;font-weight:700;color:var(--muted,#888);letter-spacing:.02em}
+.memo{display:flex;align-items:center;gap:12px;margin:10px auto 0;padding:10px 14px;max-width:420px;border-radius:14px;background:var(--card,#fff);border:1px solid var(--line);text-align:left;color:var(--ink)}.memo-k{font-size:34px;line-height:1;font-family:"Noto Sans JP",sans-serif;color:var(--accent)}.memo-t{display:flex;flex-direction:column;font-size:13.5px;line-height:1.45}.memo-t small{font-size:11px;font-weight:700;color:var(--muted,#888);letter-spacing:.02em}
 .chart-top{position:sticky;top:8px;z-index:3;display:flex;align-items:center;gap:10px;margin:0 0 12px;grid-column:1/-1}
 .chart-info{flex:1;display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:0 4px 14px rgba(0,0,0,.06)}
 .ci-empty{font-size:12px;color:var(--sub)}
@@ -1352,17 +1352,11 @@ const HINTS={
   "レ":"체크 표시(✓) '레'","ロ":"네모 = 입 구(口) '로'",
   "ワ":"ウ에서 점이 빠진 '와'","ヲ":"조사 '을/를'에만 쓰는 '오'","ン":"점이 왼쪽, 획이 아래에서 위로 '응'"
 };
-const PICS={"あ":"😮","い":"✌️","う":"🙇","え":"💃","お":"🙋","か":"🗡️","き":"🔑","く":"🐦","け":"🍰","こ":"👃","さ":"🫥","し":"🎣","す":"🧵","そ":"🌀",
-  "た":"⌨️","ち":"5️⃣","つ":"🌊","て":"✋","と":"🦶","な":"🎀","に":"👯","ぬ":"🍝","ね":"🐈","の":"🚫","は":"😄","ひ":"😁","ふ":"🌬️","へ":"⛰️","ほ":"🏨",
-  "ま":"🍾","み":"👩","む":"🐄","め":"👁️","も":"🪝","や":"🐂","ゆ":"🐟","よ":"🪀","ら":"🐰","り":"🏞️","る":"➰","れ":"🏎️","ろ":"🛣️","わ":"🐕","ん":"🙆",
-  "ア":"🪓","イ":"🧍","ウ":"🏠","エ":"🔧","オ":"🎤","カ":"💪","キ":"🔑","ク":"🐦","サ":"🪜","シ":"😊","ス":"⛷️","セ":"🧼","ソ":"🌧️","タ":"🐙","チ":"🧀",
-  "ツ":"🌊","テ":"🍽️","ト":"🍅","ナ":"🔪","ニ":"2️⃣","ヌ":"🥢","ネ":"⛩️","ノ":"✏️","ヒ":"🥄","フ":"🌬️","ヘ":"⛰️","ホ":"🌳","ミ":"🛝","ム":"🐮","メ":"❌",
-  "モ":"🦟","ヤ":"⚾","ラ":"🍜","リ":"🏞️","レ":"✔️","ロ":"👄"};
 function memoCard(k){
   const base=HINTS[k]?k:k.normalize("NFD")[0],h=HINTS[base];
   if(!h)return"";
   const extra=base===k?"":k.normalize("NFD").length>1&&k.length===1?`${k} = ${base} + ${/゚/.test(k.normalize("NFD"))?"゜":"゛"} · `:`${k} = ${k[0]} + 작은 ${k[1]} · `;
-  return `<span class="memo"><b class="memo-k" lang="ja">${base}</b>${PICS[base]?`<span class="memo-pic" aria-hidden="true">${PICS[base]}</span>`:""}<span class="memo-t"><small>이렇게 외워요</small>${extra}${h}</span></span>`;
+  return `<span class="memo"><b class="memo-k" lang="ja">${base}</b><span class="memo-t"><small>이렇게 외워요</small>${extra}${h}</span></span>`;
 }
 const introduced=k=>!!(S.seen[k]||S.c[k]||S.cr[k]||S.ca[k]);
 const rowIndex=k=>{const c=CH[k];return (c&&c.kata?ROWS_K:ROWS).findIndex(r=>r.cells.some(x=>x&&x.k===k))};
@@ -1373,7 +1367,7 @@ function renderLearn(keys){
     return `<button class="learn-tile" data-say="${say}"><b>${c.sp?c.disp:c.k}</b><span>${clean(c.h)}</span>${c.sp?`<small>${c.ex[0][0]}</small>`:c.r?`<small>${c.r}</small>`:""}</button>`};
   const tips=keys.map(k=>CH[k]).filter(c=>c.sp&&c.tip).map(c=>`<p class="tip">${c.tip}</p>`).join("");
   const hints=keys.filter(k=>HINTS[k]);
-  const hintList=hints.length?`<ul class="hint-list" aria-label="외우는 요령">${hints.map(k=>`<li><b>${k}</b>${PICS[k]?`<span aria-hidden="true">${PICS[k]}</span> `:""}${HINTS[k]}</li>`).join("")}</ul>`:"";
+  const hintList=hints.length?`<ul class="hint-list" aria-label="외우는 요령">${hints.map(k=>`<li><b>${k}</b>${HINTS[k]}</li>`).join("")}</ul>`:"";
   const brk=rowRun.n?`<div class="row-break"><b>여기까지 ${rowRun.n}문제 중 ${rowRun.ok}개 맞혔어요</b>
     <span>진도는 저장돼요. 쉬었다 와도 이 자리부터 이어서 할 수 있어요.</span><button class="ghost" id="learn-stop">오늘은 여기까지</button></div>`:"";
   $("quiz").innerHTML=`${quizStatus(qStage,[`새 글자 ${keys.length}개`])}${brk}
