@@ -139,6 +139,7 @@
 .hint-list b{display:inline-block;min-width:26px;font-size:16px;margin-right:6px}
 .memo{display:flex;align-items:center;gap:12px;margin:10px auto 0;padding:10px 14px;max-width:420px;border-radius:14px;background:var(--card,#fff);border:1px solid var(--line);text-align:left;color:var(--ink)}.memo-k{font-size:34px;line-height:1;font-family:"Noto Sans JP",sans-serif;color:var(--accent)}.memo-t{display:flex;flex-direction:column;font-size:13.5px;line-height:1.45}.memo-t small{font-size:11px;font-weight:700;color:var(--muted,#888);letter-spacing:.02em}
 .read-now{flex:1 1 100%;margin:4px 0;padding:10px 12px;border-radius:12px;background:var(--card,#fff);border:1px solid var(--line);text-align:left}.read-now>b{display:block;font-size:13px;margin-bottom:6px;color:var(--accent)}.rn-list{display:flex;flex-wrap:wrap;gap:6px}.rn-w{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:7px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;font:inherit}.rn-w span,.row-break .rn-w span{flex:none;font-size:19px;color:var(--ink);font-family:"Noto Sans JP",sans-serif}.row-break .read-now>b{flex:none;color:var(--accent)}.rn-w small{font-size:11.5px;opacity:.8}
+.bd-slots{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:4px 0 16px;min-height:58px}.bd-slot{min-width:46px;height:56px;padding:0 4px;display:grid;place-items:center;border-bottom:3px solid var(--line);font-size:30px;font-weight:600;font-family:"Noto Sans JP",sans-serif}.bd-slot.on{border-color:var(--accent)}.bd-slots.right .bd-slot{border-color:var(--ok);color:var(--ok)}.bd-slots.wrong .bd-slot{border-color:var(--bad);color:var(--bad)}.bd-tiles{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}.bd-tile{min-width:58px;height:58px;padding:0 10px;font-size:26px;font-weight:600;border:2px solid var(--line);border-bottom:5px solid var(--panel-shadow);border-radius:13px;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP",sans-serif}.bd-tile:disabled{opacity:.28}.bd-tools{display:flex;justify-content:center;gap:8px;margin:14px 0 4px}.big.build-mean{font-size:30px}
 .mean.big-mean{font-size:34px;margin:14px 0 12px}.reveal-btn{display:block;margin:10px auto;border-style:dashed}
 .wrow .wk.wk-ko{font-size:16px;font-weight:700}
 .chart-top{position:sticky;top:8px;z-index:3;display:flex;align-items:center;gap:10px;margin:0 0 12px;grid-column:1/-1}
@@ -1289,6 +1290,30 @@ function mc(el,o){
   });
 }
 
+function buildMc(el,o){
+  const ans=o.answer,picked=[];let done=false;curMc=null; // 숫자키 고르기는 쓰지 않는다
+  el.innerHTML=`${o.head||""}<div class="q">${o.prompt}</div><div class="big ${o.bigCls||""}">${o.big}</div>
+    <div class="bd-slots" aria-label="만든 단어"></div>
+    <div class="bd-tiles">${o.tiles.map((t,i)=>`<button type="button" class="bd-tile" data-i="${i}" lang="ja">${t}</button>`).join("")}</div>
+    <div class="bd-tools"><button type="button" class="ghost" id="bd-undo">한 글자 지우기</button>${o.say?`<button type="button" class="ghost" id="bd-say">소리 힌트</button>`:""}</div>
+    <div class="fb" aria-live="polite"></div><div class="nx"></div>`;
+  const slots=el.querySelector(".bd-slots"),tiles=[...el.querySelectorAll(".bd-tile")];
+  const draw=()=>{slots.innerHTML=ans.map((_,i)=>`<span class="bd-slot${picked[i]!=null?" on":""}" lang="ja">${picked[i]!=null?o.tiles[picked[i]]:""}</span>`).join("");tiles.forEach((b,i)=>b.disabled=done||picked.includes(i))};
+  const finish=()=>{
+    done=true;recordPractice();
+    const ok=picked.map(i=>o.tiles[i]).join("")===ans.join("");
+    slots.classList.add(ok?"right":"wrong");draw();$("bd-undo").disabled=true;
+    const fb=el.querySelector(".fb");fb.classList.add(ok?"feedback-correct":"feedback-wrong");
+    fb.innerHTML=(ok?`<strong>✓ 잘했어요! +${XP_RIGHT} XP</strong> `:"<strong>다시 배우는 기회예요.</strong> ")+o.onPick(ok).replace(/^(정답!|아쉬워요\.) /,"");
+    afterAnswer(ok,o);
+    const nb=document.createElement("button");nb.className="next";nb.textContent=o.nextLabel||"다음 문제";nb.onclick=()=>{o.onNext();fitQuiz(curMc&&curMc.el)};
+    el.querySelector(".nx").appendChild(nb);nb.focus();
+  };
+  tiles.forEach((b,i)=>b.onclick=()=>{if(done||picked.includes(i))return;picked.push(i);draw();if(picked.length===ans.length)finish()});
+  $("bd-undo").onclick=()=>{if(done)return;picked.pop();draw()};
+  if(o.say)$("bd-say").onclick=()=>speak(o.say);
+  draw();
+}
 let kataMode=false;
 const level=k=>{const c=S.c[k];if(!c)return"";if(c.d)return c.w>0?"l-mid":"l-ok";return c.w>0?"l-bad":""};
 function showChartInfo(c,ch){
@@ -1622,11 +1647,17 @@ function unknownNote(w){
   return `<p class="tip wnew-tip">처음 보는 글자: <b>${u.map(k=>CH[k].disp||k).join(" ")}</b> · 가나 퀴즈 ${steps}에서 배워요.${small}${tsu}</p>`;
 }
 const batchCands=id=>catWords(id).filter(w=>!wdm(w.id)).sort((a,b)=>wordUnknown(a).length-wordUnknown(b).length||(b.koreanSimilar?1:0)-(a.koreanSimilar?1:0));
-function wordQ(w,mode){
+const canBuild=w=>((S.w[w.id]||{}).r||0)+((S.wr[w.id]||{}).r||0)>=2&&units(w.kana).length<=6&&Math.random()<0.5;
+function wordQ(w,mode,build){
   const pool=[...shuffle(WORDS.filter(x=>x.category===w.category)),...shuffle(WORDS.filter(x=>x.category!==w.category))];
   const used=new Set([w.meaning]),picks=[];
   for(const x of pool){if(used.has(x.meaning)||x.kana===w.kana)continue;used.add(x.meaning);picks.push(x);if(picks.length===3)break}
   const opts=shuffle([w,...picks]),fb=ok=>`${ok?"정답!":"아쉬워요."} ${w.kana} (${w.hangul}) = ${w.meaning}`;
+  if(build){
+    const us=units(w.kana),kata=/[ァ-ヶ]/.test(w.kana),extra=[];
+    for(const x of shuffle(WORDS.filter(x=>x.id!==w.id&&/[ァ-ヶ]/.test(x.kana)===kata).flatMap(x=>units(x.kana)))){if(!us.includes(x)&&!extra.includes(x))extra.push(x);if(extra.length>=Math.max(2,Math.min(3,8-us.length)))break}
+    return{build:1,prompt:"뜻에 맞게 글자를 눌러 단어를 만들어요",big:w.meaning,bigCls:"word build-mean",answer:us,tiles:shuffle([...us,...extra]),say:w.kana,fb,kind:"word",rev:1};
+  }
   if(mode==="rev")
     return{prompt:"이 뜻의 일본어는?",big:w.meaning,bigCls:"word",chCls:"text kana",choices:opts.map(x=>x.kana),correct:opts.indexOf(w),say:w.kana,fb,kind:"word",rev:1};
   return{prompt:"이 단어의 뜻은?",big:w.kana,bigCls:"word",chCls:"text",choices:opts.map(x=>x.meaning),correct:opts.indexOf(w),say:w.kana,fb,kind:"word"};
@@ -1704,9 +1735,9 @@ function renderWords(){
     return;
   }
   if(wv.view==="quiz"){
-    const w=wv.queue[0],q=wordQ(w,wMode),retry=wv.wrong.has(w.id);
+    const w=wv.queue[0],q=wordQ(w,wMode,canBuild(w)),retry=wv.wrong.has(w.id);
     el.innerHTML=`<div class="panel" id="wq"></div>`;
-    mc($("wq"),{...q,head:`${exitBtn}<div class="status qstat"><span>${WSCRIPTS[cat.script]} · ${cat.name}${modeTag()} · 남은 문제 ${wv.queue.length}</span>${resetBtn(`wc-${cat.id}-${wMode}`,"초기화")}</div>${retry?'<span class="pill">다시 나온 단어</span>':""}`,
+    (q.build?buildMc:mc)($("wq"),{...q,head:`${exitBtn}<div class="status qstat"><span>${WSCRIPTS[cat.script]} · ${cat.name}${modeTag()} · 남은 문제 ${wv.queue.length}</span>${resetBtn(`wc-${cat.id}-${wMode}`,"초기화")}</div>${retry?'<span class="pill">다시 나온 단어</span>':""}`,
       onPick(ok){
         S.last={t:"word",cat:cat.id,m:wMode};
         if(wMode==="rev"){const x=S.wr[w.id]||(S.wr[w.id]={r:0,w:0,d:0});if(ok){if(!x.r)dayState().fresh++;x.r++;x.d=1}else{x.w++;x.d=0;addNote("w:"+w.id)}}
