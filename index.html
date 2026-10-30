@@ -137,6 +137,7 @@
 .hint-list{list-style:none;margin:4px 0 12px;padding:12px 14px;border-radius:12px;background:var(--midbg);font-size:13px;line-height:1.7;text-align:left}
 .hint-list b{display:inline-block;min-width:26px;font-size:16px;margin-right:6px}
 .memo{display:flex;align-items:center;gap:12px;margin:10px auto 0;padding:10px 14px;max-width:420px;border-radius:14px;background:var(--card,#fff);border:1px solid var(--line);text-align:left;color:var(--ink)}.memo-k{font-size:34px;line-height:1;font-family:"Noto Sans JP",sans-serif;color:var(--accent)}.memo-t{display:flex;flex-direction:column;font-size:13.5px;line-height:1.45}.memo-t small{font-size:11px;font-weight:700;color:var(--muted,#888);letter-spacing:.02em}
+.read-now{flex:1 1 100%;margin:4px 0;padding:10px 12px;border-radius:12px;background:var(--card,#fff);border:1px solid var(--line);text-align:left}.read-now>b{display:block;font-size:13px;margin-bottom:6px;color:var(--accent)}.rn-list{display:flex;flex-wrap:wrap;gap:6px}.rn-w{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:7px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;font:inherit}.rn-w span,.row-break .rn-w span{flex:none;font-size:19px;color:var(--ink);font-family:"Noto Sans JP",sans-serif}.row-break .read-now>b{flex:none;color:var(--accent)}.rn-w small{font-size:11.5px;opacity:.8}
 .chart-top{position:sticky;top:8px;z-index:3;display:flex;align-items:center;gap:10px;margin:0 0 12px;grid-column:1/-1}
 .chart-info{flex:1;display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:0 4px 14px rgba(0,0,0,.06)}
 .ci-empty{font-size:12px;color:var(--sub)}
@@ -726,6 +727,43 @@ const SENT_UNITS=[
     {id:"s1304",ja:"テニス[も] します。",hg:"테니스모 시마스",ko:"테니스도 합니다."},
     {id:"s1305",ja:"カメラ[と] ラジオ{を} かいます。",hg:"카메라토 라지오오 카이마스",ko:"카메라와 라디오를 삽니다."},
     {id:"s1306",ja:"あした[も] プール{に} いきます。",hg:"아시타모 푸-루니 이키마스",ko:"내일도 수영장에 갑니다."}]}
+  ,
+  {id:"u14",g:"v",title:"~ません / ~ました",ko:"안 해요 / 했어요",opts:["ます","ません","ました","ませんでした"],tip:"ます(합니다)의 끝만 바꾸면 돼요: ません = 안 합니다, ました = 했습니다, ませんでした = 안 했습니다.",items:[
+    {id:"s1401",ja:"きょう{は} いき[ません]。",hg:"",ko:"오늘은 안 갑니다."},
+    {id:"s1402",ja:"きのう すし{を} たべ[ました]。",hg:"",ko:"어제 초밥을 먹었습니다."},
+    {id:"s1403",ja:"コーヒー{は} のみ[ません]。",hg:"",ko:"커피는 안 마십니다."},
+    {id:"s1404",ja:"きのう テレビ{を} み[ませんでした]。",hg:"",ko:"어제 텔레비전을 안 봤습니다."},
+    {id:"s1405",ja:"よる よく ね[ました]。",hg:"",ko:"밤에 잘 잤습니다."}]},
+  {id:"u15",g:"v",title:"あります / います",ko:"(물건이) 있어요 / (사람·동물이) 있어요",opts:["あります","います","ありません","いません"],tip:"물건·장소는 あります, 사람·동물처럼 움직이는 것은 います. 없을 때는 ありません·いません이에요.",items:[
+    {id:"s1501",ja:"トイレ{は} [あります]か。",hg:"",ko:"화장실 있어요?"},
+    {id:"s1502",ja:"ねこ{が} [います]。",hg:"",ko:"고양이가 있어요."},
+    {id:"s1503",ja:"ちかく{に} コンビニ{が} [あります]。",hg:"",ko:"근처에 편의점이 있어요."},
+    {id:"s1504",ja:"へや{に} だれ{も} [いません]。",hg:"",ko:"방에 아무도 없어요."},
+    {id:"s1505",ja:"じかん{が} [ありません]。",hg:"",ko:"시간이 없어요."}]},
+  {id:"u16",g:"v",title:"~たいです",ko:"~하고 싶어요",opts:["たいです","ます","ません","ました"],tip:"ます를 떼고 たいです를 붙이면 \"~하고 싶어요\"가 돼요. たべます → たべたいです, いきます → いきたいです.",items:[
+    {id:"s1601",ja:"すし{を} たべ[たいです]。",hg:"",ko:"초밥을 먹고 싶어요."},
+    {id:"s1602",ja:"にほん{に} いき[たいです]。",hg:"",ko:"일본에 가고 싶어요."},
+    {id:"s1603",ja:"ふじさん{を} み[たいです]。",hg:"",ko:"후지산을 보고 싶어요."},
+    {id:"s1604",ja:"おみやげ{を} かい[たいです]。",hg:"",ko:"기념품을 사고 싶어요."},
+    {id:"s1605",ja:"すこし やすみ[たいです]。",hg:"",ko:"조금 쉬고 싶어요."}]},
+  {id:"u17",g:"n",ear:1,title:"가격 읽기",ko:"~えんです = ~엔이에요",tip:"100 ひゃく, 1,000 せん, 10,000 いちまん. 300 さんびゃく, 600 ろっぴゃく, 800 はっぴゃく, 3,000 さんぜん, 8,000 はっせん처럼 소리가 바뀌는 수가 있어요.",items:[
+    {id:"s1701",ja:"ひゃくえんです。",hg:"",ko:"100엔이에요."},
+    {id:"s1702",ja:"さんびゃくえんです。",hg:"",ko:"300엔이에요."},
+    {id:"s1703",ja:"ごひゃくえんです。",hg:"",ko:"500엔이에요."},
+    {id:"s1704",ja:"はっぴゃくえんです。",hg:"",ko:"800엔이에요."},
+    {id:"s1705",ja:"せんえんです。",hg:"",ko:"1,000엔이에요."},
+    {id:"s1706",ja:"せんごひゃくえんです。",hg:"",ko:"1,500엔이에요."},
+    {id:"s1707",ja:"さんぜんえんです。",hg:"",ko:"3,000엔이에요."},
+    {id:"s1708",ja:"いちまんえんです。",hg:"",ko:"10,000엔이에요."}]},
+  {id:"u18",g:"n",ear:1,title:"시간 읽기",ko:"~じ ~ふん = ~시 ~분",tip:"~じ = ~시, ~ふん·ぷん = ~분, はん = 반. 4시 よじ, 7시 しちじ, 9시 くじ처럼 읽는 법이 특별한 시간이 있어요. 10분은 じゅっぷん.",items:[
+    {id:"s1801",ja:"いちじです。",hg:"",ko:"1시예요."},
+    {id:"s1802",ja:"よじです。",hg:"",ko:"4시예요."},
+    {id:"s1803",ja:"しちじです。",hg:"",ko:"7시예요."},
+    {id:"s1804",ja:"くじです。",hg:"",ko:"9시예요."},
+    {id:"s1805",ja:"さんじ はんです。",hg:"",ko:"3시 반이에요."},
+    {id:"s1806",ja:"じゅうじ じゅっぷんです。",hg:"",ko:"10시 10분이에요."},
+    {id:"s1807",ja:"ごじ ごふんです。",hg:"",ko:"5시 5분이에요."},
+    {id:"s1808",ja:"いま なんじですか。",hg:"",ko:"지금 몇 시예요?"}]}
 ];
 const SENTS=SENT_UNITS.flatMap(u=>u.items.map(s=>({...s,unit:u.id})));
 const SENT_BY_ID=Object.fromEntries(SENTS.map(s=>[s.id,s]));
@@ -1360,6 +1398,21 @@ function memoCard(k){
 }
 const introduced=k=>!!(S.seen[k]||S.c[k]||S.cr[k]||S.ca[k]);
 const rowIndex=k=>{const c=CH[k];return (c&&c.kata?ROWS_K:ROWS).findIndex(r=>r.cells.some(x=>x&&x.k===k))};
+const READ_WORDS=[["あい","사랑"],["いえ","집"],["うえ","위"],["あお","파랑"],["あか","빨강"],["かお","얼굴"],["いけ","연못"],["えき","역"],["こえ","목소리"],["あき","가을"],["かき","감"],
+  ["あさ","아침"],["いす","의자"],["すし","초밥"],["しお","소금"],["うし","소"],["かさ","우산"],["せき","자리"],["たこ","문어"],["くつ","신발"],["ちかてつ","지하철"],["つくえ","책상"],["て","손"],
+  ["なつ","여름"],["いぬ","개"],["ねこ","고양이"],["なに","무엇"],["はな","꽃"],["ひと","사람"],["ふね","배"],["ほし","별"],["へそ","배꼽"],["まち","마을"],["みみ","귀"],["むし","벌레"],["うみ","바다"],["あたま","머리"],["もの","물건"],
+  ["やま","산"],["ゆき","눈(내리는 눈)"],["よる","밤"],["さくら","벚꽃"],["そら","하늘"],["くるま","자동차"],["とり","새"],["はれ","맑음"],["ふろ","목욕"],["かわ","강"],["わたし","나"],
+  ["アイス","아이스크림"],["ココア","코코아"],["キウイ","키위"],["カメラ","카메라"],["マスク","마스크"],["テニス","테니스"],["トマト","토마토"],["キムチ","김치"],["アニメ","애니메이션"],["ナイフ","나이프"],["ネクタイ","넥타이"],
+  ["ホテル","호텔"],["ハム","햄"],["メモ","메모"],["ミルク","우유"],["トイレ","화장실"],["アメリカ","미국"],["ハワイ","하와이"],["ソウル","서울"],["タオル","수건"],["オムレツ","오믈렛"],["クラス","반(클래스)"],["セロリ","셀러리"],["タイヤ","타이어"],["メニュー","메뉴"]];
+function readNow(keys){
+  const rows=CH[keys[0]].kata?ROWS_K:ROWS,prev=rows[rowIndex(keys[0])-1];
+  if(!prev)return"";
+  const fresh=new Set(prev.cells.filter(Boolean).map(c=>c.k)),seen=new Set();
+  const ws=shuffle([...READ_WORDS,...WORDS.map(w=>[w.kana,w.meaning])].filter(([k])=>{const us=units(k);if(us.length<2||seen.has(k)||!us.every(introduced)||!us.some(u=>fresh.has(u)))return false;seen.add(k);return true}))
+    .sort((a,b)=>a[0].length-b[0].length).slice(0,3);
+  if(!ws.length)return"";
+  return `<div class="read-now"><b>벌써 이런 단어를 읽을 수 있어요</b><div class="rn-list">${ws.map(([k,m])=>`<button class="rn-w" type="button" data-say="${esc(k)}"><span lang="ja">${esc(k)}</span><small>${esc(autoHangul(k))} · ${esc(m)}</small></button>`).join("")}</div></div>`;
+}
 function renderLearn(keys){
   const row=(CH[keys[0]].kata?ROWS_K:ROWS)[rowIndex(keys[0])];
   if(row){const pos=k=>row.cells.findIndex(x=>x&&x.k===k);keys=keys.slice().sort((a,b)=>pos(a)-pos(b))} // 배울 때는 あいうえお 순서대로
@@ -1369,13 +1422,14 @@ function renderLearn(keys){
   const hints=keys.filter(k=>HINTS[k]);
   const hintList=hints.length?`<ul class="hint-list" aria-label="외우는 요령">${hints.map(k=>`<li><b>${k}</b>${HINTS[k]}</li>`).join("")}</ul>`:"";
   const brk=rowRun.n?`<div class="row-break"><b>여기까지 ${rowRun.n}문제 중 ${rowRun.ok}개 맞혔어요</b>
-    <span>진도는 저장돼요. 쉬었다 와도 이 자리부터 이어서 할 수 있어요.</span><button class="ghost" id="learn-stop">오늘은 여기까지</button></div>`:"";
+    <span>진도는 저장돼요. 쉬었다 와도 이 자리부터 이어서 할 수 있어요.</span>${readNow(keys)}<button class="ghost" id="learn-stop">오늘은 여기까지</button></div>`:"";
   $("quiz").innerHTML=`${quizStatus(qStage,[`새 글자 ${keys.length}개`])}${brk}
     <h2 class="learn-h">새 글자를 먼저 만나요 <small>${row?rowName(row):""}</small></h2>
     <p class="intro">글자를 눌러 소리를 들어 보세요. 다 봤으면 바로 퀴즈로 확인해요.</p>
     <div class="learn-grid">${keys.map(tile).join("")}</div>${hintList}${tips}
     <div class="navrow"><button class="ghost" id="learn-all">${SPK} 차례로 듣기</button><button class="next" id="learn-go">다 봤어요, 퀴즈 풀기</button></div>`;
   $("quiz").querySelectorAll(".learn-tile").forEach(b=>b.onclick=()=>speak(b.dataset.say));
+  $("quiz").querySelectorAll(".rn-w").forEach(b=>b.onclick=()=>speak(b.dataset.say));
   $("learn-all").onclick=()=>{const ts=[...$("quiz").querySelectorAll(".learn-tile")];ts.forEach((b,i)=>setTimeout(()=>{ts.forEach(x=>x.classList.remove("on"));b.classList.add("on");speak(b.dataset.say)},i*1300));setTimeout(()=>ts.forEach(x=>x.classList.remove("on")),ts.length*1300)};
   $("learn-go").onclick=()=>{keys.forEach(k=>S.seen[k]=1);save();rowRun={n:0,ok:0};renderCharQuiz();fitQuiz($("quiz"))};
   if($("learn-stop"))$("learn-stop").onclick=()=>{rowRun={n:0,ok:0};show(0)};
@@ -1678,23 +1732,25 @@ const sAns=s=>(s.ja.match(/\[([^\]]+)\]/)||[])[1];
 const sxd=id=>!!(S.sx[id]&&S.sx[id].d);
 const unitDone=u=>u.items.every(s=>sxd(s.id));
 function recordSent(id,ok){const x=S.sx[id]||(S.sx[id]={r:0,w:0,d:0});if(ok){if(!x.r)dayState().fresh++;x.r++;x.d=1;schedule("s:"+id)}else{x.w++;x.d=0;addNote("s:"+id)}}
-function sentQ(s,type){
-  type=type||rand(sAns(s)?["mean","blank","rev"]:["mean","rev"]);
+function sentQ(s,type,ear){ // ear: 소리만 듣고 고르기 허용 (숫자 단원, 문장 칸에서 풀 때만)
+  const su=SENT_UNITS.find(x=>x.id===s.unit)||{};
+  type=type||rand(sAns(s)?["mean","blank","rev"]:ear&&su.ear?["ear","ear","mean","rev"]:["mean","rev"]);
   const fb=ok=>`${ok?"정답!":"아쉬워요."} ${esc(sjPlain(s))} = ${esc(s.ko)}<span class="tip">${esc(s.hg)}</span>`;
   const base={say:sjPlain(s),fb,kind:"sent"};
   if(type==="blank"){
-    const a=sAns(s),bad=new Set([a,...(s.no||[])]),opts=shuffle([a,...shuffle(PARTICLES.filter(p=>!bad.has(p))).slice(0,3)]);
-    return{...base,prompt:"뜻에 맞게 빈칸에 들어갈 조사를 고르세요",big:`${sjBlank(s)}<small class="s-ko">${esc(s.ko)}</small>`,bigCls:"sent",choices:opts,chCls:"kana",correct:opts.indexOf(a)};
+    const a=sAns(s),bad=new Set([a,...(s.no||[])]),opts=shuffle([a,...shuffle((su.opts||PARTICLES).filter(p=>!bad.has(p))).slice(0,3)]);
+    return{...base,prompt:su.opts?"뜻에 맞게 빈칸에 들어갈 말을 고르세요":"뜻에 맞게 빈칸에 들어갈 조사를 고르세요",big:`${sjBlank(s)}<small class="s-ko">${esc(s.ko)}</small>`,bigCls:"sent",choices:opts,chCls:"kana",correct:opts.indexOf(a)};
   }
   const others=shuffle(SENTS.filter(x=>x.id!==s.id&&x.ko!==s.ko)),pick=[...others.filter(x=>x.unit===s.unit),...others.filter(x=>x.unit!==s.unit)].slice(0,3);
   const opts=shuffle([s,...pick]);
+  if(type==="ear")return{...base,prompt:"소리만 듣고 뜻을 고르세요",big:`<button class="ear-btn" type="button" aria-label="소리 다시 듣기">${SPK}<span>다시 듣기</span></button>`,bigCls:"ear",choices:opts.map(x=>esc(x.ko)),chCls:"text",correct:opts.indexOf(s),ear:1};
   if(type==="rev")return{...base,prompt:"이 뜻의 일본어 문장은?",big:esc(s.ko),bigCls:"sent ko",choices:opts.map(x=>esc(sjPlain(x))),chCls:"text kana sentc",correct:opts.indexOf(s),rev:1};
   return{...base,prompt:"이 문장의 뜻은?",big:esc(sjPlain(s)),bigCls:"sent",choices:opts.map(x=>esc(x.ko)),chCls:"text",correct:opts.indexOf(s)};
 }
-const SGROUPS={p:"조사",k:"가타카나 넣은 문장"};
-const sgOf=u=>u.mix?"k":"p";
+const SGROUPS={p:"조사",v:"말끝 바꾸기",k:"가타카나 넣은 문장",n:"숫자 읽기"};
+const sgOf=u=>u.g||(u.mix?"k":"p");
 const groupUnits=g=>SENT_UNITS.filter(u=>sgOf(u)===g);
-const sLabel=u=>u.mix?`${SGROUPS.k} · ${u.title}`:`문장 · ${u.title}`; // 상태 줄·초기화 알림에 쓰는 이름
+const sLabel=u=>sgOf(u)==="p"?`문장 · ${u.title}`:`${SGROUPS[sgOf(u)]} · ${u.title}`; // 상태 줄·초기화 알림에 쓰는 이름
 let sentGroup="p"; // 마지막으로 본 탭 (단원에서 목록으로 돌아올 때 그 탭으로)
 function renderSent(el){
   const seg=kindTabs("s");
@@ -1703,7 +1759,7 @@ function renderSent(el){
     if(SGROUPS[wv.sg])sentGroup=wv.sg;
     const g=sentGroup,units=groupUnits(g),nx=units.findIndex(u=>!unitDone(u));
     const gseg=`<div class="seg" role="group" aria-label="문장 종류">${Object.keys(SGROUPS).map(k=>`<button data-sg="${k}" class="${k===g?"on":""}" aria-pressed="${k===g}">${SGROUPS[k]}</button>`).join("")}</div>`;
-    const intro=g==="k"?"コーヒー·テレビ처럼 가타카나로 쓰는 말을 히라가나 문장에 넣어 읽어요. 조사 단원을 먼저 하면 더 쉬워요."
+    const intro=g==="v"?"문장 끝(ます)만 바꿔서 \"안 해요·했어요·있어요·하고 싶어요\"를 말해요. 조사 단원 다음에 하면 좋아요.":g==="n"?"가격과 시간을 읽고 들어요. 일본에서 계산할 때, 시간을 확인할 때 바로 써요. 소리만 듣고 고르는 문제도 나와요.":g==="k"?"コーヒー·テレビ처럼 가타카나로 쓰는 말을 히라가나 문장에 넣어 읽어요. 조사 단원을 먼저 하면 더 쉬워요."
       :"단어를 이어 짧은 문장을 만들어요. 조사(は·を·に…)를 하나씩, 위에서부터 차례로 익히면 좋아요.";
     el.innerHTML=seg+gseg+`<p class="intro">${intro}</p>
       <div class="cats">${units.map((u,i)=>{const n=u.items.filter(s=>sxd(s.id)).length;
@@ -1749,7 +1805,7 @@ function renderSent(el){
   }
   if(wv.view==="squiz"){
     if(!wv.queue.length){wv={view:"sdone",unit:u.id,wrong:wv.wrong||[]};return renderWords()}
-    const s=SENT_BY_ID[wv.queue[0]],q=sentQ(s),retry=(wv.wrong||[]).includes(s.id);
+    const s=SENT_BY_ID[wv.queue[0]],q=sentQ(s,0,1),retry=(wv.wrong||[]).includes(s.id);
     el.innerHTML=`<div class="panel" id="sq"></div>`;
     mc($("sq"),{...q,head:`${exitS}<div class="status qstat"><span>${esc(sLabel(u))} · 남은 문제 ${wv.queue.length}</span></div>${retry?'<span class="pill">다시 나온 문장</span>':""}`,
       onPick(ok){
@@ -1759,6 +1815,7 @@ function renderSent(el){
         return q.fb(ok);
       },
       onNext:()=>renderWords()});
+    if(q.ear)bindEar($("sq"),q.say);
     $("sexit").onclick=toUnit;
     return;
   }
@@ -3150,7 +3207,7 @@ const ROAD=[
     {id:"wh",mark:"ねこ",name:"히라가나 단어",desc:"학교·일상·가족처럼 매일 쓰는 기초 단어",items:()=>wordIdsOf("h"),done:wd,go:()=>{wv={view:"list",script:"h"};show(3)}},
     {id:"wk",mark:"パン",name:"가타카나 단어",desc:"커피·버스처럼 외국에서 온 말",items:()=>wordIdsOf("k"),done:wd,go:()=>{wv={view:"list",script:"k"};show(3)}}]},
   {title:"문장",icon:"文",steps:[
-    {id:"sp",mark:"は",name:"조사로 문장 만들기",desc:"は・を・に를 넣어 짧은 문장 읽기",items:()=>groupUnits("p").flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"p"};show(3);renderWords()}},
+    {id:"sp",mark:"は",name:"짧은 문장 만들기",desc:"は・を・に 조사와 ません・あります・たいです 말끝",items:()=>[...groupUnits("p"),...groupUnits("v")].flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"p"};show(3);renderWords()}},
     {id:"sk",mark:"文",name:"가타카나 넣은 문장",desc:"コーヒーを のみます처럼 가타카나 말이 든 문장",items:()=>groupUnits("k").flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"k"};show(3);renderWords()}}]},
 ];
 const roadDone=()=>ROAD_STEPS.every(st=>stepProg(st).f>=1);
