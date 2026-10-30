@@ -1801,6 +1801,7 @@ const groupUnits=g=>SENT_UNITS.filter(u=>sgOf(u)===g);
 const sLabel=u=>sgOf(u)==="p"?`문장 · ${u.title}`:`${SGROUPS[sgOf(u)]} · ${u.title}`; // 상태 줄·초기화 알림에 쓰는 이름
 let sentGroup="p"; // 마지막으로 본 탭 (단원에서 목록으로 돌아올 때 그 탭으로)
 function renderSent(el){
+  setLast(wv.view!=="slist"&&wv.unit?{t:"sent",unit:wv.unit}:{t:"sent",sg:wv.sg||sentGroup}); // 이어서 학습: 문장 칸으로
   const seg=kindTabs("s");
   const toWords=()=>bindKindTabs(el);
   if(wv.view==="slist"){
@@ -3386,6 +3387,7 @@ function lastPlace(){const L=S.last;if(!L)return"";
   if(L.t==="table")return`가나 도감 · ${L.kata?"가타카나":"히라가나"}`;
   if(L.t==="profile")return"프로필";
   if(L.t==="wordlist")return`단어 · ${WSCRIPTS[L.s]||"히라가나"}${L.m==="rev"?" · "+WMODE_NAMES.rev:""}`;
+  if(L.t==="sent"){const u=SENT_UNITS.find(x=>x.id===L.unit);return u?`문장 · ${u.title}`:`문장 · ${SGROUPS[L.sg]||"조사"}`}
   if(L.t==="char")return`${SCRIPTS[L.s].name}${L.n>1?" "+QCATS[L.n-1]:""}${L.m&&L.m!=="fwd"&&MODE_NAMES[L.m]?" · "+MODE_NAMES[L.m]:""}`;
   const c=catOf(L.cat);return c?`${c.name} 단어${L.m==="rev"?" · "+WMODE_NAMES.rev:""}`:""}
 function continueStudy(){
@@ -3395,6 +3397,7 @@ function continueStudy(){
   if(L&&L.t==="table"){kataMode=!!L.kata;$("s1").classList.toggle("on",!kataMode);$("s2").classList.toggle("on",kataMode);show(1);return}
   if(L&&L.t==="wordlist"){wMode=L.m==="rev"?"rev":"fwd";wv={view:"list",script:WSCRIPTS[L.s]?L.s:"h"};show(3);return}
   if(L&&L.t==="review"){show(4);if(!rv&&dueKeys().length)$("rv-start").click();$("review").scrollIntoView({block:"start"});return}
+  if(L&&L.t==="sent"){wv=SENT_UNITS.some(u=>u.id===L.unit)?{view:"sunit",unit:L.unit}:{view:"slist",sg:SGROUPS[L.sg]?L.sg:"p"};show(3);return}
   if(L&&L.t==="char"&&SCRIPTS[L.s]){qMode=MODE_NAMES[L.m]?L.m:"fwd";openLesson(L.n||1,L.s);return}
   if(L&&L.t==="word"&&catOf(L.cat)&&catOpen(catOf(L.cat))){wMode=L.m==="rev"?"rev":"fwd";wv={view:"cat",cat:L.cat};show(3);return}
   const c=roadCurrent();if(c)c.go();else openLesson(1,"h"); // 아직 안 끝낸 첫 단계로
