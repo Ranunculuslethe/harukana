@@ -1473,7 +1473,8 @@ function charQ(c,mode){
   }
   const pool=(c.kata?ALL_K:ALL).filter(x=>!x.sp&&x.k!==c.k);
   const used=new Set([clean(c.h)]),others=[];
-  for(const x of [...shuffle(pool.filter(x=>x.stage===c.stage)),...shuffle(pool.filter(x=>x.stage!==c.stage))]){
+  const same=pool.filter(x=>x.stage===c.stage),learned=same.filter(x=>introduced(x.k));
+  for(const x of [...shuffle(learned),...shuffle(same.filter(x=>!introduced(x.k))),...shuffle(pool.filter(x=>x.stage!==c.stage))]){
     const h=clean(x.h);if(used.has(h))continue;used.add(h);others.push(x);if(others.length===3)break;
   }
   const opts=shuffle([c,...others]);
