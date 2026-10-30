@@ -1623,7 +1623,7 @@ const scriptCats=s=>CATS.filter(c=>c.script===s);
 const catDone=id=>catWords(id).every(w=>wd(w.id));
 const catOpen=()=>true;
 const josa=(s,a,b)=>{const c=s.charCodeAt(s.length-1)-0xAC00;return s+(c>=0&&c<11172&&c%28?a:b)};
-let wMode="fwd";
+let wMode="fwd";try{if(localStorage.getItem("harukana-wmode")==="rev")wMode="rev"}catch(e){} // 고른 방향은 이 기기에 기억
 const WMODE_NAMES={fwd:"일본어 → 뜻",rev:"뜻 → 일본어"};
 const wdm=(id,m=wMode)=>m==="rev"?!!(S.wr[id]&&S.wr[id].d):wd(id);
 const modeTag=()=>wMode==="rev"?` · ${WMODE_NAMES.rev}`:"";
@@ -1674,19 +1674,17 @@ function renderWords(){
   if(wv.view==="list"){
     const s=WSCRIPTS[wv.script]?wv.script:"h",cats=scriptCats(s); // 예전에 저장된 섞어 쓰기(m)는 히라가나로
     setLast({t:"wordlist",s,m:wMode});
-    const seg=`<div class="seg" role="group" aria-label="단어 글자 종류">${Object.keys(WSCRIPTS).map(k=>`<button data-s="${k}" class="${k===s?"on":""}" aria-pressed="${k===s}">${WSCRIPTS[k]}</button>`).join("")}</div>
-      <div class="seg mode-seg" role="group" aria-label="문제 방향">${Object.keys(WMODE_NAMES).map(m=>`<button data-wm="${m}" class="${m===wMode?"on":""}" aria-pressed="${m===wMode}">${WMODE_NAMES[m]}</button>`).join("")}</div>`;
+    const seg=`<div class="seg" role="group" aria-label="단어 글자 종류">${Object.keys(WSCRIPTS).map(k=>`<button data-s="${k}" class="${k===s?"on":""}" aria-pressed="${k===s}">${WSCRIPTS[k]}</button>`).join("")}</div>`;
     let body;
-      body=`<p class="intro">${s==="m"?"가타카나와 히라가나가 함께 나오는 단어와 짧은 표현이에요.":(wMode==="rev"?"한국어 뜻을 보고 일본어 단어를 골라요. 하고 싶은 말을 일본어로 떠올리는 연습이에요.":"일본어 단어를 보고 뜻을 골라요. 일본에서 글을 보고 알아듣는 연습이에요.")+" 원하는 카테고리부터 골라서 풀어요. 발음의 \"-\"는 앞 소리를 길게 읽으라는 뜻이에요 (토-쿄- = 도쿄)."}</p><div class="cats">${cats.map((c,i)=>{
-        const ws=catWords(c.id),mw=ws.filter(w=>wdm(w.id)).length,open=catOpen(c);
-        return `<button class="catcard" data-id="${c.id}" ${open?"":"disabled"}><div class="cat-top"><b>${c.name}</b>${c.recommended&&open&&mw<ws.length?'<span class="pill">처음 추천</span>':""}${open&&mw===ws.length?'<span class="pill ok">완료</span>':""}${open?"":'<span class="pill lockp">잠김</span>'}</div>
-          <div class="desc">${open?c.desc:`${josa(cats[i-1].name,"을","를")} 끝내면 열려요`}</div><div class="bar"><i style="width:${ws.length?mw/ws.length*100:0}%"></i></div>
-          <div class="meta">맞힌 단어 ${mw}/${ws.length}${(()=>{const n=ws.filter(w=>!wdm(w.id)&&wordUnknown(w).length).length;return open&&n?` · 처음 보는 글자가 든 단어 ${n}개`:""})()}</div></button>`}).join("")}</div>`;
+      body=`<p class="intro">${s==="m"?"가타카나와 히라가나가 함께 나오는 단어와 짧은 표현이에요.":"N5 수준 기초 단어예요. 카테고리에 들어가서 '일본어 → 뜻'이나 '뜻 → 일본어'를 골라 풀어요. 발음의 \"-\"는 앞 소리를 길게 읽으라는 뜻이에요 (토-쿄- = 도쿄)."}</p><div class="cats">${cats.map((c,i)=>{
+        const ws=catWords(c.id),mf=ws.filter(w=>wdm(w.id,"fwd")).length,mr=ws.filter(w=>wdm(w.id,"rev")).length,mw=mf,open=catOpen(c),all=mf===ws.length&&mr===ws.length; // 두 방향 진도를 같이 보여 준다
+        return `<button class="catcard" data-id="${c.id}" ${open?"":"disabled"}><div class="cat-top"><b>${c.name}</b>${c.recommended&&open&&mw<ws.length?'<span class="pill">처음 추천</span>':""}${open&&all?'<span class="pill ok">완료</span>':""}${open?"":'<span class="pill lockp">잠김</span>'}</div>
+          <div class="desc">${open?c.desc:`${josa(cats[i-1].name,"을","를")} 끝내면 열려요`}</div><div class="bar"><i style="width:${ws.length?(mf+mr)/ws.length*50:0}%"></i></div>
+          <div class="meta">일본어 → 뜻 ${mf}/${ws.length} · 뜻 → 일본어 ${mr}/${ws.length}${(()=>{const n=ws.filter(w=>!wdm(w.id,"fwd")&&wordUnknown(w).length).length;return open&&n?` · 처음 보는 글자가 든 단어 ${n}개`:""})()}</div></button>`}).join("")}</div>`;
     const kindSeg=kindTabs("w");
     el.innerHTML=kindSeg+seg+body;
     bindKindTabs(el);
     el.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{wv={view:"list",script:b.dataset.s};renderWords()});
-    el.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{wMode=b.dataset.wm;renderWords()});
     el.querySelectorAll(".catcard").forEach(b=>b.onclick=()=>{wv={view:"cat",cat:b.dataset.id};wordsHist();renderWords()});
     return;
   }
@@ -1695,13 +1693,16 @@ function renderWords(){
   if(wv.view==="cat"){
     const ws=catWords(cat.id),cands=batchCands(cat.id);
     const action=cands.length?`<button class="next" id="go">학습 시작 (${cands.length}개)</button>`:`<button class="next" id="go">다시 풀기</button>`;
-    el.innerHTML=`<button class="back" id="bk">← ${WSCRIPTS[cat.script]} 카테고리</button><div class="status qstat"><span>${WSCRIPTS[cat.script]} · ${cat.name}${modeTag()} · 맞힌 단어 ${ws.filter(w=>wdm(w.id)).length}/${ws.length} · 남은 문제 ${cands.length}</span>${resetBtn(`wc-${cat.id}-${wMode}`,"초기화")}</div><h2>${cat.name}</h2><div style="text-align:center">${action}</div><p class="intro wpick-hint">단어를 누르면 그 단어부터 볼 수 있어요.</p>
+    el.innerHTML=`<button class="back" id="bk">← ${WSCRIPTS[cat.script]} 카테고리</button><div class="status qstat"><span>${WSCRIPTS[cat.script]} · ${cat.name}${modeTag()} · 맞힌 단어 ${ws.filter(w=>wdm(w.id)).length}/${ws.length} · 남은 문제 ${cands.length}</span>${resetBtn(`wc-${cat.id}-${wMode}`,"초기화")}</div><h2>${cat.name}</h2>
+      <div class="seg mode-seg" role="group" aria-label="문제 방향">${Object.keys(WMODE_NAMES).map(m=>`<button data-wm="${m}" class="${m===wMode?"on":""}" aria-pressed="${m===wMode}">${WMODE_NAMES[m]}</button>`).join("")}</div>
+      <p class="intro">${wMode==="rev"?"한국어 뜻을 보고 일본어 단어를 골라요. 하고 싶은 말을 일본어로 떠올리는 연습이에요.":"일본어 단어를 보고 뜻을 골라요. 일본에서 글을 보고 알아듣는 연습이에요."}</p><div style="text-align:center">${action}</div><p class="intro wpick-hint">단어를 누르면 그 단어부터 볼 수 있어요.</p>
       <div class="wlist">${ws.map(w=>{
         const x=S.w[w.id],seen=x&&(x.v||x.r||x.w);
         const st=wdm(w.id)?'<span class="st pill ok">맞힘</span>':seen?'<span class="st pill">학습 중</span>':'<span class="st pill lockp">새 단어</span>';
         const u=wordUnknown(w);
         return `<button class="wrow wpick" data-w="${w.id}" aria-label="${w.kana} 카드 보기">${wMode==="rev"?`<span class="wk wk-ko">${w.meaning}</span><span class="wm">${seen?`${w.kana} · ${w.hangul}`:"아직 안 본 단어"}`:`<span class="wk">${w.kana}</span><span class="wm">${seen?`${w.hangul} · ${w.meaning}`:"아직 안 본 단어"}`}${u.length?`<small class="wnew">처음 보는 글자 ${u.map(k=>CH[k].disp||k).join(" ")}</small>`:""}</span>${st}</button>`}).join("")}</div>`;
     $("bk").onclick=()=>toList(cat);
+    el.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{wMode=b.dataset.wm;try{localStorage.setItem("harukana-wmode",wMode)}catch(e){}renderWords()});
     $("go").onclick=()=>{if(cands.length)startCards(cat.id);else startQuiz(cat.id,ws);renderWords()};
     el.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{const w=WORDS.find(x=>x.id===b.dataset.w);if(!w)return;wv={view:"card",cat:cat.id,batch:[w,...cands.filter(x=>x.id!==w.id)],i:0};renderWords()});
     return;
