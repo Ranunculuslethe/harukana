@@ -136,6 +136,7 @@
 .scene-caption small{display:block;font-size:10px;letter-spacing:0;opacity:.85;margin-top:1px}
 .hint-list{list-style:none;margin:4px 0 12px;padding:12px 14px;border-radius:12px;background:var(--midbg);font-size:13px;line-height:1.7;text-align:left}
 .hint-list b{display:inline-block;min-width:26px;font-size:16px;margin-right:6px}
+.memo{display:flex;align-items:center;gap:12px;margin:10px auto 0;padding:10px 14px;max-width:420px;border-radius:14px;background:var(--card,#fff);border:1px solid var(--line);text-align:left;color:var(--ink)}.memo-k{font-size:34px;line-height:1;font-family:"Noto Sans JP",sans-serif;color:var(--accent)}.memo-pic{font-size:30px;line-height:1}.memo-t{display:flex;flex-direction:column;font-size:13.5px;line-height:1.45}.memo-t small{font-size:11px;font-weight:700;color:var(--muted,#888);letter-spacing:.02em}
 .chart-top{position:sticky;top:8px;z-index:3;display:flex;align-items:center;gap:10px;margin:0 0 12px;grid-column:1/-1}
 .chart-info{flex:1;display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:0 4px 14px rgba(0,0,0,.06)}
 .ci-empty{font-size:12px;color:var(--sub)}
@@ -1318,39 +1319,51 @@ const HINTS={
   "え":"점 아래로 지그재그 — '에'너지 넘치는 춤","お":"あ와 닮았지만 오른쪽 위에 점 — '오!' 하고 손든 모양",
   "か":"칼날(ㄱ)과 점 — 칼 휘두르는 '카'","き":"가로줄 두 개 열쇠 — 키(key)","く":"꺾인 새 부리 — '쿡' 찌르기",
   "け":"기둥 옆 칼 — 케이크 자르기","こ":"누운 두 줄 — 콧구멍 두 개 '코'",
-  "さ":"き에서 가로줄 하나 빠진 '사'","し":"낚싯바늘처럼 쭉 내려와 꺾인 '시'","す":"가운데 고리 한 번 — 실을 스윽 감은 '스'",
+  "さ":"き에서 가로줄 하나가 '사'라졌어요 — 열쇠가 하나 사라진 '사'","し":"낚싯바늘처럼 쭉 내려와 꺾인 '시'","す":"가운데 고리 한 번 — 실을 스윽 감은 '스'",
   "せ":"가로줄에 세로 두 개 — 세 갈래 길 '세'","そ":"지그재그로 흐르는 '소'용돌이",
   "た":"ナ 옆에 こ — '타'자 치는 손","ち":"숫자 5를 닮은 '치' (さ를 뒤집은 모양)","つ":"옆으로 밀려오는 파도 — 쓰나미의 '츠'",
   "て":"가로줄 아래 휘는 팔 — 손(て) '테'","と":"발가락에 박힌 가시 — '토'(발)",
-  "な":"십자 옆 리본 매듭 — 나비 리본 '나'","に":"세로줄 옆에 こ 두 줄 — '니'","ぬ":"꼬불꼬불 면에 고리 — 누들 '누'",
+  "な":"십자 옆 리본 매듭 — 나비 리본 '나'","に":"세로 기둥 옆에 짧은 줄 두 개 — 이(2)줄로 선 '니'","ぬ":"꼬불꼬불 면에 고리 — 누들 '누'",
   "ね":"끝이 말린 고양이 꼬리 — 네코의 '네'","の":"한 번에 그리는 동그라미 — No 표시 '노'",
   "は":"세로줄 옆 '하'하 웃는 입","ひ":"활짝 웃는 입 — '히'히","ふ":"'후~' 부는 입과 바람 방울",
   "へ":"산봉우리 하나 — '헤'이, 산이다","ほ":"は에 가로줄 하나 더 — 호텔 간판 '호'",
-  "ま":"세로줄 아래 고리 — 병'마'개","み":"21처럼 생긴 '미'","む":"뿔 달린 소 — '음메(무)'",
+  "ま":"세로줄 아래 고리 — 병'마'개","み":"숫자 21처럼 생긴 '미' — 스물한 살 '미'인","む":"뿔 달린 소 — '음메(무)'",
   "め":"눈 모양 — 눈(め) '메' (ぬ와 달리 고리 없음)","も":"가로줄 두 개 걸린 낚싯바늘 — 더 '모'으기",
   "や":"비스듬한 야크 뿔 — '야'","ゆ":"헤엄치는 물고기 — '유'유히","よ":"줄 끝에 매달린 요요 — '요'",
   "ら":"위에 점 하나 — 토끼 귀 '라'빗","り":"흐르는 두 물줄기 — 리버(river) '리'","る":"끝에 작은 고리 — 루프(loop) '루'",
   "れ":"끝이 바깥으로 차고 나가는 레이서 '레'","ろ":"る에서 고리가 없는 '로' — 열린 길",
-  "わ":"끝이 둥글게 감긴 '와'","を":"조사 '을/를'에만 쓰는 '오' — 칼을 든 사람","ん":"필기체 n처럼 생긴 '응'",
+  "わ":"웅크린 강아지 — '와'왈! (끝이 말려 들어가면 ね, 둥글게 끝나면 わ)","を":"조사 '을/를'에만 쓰는 '오' — 칼을 든 사람","ん":"필기체 n — 고개를 끄덕이며 '응'",
   "ア":"도끼 모양 — '아'크스(axe)","イ":"비스듬히 기댄 사람 — '이'웃","ウ":"う처럼 위에 점 — 지붕 아래 '우'",
   "エ":"공(工)자 모양 — '에'스컬레이터 계단","オ":"팔 벌린 오페라 가수 '오'",
   "カ":"か에서 점이 빠진 '카' — 힘 력(力)","キ":"가로줄 두 개 열쇠 '키'","ク":"각진 새 부리 '쿠'",
   "ケ":"기울어진 K — '케'이","コ":"네모의 오른쪽 반 — 코너 '코'",
   "サ":"가로줄에 세로 두 개 — '사'다리","シ":"점 두 개가 왼쪽, 획이 위로 — 웃는 얼굴 '시'","ス":"다리 벌린 스키 선수 '스'",
-  "セ":"せ와 닮은 '세'","ソ":"위에서 아래로 내리는 빗줄기 — '소'나기",
+  "セ":"팔을 꺾어 '세'수하는 모양 (せ에서 세로줄이 하나 빠졌어요)","ソ":"위에서 아래로 내리는 빗줄기 — '소'나기",
   "タ":"ク 안에 획 하나 더 — '타'코 다리","チ":"千처럼 생긴 '치'","ツ":"점 두 개가 위, 획이 아래로 — 쓰나미 '츠'",
   "テ":"가로줄 두 개 아래 다리 — '테'이블","ト":"세로줄 옆 점 하나 — '토'마토 꼭지",
-  "ナ":"十자처럼 생긴 '나'","ニ":"두 줄 — 숫자 이(2) '니'","ヌ":"ス에 획 하나 더 — 젓가락으로 집은 누들 '누'",
+  "ナ":"비스듬한 십자 — 나이프로 긋는 '나'","ニ":"두 줄 — 숫자 이(2) '니'","ヌ":"ス에 획 하나 더 — 젓가락으로 집은 누들 '누'",
   "ネ":"네모난 지붕 아래 '네'","ノ":"한 획 빗금 — No 하고 긋는 '노'",
   "ハ":"벌어진 두 획 — 팔(八) '하'","ヒ":"옆으로 누운 숟가락 '히'","フ":"한 획으로 '후~' 부는 바람",
   "ヘ":"へ와 같은 모양 — 산봉우리 '헤'","ホ":"나무 목(木) 모양 '호'",
-  "マ":"아래로 점이 찍힌 '마'","ミ":"빗금 세 개 '미'","ム":"세모에 점 — 소 코 '무'",
-  "メ":"X표 — 메모에 엑스 '메'","モ":"も와 닮은 '모'",
-  "ヤ":"や와 닮은 '야'","ユ":"아래 줄이 길게 나온 '유'","ヨ":"E를 뒤집은 '요'",
-  "ラ":"위에 짧은 줄 하나 — ら처럼 '라'","リ":"り와 닮은 '리'","ル":"두 다리, 오른쪽 끝이 꺾인 '루'",
+  "マ":"아래로 점이 찍힌 '마'","ミ":"빗금 세 개 — 미끄럼틀을 세 번 타는 '미'","ム":"세모에 점 — 소 코 '무'",
+  "メ":"X표 — 메모에 엑스 '메'","モ":"가로줄 두 개에 꼬리 — '모'기 (も와 달리 위로 튀어나오지 않아요)",
+  "ヤ":"비스듬히 휘두른 야구 방망이 '야'","ユ":"옆으로 누운 U — '유'(U), 아래 줄이 길어요","ヨ":"E를 뒤집은 '요'",
+  "ラ":"뚜껑을 덮은 컵'라'면","リ":"곧게 흐르는 두 물줄기 — 리버(river) '리'","ル":"두 다리, 오른쪽 끝이 꺾인 '루'",
   "レ":"체크 표시(✓) '레'","ロ":"네모 = 입 구(口) '로'",
   "ワ":"ウ에서 점이 빠진 '와'","ヲ":"조사 '을/를'에만 쓰는 '오'","ン":"점이 왼쪽, 획이 아래에서 위로 '응'"
 };
+const PICS={"あ":"😮","い":"✌️","う":"🙇","え":"💃","お":"🙋","か":"🗡️","き":"🔑","く":"🐦","け":"🍰","こ":"👃","さ":"🫥","し":"🎣","す":"🧵","そ":"🌀",
+  "た":"⌨️","ち":"5️⃣","つ":"🌊","て":"✋","と":"🦶","な":"🎀","に":"👯","ぬ":"🍝","ね":"🐈","の":"🚫","は":"😄","ひ":"😁","ふ":"🌬️","へ":"⛰️","ほ":"🏨",
+  "ま":"🍾","み":"👩","む":"🐄","め":"👁️","も":"🪝","や":"🐂","ゆ":"🐟","よ":"🪀","ら":"🐰","り":"🏞️","る":"➰","れ":"🏎️","ろ":"🛣️","わ":"🐕","ん":"🙆",
+  "ア":"🪓","イ":"🧍","ウ":"🏠","エ":"🔧","オ":"🎤","カ":"💪","キ":"🔑","ク":"🐦","サ":"🪜","シ":"😊","ス":"⛷️","セ":"🧼","ソ":"🌧️","タ":"🐙","チ":"🧀",
+  "ツ":"🌊","テ":"🍽️","ト":"🍅","ナ":"🔪","ニ":"2️⃣","ヌ":"🥢","ネ":"⛩️","ノ":"✏️","ヒ":"🥄","フ":"🌬️","ヘ":"⛰️","ホ":"🌳","ミ":"🛝","ム":"🐮","メ":"❌",
+  "モ":"🦟","ヤ":"⚾","ラ":"🍜","リ":"🏞️","レ":"✔️","ロ":"👄"};
+function memoCard(k){
+  const base=HINTS[k]?k:k.normalize("NFD")[0],h=HINTS[base];
+  if(!h)return"";
+  const extra=base===k?"":k.normalize("NFD").length>1&&k.length===1?`${k} = ${base} + ${/゚/.test(k.normalize("NFD"))?"゜":"゛"} · `:`${k} = ${k[0]} + 작은 ${k[1]} · `;
+  return `<span class="memo"><b class="memo-k" lang="ja">${base}</b>${PICS[base]?`<span class="memo-pic" aria-hidden="true">${PICS[base]}</span>`:""}<span class="memo-t"><small>이렇게 외워요</small>${extra}${h}</span></span>`;
+}
 const introduced=k=>!!(S.seen[k]||S.c[k]||S.cr[k]||S.ca[k]);
 const rowIndex=k=>{const c=CH[k];return (c&&c.kata?ROWS_K:ROWS).findIndex(r=>r.cells.some(x=>x&&x.k===k))};
 function renderLearn(keys){
@@ -1360,7 +1373,7 @@ function renderLearn(keys){
     return `<button class="learn-tile" data-say="${say}"><b>${c.sp?c.disp:c.k}</b><span>${clean(c.h)}</span>${c.sp?`<small>${c.ex[0][0]}</small>`:c.r?`<small>${c.r}</small>`:""}</button>`};
   const tips=keys.map(k=>CH[k]).filter(c=>c.sp&&c.tip).map(c=>`<p class="tip">${c.tip}</p>`).join("");
   const hints=keys.filter(k=>HINTS[k]);
-  const hintList=hints.length?`<ul class="hint-list" aria-label="외우는 요령">${hints.map(k=>`<li><b>${k}</b>${HINTS[k]}</li>`).join("")}</ul>`:"";
+  const hintList=hints.length?`<ul class="hint-list" aria-label="외우는 요령">${hints.map(k=>`<li><b>${k}</b>${PICS[k]?`<span aria-hidden="true">${PICS[k]}</span> `:""}${HINTS[k]}</li>`).join("")}</ul>`:"";
   const brk=rowRun.n?`<div class="row-break"><b>여기까지 ${rowRun.n}문제 중 ${rowRun.ok}개 맞혔어요</b>
     <span>진도는 저장돼요. 쉬었다 와도 이 자리부터 이어서 할 수 있어요.</span><button class="ghost" id="learn-stop">오늘은 여기까지</button></div>`:"";
   $("quiz").innerHTML=`${quizStatus(qStage,[`새 글자 ${keys.length}개`])}${brk}
@@ -1390,7 +1403,7 @@ function charQ(c,mode){
     const h=clean(x.h);if(used.has(h))continue;used.add(h);others.push(x);if(others.length===3)break;
   }
   const opts=shuffle([c,...others]);
-  const fb=ok=>`${ok?"정답!":"아쉬워요."} ${c.k} = ${c.h} (${c.r})${ok?"":`<span class="tip">${HINTS[c.k]?`외우는 요령: ${HINTS[c.k]} · `:""}조금 뒤에 다시 나와요.</span>`}`;
+  const fb=ok=>`${ok?"정답!":"아쉬워요."} ${c.k} = ${c.h} (${c.r})${ok?"":memoCard(c.k)}`;
   const keys=opts.map(x=>x.k); // 틀렸을 때 어떤 글자와 헷갈렸는지 기록하는 데 씀
   if(mode==="ear")
     return{prompt:"소리를 듣고 글자를 고르세요",big:`<button class="ear-btn" type="button" aria-label="소리 다시 듣기">${SPK}<span>다시 듣기</span></button>`,bigCls:"ear",choices:keys,chCls:"kana",correct:opts.indexOf(c),say:c.k,fb,kind:"char",kata:!!c.kata,ear:1,keys};
@@ -2002,7 +2015,7 @@ function renderNoteQuiz(){
       nq.queue.shift();
       let extra="";
       if(ok){delete S.n[key];extra='<span class="tip">노트에서 뺐어요.</span>'}
-      else{nq.queue.splice(Math.min(RETRY_GAP,nq.queue.length),0,key);extra='<span class="tip">조금 뒤에 다시 나와요.</span>'}
+      else{nq.queue.splice(Math.min(RETRY_GAP,nq.queue.length),0,key);extra=""}
       speak(q.say);save();refreshSummary();return q.fb(ok).replace(/<span class="tip">조금 뒤에 다시 나와요.<\/span>/,"")+extra;
     },
     onNext:renderNoteQuiz});
@@ -3035,7 +3048,7 @@ function renderReview(){
       else if(ok){s.lv=0;s.due=today()+1}
       else{s.lv=0;s.due=today()+1;rv.wrong++;rv.missed.add(key);addNote(key);const from=Math.min(RETRY_GAP,rv.queue.length);rv.queue.splice(from+Math.floor(Math.random()*(rv.queue.length-from+1)),0,key)}
       save();refreshSummary();
-      return q.fb(ok)+(ok?`<span class="tip">다음 복습: ${INTERVALS[s.lv]}일 뒤</span>`:'<span class="tip">오답노트에 넣었어요. 조금 뒤에 다시 나와요.</span>');
+      return q.fb(ok)+(ok?`<span class="tip">다음 복습: ${INTERVALS[s.lv]}일 뒤</span>`:'<span class="tip">오답노트에 넣었어요.</span>');
     },
     onNext:renderReview});
   $("rv-stop").onclick=()=>{rv=null;renderReview()};
