@@ -89,6 +89,7 @@
 .set-acct .pf-acct{margin:0}
 .set-dlg{border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);padding:20px 22px 22px;width:min(560px,calc(100vw - 32px));max-height:calc(100dvh - 48px);overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.18)}.set-dlg::backdrop{background:rgba(20,25,30,.45)}.set-top{display:flex;align-items:center;justify-content:space-between}.set-top h3{margin:0;font-size:18px}.set-x{border:0;background:none;font-size:24px;line-height:1;color:var(--sub);padding:2px 8px;border-radius:8px}.set-x:hover{color:var(--ink);background:var(--bg)}.set-dlg .set-h:first-of-type{margin-top:10px}.set-dlg .rec-etc{margin-top:0}
 .guide-dlg{text-align:center;width:min(460px,calc(100vw - 32px))}.guide-step{font-size:12px;color:var(--sub);font-weight:700}.guide-mark{width:76px;height:76px;margin:6px auto 10px;border-radius:22px;display:grid;place-items:center;background:var(--accent-soft,#fbe9ee);color:var(--accent);font-size:38px;font-weight:700;font-family:"Noto Sans JP",sans-serif}.guide-mark.fox-mark{background:none;width:96px;height:96px}.guide-mark .fox{width:96px;height:96px}.guide-dlg h3{margin:0 0 8px;font-size:20px}.guide-p{margin:0 auto 12px;max-width:380px;color:var(--sub);font-size:14px;line-height:1.65}.guide-list{list-style:none;margin:0 auto 12px;padding:0;max-width:360px;text-align:left;display:grid;gap:8px}.guide-list li{display:flex;align-items:center;gap:12px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}.gl-m{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--accent-soft,#fbe9ee);color:var(--accent);font-weight:700;font-size:17px;font-family:"Noto Sans JP",sans-serif}.guide-list b{display:block;font-size:14px}.guide-list small{display:block;font-size:12px;color:var(--sub)}.guide-dots{display:flex;justify-content:center;gap:6px;margin:4px 0 12px}.guide-dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}.guide-dots i.on{width:20px;border-radius:4px;background:var(--accent)}.guide-dlg .navrow{justify-content:center}
+.grad-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:4px auto 14px;max-width:380px}.grad-stats>div{display:flex;flex-direction:column;align-items:center;padding:10px 8px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}.grad-stats b{font-size:26px;line-height:1.1;color:var(--accent)}.grad-stats span{font-size:13px;font-weight:700;margin-top:2px}.grad-stats small{font-size:11px;color:var(--sub)}.grad-next{background:var(--accent-soft);border-radius:12px;padding:10px 12px;color:var(--ink)}
 .row-break{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:4px 0 14px;padding:12px 16px;border-radius:12px;background:var(--okbg);text-align:left}.row-break b{flex:1 1 100%;color:var(--ok)}.row-break span{flex:1 1 220px;font-size:12px;color:var(--sub)}.row-break .ghost{padding:7px 14px;font-size:12px}
 .phrase-tip{display:block;margin-top:4px;font-size:11px;line-height:1.5}
 .reset-bar span{font-size:12px;color:var(--sub);flex:1 1 200px}.reset-bar .rec-reset{margin:0}
@@ -2152,7 +2153,7 @@ const weekStart=wn=>(wn*7-3)*DAYMS-KST;
 function weekId(){return String(weekNum())}
 const weekXp=()=>S.wk.id===weekId()?S.wk.xp:0;
 function addXp(n){S.xp+=n;const w=weekId();if(S.wk.id!==w)S.wk={id:w,xp:0};S.wk.xp+=n}
-function afterAnswer(ok,o){if(ok)addXp(XP_RIGHT);trackAnswer(ok,o||{});updateTitles();checkBadges();save();refreshSummary();syncScore();if(tab===5)renderRank()}
+function afterAnswer(ok,o){if(ok)addXp(XP_RIGHT);checkGrad();trackAnswer(ok,o||{});updateTitles();checkBadges();save();refreshSummary();syncScore();if(tab===5)renderRank()}
 
 const TOP_N=50;
 const WEEK_REWARDS=[3000,2500,2000,1600,1300,1000,800,600,400,200]; // 주간 리그 1~10등 보상 XP
@@ -2970,9 +2971,11 @@ function testClear(lv){
   const done={r:1,w:0,d:1};
   for(const st of ROAD_STEPS){const map=st.done===cd?S.c:st.done===wd?S.w:S.sx;st.items().forEach(k=>{map[k]={...done};if(map===S.c)S.seen[k]=1})}
   if(lv==="mid"){KANJI.forEach(j=>S.kj[j.k]={...done});TRAVEL.forEach(t=>S.tv[t.id]={...done})}
+  if(lv==="beg")delete S.flags.grad; // 테스트: 초급 클리어 뒤 수료 창을 다시 볼 수 있게
   updateTitles();checkBadges();save();
   setLevel(lv==="mid"); // 초급 클리어 = 학습 길 10단계 완료(초급 그대로), 중급 클리어 = 한자까지 완료하고 중급으로
   notifyText(lv==="mid"?"중급까지 클리어했어요 (테스트).":"초급을 클리어했어요 (테스트). 이제 중급으로 바꿀 수 있어요.");
+  if(lv==="beg"){document.querySelector("dialog[open]")?.close();checkGrad()}
 }
 function openSettings(){
   let d=$("set-dlg");
@@ -3018,6 +3021,25 @@ function renderGuide(){
   $("guide-nx").onclick=()=>{if(!last){guideAt++;renderGuide();return}close();ROAD_STEPS[0].go()};
   $("guide-nx").focus();
 }
+function openGrad(){
+  let d=$("grad-dlg");
+  if(!d){d=document.createElement("dialog");d.id="grad-dlg";d.className="set-dlg guide-dlg grad-dlg";d.setAttribute("aria-labelledby","grad-title");document.body.appendChild(d)}
+  const chars=[...ALL,...ALL_K],stat=(n,label,sub)=>`<div><b>${n}</b><span>${label}</span><small>${sub}</small></div>`;
+  d.innerHTML=`<div class="set-top"><span class="guide-step">초급 수료</span><button class="set-x" id="grad-x" aria-label="닫기">×</button></div>
+    <div class="guide-mark fox-mark" aria-hidden="true"><svg viewBox="0 0 180 190" class="fox" aria-hidden="true"><use href="#fox"/></svg></div>
+    <h3 id="grad-title">초급을 모두 마쳤어요!</h3>
+    <p class="guide-p">일본어를 처음 시작해서 여기까지 왔어요. 이제 히라가나·가타카나를 읽고, 기초 단어와 짧은 문장을 알아볼 수 있어요.</p>
+    <div class="grad-stats">${stat(chars.filter(c=>cd(c.k)).length,"익힌 가나","히라가나·가타카나")}${stat(WORDS.filter(w=>wd(w.id)).length,"모은 단어","기초 단어")}${stat(SENTS.filter(s=>sxd(s.id)).length,"읽은 문장","짧은 문장")}${stat(Object.keys(S.daily||{}).length,"공부한 날","하루하루 쌓은 날")}</div>
+    <p class="guide-p grad-next"><b>다음은 중급, 여행 회화예요.</b> 식당·가게·역에서 바로 쓰는 말과 점원 말 알아듣기를 배워요.</p>
+    <div class="navrow">${isMid()?'<button class="next" id="grad-go">여행 회화로 가기</button>':'<button class="ghost" id="grad-stay">초급 더 복습할게요</button><button class="next" id="grad-go">중급 시작하기</button>'}</div>`;
+  const close=()=>d.close();
+  $("grad-x").onclick=close;
+  if($("grad-stay"))$("grad-stay").onclick=close;
+  $("grad-go").onclick=()=>{close();if(!isMid())setLevel(true);if(isMid())show(6)};
+  if(!d.open)d.showModal();
+  $("grad-go").focus();
+}
+function checkGrad(){if(S.flags.grad||!roadDone())return;S.flags.grad=1;save();setTimeout(()=>{if(!document.querySelector("dialog[open]"))openGrad()},900)}
 function renderSettings(force){
   const d=$("set-dlg");if(!d||(!force&&!d.open))return;
   const nb=Object.keys(S.badges).length;
@@ -3026,7 +3048,7 @@ function renderSettings(force){
       <p class="set-note">${isMid()?"중급에서는 메뉴에 여행 회화 칸이 생겨요. 초급으로 돌아가도 기록은 그대로 남아요.":roadDone()?"학습 길을 모두 마쳤어요. 중급으로 바꾸면 여행 회화 칸이 열려요.":`학습 길 10단계를 모두 마치면 중급(여행 일본어·한자)으로 바꿀 수 있어요. 지금 ${ROAD_STEPS.filter(st=>stepProg(st).f>=1).length} / ${ROAD_STEPS.length}단계예요.`}</p></div>
     <h4 class="set-h">계정</h4><div class="set-sound set-acct">${acctRow("s")}</div>
     <h4 class="set-h">소리</h4><div class="set-sound" id="snd-box"></div>
-    <h4 class="set-h">도움말</h4><div class="set-sound"><p class="set-note" style="margin-top:0">하루카나를 어떻게 쓰는지 처음 안내를 다시 볼 수 있어요.</p><button type="button" class="rec-reset" id="guide-open">처음 안내 다시 보기</button></div>
+    <h4 class="set-h">도움말</h4><div class="set-sound"><p class="set-note" style="margin-top:0">하루카나를 어떻게 쓰는지 처음 안내를 다시 볼 수 있어요.</p><button type="button" class="rec-reset" id="guide-open">처음 안내 다시 보기</button>${S.flags.grad?' <button type="button" class="rec-reset" id="grad-open">초급 수료 다시 보기</button>':""}</div>
     <h4 class="set-h">학습 기록</h4>
     <div class="rec-etc">
       <div><b>XP · 배지</b><small>${S.xp} XP · 배지 ${nb}개를 0으로 되돌려요</small>${resetBtn("reward","XP·배지 초기화")}</div>
@@ -3040,6 +3062,7 @@ function renderSettings(force){
   d.querySelectorAll("[data-clear]").forEach(b=>b.onclick=()=>testClear(b.dataset.clear));
   if($("rk-hide"))$("rk-hide").onclick=()=>setRankHidden(!S.rankOff);
   $("guide-open").onclick=()=>{d.close();openGuide()};
+  if($("grad-open"))$("grad-open").onclick=()=>{d.close();openGrad()};
   bindAcct("s");
   renderSoundSettings();
 }
@@ -3449,6 +3472,7 @@ const orientNav=()=>document.querySelector('.tabs').setAttribute('aria-orientati
 mobileNav.addEventListener('change',orientNav);orientNav();
 dropGone();updateTitles();migrateSr();save();refreshSummary();renderHome();initRank();
 if(!S.flags.guide&&!Object.keys(S.c||{}).length&&!S.xp)openGuide(); // 처음 온 사람만 (이미 공부한 기록이 있으면 안 띄운다)
+if(!S.flags.grad&&roadDone()&&isMid()){S.flags.grad=1;save()} // 이미 중급인 사람에게는 수료 창을 새로 띄우지 않는다
 {histPush({tab:0},true);histTab=0} // 늘 홈에서 시작하고, 지금 칸을 이번 회차의 첫 기록으로 둔다
 </script>
 
