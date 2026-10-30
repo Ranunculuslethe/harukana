@@ -138,7 +138,6 @@
 .hint-list{list-style:none;margin:4px 0 12px;padding:12px 14px;border-radius:12px;background:var(--midbg);font-size:13px;line-height:1.7;text-align:left}
 .hint-list b{display:inline-block;min-width:26px;font-size:16px;margin-right:6px}
 .memo{display:flex;align-items:center;gap:12px;margin:10px auto 0;padding:10px 14px;max-width:420px;border-radius:14px;background:var(--card,#fff);border:1px solid var(--line);text-align:left;color:var(--ink)}.memo-k{font-size:34px;line-height:1;font-family:"Noto Sans JP",sans-serif;color:var(--accent)}.memo-t{display:flex;flex-direction:column;font-size:13.5px;line-height:1.45}.memo-t small{font-size:11px;font-weight:700;color:var(--muted,#888);letter-spacing:.02em}
-.read-now{flex:1 1 100%;margin:4px 0;padding:10px 12px;border-radius:12px;background:var(--card,#fff);border:1px solid var(--line);text-align:left}.read-now>b{display:block;font-size:13px;margin-bottom:6px;color:var(--accent)}.rn-list{display:flex;flex-wrap:wrap;gap:6px}.rn-w{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:7px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;font:inherit}.rn-w span,.row-break .rn-w span{flex:none;font-size:19px;color:var(--ink);font-family:"Noto Sans JP",sans-serif}.row-break .read-now>b{flex:none;color:var(--accent)}.rn-w small{font-size:11.5px;opacity:.8}
 .bd-tiles .bd-tile.blk,.bd-slots .bd-slot.blk{font-size:20px}
 .bd-slots{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:4px 0 16px;min-height:58px}.bd-slot{min-width:46px;height:56px;padding:0 4px;display:grid;place-items:center;border-bottom:3px solid var(--line);font-size:30px;font-weight:600;font-family:"Noto Sans JP",sans-serif}.bd-slot.on{border-color:var(--accent)}.bd-slots.right .bd-slot{border-color:var(--ok);color:var(--ok)}.bd-slots.wrong .bd-slot{border-color:var(--bad);color:var(--bad)}.bd-tiles{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}.bd-tile{min-width:58px;height:58px;padding:0 10px;font-size:26px;font-weight:600;border:2px solid var(--line);border-bottom:5px solid var(--panel-shadow);border-radius:13px;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP",sans-serif}.bd-tile:disabled{opacity:.28}.bd-tools{display:flex;justify-content:center;gap:8px;margin:14px 0 4px}.big.build-mean{font-size:30px}
 .mean.big-mean{font-size:34px;margin:14px 0 12px}.reveal-btn{display:block;margin:10px auto;border-style:dashed}
@@ -1099,7 +1098,7 @@ let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||typeof S!=="object")S=fresh();
 S.c=S.c||{};S.w=S.w||{};S.n=S.n||{};S.daily=S.daily||{};delete S.u;
 if(!S.co){S.co={h:S.cu||1,k:1}}delete S.cu; // 예전 저장분: 히라가나 카테고리 진도 옮기기
-S.mix=S.mix||0;S.xp=S.xp||0;S.badges=S.badges||{};S.flags=S.flags||{};// 랭킹은 기본으로 참가한다 (프로필에서 "랭킹에서 숨기기"를 누른 사람만 rankOff). 닉네임이 없으면 "학습자1234" 같은 가명을 한 번 만든다
+S.mix=S.mix||0;S.ct=S.ct||{};S.xp=S.xp||0;S.badges=S.badges||{};S.flags=S.flags||{};// 랭킹은 기본으로 참가한다 (프로필에서 "랭킹에서 숨기기"를 누른 사람만 rankOff). 닉네임이 없으면 "학습자1234" 같은 가명을 한 번 만든다
 if(!S.rankOff)S.rank=1;
 if(!S.nick)S.nick="학습자"+String(Math.floor(1000+Math.random()*9000));
 S.titles=S.titles||{};delete S.ro;S.sr=S.sr||{};S.wk=S.wk||{id:"",xp:0};S.cr=S.cr||{};S.wr=S.wr||{};S.claimed=S.claimed||{};S.ca=S.ca||{};S.cf=S.cf||{};S.seen=S.seen||{};S.sx=S.sx||{};S.kj=S.kj||{};S.tv=S.tv||{}; // sx: 문장 연습 진도 {문장id:{r,w,d}}, kj: 한자 진도 {한자:{r,w,d}} // seen: 글자 퀴즈 전에 "새 글자 만나기"로 본 글자
@@ -1428,20 +1427,18 @@ function memoCard(k){
 }
 const introduced=k=>!!(S.seen[k]||S.c[k]||S.cr[k]||S.ca[k]);
 const rowIndex=k=>{const c=CH[k];return (c&&c.kata?ROWS_K:ROWS).findIndex(r=>r.cells.some(x=>x&&x.k===k))};
-const READ_WORDS=[["あい","사랑"],["いえ","집"],["うえ","위"],["あお","파랑"],["あか","빨강"],["かお","얼굴"],["いけ","연못"],["えき","역"],["こえ","목소리"],["あき","가을"],["かき","감"],
-  ["あさ","아침"],["いす","의자"],["すし","초밥"],["しお","소금"],["うし","소"],["かさ","우산"],["せき","자리"],["たこ","문어"],["くつ","신발"],["ちかてつ","지하철"],["つくえ","책상"],["て","손"],
-  ["なつ","여름"],["いぬ","개"],["ねこ","고양이"],["なに","무엇"],["はな","꽃"],["ひと","사람"],["ふね","배"],["ほし","별"],["へそ","배꼽"],["まち","마을"],["みみ","귀"],["むし","벌레"],["うみ","바다"],["あたま","머리"],["もの","물건"],
-  ["やま","산"],["ゆき","눈(내리는 눈)"],["よる","밤"],["さくら","벚꽃"],["そら","하늘"],["くるま","자동차"],["とり","새"],["はれ","맑음"],["ふろ","목욕"],["かわ","강"],["わたし","나"],
-  ["アイス","아이스크림"],["ココア","코코아"],["キウイ","키위"],["カメラ","카메라"],["マスク","마스크"],["テニス","테니스"],["トマト","토마토"],["キムチ","김치"],["アニメ","애니메이션"],["ナイフ","나이프"],["ネクタイ","넥타이"],
-  ["ホテル","호텔"],["ハム","햄"],["メモ","메모"],["ミルク","우유"],["トイレ","화장실"],["アメリカ","미국"],["ハワイ","하와이"],["ソウル","서울"],["タオル","수건"],["オムレツ","오믈렛"],["クラス","반(클래스)"],["セロリ","셀러리"],["タイヤ","타이어"],["メニュー","메뉴"]];
-function readNow(keys){
-  const rows=CH[keys[0]].kata?ROWS_K:ROWS,prev=rows[rowIndex(keys[0])-1];
-  if(!prev)return"";
-  const fresh=new Set(prev.cells.filter(Boolean).map(c=>c.k)),seen=new Set();
-  const ws=shuffle([...READ_WORDS,...WORDS.map(w=>[w.kana,w.meaning])].filter(([k])=>{const us=units(k);if(us.length<2||seen.has(k)||!us.every(introduced)||!us.some(u=>fresh.has(u)))return false;seen.add(k);return true}))
-    .sort((a,b)=>a[0].length-b[0].length).slice(0,3);
-  if(!ws.length)return"";
-  return `<div class="read-now"><b>벌써 이런 단어를 읽을 수 있어요</b><div class="rn-list">${ws.map(([k,m])=>`<button class="rn-w" type="button" data-say="${esc(k)}"><span lang="ja">${esc(k)}</span><small>${esc(autoHangul(k))} · ${esc(m)}</small></button>`).join("")}</div></div>`;
+function mixPrev(keys){
+  if(!cq)return;
+  const all=modeChars(qScript,qStage).map(c=>c.k),row=new Set(keys);
+  const at=cq.queue.reduce((m,k,i)=>row.has(k)?i+1:m,0),queued=new Set(cq.queue);
+  const prev=all.filter(k=>introduced(k)&&!queued.has(k)); // 이미 줄에 있는 글자(이번 행·다시 나올 글자)는 빼고
+  if(!prev.length)return;
+  if(all.every(introduced)){
+    if(prev.length<5)return;
+    cq.queue.splice(at,0,...shuffle(prev));
+    notifyText(`마지막 행까지 만났어요! 이 행을 푼 다음, 지금까지 배운 ${all.length}자를 섞어서 한 바퀴 풀어요.`);
+  }else cq.queue.splice(at,0,...shuffle(prev.sort((a,b)=>(cdm(a)-cdm(b))||((S.ct[a]||0)-(S.ct[b]||0))).slice(0,5)));
+  saveQSess();
 }
 function renderLearn(keys){
   const row=(CH[keys[0]].kata?ROWS_K:ROWS)[rowIndex(keys[0])];
@@ -1452,16 +1449,15 @@ function renderLearn(keys){
   const hints=keys.filter(k=>HINTS[k]);
   const hintList=hints.length?`<ul class="hint-list" aria-label="외우는 요령">${hints.map(k=>`<li><b>${k}</b>${HINTS[k]}</li>`).join("")}</ul>`:"";
   const brk=rowRun.n?`<div class="row-break"><b>여기까지 ${rowRun.n}문제 중 ${rowRun.ok}개 맞혔어요</b>
-    <span>진도는 저장돼요. 쉬었다 와도 이 자리부터 이어서 할 수 있어요.</span>${readNow(keys)}<button class="ghost" id="learn-stop">오늘은 여기까지</button></div>`:"";
+    <span>진도는 저장돼요. 쉬었다 와도 이 자리부터 이어서 할 수 있어요.</span><button class="ghost" id="learn-stop">오늘은 여기까지</button></div>`:"";
   $("quiz").innerHTML=`${quizStatus(qStage,[`새 글자 ${keys.length}개`])}${brk}
     <h2 class="learn-h">새 글자를 먼저 만나요 <small>${row?rowName(row):""}</small></h2>
     <p class="intro">글자를 눌러 소리를 들어 보세요. 다 봤으면 바로 퀴즈로 확인해요.</p>
     <div class="learn-grid">${keys.map(tile).join("")}</div>${hintList}${tips}
     <div class="navrow"><button class="ghost" id="learn-all">${SPK} 차례로 듣기</button><button class="next" id="learn-go">다 봤어요, 퀴즈 풀기</button></div>`;
   $("quiz").querySelectorAll(".learn-tile").forEach(b=>b.onclick=()=>speak(b.dataset.say));
-  $("quiz").querySelectorAll(".rn-w").forEach(b=>b.onclick=()=>speak(b.dataset.say));
   $("learn-all").onclick=()=>{const ts=[...$("quiz").querySelectorAll(".learn-tile")];ts.forEach((b,i)=>setTimeout(()=>{ts.forEach(x=>x.classList.remove("on"));b.classList.add("on");speak(b.dataset.say)},i*1300));setTimeout(()=>ts.forEach(x=>x.classList.remove("on")),ts.length*1300)};
-  $("learn-go").onclick=()=>{keys.forEach(k=>S.seen[k]=1);save();rowRun={n:0,ok:0};renderCharQuiz();fitQuiz($("quiz"))};
+  $("learn-go").onclick=()=>{keys.forEach(k=>S.seen[k]=1);save();rowRun={n:0,ok:0};mixPrev(keys);renderCharQuiz();fitQuiz($("quiz"))};
   if($("learn-stop"))$("learn-stop").onclick=()=>{rowRun={n:0,ok:0};show(0)};
   $("learn-go").focus();
 }
@@ -1525,7 +1521,7 @@ function renderCharQuiz(){
       if(qMode!=="fwd"){const x=qMode==="ear"?ga(key):gr(key);if(ok){if(!x.r)dayState().fresh++;x.r++;x.d=1}else{x.w++;x.d=0;addNote("c:"+key)}}
       else recordChar(key,ok);
       if(!ok&&q.keys)addConfusion(key,q.keys[picked]);
-      rowRun.n++;if(ok)rowRun.ok++;
+      rowRun.n++;if(ok)rowRun.ok++;S.ct[key]=Date.now(); // 마지막으로 푼 때 (앞 글자 섞어 넣을 때 오래 안 본 것부터)
       speak(q.say);
       cq.queue.shift();if(!ok){const from=Math.min(RETRY_GAP,cq.queue.length);cq.queue.splice(from+Math.floor(Math.random()*(cq.queue.length-from+1)),0,key)}
       saveQSess(); // 다음 문제로 넘어가기 전에 떠나도, 돌아오면 다음 문제부터
