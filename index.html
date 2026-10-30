@@ -138,6 +138,7 @@
 .hint-list b{display:inline-block;min-width:26px;font-size:16px;margin-right:6px}
 .memo{display:flex;align-items:center;gap:12px;margin:10px auto 0;padding:10px 14px;max-width:420px;border-radius:14px;background:var(--card,#fff);border:1px solid var(--line);text-align:left;color:var(--ink)}.memo-k{font-size:34px;line-height:1;font-family:"Noto Sans JP",sans-serif;color:var(--accent)}.memo-t{display:flex;flex-direction:column;font-size:13.5px;line-height:1.45}.memo-t small{font-size:11px;font-weight:700;color:var(--muted,#888);letter-spacing:.02em}
 .read-now{flex:1 1 100%;margin:4px 0;padding:10px 12px;border-radius:12px;background:var(--card,#fff);border:1px solid var(--line);text-align:left}.read-now>b{display:block;font-size:13px;margin-bottom:6px;color:var(--accent)}.rn-list{display:flex;flex-wrap:wrap;gap:6px}.rn-w{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:7px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;font:inherit}.rn-w span,.row-break .rn-w span{flex:none;font-size:19px;color:var(--ink);font-family:"Noto Sans JP",sans-serif}.row-break .read-now>b{flex:none;color:var(--accent)}.rn-w small{font-size:11.5px;opacity:.8}
+.wrow .wk.wk-ko{font-size:16px;font-weight:700}
 .chart-top{position:sticky;top:8px;z-index:3;display:flex;align-items:center;gap:10px;margin:0 0 12px;grid-column:1/-1}
 .chart-info{flex:1;display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:0 4px 14px rgba(0,0,0,.06)}
 .ci-empty{font-size:12px;color:var(--sub)}
@@ -1643,7 +1644,7 @@ function renderWords(){
     const seg=`<div class="seg" role="group" aria-label="단어 글자 종류">${Object.keys(WSCRIPTS).map(k=>`<button data-s="${k}" class="${k===s?"on":""}" aria-pressed="${k===s}">${WSCRIPTS[k]}</button>`).join("")}</div>
       <div class="seg mode-seg" role="group" aria-label="문제 방향">${Object.keys(WMODE_NAMES).map(m=>`<button data-wm="${m}" class="${m===wMode?"on":""}" aria-pressed="${m===wMode}">${WMODE_NAMES[m]}</button>`).join("")}</div>`;
     let body;
-      body=`<p class="intro">${s==="m"?"가타카나와 히라가나가 함께 나오는 단어와 짧은 표현이에요.":"N5 수준 기초 단어예요. 원하는 카테고리부터 골라서 풀어요. 발음의 \"-\"는 앞 소리를 길게 읽으라는 뜻이에요 (토-쿄- = 도쿄)."}</p><div class="cats">${cats.map((c,i)=>{
+      body=`<p class="intro">${s==="m"?"가타카나와 히라가나가 함께 나오는 단어와 짧은 표현이에요.":(wMode==="rev"?"한국어 뜻을 보고 일본어 단어를 골라요. 하고 싶은 말을 일본어로 떠올리는 연습이에요.":"일본어 단어를 보고 뜻을 골라요. 일본에서 글을 보고 알아듣는 연습이에요.")+" 원하는 카테고리부터 골라서 풀어요. 발음의 \"-\"는 앞 소리를 길게 읽으라는 뜻이에요 (토-쿄- = 도쿄)."}</p><div class="cats">${cats.map((c,i)=>{
         const ws=catWords(c.id),mw=ws.filter(w=>wdm(w.id)).length,open=catOpen(c);
         return `<button class="catcard" data-id="${c.id}" ${open?"":"disabled"}><div class="cat-top"><b>${c.name}</b>${c.recommended&&open&&mw<ws.length?'<span class="pill">처음 추천</span>':""}${open&&mw===ws.length?'<span class="pill ok">완료</span>':""}${open?"":'<span class="pill lockp">잠김</span>'}</div>
           <div class="desc">${open?c.desc:`${josa(cats[i-1].name,"을","를")} 끝내면 열려요`}</div><div class="bar"><i style="width:${ws.length?mw/ws.length*100:0}%"></i></div>
@@ -1666,7 +1667,7 @@ function renderWords(){
         const x=S.w[w.id],seen=x&&(x.v||x.r||x.w);
         const st=wdm(w.id)?'<span class="st pill ok">맞힘</span>':seen?'<span class="st pill">학습 중</span>':'<span class="st pill lockp">새 단어</span>';
         const u=wordUnknown(w);
-        return `<button class="wrow wpick" data-w="${w.id}" aria-label="${w.kana} 카드 보기"><span class="wk">${w.kana}</span><span class="wm">${seen?`${w.hangul} · ${w.meaning}`:"아직 안 본 단어"}${u.length?`<small class="wnew">처음 보는 글자 ${u.map(k=>CH[k].disp||k).join(" ")}</small>`:""}</span>${st}</button>`}).join("")}</div>`;
+        return `<button class="wrow wpick" data-w="${w.id}" aria-label="${w.kana} 카드 보기">${wMode==="rev"?`<span class="wk wk-ko">${w.meaning}</span><span class="wm">${seen?`${w.kana} · ${w.hangul}`:"아직 안 본 단어"}`:`<span class="wk">${w.kana}</span><span class="wm">${seen?`${w.hangul} · ${w.meaning}`:"아직 안 본 단어"}`}${u.length?`<small class="wnew">처음 보는 글자 ${u.map(k=>CH[k].disp||k).join(" ")}</small>`:""}</span>${st}</button>`}).join("")}</div>`;
     $("bk").onclick=()=>toList(cat);
     $("go").onclick=()=>{if(cands.length)startCards(cat.id);else startQuiz(cat.id,ws);renderWords()};
     el.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{const w=WORDS.find(x=>x.id===b.dataset.w);if(!w)return;wv={view:"card",cat:cat.id,batch:[w,...cands.filter(x=>x.id!==w.id)],i:0};renderWords()});
