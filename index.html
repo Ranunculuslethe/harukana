@@ -1683,7 +1683,7 @@ function renderWords(){
     const body=rev
       ?`<div class="mean big-mean">${w.meaning}</div>${rv>=1?`<div class="hg">${w.hangul}</div>`:step("눌러서 발음 힌트 보기")}${rv>=2?kanaHtml:rv===1?step("눌러서 일본어 보기"):""}`
       :`${kanaHtml}${rv>=1?`<div class="hg">${w.hangul}</div>`:step("눌러서 발음 보기")}${rv>=2?`<div class="mean">${w.meaning}</div>`:rv===1?step("눌러서 뜻 보기"):""}`;
-    const canSay=!rev||rv>=1;
+    const canSay=rev?rv>=2:rv>=1; // 소리는 발음과 일본어가 다 보인 뒤에, 듣고 싶을 때 버튼으로만
     el.innerHTML=`<div class="panel">${exitBtn}<div class="status">새 단어 ${wv.i+1} / ${n}${modeTag()}</div>
       ${w.koreanSimilar&&(!rev||rv>=1)?'<span class="pill">한국어와 소리가 비슷해요</span>':""}
       ${body}
@@ -1691,7 +1691,6 @@ function renderWords(){
       <div class="slow-row" style="justify-content:center">${slowToggle()}</div>`:""}
       <div class="navrow"><button class="ghost" id="pv" ${wv.i?"":"disabled"}>이전</button><button class="next" id="nx">${last?"확인 퀴즈 시작":"다음"}</button></div>
       <button class="link" id="skip">다 아는 단어면 바로 퀴즈</button></div>`;
-    if(canSay&&(rv===0||rv===1&&rev||rv===2&&rev))speak(w.kana); // 뜻→일본어는 발음 힌트를 연 뒤에 소리를 들려준다
     if($("rv"))$("rv").onclick=()=>{wv.rv++;renderWords()};
     const toQuiz=()=>{startQuiz(wv.cat,wv.batch,wv.batch);renderWords()};
     if($("say"))$("say").onclick=()=>speak(w.kana);
