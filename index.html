@@ -89,6 +89,7 @@
 .set-acct .pf-acct{margin:0}
 .set-dlg{border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);padding:20px 22px 22px;width:min(560px,calc(100vw - 32px));max-height:calc(100dvh - 48px);overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.18)}.set-dlg::backdrop{background:rgba(20,25,30,.45)}.set-top{display:flex;align-items:center;justify-content:space-between}.set-top h3{margin:0;font-size:18px}.set-x{border:0;background:none;font-size:24px;line-height:1;color:var(--sub);padding:2px 8px;border-radius:8px}.set-x:hover{color:var(--ink);background:var(--bg)}.set-dlg .set-h:first-of-type{margin-top:10px}.set-dlg .rec-etc{margin-top:0}
 .guide-dlg{text-align:center;width:min(460px,calc(100vw - 32px))}.guide-step{font-size:12px;color:var(--sub);font-weight:700}.guide-mark{width:76px;height:76px;margin:6px auto 10px;border-radius:22px;display:grid;place-items:center;background:var(--accent-soft,#fbe9ee);color:var(--accent);font-size:38px;font-weight:700;font-family:"Noto Sans JP",sans-serif}.guide-mark.fox-mark{background:none;width:96px;height:96px}.guide-mark .fox{width:96px;height:96px}.guide-dlg h3{margin:0 0 8px;font-size:20px}.guide-p{margin:0 auto 12px;max-width:380px;color:var(--sub);font-size:14px;line-height:1.65}.guide-list{list-style:none;margin:0 auto 12px;padding:0;max-width:360px;text-align:left;display:grid;gap:8px}.guide-list li{display:flex;align-items:center;gap:12px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}.gl-m{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--accent-soft,#fbe9ee);color:var(--accent);font-weight:700;font-size:17px;font-family:"Noto Sans JP",sans-serif}.guide-list b{display:block;font-size:14px}.guide-list small{display:block;font-size:12px;color:var(--sub)}.guide-dots{display:flex;justify-content:center;gap:6px;margin:4px 0 12px}.guide-dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}.guide-dots i.on{width:20px;border-radius:4px;background:var(--accent)}.guide-dlg .navrow{justify-content:center}
+.hide-hg .hgx:not(.show){filter:blur(5px);cursor:pointer;user-select:none;transition:filter .2s}
 .grad-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:4px auto 14px;max-width:380px}.grad-stats>div{display:flex;flex-direction:column;align-items:center;padding:10px 8px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}.grad-stats b{font-size:26px;line-height:1.1;color:var(--accent)}.grad-stats span{font-size:13px;font-weight:700;margin-top:2px}.grad-stats small{font-size:11px;color:var(--sub)}.grad-next{background:var(--accent-soft);border-radius:12px;padding:10px 12px;color:var(--ink)}
 .row-break{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:4px 0 14px;padding:12px 16px;border-radius:12px;background:var(--okbg);text-align:left}.row-break b{flex:1 1 100%;color:var(--ok)}.row-break span{flex:1 1 220px;font-size:12px;color:var(--sub)}.row-break .ghost{padding:7px 14px;font-size:12px}
 .phrase-tip{display:block;margin-top:4px;font-size:11px;line-height:1.5}
@@ -662,42 +663,74 @@ const SENT_UNITS=[
     {id:"s101",ja:"わたし[は] がくせいです。",hg:"와타시와 가쿠세이데스",ko:"저는 학생입니다."},
     {id:"s102",ja:"たなかさん[は] せんせいです。",hg:"타나카산와 센세이데스",ko:"다나카 씨는 선생님입니다."},
     {id:"s103",ja:"わたし[は] かんこくじんです。",hg:"와타시와 칸코쿠진데스",ko:"저는 한국인입니다."},
-    {id:"s104",ja:"きょう[は] にちようびです。",hg:"쿄우와 니치요우비데스",ko:"오늘은 일요일입니다."}]},
+    {id:"s104",ja:"きょう[は] にちようびです。",hg:"쿄우와 니치요우비데스",ko:"오늘은 일요일입니다."},
+    {id:"s105",ja:"やまださん[は] いしゃです。",hg:"",ko:"야마다 씨는 의사입니다.",no:["が"]},
+    {id:"s106",ja:"あね[は] かいしゃいんです。",hg:"",ko:"언니(누나)는 회사원입니다.",no:["が"]},
+    {id:"s107",ja:"わたし[は] にじゅっさいです。",hg:"",ko:"저는 스무 살입니다.",no:["が"]},
+    {id:"s108",ja:"ここ[は] えきです。",hg:"",ko:"여기는 역입니다.",no:["が"]}]},
   {id:"u2",title:"~ですか / ~じゃないです",ko:"~입니까? / ~이 아닙니다",tip:"문장 끝에 か를 붙이면 질문이 돼요. 「~じゃないです」는 \"~이 아닙니다\". 대답은 はい(네)·いいえ(아니요).",items:[
     {id:"s201",ja:"がくせいです[か]。",hg:"가쿠세이데스카",ko:"학생입니까?"},
     {id:"s202",ja:"はい、がくせいです。",hg:"하이, 가쿠세이데스",ko:"네, 학생입니다."},
     {id:"s203",ja:"いいえ、せんせいじゃないです。",hg:"이이에, 센세이자나이데스",ko:"아니요, 선생님이 아닙니다."},
-    {id:"s204",ja:"これ{は} みずです[か]。",hg:"코레와 미즈데스카",ko:"이것은 물입니까?"}]},
+    {id:"s204",ja:"これ{は} みずです[か]。",hg:"코레와 미즈데스카",ko:"이것은 물입니까?"},
+    {id:"s205",ja:"あなた[は] にほんじんですか。",hg:"",ko:"당신은 일본인입니까?",no:["が"]},
+    {id:"s206",ja:"いいえ、かんこくじんです。",hg:"",ko:"아니요, 한국인입니다."},
+    {id:"s207",ja:"これ{は} おちゃです[か]。",hg:"",ko:"이것은 차입니까?"},
+    {id:"s208",ja:"それ[は] わたしの かばんじゃないです。",hg:"",ko:"그것은 제 가방이 아닙니다.",no:["が"]}]},
   {id:"u3",title:"これ・それ・あれ / ~の",ko:"이것·그것·저것 / ~의",tip:"これ(이것)·それ(그것)·あれ(저것). の는 \"~의\"로, 「わたしの」는 \"나의(내)\"예요.",items:[
     {id:"s301",ja:"これ[は] ほんです。",hg:"코레와 혼데스",ko:"이것은 책입니다."},
     {id:"s302",ja:"それ{は} わたし[の] かさです。",hg:"소레와 와타시노 카사데스",ko:"그것은 제 우산입니다."},
     {id:"s303",ja:"あれ[は] がっこうです。",hg:"아레와 갓코우데스",ko:"저것은 학교입니다."},
-    {id:"s304",ja:"ともだち[の] いえです。",hg:"토모다치노 이에데스",ko:"친구의 집입니다."}]},
+    {id:"s304",ja:"ともだち[の] いえです。",hg:"토모다치노 이에데스",ko:"친구의 집입니다."},
+    {id:"s305",ja:"これ{は} せんせい[の] ほんです。",hg:"",ko:"이것은 선생님의 책입니다."},
+    {id:"s306",ja:"あれ[は] なんですか。",hg:"",ko:"저것은 무엇입니까?",no:["が"]},
+    {id:"s307",ja:"それ{は} にほん[の] おかしです。",hg:"",ko:"그것은 일본 과자입니다."},
+    {id:"s308",ja:"この かさ[は] わたしのです。",hg:"",ko:"이 우산은 제 것입니다.",no:["が"]}]},
   {id:"u4",title:"~を ~ます",ko:"~을/를 ~합니다",tip:"を는 \"~을/를\"이고 '오'로 읽어요. 동사 끝의 ます는 \"~합니다\"처럼 정중하게 말하는 모양이에요.",items:[
     {id:"s401",ja:"みず[を] のみます。",hg:"미즈오 노미마스",ko:"물을 마십니다."},
     {id:"s402",ja:"ごはん[を] たべます。",hg:"고한오 타베마스",ko:"밥을 먹습니다."},
     {id:"s403",ja:"テレビ[を] みます。",hg:"테레비오 미마스",ko:"텔레비전을 봅니다."},
-    {id:"s404",ja:"にほんご[を] べんきょうします。",hg:"니혼고오 벤쿄우시마스",ko:"일본어를 공부합니다."}]},
+    {id:"s404",ja:"にほんご[を] べんきょうします。",hg:"니혼고오 벤쿄우시마스",ko:"일본어를 공부합니다."},
+    {id:"s405",ja:"おちゃ[を] のみます。",hg:"",ko:"차를 마십니다."},
+    {id:"s406",ja:"てがみ[を] かきます。",hg:"",ko:"편지를 씁니다."},
+    {id:"s407",ja:"おんがく[を] ききます。",hg:"",ko:"음악을 듣습니다."},
+    {id:"s408",ja:"しゃしん[を] とります。",hg:"",ko:"사진을 찍습니다."}]},
   {id:"u5",title:"~に / ~へ いきます",ko:"~에 갑니다",tip:"가는 곳에는 に나 へ를 붙여요. 둘 다 \"~에\"이고, 방향의 へ는 '에'로 읽어요.",items:[
     {id:"s501",ja:"がっこう[に] いきます。",hg:"갓코우니 이키마스",ko:"학교에 갑니다.",no:["へ"]},
     {id:"s502",ja:"えき[へ] いきます。",hg:"에키에 이키마스",ko:"역에 갑니다.",no:["に"]},
     {id:"s503",ja:"うち[に] かえります。",hg:"우치니 카에리마스",ko:"집에 돌아갑니다.",no:["へ"]},
-    {id:"s504",ja:"にほん[に] いきます。",hg:"니혼니 이키마스",ko:"일본에 갑니다.",no:["へ"]}]},
+    {id:"s504",ja:"にほん[に] いきます。",hg:"니혼니 이키마스",ko:"일본에 갑니다.",no:["へ"]},
+    {id:"s505",ja:"こうえん[に] いきます。",hg:"",ko:"공원에 갑니다.",no:["へ"]},
+    {id:"s506",ja:"ともだち{が} うち[に] きます。",hg:"",ko:"친구가 집에 옵니다.",no:["へ"]},
+    {id:"s507",ja:"とうきょう[へ] いきます。",hg:"",ko:"도쿄에 갑니다.",no:["に"]},
+    {id:"s508",ja:"まいにち かいしゃ[に] いきます。",hg:"",ko:"매일 회사에 갑니다.",no:["へ"]}]},
   {id:"u6",title:"~で ~ます",ko:"~에서 ~합니다",tip:"무엇을 하는 장소에는 で를 붙여요. \"~에서\"예요. 가는 곳의 に와 헷갈리지 않게!",items:[
     {id:"s601",ja:"いえ[で] ごはん{を} たべます。",hg:"이에데 고한오 타베마스",ko:"집에서 밥을 먹습니다."},
     {id:"s602",ja:"がっこう[で] べんきょうします。",hg:"갓코우데 벤쿄우시마스",ko:"학교에서 공부합니다."},
     {id:"s603",ja:"こうえん[で] あそびます。",hg:"코우엔데 아소비마스",ko:"공원에서 놉니다."},
-    {id:"s604",ja:"みせ[で] パン{を} かいます。",hg:"미세데 판오 카이마스",ko:"가게에서 빵을 삽니다."}]},
+    {id:"s604",ja:"みせ[で] パン{を} かいます。",hg:"미세데 판오 카이마스",ko:"가게에서 빵을 삽니다."},
+    {id:"s605",ja:"としょかん[で] ほん{を} よみます。",hg:"",ko:"도서관에서 책을 읽습니다."},
+    {id:"s606",ja:"レストラン[で] ばんごはん{を} たべます。",hg:"",ko:"레스토랑에서 저녁을 먹습니다."},
+    {id:"s607",ja:"えき[で] ともだち{に} あいます。",hg:"",ko:"역에서 친구를 만납니다."},
+    {id:"s608",ja:"うち[で] テレビ{を} みます。",hg:"",ko:"집에서 텔레비전을 봅니다."}]},
   {id:"u7",title:"~と / ~も",ko:"~와/과 / ~도",tip:"と는 \"~와/과\"(함께, 그리고), も는 \"~도\"예요. も를 쓰면 は 대신 들어가요.",items:[
     {id:"s701",ja:"ともだち[と] いきます。",hg:"토모다치토 이키마스",ko:"친구와 갑니다."},
     {id:"s702",ja:"わたし[も] がくせいです。",hg:"와타시모 가쿠세이데스",ko:"저도 학생입니다."},
     {id:"s703",ja:"パン[と] みず{を} かいます。",hg:"판토 미즈오 카이마스",ko:"빵과 물을 삽니다."},
-    {id:"s704",ja:"あした[も] いきます。",hg:"아시타모 이키마스",ko:"내일도 갑니다."}]},
+    {id:"s704",ja:"あした[も] いきます。",hg:"아시타모 이키마스",ko:"내일도 갑니다."},
+    {id:"s705",ja:"かぞく[と] しょくじします。",hg:"",ko:"가족과 식사합니다."},
+    {id:"s706",ja:"これ[も] おいしいです。",hg:"",ko:"이것도 맛있습니다."},
+    {id:"s707",ja:"はは[と] かいもの{に} いきます。",hg:"",ko:"어머니와 쇼핑하러 갑니다."},
+    {id:"s708",ja:"わたし[も] コーヒー{を} のみます。",hg:"",ko:"저도 커피를 마십니다."}]},
   {id:"u8",title:"형용사 + です",ko:"~합니다 (맛있다, 춥다)",tip:"い로 끝나는 형용사에 です를 붙이면 정중한 말이 돼요. 「この」는 \"이 ~\"(이 사과, 이 방)예요.",items:[
     {id:"s801",ja:"この りんご[は] おいしいです。",hg:"코노 린고와 오이시이데스",ko:"이 사과는 맛있습니다."},
     {id:"s802",ja:"きょう[は] さむいです。",hg:"쿄우와 사무이데스",ko:"오늘은 춥습니다."},
     {id:"s803",ja:"この へや[は] ひろいです。",hg:"코노 헤야와 히로이데스",ko:"이 방은 넓습니다."},
-    {id:"s804",ja:"にほんご[は] たのしいです。",hg:"니혼고와 타노시이데스",ko:"일본어는 즐겁습니다."}]},
+    {id:"s804",ja:"にほんご[は] たのしいです。",hg:"니혼고와 타노시이데스",ko:"일본어는 즐겁습니다."},
+    {id:"s805",ja:"この ラーメン[は] あついです。",hg:"",ko:"이 라멘은 뜨겁습니다.",no:["が"]},
+    {id:"s806",ja:"あの やま[は] たかいです。",hg:"",ko:"저 산은 높습니다.",no:["が"]},
+    {id:"s807",ja:"にほん[の] なつ{は} あついです。",hg:"",ko:"일본의 여름은 덥습니다."},
+    {id:"s808",ja:"この かばん[は] やすいです。",hg:"",ko:"이 가방은 쌉니다.",no:["が"]}]},
   {id:"u9",mix:1,title:"생활",ko:"가타카나 말 + を + ~ます",tip:"コーヒー·テレビ 같은 가타카나 말에도 히라가나 조사와 동사를 그대로 이어요. 장음 ー는 앞 소리를 길게 읽어요.",items:[
     {id:"s901",ja:"コーヒー[を] のみます。",hg:"코-히-오 노미마스",ko:"커피를 마십니다."},
     {id:"s902",ja:"まいにち テレビ[を] みます。",hg:"마이니치 테레비오 미마스",ko:"매일 텔레비전을 봅니다."},
@@ -734,6 +767,19 @@ const SENT_UNITS=[
     {id:"s1305",ja:"カメラ[と] ラジオ{を} かいます。",hg:"카메라토 라지오오 카이마스",ko:"카메라와 라디오를 삽니다."},
     {id:"s1306",ja:"あした[も] プール{に} いきます。",hg:"아시타모 푸-루니 이키마스",ko:"내일도 수영장에 갑니다."}]}
   ,
+  {id:"u19",g:"v",title:"~を ください",ko:"~ 주세요",opts:["ください","ます","ません","たいです"],tip:"갖고 싶은 것 뒤에 を ください를 붙이면 \"~ 주세요\"예요. 가게·식당에서 가장 많이 쓰는 말이에요. 개수는 ひとつ(1개)·ふたつ(2개)처럼 ください 앞에 넣어요.",items:[
+    {id:"s1901",ja:"みず{を} [ください]。",hg:"",ko:"물 주세요."},
+    {id:"s1902",ja:"これ{を} [ください]。",hg:"",ko:"이거 주세요."},
+    {id:"s1903",ja:"コーヒー{を} ふたつ [ください]。",hg:"",ko:"커피 두 잔 주세요."},
+    {id:"s1904",ja:"メニュー{を} [ください]。",hg:"",ko:"메뉴판 주세요."},
+    {id:"s1905",ja:"りんご{を} ひとつ [ください]。",hg:"",ko:"사과 하나 주세요."}]},
+  {id:"u20",g:"v",title:"どこ・なん・いつ・だれ",ko:"어디·무엇·언제·누구",opts:["どこ","なん","いつ","だれ"],tip:"どこ = 어디, なん(なに) = 무엇, いつ = 언제, だれ = 누구. 묻는 말 뒤에 ですか를 붙이면 질문이 돼요. です 앞의 \"무엇\"은 なん으로 읽어요.",items:[
+    {id:"s2001",ja:"トイレ{は} [どこ]ですか。",hg:"",ko:"화장실은 어디예요?"},
+    {id:"s2002",ja:"これ{は} [なん]ですか。",hg:"",ko:"이건 뭐예요?"},
+    {id:"s2003",ja:"たんじょうび{は} [いつ]ですか。",hg:"",ko:"생일은 언제예요?"},
+    {id:"s2004",ja:"あの ひと{は} [だれ]ですか。",hg:"",ko:"저 사람은 누구예요?"},
+    {id:"s2005",ja:"えき{は} [どこ]ですか。",hg:"",ko:"역은 어디예요?"},
+    {id:"s2006",ja:"テスト{は} [いつ]ですか。",hg:"",ko:"시험은 언제예요?"}]},
   {id:"u14",g:"v",title:"~ません / ~ました",ko:"안 해요 / 했어요",opts:["ます","ません","ました","ませんでした"],tip:"ます(합니다)의 끝만 바꾸면 돼요: ません = 안 합니다, ました = 했습니다, ませんでした = 안 했습니다.",items:[
     {id:"s1401",ja:"きょう{は} いき[ません]。",hg:"",ko:"오늘은 안 갑니다."},
     {id:"s1402",ja:"きのう すし{を} たべ[ました]。",hg:"",ko:"어제 초밥을 먹었습니다."},
@@ -1651,7 +1697,7 @@ function wordQ(w,mode,build){
   const pool=[...shuffle(WORDS.filter(x=>x.category===w.category)),...shuffle(WORDS.filter(x=>x.category!==w.category))];
   const used=new Set([w.meaning]),picks=[];
   for(const x of pool){if(used.has(x.meaning)||x.kana===w.kana)continue;used.add(x.meaning);picks.push(x);if(picks.length===3)break}
-  const opts=shuffle([w,...picks]),fb=ok=>`${ok?"정답!":"아쉬워요."} ${w.kana} (${w.hangul}) = ${w.meaning}`;
+  const opts=shuffle([w,...picks]),fb=ok=>`${ok?"정답!":"아쉬워요."} ${w.kana} <span class="hgx">(${w.hangul})</span> = ${w.meaning}`;
   if(build){
     const us=units(w.kana),kata=/[ァ-ヶ]/.test(w.kana),extra=[];
     for(const x of shuffle(WORDS.filter(x=>x.id!==w.id&&/[ァ-ヶ]/.test(x.kana)===kata).flatMap(x=>units(x.kana)))){if(!us.includes(x)&&!extra.includes(x))extra.push(x);if(extra.length>=Math.max(2,Math.min(3,8-us.length)))break}
@@ -1701,7 +1747,7 @@ function renderWords(){
         const x=S.w[w.id],seen=x&&(x.v||x.r||x.w);
         const st=wdm(w.id)?'<span class="st pill ok">맞힘</span>':seen?'<span class="st pill">학습 중</span>':'<span class="st pill lockp">새 단어</span>';
         const u=wordUnknown(w);
-        return `<button class="wrow wpick" data-w="${w.id}" aria-label="${w.kana} 카드 보기">${wMode==="rev"?`<span class="wk wk-ko">${w.meaning}</span><span class="wm">${seen?`${w.kana} · ${w.hangul}`:"아직 안 본 단어"}`:`<span class="wk">${w.kana}</span><span class="wm">${seen?`${w.hangul} · ${w.meaning}`:"아직 안 본 단어"}`}${u.length?`<small class="wnew">처음 보는 글자 ${u.map(k=>CH[k].disp||k).join(" ")}</small>`:""}</span>${st}</button>`}).join("")}</div>`;
+        return `<button class="wrow wpick" data-w="${w.id}" aria-label="${w.kana} 카드 보기">${wMode==="rev"?`<span class="wk wk-ko">${w.meaning}</span><span class="wm">${seen?`${w.kana} · <span class="hgx">${w.hangul}</span>`:"아직 안 본 단어"}`:`<span class="wk">${w.kana}</span><span class="wm">${seen?`<span class="hgx">${w.hangul}</span> · ${w.meaning}`:"아직 안 본 단어"}`}${u.length?`<small class="wnew">처음 보는 글자 ${u.map(k=>CH[k].disp||k).join(" ")}</small>`:""}</span>${st}</button>`}).join("")}</div>`;
     $("bk").onclick=()=>toList(cat);
     el.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{wMode=b.dataset.wm;try{localStorage.setItem("harukana-wmode",wMode)}catch(e){}renderWords()});
     $("go").onclick=()=>{if(cands.length)startCards(cat.id);else startQuiz(cat.id,ws);renderWords()};
@@ -1758,7 +1804,7 @@ function renderWords(){
     const msgs=wv.opened.map(n=>`${josa(n,"이","가")} 열렸어요.`);
     if(catWords(cat.id).every(w=>wdm(w.id)))msgs.unshift(`${cat.name}${modeTag()} 완료!`);
     el.innerHTML=`<div class="panel"><div class="status">${WSCRIPTS[cat.script]} · ${cat.name}</div><h2>${wv.total}개 단어를 모두 맞혔어요</h2>
-      ${wrong.length?`<p class="intro">처음에 틀린 단어 ${wrong.length}개는 오답노트에 있어요.</p><div class="wlist" style="text-align:left">${wrong.map(w=>`<div class="wrow"><span class="wk">${w.kana}</span><span class="wm">${w.hangul} · ${w.meaning}</span></div>`).join("")}</div>`:'<p class="intro">한 번에 다 맞혔어요.</p>'}
+      ${wrong.length?`<p class="intro">처음에 틀린 단어 ${wrong.length}개는 오답노트에 있어요.</p><div class="wlist" style="text-align:left">${wrong.map(w=>`<div class="wrow"><span class="wk">${w.kana}</span><span class="wm"><span class="hgx">${w.hangul}</span> · ${w.meaning}</span></div>`).join("")}</div>`:'<p class="intro">한 번에 다 맞혔어요.</p>'}
       ${msgs.length?`<div class="msg" style="margin-top:12px">${msgs.join(" ")}</div>`:""}
       <div class="navrow"><button class="ghost" id="bk">단어 목록</button>${more?'<button class="next" id="go">다음 묶음</button>':next?'<button class="next" id="go">다음 카테고리로</button>':""}</div></div>`;
     $("bk").onclick=()=>{wv={view:"cat",cat:cat.id};renderWords()};
@@ -1781,10 +1827,10 @@ function sentQ(s,type,ear,build){ // ear: 소리만 듣고 고르기 허용 (숫
   if(build){
     const bs=sBlocks(s),pool=(su.opts||PARTICLES).filter(p=>!bs.includes(p)&&!(s.no||[]).includes(p)),extra=sAns(s)&&pool.length?[rand(pool)]:[];
     return{build:1,prompt:"뜻에 맞게 블록을 눌러 문장을 만들어요",big:esc(s.ko),bigCls:"sent ko build-mean",answer:bs,tiles:shuffle([...bs,...extra]),say:sjPlain(s),kind:"sent",rev:1,
-      fb:ok=>`${ok?"정답!":"아쉬워요."} ${esc(sjPlain(s))} = ${esc(s.ko)}<span class="tip">${esc(s.hg)}</span>`};
+      fb:ok=>`${ok?"정답!":"아쉬워요."} ${esc(sjPlain(s))} = ${esc(s.ko)}<span class="tip hgx">${esc(s.hg)}</span>`};
   }
   type=type||rand(sAns(s)?["mean","blank","rev"]:ear&&su.ear?["ear","ear","mean","rev"]:["mean","rev"]);
-  const fb=ok=>`${ok?"정답!":"아쉬워요."} ${esc(sjPlain(s))} = ${esc(s.ko)}<span class="tip">${esc(s.hg)}</span>`;
+  const fb=ok=>`${ok?"정답!":"아쉬워요."} ${esc(sjPlain(s))} = ${esc(s.ko)}<span class="tip hgx">${esc(s.hg)}</span>`;
   const base={say:sjPlain(s),fb,kind:"sent"};
   if(type==="blank"){
     const a=sAns(s),bad=new Set([a,...(s.no||[])]),opts=shuffle([a,...shuffle((su.opts||PARTICLES).filter(p=>!bad.has(p))).slice(0,3)]);
@@ -1796,7 +1842,7 @@ function sentQ(s,type,ear,build){ // ear: 소리만 듣고 고르기 허용 (숫
   if(type==="rev")return{...base,prompt:"이 뜻의 일본어 문장은?",big:esc(s.ko),bigCls:"sent ko",choices:opts.map(x=>esc(sjPlain(x))),chCls:"text kana sentc",correct:opts.indexOf(s),rev:1};
   return{...base,prompt:"이 문장의 뜻은?",big:esc(sjPlain(s)),bigCls:"sent",choices:opts.map(x=>esc(x.ko)),chCls:"text",correct:opts.indexOf(s)};
 }
-const SGROUPS={p:"조사",v:"말끝 바꾸기",k:"가타카나 넣은 문장",n:"숫자 읽기"};
+const SGROUPS={p:"조사",v:"표현 더하기",k:"가타카나 넣은 문장",n:"숫자 읽기"};
 const sgOf=u=>u.g||(u.mix?"k":"p");
 const groupUnits=g=>SENT_UNITS.filter(u=>sgOf(u)===g);
 const sLabel=u=>sgOf(u)==="p"?`문장 · ${u.title}`:`${SGROUPS[sgOf(u)]} · ${u.title}`; // 상태 줄·초기화 알림에 쓰는 이름
@@ -1809,7 +1855,7 @@ function renderSent(el){
     if(SGROUPS[wv.sg])sentGroup=wv.sg;
     const g=sentGroup,units=groupUnits(g),nx=units.findIndex(u=>!unitDone(u));
     const gseg=`<div class="seg" role="group" aria-label="문장 종류">${Object.keys(SGROUPS).map(k=>`<button data-sg="${k}" class="${k===g?"on":""}" aria-pressed="${k===g}">${SGROUPS[k]}</button>`).join("")}</div>`;
-    const intro=g==="v"?"문장 끝(ます)만 바꿔서 \"안 해요·했어요·있어요·하고 싶어요\"를 말해요. 조사 단원 다음에 하면 좋아요.":g==="n"?"가격과 시간을 읽고 들어요. 일본에서 계산할 때, 시간을 확인할 때 바로 써요. 소리만 듣고 고르는 문제도 나와요.":g==="k"?"コーヒー·テレビ처럼 가타카나로 쓰는 말을 히라가나 문장에 넣어 읽어요. 조사 단원을 먼저 하면 더 쉬워요."
+    const intro=g==="v"?"\"~ 주세요\", \"어디예요?\"처럼 바로 쓰는 표현과, 문장 끝(ます)을 바꿔 \"안 해요·했어요·있어요·하고 싶어요\"를 말해요. 조사 단원 다음에 하면 좋아요.":g==="n"?"가격과 시간을 읽고 들어요. 일본에서 계산할 때, 시간을 확인할 때 바로 써요. 소리만 듣고 고르는 문제도 나와요.":g==="k"?"コーヒー·テレビ처럼 가타카나로 쓰는 말을 히라가나 문장에 넣어 읽어요. 조사 단원을 먼저 하면 더 쉬워요."
       :"단어를 이어 짧은 문장을 만들어요. 조사(は·を·に…)를 하나씩, 위에서부터 차례로 익히면 좋아요.";
     el.innerHTML=seg+gseg+`<p class="intro">${intro}</p>
       <div class="cats">${units.map((u,i)=>{const n=u.items.filter(s=>sxd(s.id)).length;
@@ -1842,7 +1888,7 @@ function renderSent(el){
   if(wv.view==="scard"){
     const s=SENT_BY_ID[wv.batch[wv.i]],n=wv.batch.length,last=wv.i===n-1;
     el.innerHTML=`<div class="panel">${exitS}<div class="status">${esc(u.title)} · 문장 ${wv.i+1} / ${n}</div>
-      <div class="big sent">${sjMark(s)}</div><div class="hg">${esc(s.hg)}</div><div class="mean">${esc(s.ko)}</div>
+      <div class="big sent">${sjMark(s)}</div><div class="hg hgx">${esc(s.hg)}</div><div class="mean">${esc(s.ko)}</div>
       <p class="tip s-note"><b>문법 포인트</b> ${esc(u.tip)}</p>
       <button class="ghost" id="say">발음 듣기</button><div class="slow-row" style="justify-content:center">${slowToggle()}</div>
       <div class="navrow"><button class="ghost" id="pv" ${wv.i?"":"disabled"}>이전</button><button class="next" id="nx">${last?"확인 퀴즈 시작":"다음"}</button></div>
@@ -1988,7 +2034,7 @@ function travelQ(t,type){
   const sign=t.mode==="sign";
   type=type||rand(sign?["mean","rev","read"]:t.mode==="ear"?["ear","ear","mean"]:["mean","rev"]);
   const pool=[...shuffle(TRAVEL.filter(x=>x.id!==t.id&&x.cat===t.cat)),...shuffle(TRAVEL.filter(x=>x.id!==t.id&&x.cat!==t.cat&&x.mode===t.mode))];
-  const fb=ok=>`${ok?"정답!":"아쉬워요."} ${esc(t.ja)} = ${esc(t.ko)}<span class="tip">${esc(sign?t.rd+" · ":"")}${esc(tvHg(t))}${t.tip?` · ${esc(t.tip)}`:""}</span>`;
+  const fb=ok=>`${ok?"정답!":"아쉬워요."} ${esc(t.ja)} = ${esc(t.ko)}<span class="tip">${esc(sign?t.rd+" · ":"")}<span class="hgx">${esc(tvHg(t))}</span>${t.tip?` · ${esc(t.tip)}`:""}</span>`;
   const base={say:t.rd,fb,kind:"travel"};
   const pick=(key)=>{const used=new Set([key(t)]),o=[t];for(const x of pool){if(!used.has(key(x))){used.add(key(x));o.push(x)}if(o.length===4)break}return shuffle(o)};
   if(type==="read"){const o=pick(x=>x.rd);return{...base,prompt:"이 표지판은 어떻게 읽을까요?",big:`<span class="ja-font" lang="ja">${esc(t.ja)}</span>`,bigCls:"kanji-word",choices:o.map(x=>x.rd),chCls:"kana",correct:o.indexOf(t)}}
@@ -2030,7 +2076,7 @@ function renderTravel(el,seg,bindMode){
     const t=TRAVEL_BY[jv.batch[jv.i]],n=jv.batch.length,last=jv.i===n-1;
     el.innerHTML=`<div class="panel">${exitJ}<div class="status">${MID_MODES[mode]} · ${c.name} · ${jv.i+1} / ${n}</div>
       <div class="tv-card"><div class="tv-ja ja-font" lang="ja">${esc(t.ja)}</div>
-        <div class="tv-rd">${sign?`<span lang="ja">${esc(t.rd)}</span> · `:""}${esc(tvHg(t))}</div><div class="tv-ko">${esc(t.ko)}</div>
+        <div class="tv-rd">${sign?`<span lang="ja">${esc(t.rd)}</span> · `:""}<span class="hgx">${esc(tvHg(t))}</span></div><div class="tv-ko">${esc(t.ko)}</div>
         ${t.tip?`<p class="tip s-note">${t.mode==="ear"?"<b>이렇게 대답해요</b> ":""}${esc(t.tip)}</p>`:""}</div>
       <button class="ghost" id="say">${SPK} 발음 듣기</button><div class="slow-row" style="justify-content:center">${slowToggle()}</div>
       <div class="navrow"><button class="ghost" id="pv" ${jv.i?"":"disabled"}>이전</button><button class="next" id="nx">${last?"확인 퀴즈 시작":"다음"}</button></div>
@@ -3048,6 +3094,7 @@ function renderSettings(force){
       <p class="set-note">${isMid()?"중급에서는 메뉴에 여행 회화 칸이 생겨요. 초급으로 돌아가도 기록은 그대로 남아요.":roadDone()?"학습 길을 모두 마쳤어요. 중급으로 바꾸면 여행 회화 칸이 열려요.":`학습 길 10단계를 모두 마치면 중급(여행 일본어·한자)으로 바꿀 수 있어요. 지금 ${ROAD_STEPS.filter(st=>stepProg(st).f>=1).length} / ${ROAD_STEPS.length}단계예요.`}</p></div>
     <h4 class="set-h">계정</h4><div class="set-sound set-acct">${acctRow("s")}</div>
     <h4 class="set-h">소리</h4><div class="set-sound" id="snd-box"></div>
+    <h4 class="set-h">보기</h4><div class="set-sound"><label class="slow-tg"><input type="checkbox" id="hide-hg" ${hideHg()?"checked":""}>한글 발음 가리기</label><p class="set-note">가나를 다 배웠다면 켜 보세요. 단어·문장의 한글 발음이 흐리게 가려지고, 누르면 보여요. 가나 퀴즈의 발음은 그대로예요.</p></div>
     <h4 class="set-h">도움말</h4><div class="set-sound"><p class="set-note" style="margin-top:0">하루카나를 어떻게 쓰는지 처음 안내를 다시 볼 수 있어요.</p><button type="button" class="rec-reset" id="guide-open">처음 안내 다시 보기</button>${S.flags.grad?' <button type="button" class="rec-reset" id="grad-open">초급 수료 다시 보기</button>':""}</div>
     <h4 class="set-h">학습 기록</h4>
     <div class="rec-etc">
@@ -3062,6 +3109,7 @@ function renderSettings(force){
   d.querySelectorAll("[data-clear]").forEach(b=>b.onclick=()=>testClear(b.dataset.clear));
   if($("rk-hide"))$("rk-hide").onclick=()=>setRankHidden(!S.rankOff);
   $("guide-open").onclick=()=>{d.close();openGuide()};
+  $("hide-hg").onchange=e=>setHideHg(e.target.checked);
   if($("grad-open"))$("grad-open").onclick=()=>{d.close();openGrad()};
   bindAcct("s");
   renderSoundSettings();
@@ -3345,7 +3393,7 @@ const ROAD=[
     {id:"wh",mark:"ねこ",name:"히라가나 단어",desc:"학교·일상·가족처럼 매일 쓰는 기초 단어",items:()=>wordIdsOf("h"),done:wd,go:()=>{wv={view:"list",script:"h"};show(3)}},
     {id:"wk",mark:"パン",name:"가타카나 단어",desc:"커피·버스처럼 외국에서 온 말",items:()=>wordIdsOf("k"),done:wd,go:()=>{wv={view:"list",script:"k"};show(3)}}]},
   {title:"문장",icon:"文",steps:[
-    {id:"sp",mark:"は",name:"짧은 문장 만들기",desc:"は・を・に 조사와 ません・あります・たいです 말끝",items:()=>[...groupUnits("p"),...groupUnits("v")].flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"p"};show(3);renderWords()}},
+    {id:"sp",mark:"は",name:"짧은 문장 만들기",desc:"は・を・に 조사, ください·どこ, ません・あります・たいです",items:()=>[...groupUnits("p"),...groupUnits("v")].flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"p"};show(3);renderWords()}},
     {id:"sk",mark:"文",name:"가타카나 넣은 문장",desc:"コーヒーを のみます처럼 가타카나 말이 든 문장",items:()=>groupUnits("k").flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"k"};show(3);renderWords()}}]},
 ];
 const roadDone=()=>ROAD_STEPS.every(st=>stepProg(st).f>=1);
@@ -3452,10 +3500,14 @@ function renderPhrase(){
   const [ja,,ko,tip]=todayPhrase(),hg=jaHangul(ja); // 발음은 공통 규칙으로 (길게 읽는 소리 "-")
   $("phrase-jp").textContent=ja;
   $("phrase-jp").style.fontSize=!/\s/.test(ja)&&ja.length>=8?"20px":"";
-  $("phrase-sub").innerHTML=`${esc(hg)} <span>·</span> ${esc(ko)}${tip?`<small class="phrase-tip">${esc(tip)}</small>`:""}`;
+  $("phrase-sub").innerHTML=`<span class="hgx">${esc(hg)}</span> <span>·</span> ${esc(ko)}${tip?`<small class="phrase-tip">${esc(tip)}</small>`:""}`;
 }
 renderPhrase();
 $("phrase-listen").onclick=()=>{if(!('speechSynthesis' in window)){notifyText('이 브라우저에서는 음성 재생을 지원하지 않아요.');return}speak(todayPhrase()[0])};
+const hideHg=()=>{try{return localStorage.getItem("harukana-hidehg")==="1"}catch(e){return false}};
+function setHideHg(on){try{localStorage.setItem("harukana-hidehg",on?"1":"0")}catch(e){}document.body.classList.toggle("hide-hg",on)}
+document.body.classList.toggle("hide-hg",hideHg());
+document.addEventListener("click",e=>{const x=e.target.closest(".hgx");if(x&&document.body.classList.contains("hide-hg"))x.classList.add("show")});
 function applyTheme(theme){document.documentElement.dataset.theme=theme;$("theme").querySelector('span').textContent=theme==='dark'?'낮 모드':'밤 모드';$("theme").setAttribute('aria-label',theme==='dark'?'낮 모드로 전환':'밤 모드로 전환')}
 const systemTheme=()=>matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
 try{const saved=localStorage.getItem('harukana-theme');applyTheme(saved==='dark'||saved==='light'?saved:systemTheme())}catch{applyTheme(systemTheme())}
