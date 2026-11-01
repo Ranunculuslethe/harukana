@@ -384,6 +384,14 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .goal-pick button.on{border-color:var(--accent);background:var(--accent-soft)}.goal-pick button.on b{color:var(--accent-dark)}
 .goal-pick button:hover{border-color:var(--accent)}
 .goal-card>div{flex:1;min-width:0}
+.course-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+.course-pill{display:flex;align-items:center;gap:10px;min-height:56px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);text-align:left}
+.course-pill>span:nth-child(2){flex:1;min-width:0;display:flex;flex-direction:column}.course-pill b{font-size:15px}.course-pill small{font-size:13px;color:var(--sub)}
+.course-pill.on{border-color:var(--accent);background:var(--accent-soft)}.course-pill.on b{color:var(--accent-dark)}.course-pill .cp-go{font-size:20px;color:var(--accent)}
+.course-pill.add{border-style:dashed;background:var(--bg)}.course-pill.add b{color:var(--accent-dark)}.course-pill:hover{border-color:var(--accent)}
+.course-pill .road-ic{flex:none}
+.tab.tab-add{opacity:.6}.tab.tab-add:hover{opacity:1}.tab.tab-add>span[data-s]::before{content:"+ "}
+@media(max-width:640px){.course-row{grid-template-columns:1fr}.tab.tab-add>span[data-s]::before{content:""}}
 .road-more{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;padding:14px 16px;border:1px dashed var(--line);border-radius:16px;background:var(--bg)}.road-more>div{flex:1 1 200px;display:flex;flex-direction:column;gap:2px}.road-more b{font-size:15px}.road-more small{font-size:13px;color:var(--sub);line-height:1.5}.road-more .ghost{min-height:44px}
 .road-sec.locked{opacity:.75}.road-sec.locked .lesson-node,.road-sec.locked .lesson-info{cursor:default}
 @media(max-width:640px){.goal-pick{grid-template-columns:1fr}.goal-pick button{min-height:48px}}
@@ -4551,6 +4559,7 @@ const NAV=[0,1,3,7,6,8,4,5];
 let kanaSub=1;
 const isSentView=()=>wv.view[0]==="s";
 function navGo(i){
+  if((i===6&&!isMid())||(i===8&&!isAdv())){if(!basicDone()||!goalOf())return;setGoal("both")} // 안 열린 코스 칸을 누르면 그 코스를 연다
   if(i===1)return show(kanaSub);
   if(i===3||i===7){
     const sent=i===7;
@@ -4620,7 +4629,9 @@ function applyLevel(){
   const t=isMid(),n=isAdv();
   $("level-label").textContent=t&&n?"여행·N5":t?"여행":n?"N5":"기초";
   $("level-label").title=t||n?`목표: ${GOALS[goalOf()]} (설정에서 바꿀 수 있어요)`:`기초 · 학습 길 ${ROAD_STEPS.length}단계를 마치면 고른 코스가 열려요`;
-  $("t6").hidden=!t;$("t8").hidden=!n;
+  const pre=basicDone()&&!!goalOf(); // 안 열린 코스도 메뉴에 "+"로 보여 준다
+  $("t6").hidden=!(t||pre);$("t8").hidden=!(n||pre);$("t6").classList.toggle("tab-add",!t);$("t8").classList.toggle("tab-add",!n);
+  $("t6").title=t?"":"누르면 여행 코스가 열려요";$("t8").title=n?"":"누르면 N5 코스가 열려요";
 }
 const ROAD_STEPS=ROAD.flatMap(sec=>sec.steps);
 const stepProg=st=>{const it=st.items(),n=it.filter(st.done).length;return{n,t:it.length,f:it.length?n/it.length:1}};
@@ -4657,8 +4668,7 @@ function renderRoad(){
   $("road-bar").style.width=avg+"%";
   $("road-sum").textContent=(live.length?P.map(p=>`${p.title} ${p.done}/${p.n}단계`).join(" · "):`기초 ${ROAD_STEPS.length}단계 중 ${P[0].done}단계 완료`)+(cur?` · 지금 여기: ${cur.name}`:open&&g?" · 모든 여정을 마쳤어요!":"");
   const pick=!g?`<div class="road-fin goal-card"><span class="road-fin-ic" aria-hidden="true">✿</span><div><b>${open?"기초를 모두 마쳤어요! 이제 목표를 골라요":"어떤 목표로 일본어를 배울까요?"}</b><small>${open?"고른 코스가 바로 열려요. 설정에서 언제든 바꿀 수 있어요.":"가나·단어·문장 기초는 모두 같이 해요. 기초를 마치면 고른 코스가 열려요."}</small>${goalBtns("")}</div></div>`:"";
-  const other=open&&(g==="trip"||g==="n5")?(g==="trip"?ROAD_ADV:ROAD_MID):null;
-  const more=other?`<div class="road-more"><span class="road-ic">${other.icon}</span><div><b>${other.title}도 해 볼까요?</b><small>${other===ROAD_ADV?"JLPT N5 한자·단어·문법과 모의시험이 있는 시험 칸이 열려요.":"여행 회화·점원 말 알아듣기·표지판이 있는 회화 칸이 열려요."} 지금 코스는 그대로예요.</small></div><button type="button" class="ghost" data-goal="both">${other.title} 열기</button></div>`:"";
+  const courseRow=open&&g?`<div class="course-row" role="group" aria-label="내 코스">${[[ROAD_MID,isMid(),6],[ROAD_ADV,isAdv(),8]].map(([sec,on,t])=>{const p=prog(sec);return on?`<button type="button" class="course-pill on" data-ctab="${t}"><span class="road-ic">${sec.icon}</span><span><b>${sec.title}</b><small>${p.title} ${p.pct}%</small></span><span class="cp-go" aria-hidden="true">›</span></button>`:`<button type="button" class="course-pill add" data-goal="both"><span class="road-ic">${sec.icon}</span><span><b>+ ${sec.title} 열기</b><small>${sec===ROAD_ADV?"JLPT N5 한자·문법·모의시험":"여행 회화·점원 말·표지판"}</small></span></button>`}).join("")}</div>`:"";
   let no=0;
   const secHtml=(sec,si,lock)=>{
     const sp=sec.steps.map(stepProg),real=sec.steps.filter(st=>!st.soon),secDone=!lock&&real.length>0&&real.every(st=>stepProg(st).f>=1),here=sec.steps.includes(cur);
@@ -4666,10 +4676,11 @@ function renderRoad(){
       no++;const p=sp[i],complete=!lock&&p.f>=1,active=st===cur,cls=lock?"soon":active?"current":complete?"complete":"upcoming";
       return `<div class="lesson ${cls}"><div class="lesson-track"><button class="lesson-node" data-step="${st.id}" aria-label="${st.name} 열기"${lock?" disabled":""}>${complete?"✿":st.mark}</button>${active?'<svg class="here-fox" viewBox="0 0 180 190" aria-hidden="true"><use href="#fox"/></svg>':""}</div><button class="lesson-info" data-step="${st.id}"${lock?" disabled":""}><span class="lesson-eyebrow">STEP ${String(no).padStart(2,"0")}${lock?" <em>잠김</em>":active?" <em>지금 여기</em>":complete?" <em>완료</em>":""}</span><h3>${st.name}</h3><p>${st.desc}</p><span class="lesson-meta">${lock?"기초를 마치면 열려요":`${p.n} / ${p.t} 완료`}</span>${!lock&&(active||(p.n&&!complete))?`<div class="bar"><i style="width:${p.f*100}%"></i></div>`:""}</button><span class="lesson-chevron" aria-hidden="true">›</span></div>`}).join("")}</div></details>`};
   const begDone=ROAD_STEPS.filter(st=>stepProg(st).f>=1).length;
-  el.innerHTML=pick+(live.length
-    ?`<details class="road-group"><summary><span class="road-ic">初</span><span class="road-title"><b>기초 여정 · 1~4구간</b><small>${begDone} / ${ROAD_STEPS.length}단계 완료 · 가나·단어·문장</small></span><span class="road-state">${begDone===ROAD_STEPS.length?"✿ 완료":""}</span></summary>${ROAD.map((s,i)=>secHtml(s,i)).join("")}</details>${live.map((s,i)=>secHtml(s,ROAD.length+i)).join("")}${more}`
+  el.innerHTML=pick+courseRow+(live.length
+    ?`<details class="road-group"><summary><span class="road-ic">初</span><span class="road-title"><b>기초 여정 · 1~4구간</b><small>${begDone} / ${ROAD_STEPS.length}단계 완료 · 가나·단어·문장</small></span><span class="road-state">${begDone===ROAD_STEPS.length?"✿ 완료":""}</span></summary>${ROAD.map((s,i)=>secHtml(s,i)).join("")}</details>${live.map((s,i)=>secHtml(s,ROAD.length+i)).join("")}`
     :ROAD.map((s,i)=>secHtml(s,i)).join("")+(g?roadCourses().map((s,i)=>secHtml(s,ROAD.length+i,true)).join(""):""));
   el.querySelectorAll("[data-step]:not([disabled])").forEach(b=>b.onclick=()=>roadSteps().find(s=>s.id===b.dataset.step).go());
+  el.querySelectorAll("[data-ctab]").forEach(b=>b.onclick=()=>show(+b.dataset.ctab));
   el.querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>setGoal(b.dataset.goal));
 }
 function setLast(o){if(JSON.stringify(S.last)!==JSON.stringify(o)){S.last=o;save()}}
