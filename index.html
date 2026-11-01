@@ -373,6 +373,9 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 [data-theme=dark] .cal-week .sat,[data-theme=dark] .cal-day.sat .cd{color:#9DB8E6}
 [data-theme=dark] .cal-week .sun,[data-theme=dark] .cal-day.sun .cd{color:var(--bad)}
 @media(max-width:760px){#continue{min-height:44px}}
+.tab-sm{display:none}
+@media(max-width:760px){.tab-lg{display:none}.tab-sm{display:inline}}
+@media(max-width:760px){.topbar,.topbar *{white-space:nowrap}.language{font-size:0;gap:6px}.language .lvl-btn{font-size:13px}.top-count{padding:3px 4px}}
 </style><a class="skip-link" href="#content">학습 내용으로 이동</a><div class="sakura-deco" aria-hidden="true"><svg class="deco-branch tr" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><path d="M230 46q-20 40-60 62M120 96q-10 30-40 46" stroke="var(--trunk)" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="150" y="30" width="100" height="64"/><use href="#hs-bloom" x="60" y="80" width="95" height="61"/><use href="#hs-bloom" x="140" y="96" width="70" height="45"/><use href="#hs-bloom" x="0" y="128" width="70" height="45"/></svg><svg class="deco-branch bl" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="130" y="40" width="100" height="64"/><use href="#hs-bloom" x="30" y="100" width="90" height="58"/></svg><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><svg xmlns="http://www.w3.org/2000/svg" class="svg-library" aria-hidden="true"><defs>
 <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></symbol>
 <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5C9 3 5 3 3 4v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1v15"/></symbol>
@@ -1948,6 +1951,7 @@ function sentQ(s,type,ear,build){ // ear: 소리만 듣고 고르기 허용 (숫
   return{...base,prompt:"이 문장의 뜻은?",big:esc(sjPlain(s)),bigCls:"sent",choices:opts.map(x=>esc(x.ko)),chCls:"text",correct:opts.indexOf(s)};
 }
 const SGROUPS={p:"조사",v:"표현 더하기",k:"가타카나 넣은 문장",n:"숫자 읽기"};
+const SGROUP_SHORT={p:"조사",v:"표현",k:"가타카나 말",n:"숫자"}; // 휴대폰 탭에 쓰는 짧은 이름
 const sgOf=u=>u.g||(u.mix?"k":"p");
 const groupUnits=g=>SENT_UNITS.filter(u=>sgOf(u)===g);
 const sLabel=u=>sgOf(u)==="p"?`문장 · ${u.title}`:`${SGROUPS[sgOf(u)]} · ${u.title}`; // 상태 줄·초기화 알림에 쓰는 이름
@@ -1959,7 +1963,7 @@ function renderSent(el){
   if(wv.view==="slist"){
     if(SGROUPS[wv.sg])sentGroup=wv.sg;
     const g=sentGroup,units=groupUnits(g),nx=units.findIndex(u=>!unitDone(u));
-    const gseg=`<div class="seg" role="group" aria-label="문장 종류">${Object.keys(SGROUPS).map(k=>`<button data-sg="${k}" class="${k===g?"on":""}" aria-pressed="${k===g}">${SGROUPS[k]}</button>`).join("")}</div>`;
+    const gseg=`<div class="seg top-tabs" role="group" aria-label="문장 종류">${Object.keys(SGROUPS).map(k=>`<button data-sg="${k}" class="${k===g?"on":""}" aria-pressed="${k===g}"><span class="tab-lg">${SGROUPS[k]}</span><span class="tab-sm">${SGROUP_SHORT[k]}</span></button>`).join("")}</div>`;
     const intro=g==="v"?"\"~ 주세요\", \"어디예요?\"처럼 바로 쓰는 표현과, 문장 끝(ます)을 바꿔 \"안 해요·했어요·있어요·하고 싶어요\"를 말해요. 조사 단원 다음에 하면 좋아요.":g==="n"?"가격과 시간을 읽고 들어요. 일본에서 계산할 때, 시간을 확인할 때 바로 써요. 소리만 듣고 고르는 문제도 나와요.":g==="k"?"コーヒー·テレビ처럼 가타카나로 쓰는 말을 히라가나 문장에 넣어 읽어요. 조사 단원을 먼저 하면 더 쉬워요."
       :"단어를 이어 짧은 문장을 만들어요. 조사(は·を·に…)를 하나씩, 위에서부터 차례로 익히면 좋아요.";
     el.innerHTML=seg+gseg+`<p class="intro">${intro}</p>
