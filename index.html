@@ -1950,7 +1950,7 @@ function sentQ(s,type,ear,build){ // ear: 소리만 듣고 고르기 허용 (숫
   if(type==="rev")return{...base,prompt:"이 뜻의 일본어 문장은?",big:esc(s.ko),bigCls:"sent ko",choices:opts.map(x=>esc(sjPlain(x))),chCls:"text kana sentc",correct:opts.indexOf(s),rev:1};
   return{...base,prompt:"이 문장의 뜻은?",big:esc(sjPlain(s)),bigCls:"sent",choices:opts.map(x=>esc(x.ko)),chCls:"text",correct:opts.indexOf(s)};
 }
-const SGROUPS={p:"조사",v:"표현 더하기",k:"가타카나 넣은 문장",n:"숫자 읽기"};
+const SGROUPS={p:"조사",v:"표현 더하기",k:"가타카나 말",n:"숫자 읽기"};
 const SGROUP_SHORT={p:"조사",v:"표현",k:"가타카나 말",n:"숫자"}; // 휴대폰 탭에 쓰는 짧은 이름
 const sgOf=u=>u.g||(u.mix?"k":"p");
 const groupUnits=g=>SENT_UNITS.filter(u=>sgOf(u)===g);
@@ -2290,7 +2290,7 @@ const BADGES=[
   ["hiraAll","히라가나 마스터","히라가나 문제를 모두 맞혔어요","ひ",()=>allCd(ALL)],
   ["kataAll","가타카나 마스터","가타카나 문제를 모두 맞혔어요","カ",()=>allCd(ALL_K)],
   ["cat1","첫 단어 카테고리","단어 카테고리를 하나 끝냈어요","語",()=>CATS.some(c=>catDone(c.id))],
-  ["mix","가타카나 문장 첫걸음","가타카나 넣은 문장을 처음 맞혔어요","あア",()=>!!S.mix||SENT_UNITS.some(u=>u.mix&&u.items.some(s=>sxd(s.id)))],
+  ["mix","가타카나 문장 첫걸음","가타카나 말이 든 문장을 처음 맞혔어요","あア",()=>!!S.mix||SENT_UNITS.some(u=>u.mix&&u.items.some(s=>sxd(s.id)))],
   ["w50","단어 50개","단어 50개를 맞혔어요","50",()=>WORDS.filter(w=>wd(w.id)).length>=50],
   ["s3","3일 연속","3일 연속으로 공부했어요","3",()=>streak()>=3],
   ["s7","7일 연속","7일 연속으로 공부했어요","7",()=>streak()>=7],
@@ -3504,7 +3504,7 @@ const ROAD=[
     {id:"wk",mark:"パン",name:"가타카나 단어",desc:"커피·버스처럼 외국에서 온 말",items:()=>wordIdsOf("k"),done:wd,go:()=>{wv={view:"list",script:"k"};show(3)}}]},
   {title:"문장",icon:"文",steps:[
     {id:"sp",mark:"は",name:"짧은 문장 만들기",desc:"は・を・に 조사, ください·どこ, ません・あります・たいです",items:()=>[...groupUnits("p"),...groupUnits("v")].flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"p"};show(3);renderWords()}},
-    {id:"sk",mark:"文",name:"가타카나 넣은 문장",desc:"コーヒーを のみます처럼 가타카나 말이 든 문장",items:()=>groupUnits("k").flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"k"};show(3);renderWords()}}]},
+    {id:"sk",mark:"文",name:"가타카나 말 문장",desc:"コーヒーを のみます처럼 가타카나 말이 든 문장",items:()=>groupUnits("k").flatMap(u=>u.items.map(s=>s.id)),done:sxd,go:()=>{wv={view:"slist",sg:"k"};show(3);renderWords()}}]},
 ];
 const roadDone=()=>ROAD_STEPS.every(st=>stepProg(st).f>=1);
 const isMid=()=>S.level==="mid";
