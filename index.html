@@ -3954,7 +3954,7 @@ function renderSettings(force){
     <div class="set-sound test-tools">${S.account?`<p class="set-note">로그인한 상태에서는 쓸 수 없어요. 계정 기록과 랭킹에 섞이지 않게, 로그아웃한 뒤 써 주세요.</p>`:`<div class="test-btns"><button type="button" class="rec-reset" data-clear="beg">기초 클리어</button><button type="button" class="rec-reset" data-clear="mid">코스 열기 (여행 클리어)</button></div>
       <p class="set-note">이 브라우저의 학습 기록만 바꿔요. 처음으로 돌리려면 위의 '모두 초기화'를 눌러요.</p>`}</div>`:""}`;
   $("set-close").onclick=()=>d.close();
-  d.querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>setGoal(b.dataset.goal));
+  d.querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>pickGoal(b.dataset.goal));
   d.querySelectorAll("[data-clear]").forEach(b=>b.onclick=()=>testClear(b.dataset.clear));
   if($("rk-hide"))$("rk-hide").onclick=()=>setRankHidden(!S.rankOff);
   $("guide-open").onclick=()=>{d.close();openGuide()};
@@ -4625,6 +4625,19 @@ function setGoal(g){
   if((tab===6&&!t)||(tab===8&&!n))show(0);
   renderRoad();renderSettings();
 }
+function pickGoal(g){
+  if(g===goalOf())return;
+  const on=basicDone(),closing=[isMid()&&on&&!(g==="trip"||g==="both")?"여행 코스(회화 칸)":"",isAdv()&&on&&!(g==="n5"||g==="both")?"N5 코스(시험 칸)":""].filter(Boolean);
+  if(!closing.length)return setGoal(g);
+  askConfirm(`${closing.join("와 ")}를 닫을까요?`,`목표를 '${GOALS[g]}'(으)로 바꾸면 메뉴에서 ${closing.join("와 ")}이 사라져요. 지금까지 공부한 기록은 그대로 남고, 언제든 다시 열 수 있어요.`,"닫고 바꾸기",()=>setGoal(g));
+}
+function askConfirm(title,body,ok,cb){
+  let d=$("ask-dlg");
+  if(!d){d=document.createElement("dialog");d.id="ask-dlg";d.className="set-dlg guide-dlg";d.setAttribute("aria-labelledby","ask-title");document.body.appendChild(d)}
+  d.innerHTML=`<h3 id="ask-title">${esc(title)}</h3><p class="guide-p">${esc(body)}</p><div class="navrow"><button type="button" class="ghost" id="ask-no">그대로 둘게요</button><button type="button" class="next" id="ask-ok">${esc(ok)}</button></div>`;
+  $("ask-no").onclick=()=>d.close();$("ask-ok").onclick=()=>{d.close();cb()};
+  if(!d.open)d.showModal();$("ask-no").focus();
+}
 function applyLevel(){
   const t=isMid(),n=isAdv();
   $("level-label").textContent=t&&n?"여행·N5":t?"여행":n?"N5":"기초";
@@ -4681,7 +4694,7 @@ function renderRoad(){
     :ROAD.map((s,i)=>secHtml(s,i)).join("")+(g?roadCourses().map((s,i)=>secHtml(s,ROAD.length+i,true)).join(""):""));
   el.querySelectorAll("[data-step]:not([disabled])").forEach(b=>b.onclick=()=>roadSteps().find(s=>s.id===b.dataset.step).go());
   el.querySelectorAll("[data-ctab]").forEach(b=>b.onclick=()=>show(+b.dataset.ctab));
-  el.querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>setGoal(b.dataset.goal));
+  el.querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>pickGoal(b.dataset.goal));
 }
 function setLast(o){if(JSON.stringify(S.last)!==JSON.stringify(o)){S.last=o;save()}}
 function lastPlace(){const L=S.last;if(!L)return"";
