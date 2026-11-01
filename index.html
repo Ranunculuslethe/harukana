@@ -406,6 +406,8 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .jl-script{margin-top:10px;padding:10px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--line);font-size:16px;line-height:1.7;text-align:left}
 .jl-script p{margin:2px 0}.jl-script small{display:inline-block;min-width:34px;color:var(--sub);font-size:13px}
 .jl-note{text-align:center;color:var(--sub);font-size:14px;margin:-8px 0 14px}
+.jl-sit{margin:0 0 14px;padding:14px 16px;border-radius:12px;background:var(--accent-soft);color:var(--accent-dark);font-size:17px;font-weight:600;text-align:center}
+.choices.jl-num{grid-template-columns:repeat(4,minmax(0,1fr))}.choices.jl-num button{font-size:20px;font-weight:700;padding-left:6px}.choices.jl-num button::before{display:none}
 .jl-exam-st{justify-content:space-between}
 .jl-exam-st .jl-timer{flex:none;width:auto;font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent-dark);padding:2px 10px;border-radius:8px;background:var(--accent-soft)}
 .jl-timer.low{color:var(--bad);background:var(--badbg)}
@@ -4172,6 +4174,88 @@ const JL_L=[
   ["l12","resp",[["F","いま 何時ですか。"]],"",["三時半です。","三月です。","三かいです。","三人です。"],"지금 몇 시예요? → <b>3시 반이에요</b>."],
   ["l13","resp",[["M","いってきます。"]],"",["いってらっしゃい。","ただいま。","おやすみなさい。","はじめまして。"],"다녀오겠습니다 → <b>다녀오세요</b>(いってらっしゃい)."],
   ["l14","resp",[["F","この ケーキ、いっしょに 食べませんか。"]],"",["ええ、食べましょう。","はい、食べませんでした。","いいえ、食べます。","ええ、食べて いました。"],"같이 먹지 않을래요? → <b>네, 먹어요</b>(食べましょう)."]];
+JL_V.push(
+  ["v23","ctx","でんきを つけて ください。へやが （　）です。",["くらい","あかるい","ひろい","あたらしい"],"불을 켜 주세요. 방이 <b>어두워요</b>."],
+  ["v24","ctx","わたしは 毎朝 シャワーを （　）。",["あびます","はいります","あらいます","かけます"],"샤워는 あびる(끼얹다)를 써요. 매일 아침 샤워를 <b>해요</b>."],
+  ["v25","ctx","さむいですから、コートを （　）。",["きます","はきます","かぶります","つけます"],"코트·셔츠처럼 윗옷은 <b>きる</b>, 바지·신발은 はく, 모자는 かぶる."],
+  ["v26","ctx","あたまに ぼうしを （　）。",["かぶります","きます","はきます","かけます"],"모자는 <b>かぶる</b>(쓰다)."],
+  ["v27","ctx","くつを （　） から、うちに 入ります。",["ぬいで","きて","はいて","かぶって"],"신발을 <b>벗고</b> 나서 집에 들어가요. ぬぐ = 벗다."],
+  ["v28","ctx","もう おそいですから、（　） ねましょう。",["はやく","おおきく","ながく","たかく"],"이제 늦었으니까 <b>일찍</b> 잡시다. はやい → はやく."],
+  ["v29","ctx","この みちを （　） 行くと、駅が あります。",["まっすぐ","たくさん","ときどき","いつも"],"이 길을 <b>똑바로</b> 가면 역이 있어요."],
+  ["v30","ctx","わたしは （　） テレビを 見ません。",["あまり","とても","よく","たくさん"],"あまり + 부정 = 별로 ~않다. <b>별로</b> 텔레비전을 안 봐요."],
+  ["v31","ctx","日本語が （　） わかりません。",["ぜんぜん","とても","もっと","たくさん"],"ぜんぜん + 부정 = 전혀 ~않다. 일본어를 <b>전혀</b> 몰라요."],
+  ["v32","ctx","きってを 買いに （　）へ 行きます。",["ゆうびんきょく","としょかん","びょういん","ぎんこう"],"우표(きって)는 <b>우체국</b>에서 사요."],
+  ["v33","ctx","おかねが ありませんから、（　）へ 行きます。",["ぎんこう","こうえん","えいがかん","びじゅつかん"],"돈이 없어서 <b>은행</b>에 가요."],
+  ["v34","ctx","ねつが ありますから、（　）へ 行きます。",["びょういん","ぎんこう","デパート","こうえん"],"열이 있어서 <b>병원</b>에 가요."],
+  ["v35","ctx","わたしは りょうりが （　）です。毎日 つくります。",["すき","きらい","へた","いや"],"매일 만드니까 요리를 <b>좋아해요</b>."],
+  ["v36","ctx","としょかんでは （　） して ください。",["しずかに","にぎやかに","げんきに","たいへんに"],"도서관에서는 <b>조용히</b> 해 주세요. しずか → しずかに."],
+  ["v37","ctx","すみません、トイレは （　）ですか。",["どこ","だれ","いつ","いくら"],"화장실은 <b>어디</b>예요?"],
+  ["v38","ctx","この ナイフは よく きれますから、（　）ですよ。",["あぶない","うるさい","きたない","かわいい"],"이 칼은 잘 드니까 <b>위험해요</b>. あぶない = 위험하다."],
+  ["v39","para","この へやは _くらいです_。",["この へやは あかるくないです。","この へやは あかるいです。","この へやは ひろくないです。","この へやは せまいです。"],"어둡다 = <b>밝지 않다</b>(あかるくない)."],
+  ["v40","para","_きのうの よる_ テレビを 見ました。",["ゆうべ テレビを 見ました。","けさ テレビを 見ました。","こんばん テレビを 見ました。","おととい テレビを 見ました。"],"어젯밤 = <b>ゆうべ</b>. けさ는 오늘 아침, こんばん은 오늘 밤."],
+  ["v41","para","_あさって_ くにへ かえります。",["二日 あとに くにへ かえります。","あした くにへ かえります。","きのう くにへ かえります。","二日 前に くにへ かえります。"],"あさって = 모레 = <b>二日 あと</b>(이틀 뒤)."],
+  ["v42","para","_この 本は やさしいです_。",["この 本は むずかしくないです。","この 本は むずかしいです。","この 本は おもしろくないです。","この 本は 高くないです。"],"쉽다 = <b>어렵지 않다</b>(むずかしくない)."],
+  ["v43","para","_おととし_ 日本へ 行きました。",["二年 前に 日本へ 行きました。","一年 前に 日本へ 行きました。","二年 あとに 日本へ 行きました。","三年 前に 日本へ 行きました。"],"おととし = 재작년 = <b>二年 前</b>(2년 전)."],
+  ["v44","para","わたしの うちは _駅から ちかいです_。",["わたしの うちは 駅から とおくないです。","わたしの うちは 駅から とおいです。","わたしの うちは 駅の 中です。","わたしの うちは 駅から 一時間です。"],"가깝다 = <b>멀지 않다</b>(とおくない)."],
+  ["v45","para","この 店は _いつも にぎやかです_。",["この 店は いつも 人が 多いです。","この 店は いつも 人が 少ないです。","この 店は いつも しずかです。","この 店は いつも 安いです。"],"にぎやか(북적이다) = <b>사람이 많다</b>."],
+  ["v46","para","_ここは でぐちです_。",["ここから 外へ 出ます。","ここから 中へ 入ります。","ここで まちます。","ここで 買います。"],"でぐち(출구) = <b>여기서 밖으로 나가요</b>."]);
+JL_G.push(
+  ["g21","form","きのう デパートで くつを （　）。",["買いました","買います","買って","買いましょう"],"きのう(어제)니까 과거형 <b>買いました</b>."],
+  ["g22","form","この へやは （　）で ひろいです。",["きれい","きれいな","きれいに","きれいく"],"な형용사를 이을 때는 <b>きれいで</b>(깨끗하고). い형용사라면 〜くて."],
+  ["g23","form","あの （　） 人は だれですか。",["しずかな","しずか","しずかに","しずかの"],"な형용사가 명사 앞에 오면 <b>な</b>를 붙여요: しずかな 人."],
+  ["g24","form","もっと （　） 書いて ください。",["大きく","大きい","大きいく","大きかった"],"동사를 꾸밀 때 い형용사는 い → <b>く</b>: 大きく 書く(크게 쓰다)."],
+  ["g25","form","わたしは 日本へ （　）たいです。",["行き","行く","行って","行った"],"たい 앞에는 ます형(ます를 뗀 모양): 行きます → <b>行き</b>たいです."],
+  ["g26","form","毎ばん 十一時（　） ねます。",["に","を","が","で"],"시각 뒤에는 <b>に</b>: 十一時に ねます(11시에 자요)."],
+  ["g27","form","うちから 学校まで 三十分（　） かかります。",["ぐらい","ごろ","まで","から"],"시간·양은 <b>ぐらい</b>(쯤), 시각은 ごろ(쯤): 三十分ぐらい / 三時ごろ."],
+  ["g28","form","テーブルの 上に りんご（　） バナナが あります。",["や","を","で","に"],"〜や〜 = ~랑 ~(등). 사과<b>랑</b> 바나나가 있어요."],
+  ["g29","form","わたしは バス（　） 学校へ 行きます。",["で","を","に","が"],"탈것·도구에는 <b>で</b>: バスで(버스로)."],
+  ["g30","form","きのうは どこ（　） 行きませんでした。",["にも","にを","にが","にの"],"どこにも + 부정 = 아무 데도 ~않다."],
+  ["g31","form","「この ペンは だれのですか。」「わたし（　）です。」",["の","が","を","に"],"わたしの = <b>제 것</b>."],
+  ["g32","form","へやに だれ（　） いません。",["も","が","を","で"],"だれも + 부정 = 아무도 없다."],
+  ["g33","form","わたしは 毎日 日本語を （　） います。",["べんきょうして","べんきょうする","べんきょうした","べんきょうし"],"〜て います: <b>べんきょうして</b> います(공부하고 있어요)."],
+  ["g34","form","ここは 駅（　） ちかいです。",["から","を","で","が"],"〜から ちかい = ~에서 가깝다."],
+  ["g35","form","父は いま （　） います。",["ねて","ねる","ねた","ねない"],"ねる → <b>ねて</b> います(자고 있어요)."],
+  ["g36","form","いっしょに （　） 行きませんか。",["あそびに","あそんで","あそぶ","あそび"],"ます형 + に 行く = ~하러 가다: <b>あそびに</b> 行く(놀러 가다)."],
+  ["g37","form","「きのうの えいがは （　）でしたか。」「とても おもしろかったです。」",["どう","どこ","だれ","いくつ"],"어땠는지 물을 때는 <b>どう</b>."],
+  ["g38","form","「（　） 日本へ 来ましたか。」「きょねんです。」",["いつ","どこ","なに","だれ"],"때를 물을 때는 <b>いつ</b>(언제)."],
+  ["s9","star","わたしの",["へやは","あまり","ひろく","ありません"],"。",2,"わたしの へやは あまり <b>ひろく</b> ありません. (제 방은 별로 넓지 않아요)"],
+  ["s10","star","きのう",["友だちと","いっしょに","えいがを","見に"],"行きました。",2,"きのう 友だちと いっしょに <b>えいがを</b> 見に 行きました. (어제 친구와 같이 영화를 보러 갔어요)"],
+  ["s11","star","あそこで",["新聞を","読んで","いる","人は"],"だれですか。",2,"あそこで 新聞を 読んで <b>いる</b> 人は だれですか. (저기서 신문을 읽고 있는 사람은 누구예요?)"],
+  ["s12","star","日本語の",["べんきょうは","むずかしい","ですが","おもしろい"],"です。",2,"日本語の べんきょうは むずかしい <b>ですが</b> おもしろいです. (일본어 공부는 어렵지만 재미있어요)"],
+  ["s13","star","ねる",["前に","はを","みがいて","ください"],"。",2,"ねる 前に はを <b>みがいて</b> ください. (자기 전에 이를 닦아 주세요)"],
+  ["s14","star","コーヒーと",["こうちゃと","どちらが","すき","ですか"],"。",2,"コーヒーと こうちゃと どちらが <b>すき</b> ですか. (커피와 홍차 중 어느 쪽을 좋아해요?)"],
+  ["s15","star","駅の",["ちかくに","新しい","レストランが","できました"],"。",2,"駅の ちかくに 新しい <b>レストランが</b> できました. (역 근처에 새 레스토랑이 생겼어요)"],
+  ["s16","star","わたしは",["毎ばん","おふろに","入ってから","ねます"],"。",2,"わたしは 毎ばん おふろに <b>入ってから</b> ねます. (저는 매일 밤 목욕하고 나서 자요)"]);
+JL_R.push(
+  ["r11","としょかん\n月よう日は 休みです。\n本は 一人 五さつまで かりる ことが できます。\nかりた 本は 二週間で かえして ください。","本は 何さつまで かりる ことが できますか。",["五さつ","二さつ","一さつ","何さつでも"],"한 사람 <b>다섯 권까지</b> 빌릴 수 있고, 2주 안에 돌려줘요."],
+  ["r12","あかりさん\n田中先生から 電話が ありました。あしたの じゅぎょうは 午後 二時からに なりました。きょうしつは 三かいの 三〇五です。","あしたの じゅぎょうは 何時からですか。",["午後 二時","午前 二時","午後 三時","午前 十時"],"내일 수업은 <b>오후 2시</b>부터로 바뀌었어요. 교실은 3층 305호."],
+  ["r13","きのうは 友だちの たんじょうびでした。わたしは 花を 買って、友だちの うちへ 行きました。友だちの お母さんが ケーキを つくって いました。みんなで ケーキを 食べて、ゲームを しました。","ケーキを つくったのは だれですか。",["友だちの お母さん","「わたし」","友だち","みんな"],"케이크는 <b>친구의 어머니</b>가 만들었어요. '나'는 꽃을 샀어요."],
+  ["r14","メニュー\nカレー　600円\nラーメン　700円\nサラダ　300円\nコーヒー　250円\n午後 二時までは、どの メニューも 100円 安く なります。","午後 一時に カレーと コーヒーを 食べました。いくら はらいますか。",["650円","750円","850円","550円"],"600+250 = 850엔. 오후 2시 전이라 메뉴마다 100엔씩 싸져서 <b>650엔</b>."],
+  ["r15","キムさん、こんにちは。こんどの 日よう日、いっしょに 山へ 行きませんか。朝 八時に 駅の 前で あいましょう。おべんとうは わたしが つくりますから、のみものを もって きて ください。","二人は どこで あいますか。",["駅の 前","山の 上","キムさんの うち","駅の 中"],"아침 8시에 <b>역 앞</b>에서 만나요."],
+  ["r16","なつやすみの しゅくだい\n・日本語の 本を 一さつ 読む\n・毎日 にっきを 書く\n・八月 二十五日に 学校へ もって くる","しゅくだいは いつ 出しますか。",["八月 二十五日","八月 二日","九月 一日","毎日"],"<b>8월 25일</b>에 학교에 가져와요. 일기는 매일 써요."],
+  ["r17","わたしは 毎朝 七時に おきます。いつもは 朝ごはんを 食べますが、きょうは おそく おきたので、何も 食べないで 学校へ 行きました。","きょう、この 人は どう しましたか。",["朝ごはんを 食べないで 学校へ 行きました。","七時に おきて 朝ごはんを 食べました。","学校を 休みました。","朝ごはんを 食べてから 学校へ 行きました。"],"늦게 일어나서 <b>아무것도 안 먹고</b> 학교에 갔어요. 〜ないで = ~하지 않고."],
+  ["r18","おねがい\nここで しゃしんを とらないで ください。\nたばこを すわないで ください。\nのみものは 外で のんで ください。","のみものは どこで のみますか。",["外","ここ","へやの 中","どこでも"],"음료는 <b>밖에서</b> 마셔 달래요."],
+  ["r19","山田先生、おげんきですか。わたしは いま おおさかに すんで います。毎日 かいしゃで はたらいて います。しごとは いそがしいですが、たのしいです。来月 東京へ 行きますから、先生に あいたいです。","この 人は 来月 何を しますか。",["東京へ 行きます。","おおさかに すみます。","かいしゃを 休みます。","先生が おおさかへ 来ます。"],"다음 달에 <b>도쿄에 가서</b> 선생님을 만나고 싶대요."],
+  ["r20","やまだスーパー\n毎週 水よう日は 魚の 日です。魚が ぜんぶ 半分の ねだんに なります。\n土よう日と 日よう日は 午後 九時まで あいて います。","魚を 安く 買いたいです。何よう日に 行きますか。",["水よう日","土よう日","日よう日","月よう日"],"매주 <b>수요일</b>은 생선이 반값이에요."],
+  ["r21","わたしは いぬと ねこを かって います。いぬは 白くて 大きいです。ねこは くろくて 小さいです。","ねこは どれですか。",["くろくて 小さい","白くて 大きい","くろくて 大きい","白くて 小さい"],"고양이는 <b>까맣고 작아요</b>. 개가 하얗고 커요."],
+  ["r22","あしたの よてい\n9:00　駅で あつまる\n10:00　びじゅつかん\n12:00　ひるごはん（レストラン）\n2:00　こうえんを さんぽ\n4:00　かえる","ひるごはんの あとで 何を しますか。",["こうえんを さんぽします。","びじゅつかんへ 行きます。","駅で あつまります。","うちへ かえります。"],"점심 다음(2시)은 <b>공원 산책</b>이에요."]);
+JL_L.push(
+  ["l15","task",[["N","女の人と 男の人が 話して います。男の人は 何を 買って かえりますか。"],["F","かえりに たまごと ぎゅうにゅうを 買って きて ください。"],["M","パンは いいですか。"],["F","パンは まだ ありますから、いりません。"]],"男の人は 何を 買って かえりますか。",["たまごと ぎゅうにゅう","たまごと パン","ぎゅうにゅうと パン","たまごだけ"],"달걀과 우유를 사 오래요. 빵은 아직 있어서 필요 없어요."],
+  ["l16","point",[["N","男の人が 話して います。男の人は 毎朝 何で かいしゃへ 行きますか。"],["M","前は バスで 行って いましたが、いまは 毎朝 じてんしゃで 行きます。雨の 日だけ 電車に のります。"]],"男の人は 毎朝 何で かいしゃへ 行きますか。",["じてんしゃ","バス","電車","あるいて"],"예전엔 버스, 지금은 매일 아침 <b>자전거</b>. 비 오는 날만 전철."],
+  ["l17","task",[["N","先生が 話して います。学生は あした 何時に どこへ 来ますか。"],["M","あしたは 九時に 学校の 前に あつまって ください。バスで びじゅつかんへ 行きます。おくれないで ください。"]],"学生は あした 何時に どこへ 来ますか。",["九時に 学校の 前","九時に びじゅつかん","十時に 学校の 前","十時に びじゅつかん"],"<b>9시에 학교 앞</b>에 모여서 버스로 미술관에 가요."],
+  ["l18","point",[["N","男の人と 女の人が 話して います。女の人の かさは どれですか。"],["M","これは あなたの かさですか。"],["F","いいえ、わたしのは あおくて 長い かさです。"]],"女の人の かさは どれですか。",["あおくて 長い かさ","あおくて みじかい かさ","あかくて 長い かさ","くろくて 長い かさ"],"여자의 우산은 <b>파랗고 긴</b> 우산이에요."],
+  ["l19","point",[["N","男の人と 女の人が 話して います。男の人は きのう 何を しましたか。"],["F","きのうは 何を しましたか。"],["M","朝は へやの そうじを しました。午後は 雨でしたから、テニスは しないで、うちで 本を 読みました。"]],"男の人は きのう 何を しましたか。",["そうじを して、本を 読みました","そうじを して、テニスを しました","テニスを して、本を 読みました","友だちと 出かけました"],"아침엔 청소, 오후엔 비가 와서 테니스 대신 <b>집에서 책</b>을 읽었어요."],
+  ["l20","task",[["N","店の人と 女の人が 話して います。女の人は どの ケーキを いくつ 買いますか。"],["F","いちごの ケーキを 二つと、チョコレートの ケーキを 一つ ください。"],["M","すみません、チョコレートの ケーキは もう ありません。"],["F","じゃあ、いちごの ケーキを 三つ ください。"]],"女の人は どの ケーキを いくつ 買いますか。",["いちごの ケーキ 三つ","いちごの ケーキ 二つ","いちご 二つと チョコレート 一つ","チョコレートの ケーキ 三つ"],"초콜릿 케이크가 다 떨어져서 <b>딸기 케이크 세 개</b>를 사요."],
+  ["l21","point",[["N","男の人と 女の人が 話して います。二人は 何で くうこうへ 行きますか。"],["M","くうこうまで タクシーで 行きましょうか。"],["F","タクシーは 高いですから、電車で 行きましょう。"],["M","そうですね。"]],"二人は 何で くうこうへ 行きますか。",["電車","タクシー","バス","くるま"],"택시는 비싸서 <b>전철</b>로 가기로 해요."],
+  ["l22","resp",[["F","おさきに しつれいします。"]],"",["おつかれさまでした。","いただきます。","いらっしゃいませ。","おめでとうございます。"],"먼저 실례하겠습니다(먼저 퇴근할 때) → <b>수고하셨어요</b>."],
+  ["l23","resp",[["M","きのうは どうも ありがとう ございました。"]],"",["いいえ、どういたしまして。","はい、ごちそうさまでした。","いいえ、しつれいします。","はい、いってきます。"],"어제는 고마웠어요 → <b>천만에요</b>."],
+  ["l24","resp",[["F","この ペン、かりても いいですか。"]],"",["ええ、どうぞ。","はい、かりました。","いいえ、かします。","ええ、ペンです。"],"이 펜 빌려도 돼요? → <b>네, 쓰세요</b>(どうぞ)."],
+  ["l25","resp",[["M","しゅくだいは もう おわりましたか。"]],"",["いいえ、まだです。","はい、まだです。","いいえ、もうです。","はい、おわりませんでした。"],"숙제 벌써 끝났어요? → <b>아니요, 아직이에요</b>."],
+  ["l26","utt",[["N","レストランで みずが もう すこし ほしいです。店の人に 何と 言いますか。"]],"식당에서 물을 조금 더 받고 싶어요.",["すみません、おみずを ください。","おみずを どうぞ。","おみずが ありました。","おみずを のみましょうか。"],"점원에게는 <b>すみません、おみずを ください</b>(저기요, 물 좀 주세요)."],
+  ["l27","utt",[["N","友だちの 本を かりたいです。何と 言いますか。"]],"친구의 책을 빌리고 싶어요.",["この 本、かして ください。","この 本、かりて ください。","この 本、かして あげます。","この 本、読みましたか。"],"빌려 달라고 할 때는 <b>かして ください</b>(빌려주세요). かりる는 내가 빌리는 거예요."],
+  ["l28","utt",[["N","先生の へやに 入ります。何と 言いますか。"]],"선생님 방에 들어가요.",["しつれいします。","いってきます。","ただいま。","おやすみなさい。"],"방에 들어갈 때는 <b>しつれいします</b>(실례하겠습니다)."],
+  ["l29","utt",[["N","友だちが 新しい くつを はいて います。何と 言いますか。"]],"친구가 새 신발을 신고 있어요.",["いい くつですね。","くつを ぬいで ください。","くつを かして ください。","くつが ありませんね。"],"칭찬할 때는 <b>いい くつですね</b>(좋은 신발이네요)."],
+  ["l30","utt",[["N","駅が どこか わかりません。みちを 聞きます。何と 言いますか。"]],"역이 어디인지 몰라서 길을 물어요.",["すみません、駅は どこですか。","すみません、駅へ 行きましょう。","駅は あそこです。","駅まで あるきました。"],"길을 물을 때는 <b>すみません、駅は どこですか</b>."]);
 const JL={};
 JL_V.forEach(([id,t,q,ch,ex])=>JL[id]={id,a:"v",t,q,ch,ex});
 JL_G.forEach(x=>JL[x[0]]=x[1]==="star"?{id:x[0],a:"g",t:"star",pre:x[2],pc:x[3],post:x[4],at:x[5],ex:x[6]}:{id:x[0],a:"g",t:"form",q:x[2],ch:x[3],ex:x[4]});
@@ -4192,7 +4276,7 @@ function jlAuto(t){
   const ds=jlLike(e,JL_WORDS,"w",x=>(x.w.length===e.w.length)*2+[...x.w].some(c=>e.w.includes(c)));
   return {id:"jw-"+e.w,a:"v",t:"write",w:e.r,ch:[e.w,...ds.map(x=>x.w)],ex:`<span lang="ja">${e.r}</span> = <b lang="ja">${e.w}</b> (${esc(e.m)})`};
 }
-const JL_PROMPT={read:"한자를 어떻게 읽어요?",write:"히라가나를 한자로 어떻게 써요?",ctx:"（　）에 들어갈 말을 골라요",para:"밑줄 친 문장과 뜻이 거의 같은 문장을 골라요",form:"（　）에 들어갈 말을 골라요",star:"네 칸에 알맞게 넣었을 때 ★에 들어갈 말을 골라요",doc:"글을 읽고 질문에 답해요",task:"잘 듣고 질문에 답해요",point:"잘 듣고 질문에 답해요",resp:"말을 듣고 알맞은 대답을 골라요"};
+const JL_PROMPT={read:"한자를 어떻게 읽어요?",write:"히라가나를 한자로 어떻게 써요?",ctx:"（　）에 들어갈 말을 골라요",para:"밑줄 친 문장과 뜻이 거의 같은 문장을 골라요",form:"（　）에 들어갈 말을 골라요",star:"네 칸에 알맞게 넣었을 때 ★에 들어갈 말을 골라요",doc:"글을 읽고 질문에 답해요",task:"잘 듣고 질문에 답해요",point:"잘 듣고 질문에 답해요",resp:"말을 듣고 알맞은 대답을 골라요",utt:"이럴 때 뭐라고 말할까요? 잘 듣고 골라요"};
 function jlQ(src){
   const q=typeof src==="string"?JL[src]:src;
   const raw=q.t==="star"?q.pc:q.ch,ans=q.t==="star"?q.pc[q.at]:q.ch[0],ch=shuffle(raw.slice());
@@ -4202,10 +4286,12 @@ function jlQ(src){
   else if(q.t==="write")big=`<div class="jl-word jl-kana" lang="ja">${q.w}</div>`;
   else if(q.t==="star")big=`<p class="jl-sent" lang="ja">${esc(q.pre)} ${q.pc.map((_,i)=>`<span class="jl-slot${i===q.at?" star":""}">${i===q.at?"★":""}</span>`).join(" ")} ${esc(q.post)}</p>`;
   else if(q.a==="r")big=`<div class="jl-passage" lang="ja">${esc(q.p).replace(/\n/g,"<br>")}</div><p class="jl-qline" lang="ja">${esc(q.q)}</p>`;
-  else if(q.a==="l")big=`<button type="button" class="jl-play" data-jlplay><span aria-hidden="true">▶</span> <span class="jl-play-t">듣기</span></button>${q.q?`<p class="jl-qline" lang="ja">${esc(q.q)}</p>`:""}`;
+  else if(q.a==="l")big=`${q.t==="utt"?`<p class="jl-sit">${esc(q.q)}</p>`:""}<button type="button" class="jl-play" data-jlplay><span aria-hidden="true">▶</span> <span class="jl-play-t">듣기</span></button>${q.q&&q.t!=="utt"?`<p class="jl-qline" lang="ja">${esc(q.q)}</p>`:""}`;
   else big=`<p class="jl-sent" lang="ja">${blank(q.q)}</p>`;
   const script=q.a==="l"?`<div class="jl-script" lang="ja">${q.lines.map(([w,t])=>`<p><small>${w==="F"?"여자":w==="M"?"남자":"안내"}</small> ${esc(t)}</p>`).join("")}</div>`:"";
-  return {src:q,id:q.id,a:q.a,prompt:JL_PROMPT[q.t],big,choices:ch.map(c=>`<span lang="ja">${esc(c)}</span>`),correct:ch.indexOf(ans),ans,ex:q.ex+script,lines:q.lines};
+  const ansVoice=q.t==="resp"?(q.lines[0][0]==="F"?"M":"F"):"F";
+  const examLines=q.a!=="l"?null:q.t==="resp"||q.t==="utt"?[...q.lines,...ch.flatMap((c,i)=>[["N",["いち","に","さん","よん"][i]],[ansVoice,c]])]:[...q.lines,["N",q.q]];
+  return {src:q,id:q.id,a:q.a,prompt:JL_PROMPT[q.t],big,choices:ch.map(c=>`<span lang="ja">${esc(c)}</span>`),correct:ch.indexOf(ans),ans,ex:q.ex+script,lines:q.lines,examLines,audioCh:q.t==="resp"||q.t==="utt"};
 }
 let jlUtts=[];
 function jlSay(lines,btn){try{
@@ -4215,7 +4301,7 @@ function jlSay(lines,btn){try{
   if(btn){btn.classList.add("on");const off=()=>btn.classList.remove("on");jlUtts[jlUtts.length-1].onend=off;jlUtts[jlUtts.length-1].onerror=off}
   setTimeout(()=>jlUtts.forEach(u=>ss.speak(u)),60);
 }catch(e){}}
-const jlSum=s=>s.t==="read"||s.t==="write"?s.w:s.t==="star"?s.pre+" … "+s.post:s.t==="resp"?"「"+s.lines[0][1]+"」":(s.q||"").replace(/_/g,"");
+const jlSum=s=>s.t==="read"||s.t==="write"?s.w:s.t==="star"?s.pre+" … "+s.post:s.t==="resp"?"「"+s.lines[0][1]+"」":s.t==="utt"?s.q:(s.q||"").replace(/_/g,"");
 const jlStop=()=>{try{speechSynthesis.cancel()}catch(e){}};
 function jlRecord(id,ok){if(!JL[id])return;S.jl=S.jl||{};const r=S.jl[id]||{r:0,w:0};if(ok)r.r++;else r.w++;S.jl[id]=r}
 function jlPick(ids,n){const sc=id=>{const r=(S.jl||{})[id];return !r?0:r.w>r.r?1:r.r?3:2};return shuffle(ids.slice()).sort((a,b)=>sc(a)-sc(b)).slice(0,n)}
@@ -4225,13 +4311,14 @@ function jlPractice(a){
   else qs=jlPick(jlIds(a),a==="r"?5:a==="l"?6:10).map(jlQ);
   return qs;
 }
-const JL_EXAM_MIN=25;
+const JL_EXAM_MIN=35,JL_EXAM_N=30;
 function jlExam(){
   const v=jlIds("v"),g=jlIds("g");
-  return [jlAuto("read"),jlAuto("read"),jlAuto("read"),jlAuto("write"),jlAuto("write"),
-    ...jlPick(v.filter(id=>JL[id].t==="ctx"),2),...jlPick(v.filter(id=>JL[id].t==="para"),1),
-    ...jlPick(g.filter(id=>JL[id].t==="form"),4),...jlPick(g.filter(id=>JL[id].t==="star"),2),
-    ...jlPick(jlIds("r"),3),...jlPick(jlIds("l").filter(id=>JL[id].t!=="resp"),3),...jlPick(jlIds("l").filter(id=>JL[id].t==="resp"),2)].map(jlQ);
+  const l=jlIds("l"),lt=t=>l.filter(id=>t.includes(JL[id].t));
+  return [jlAuto("read"),jlAuto("read"),jlAuto("read"),jlAuto("read"),jlAuto("write"),jlAuto("write"),
+    ...jlPick(v.filter(id=>JL[id].t==="ctx"),3),...jlPick(v.filter(id=>JL[id].t==="para"),1),
+    ...jlPick(g.filter(id=>JL[id].t==="form"),6),...jlPick(g.filter(id=>JL[id].t==="star"),2),
+    ...jlPick(jlIds("r"),4),...jlPick(lt(["task"]),2),...jlPick(lt(["point"]),2),...jlPick(lt(["utt"]),2),...jlPick(lt(["resp"]),2)].map(jlQ);
 }
 function jlScore(qs,ans){
   const by={v:[0,0],g:[0,0],r:[0,0],l:[0,0]};
@@ -4251,7 +4338,7 @@ function renderJlpt(el){
       return `<button class="catcard" data-jla="${a}"><div class="cat-top"><b>${JL_AREAS[a]}</b>${n===ids.length?'<span class="pill ok">완료</span>':""}</div>
         <div class="desc">${{v:"한자 읽기·쓰기, 빈칸 낱말, 같은 뜻 고르기",g:"조사·활용 빈칸, ★ 문장 만들기",r:"메모·안내문·일기를 읽고 답하기",l:"짧은 대화를 듣고 답하기, 바로 대답하기"}[a]}</div>
         <div class="bar"><i style="width:${n/ids.length*100}%"></i></div><div class="meta">맞힌 문제 ${n}/${ids.length}${a==="v"?" · 한자 문제는 매번 새로 나와요":""}</div></button>`};
-    el.innerHTML=`<div class="jl-learn"><span>먼저 배우기</span><button type="button" class="ghost" data-jlgo="a">N5 단어 ${WORDS.filter(w=>w.category.startsWith("a_")).length}개</button><button type="button" class="ghost" data-jlgo="j">N5 문법 ${groupUnits("j").length}단원</button></div><div class="jl-exam-card"><div><span class="jl-kicker">모의시험</span><h3>N5 모의시험 · 22문제 · ${JL_EXAM_MIN}분</h3>
+    el.innerHTML=`<div class="jl-learn"><span>먼저 배우기</span><button type="button" class="ghost" data-jlgo="a">N5 단어 ${WORDS.filter(w=>w.category.startsWith("a_")).length}개</button><button type="button" class="ghost" data-jlgo="j">N5 문법 ${groupUnits("j").length}단원</button></div><div class="jl-exam-card"><div><span class="jl-kicker">모의시험</span><h3>N5 모의시험 · ${JL_EXAM_N}문제 · ${JL_EXAM_MIN}분</h3>
         <p>실제 시험처럼 끝까지 푼 뒤에 점수와 합격선을 알려 줘요. 풀 때는 정답이 바로 나오지 않아요.</p>
         ${X.n?`<p class="jl-best">지금까지 ${X.n}번 · 최고 <b>${X.best}</b> / 180점${X.pass?' <span class="pill ok">합격선 통과</span>':""}</p>`:""}</div>
         <button class="next" id="jl-exam">${X.n?"다시 도전하기":"모의시험 시작"}</button></div>
@@ -4287,9 +4374,9 @@ function renderJlpt(el){
     el.innerHTML=`<div class="panel jl-panel">${exitBtn}
       <div class="status qstat jl-exam-st"><span>모의시험 · ${JL_AREAS[q.a]} · ${jx.i+1} / ${jx.qs.length}</span><span class="jl-timer" id="jl-timer" aria-label="남은 시간">${fmt(left())}</span></div>
       <div class="bar jl-exam-bar"><i style="width:${done/jx.qs.length*100}%"></i></div>
-      <div class="q">${q.prompt}</div><div class="big jl-big">${q.big}</div>
-      ${q.a==="l"?`<p class="jl-note">시험처럼 두 번까지 들을 수 있어요 (${plays}/2)</p>`:""}
-      <div class="choices jl-ch${q.a==="r"||q.src.t==="para"||q.a==="l"?" jl-long":""}">${q.choices.map((c,i)=>`<button data-i="${i}" class="${jx.ans[jx.i]===i?"pick":""}" aria-pressed="${jx.ans[jx.i]===i}">${c}</button>`).join("")}</div>
+      <div class="q">${q.prompt}</div><div class="big jl-big">${q.a==="l"?`${q.src.t==="utt"?`<p class="jl-sit">${esc(q.src.q)}</p>`:""}<button type="button" class="jl-play" data-jlplay><span aria-hidden="true">▶</span> <span class="jl-play-t">듣기</span></button>`:q.big}</div>
+      ${q.a==="l"?`<p class="jl-note">실제 시험처럼 ${q.audioCh?"질문과 보기가 모두 소리로만 나와요":"질문도 소리로만 나와요"}. 두 번까지 들을 수 있어요 (<span class="jl-plays">${plays}</span>/2)</p>`:""}
+      <div class="choices jl-ch${q.audioCh?" jl-num":q.a==="r"||q.src.t==="para"||q.a==="l"?" jl-long":""}">${q.choices.map((c,i)=>`<button data-i="${i}" class="${jx.ans[jx.i]===i?"pick":""}" aria-pressed="${jx.ans[jx.i]===i}">${q.audioCh?`${i+1}번`:c}</button>`).join("")}</div>
       <div class="navrow"><button class="ghost" id="jl-prev" ${jx.i?"":"disabled"}>이전</button><button class="next" id="jl-next">${last?"제출하기":"다음"}</button></div></div>`;
     $("jl-exit").onclick=()=>{if(jx.armed){jx.armed=0;jlHome()}else{jx.armed=1;notifyText("한 번 더 누르면 모의시험을 그만둬요. 지금까지 푼 답은 저장되지 않아요.");setTimeout(()=>jx.armed=0,4000)}};
     el.querySelectorAll(".choices button").forEach(b=>b.onclick=()=>{jx.ans[jx.i]=+b.dataset.i;el.querySelectorAll(".choices button").forEach(x=>{const on=x===b;x.classList.toggle("pick",on);x.setAttribute("aria-pressed",String(on))});el.querySelector(".jl-exam-bar i").style.width=jx.ans.filter(a=>a!=null).length/jx.qs.length*100+"%"});
@@ -4300,7 +4387,7 @@ function renderJlpt(el){
       jlFinish()};
     const pb=el.querySelector("[data-jlplay]");
     if(pb){const lock=()=>{if((jx.plays[jx.i]||0)>=2){pb.disabled=true;pb.querySelector(".jl-play-t").textContent="다 들었어요"}};lock();
-      pb.onclick=()=>{if((jx.plays[jx.i]||0)>=2)return;jx.plays[jx.i]=(jx.plays[jx.i]||0)+1;el.querySelector(".jl-note").textContent=`시험처럼 두 번까지 들을 수 있어요 (${jx.plays[jx.i]}/2)`;jlSay(q.lines,pb);lock()}}
+      pb.onclick=()=>{if((jx.plays[jx.i]||0)>=2)return;jx.plays[jx.i]=(jx.plays[jx.i]||0)+1;el.querySelector(".jl-plays").textContent=jx.plays[jx.i];jlSay(q.examLines,pb);lock()}}
     clearInterval(jlTimer);
     jlTimer=setInterval(()=>{if(jx.view!=="exam")return clearInterval(jlTimer);const t=$("jl-timer");if(t){t.textContent=fmt(left());t.classList.toggle("low",left()<3*60e3)}if(!left()){clearInterval(jlTimer);notifyText("시간이 다 됐어요. 푼 데까지 채점할게요.");jlFinish()}},1000);
     return;
@@ -4481,7 +4568,7 @@ const ROAD_ADV={title:"JLPT N5 도전",icon:"試",adv:true,steps:[
   {id:"nG",mark:"文",name:"문법",desc:"조사·활용 빈칸과 ★ 문장 만들기",items:()=>jlIds("g"),done:jld,go:jlGo("g")},
   {id:"nR",mark:"読",name:"독해",desc:"메모·안내문·일기를 읽고 답하기",items:()=>jlIds("r"),done:jld,go:jlGo("r")},
   {id:"nL",mark:"聞",name:"청해",desc:"짧은 대화를 듣고 답하기",items:()=>jlIds("l"),done:jld,go:jlGo("l")},
-  {id:"nX",mark:"合",name:"모의시험 합격선 넘기",desc:"22문제·25분 모의시험에서 합격선(80점) 넘기",items:()=>["x"],done:()=>!!(S.jx&&S.jx.pass),go:jlGo(null)}]};
+  {id:"nX",mark:"合",name:"모의시험 합격선 넘기",desc:"30문제·35분 모의시험에서 합격선(80점) 넘기",items:()=>["x"],done:()=>!!(S.jx&&S.jx.pass),go:jlGo(null)}]};
 const roadSecs=()=>isAdv()?[...ROAD,ROAD_MID,ROAD_ADV]:isMid()?[...ROAD,ROAD_MID]:ROAD;
 const roadSteps=()=>roadSecs().flatMap(sec=>sec.steps);
 const roadCurrent=()=>roadSteps().find(st=>!st.soon&&stepProg(st).f<1)||null;
