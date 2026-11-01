@@ -384,6 +384,7 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .goal-pick button.on{border-color:var(--accent);background:var(--accent-soft)}.goal-pick button.on b{color:var(--accent-dark)}
 .goal-pick button:hover{border-color:var(--accent)}
 .goal-card>div{flex:1;min-width:0}
+.road-more{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;padding:14px 16px;border:1px dashed var(--line);border-radius:16px;background:var(--bg)}.road-more>div{flex:1 1 200px;display:flex;flex-direction:column;gap:2px}.road-more b{font-size:15px}.road-more small{font-size:13px;color:var(--sub);line-height:1.5}.road-more .ghost{min-height:44px}
 .road-sec.locked{opacity:.75}.road-sec.locked .lesson-node,.road-sec.locked .lesson-info{cursor:default}
 @media(max-width:640px){.goal-pick{grid-template-columns:1fr}.goal-pick button{min-height:48px}}
 .tab-lock{font-size:13px;font-weight:400;color:var(--sub)}
@@ -4656,6 +4657,8 @@ function renderRoad(){
   $("road-bar").style.width=avg+"%";
   $("road-sum").textContent=(live.length?P.map(p=>`${p.title} ${p.done}/${p.n}단계`).join(" · "):`기초 ${ROAD_STEPS.length}단계 중 ${P[0].done}단계 완료`)+(cur?` · 지금 여기: ${cur.name}`:open&&g?" · 모든 여정을 마쳤어요!":"");
   const pick=!g?`<div class="road-fin goal-card"><span class="road-fin-ic" aria-hidden="true">✿</span><div><b>${open?"기초를 모두 마쳤어요! 이제 목표를 골라요":"어떤 목표로 일본어를 배울까요?"}</b><small>${open?"고른 코스가 바로 열려요. 설정에서 언제든 바꿀 수 있어요.":"가나·단어·문장 기초는 모두 같이 해요. 기초를 마치면 고른 코스가 열려요."}</small>${goalBtns("")}</div></div>`:"";
+  const other=open&&(g==="trip"||g==="n5")?(g==="trip"?ROAD_ADV:ROAD_MID):null;
+  const more=other?`<div class="road-more"><span class="road-ic">${other.icon}</span><div><b>${other.title}도 해 볼까요?</b><small>${other===ROAD_ADV?"JLPT N5 한자·단어·문법과 모의시험이 있는 시험 칸이 열려요.":"여행 회화·점원 말 알아듣기·표지판이 있는 회화 칸이 열려요."} 지금 코스는 그대로예요.</small></div><button type="button" class="ghost" data-goal="both">${other.title} 열기</button></div>`:"";
   let no=0;
   const secHtml=(sec,si,lock)=>{
     const sp=sec.steps.map(stepProg),real=sec.steps.filter(st=>!st.soon),secDone=!lock&&real.length>0&&real.every(st=>stepProg(st).f>=1),here=sec.steps.includes(cur);
@@ -4664,7 +4667,7 @@ function renderRoad(){
       return `<div class="lesson ${cls}"><div class="lesson-track"><button class="lesson-node" data-step="${st.id}" aria-label="${st.name} 열기"${lock?" disabled":""}>${complete?"✿":st.mark}</button>${active?'<svg class="here-fox" viewBox="0 0 180 190" aria-hidden="true"><use href="#fox"/></svg>':""}</div><button class="lesson-info" data-step="${st.id}"${lock?" disabled":""}><span class="lesson-eyebrow">STEP ${String(no).padStart(2,"0")}${lock?" <em>잠김</em>":active?" <em>지금 여기</em>":complete?" <em>완료</em>":""}</span><h3>${st.name}</h3><p>${st.desc}</p><span class="lesson-meta">${lock?"기초를 마치면 열려요":`${p.n} / ${p.t} 완료`}</span>${!lock&&(active||(p.n&&!complete))?`<div class="bar"><i style="width:${p.f*100}%"></i></div>`:""}</button><span class="lesson-chevron" aria-hidden="true">›</span></div>`}).join("")}</div></details>`};
   const begDone=ROAD_STEPS.filter(st=>stepProg(st).f>=1).length;
   el.innerHTML=pick+(live.length
-    ?`<details class="road-group"><summary><span class="road-ic">初</span><span class="road-title"><b>기초 여정 · 1~4구간</b><small>${begDone} / ${ROAD_STEPS.length}단계 완료 · 가나·단어·문장</small></span><span class="road-state">${begDone===ROAD_STEPS.length?"✿ 완료":""}</span></summary>${ROAD.map((s,i)=>secHtml(s,i)).join("")}</details>${live.map((s,i)=>secHtml(s,ROAD.length+i)).join("")}`
+    ?`<details class="road-group"><summary><span class="road-ic">初</span><span class="road-title"><b>기초 여정 · 1~4구간</b><small>${begDone} / ${ROAD_STEPS.length}단계 완료 · 가나·단어·문장</small></span><span class="road-state">${begDone===ROAD_STEPS.length?"✿ 완료":""}</span></summary>${ROAD.map((s,i)=>secHtml(s,i)).join("")}</details>${live.map((s,i)=>secHtml(s,ROAD.length+i)).join("")}${more}`
     :ROAD.map((s,i)=>secHtml(s,i)).join("")+(g?roadCourses().map((s,i)=>secHtml(s,ROAD.length+i,true)).join(""):""));
   el.querySelectorAll("[data-step]:not([disabled])").forEach(b=>b.onclick=()=>roadSteps().find(s=>s.id===b.dataset.step).go());
   el.querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>setGoal(b.dataset.goal));
