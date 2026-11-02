@@ -406,6 +406,8 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .jl-exam-card>div{flex:1 1 280px}.jl-exam-card h3{margin:4px 0 6px;font-size:20px}.jl-exam-card p{margin:0;color:var(--sub)}
 .jl-kicker{display:inline-block;font-size:13px;font-weight:700;color:#7a5524;background:#f3e3c7;border-radius:6px;padding:2px 8px}
 .jl-best{margin-top:8px!important;color:var(--ink)!important}
+.jl-sets{flex:1 1 100%;margin-top:6px}.jl-sets p{margin:0 0 8px;font-size:14px}.jl-sets>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.jl-sets button{display:flex;flex-direction:column;align-items:flex-start;min-height:52px;padding:8px 12px;text-align:left}.jl-sets small{font-size:13px;color:var(--sub);font-weight:400}
+@media(max-width:640px){.jl-sets>div{grid-template-columns:1fr}}
 .jl-h{font-size:18px;margin:6px 0 4px}
 .big.jl-big{font-size:19px;line-height:1.8;font-weight:400;letter-spacing:0;text-align:left;margin:6px 0 18px}
 .jl-word{font-size:64px;font-weight:600;text-align:center;line-height:1.3}.jl-kana{font-size:44px}
@@ -593,7 +595,18 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
     {"id": "a_people", "script": "a", "name": "가족·사람", "desc": "부모님, 형제, 손님, 어른"},
     {"id": "a_thing", "script": "a", "name": "물건·생활", "desc": "우표, 안경, 숟가락, 달력"},
     {"id": "a_expr", "script": "a", "name": "인사·이어 주는 말", "desc": "어서 오세요, 여보세요, 그리고, 하지만"},
-    {"id": "a_ask", "script": "a", "name": "묻는 말·세기", "desc": "몇 개, 왜, 어떤, 하나·둘"}
+    {"id": "a_ask", "script": "a", "name": "묻는 말·세기", "desc": "몇 개, 왜, 어떤, 하나·둘"},
+    {"id": "a_verb3", "script": "a", "name": "동사 3", "desc": "팔다, 두다, 내리다, 돌려주다"},
+    {"id": "a_verb4", "script": "a", "name": "동사 4 (기본형)", "desc": "타다, 돌다, 건너다, 켜다"},
+    {"id": "a_adj2", "script": "a", "name": "형용사 2 · 색", "desc": "파랗다, 즐겁다, 나쁘다, 맛없다"},
+    {"id": "a_place2", "script": "a", "name": "장소 · 위치 2", "desc": "집, 화장실, 식당, 건너편"},
+    {"id": "a_thing2", "script": "a", "name": "물건 · 옷 2", "desc": "사전, 양말, 볼펜, 침대"},
+    {"id": "a_food2", "script": "a", "name": "음식 2", "desc": "소고기, 우유, 홍차, 간장"},
+    {"id": "a_people2", "script": "a", "name": "사람 · 몸 2", "desc": "남자아이, 언니, 여러분, 목소리"},
+    {"id": "a_life", "script": "a", "name": "일 · 공부 · 생활", "desc": "청소, 빨래, 일, 연습"},
+    {"id": "a_adv2", "script": "a", "name": "부사 · 이어 주는 말 2", "desc": "가장, 함께, 처음으로, 그리고"},
+    {"id": "a_demo", "script": "a", "name": "こ · そ · あ · ど", "desc": "이것, 여기, 이 ~, 이런"},
+    {"id": "a_count2", "script": "a", "name": "세는 말 · 인사 2", "desc": "여섯, 열, 만, 감사합니다"}
   ],
   "words": [
     {"id": "w001", "kana": "がくせい", "hangul": "가쿠세이", "meaning": "학생", "category": "school_people", "koreanSimilar": true},
@@ -1214,7 +1227,158 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
     {"id": "w753", "kana": "ふたつ", "hangul": "", "meaning": "둘", "category": "a_ask", "koreanSimilar": false},
     {"id": "w754", "kana": "みっつ", "hangul": "", "meaning": "셋", "category": "a_ask", "koreanSimilar": false},
     {"id": "w755", "kana": "よっつ", "hangul": "", "meaning": "넷", "category": "a_ask", "koreanSimilar": false},
-    {"id": "w756", "kana": "いつつ", "hangul": "", "meaning": "다섯", "category": "a_ask", "koreanSimilar": false}
+    {"id": "w756", "kana": "いつつ", "hangul": "", "meaning": "다섯", "category": "a_ask", "koreanSimilar": false},
+    {"id": "w801", "kana": "うる", "hangul": "", "meaning": "팔다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w802", "kana": "おく", "hangul": "", "meaning": "두다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w803", "kana": "おりる", "hangul": "", "meaning": "내리다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w804", "kana": "かえす", "hangul": "", "meaning": "돌려주다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w805", "kana": "かす", "hangul": "", "meaning": "빌려주다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w806", "kana": "こたえる", "hangul": "", "meaning": "대답하다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w807", "kana": "さす", "hangul": "", "meaning": "(우산을) 쓰다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w808", "kana": "しぬ", "hangul": "", "meaning": "죽다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w809", "kana": "しる", "hangul": "", "meaning": "알다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w810", "kana": "すう", "hangul": "", "meaning": "(담배를) 피우다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w811", "kana": "たのむ", "hangul": "", "meaning": "부탁하다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w812", "kana": "ちがう", "hangul": "", "meaning": "다르다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w813", "kana": "つく", "hangul": "", "meaning": "도착하다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w814", "kana": "できる", "hangul": "", "meaning": "할 수 있다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w815", "kana": "ならべる", "hangul": "", "meaning": "늘어놓다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w816", "kana": "なる", "hangul": "", "meaning": "되다", "category": "a_verb3", "koreanSimilar": false},
+    {"id": "w817", "kana": "でんわする", "hangul": "", "meaning": "전화하다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w818", "kana": "ふる", "hangul": "", "meaning": "(비·눈이) 내리다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w819", "kana": "みせる", "hangul": "", "meaning": "보여 주다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w820", "kana": "やすむ", "hangul": "", "meaning": "쉬다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w821", "kana": "よぶ", "hangul": "", "meaning": "부르다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w822", "kana": "かかる", "hangul": "", "meaning": "걸리다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w823", "kana": "のる", "hangul": "", "meaning": "타다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w824", "kana": "まがる", "hangul": "", "meaning": "(길을) 돌다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w825", "kana": "わたる", "hangul": "", "meaning": "건너다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w826", "kana": "はらう", "hangul": "", "meaning": "지불하다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w827", "kana": "あける", "hangul": "", "meaning": "열다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w828", "kana": "しめる", "hangul": "", "meaning": "닫다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w829", "kana": "つける", "hangul": "", "meaning": "켜다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w830", "kana": "けす", "hangul": "", "meaning": "끄다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w831", "kana": "いれる", "hangul": "", "meaning": "넣다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w832", "kana": "だす", "hangul": "", "meaning": "꺼내다·내다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w833", "kana": "もつ", "hangul": "", "meaning": "들다·가지다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w834", "kana": "かりる", "hangul": "", "meaning": "빌리다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w835", "kana": "とる", "hangul": "", "meaning": "잡다·찍다", "category": "a_verb4", "koreanSimilar": false},
+    {"id": "w836", "kana": "あおい", "hangul": "", "meaning": "파랗다", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w837", "kana": "あかい", "hangul": "", "meaning": "빨갛다", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w838", "kana": "きいろい", "hangul": "", "meaning": "노랗다", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w839", "kana": "くろい", "hangul": "", "meaning": "검다", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w840", "kana": "しろい", "hangul": "", "meaning": "하얗다", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w841", "kana": "ちゃいろい", "hangul": "", "meaning": "갈색이다", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w842", "kana": "たのしい", "hangul": "", "meaning": "즐겁다", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w843", "kana": "ぬるい", "hangul": "", "meaning": "미지근하다", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w844", "kana": "ほしい", "hangul": "", "meaning": "갖고 싶다", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w845", "kana": "まずい", "hangul": "", "meaning": "맛없다", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w846", "kana": "わるい", "hangul": "", "meaning": "나쁘다", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w847", "kana": "たいせつ", "hangul": "", "meaning": "소중함", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w848", "kana": "しんせつ", "hangul": "", "meaning": "친절함", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w849", "kana": "かんたん", "hangul": "", "meaning": "간단함", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w850", "kana": "ほんとう", "hangul": "", "meaning": "정말·사실", "category": "a_adj2", "koreanSimilar": false},
+    {"id": "w851", "kana": "うち", "hangul": "", "meaning": "집", "category": "a_place2", "koreanSimilar": false},
+    {"id": "w852", "kana": "いけ", "hangul": "", "meaning": "연못", "category": "a_place2", "koreanSimilar": false},
+    {"id": "w853", "kana": "おてあらい", "hangul": "", "meaning": "화장실", "category": "a_place2", "koreanSimilar": false},
+    {"id": "w854", "kana": "きっさてん", "hangul": "", "meaning": "찻집", "category": "a_place2", "koreanSimilar": false},
+    {"id": "w855", "kana": "こうさてん", "hangul": "", "meaning": "교차로", "category": "a_place2", "koreanSimilar": false},
+    {"id": "w856", "kana": "しょくどう", "hangul": "", "meaning": "식당", "category": "a_place2", "koreanSimilar": false},
+    {"id": "w857", "kana": "ところ", "hangul": "", "meaning": "곳", "category": "a_place2", "koreanSimilar": false},
+    {"id": "w858", "kana": "にわ", "hangul": "", "meaning": "마당", "category": "a_place2", "koreanSimilar": false},
+    {"id": "w859", "kana": "まち", "hangul": "", "meaning": "마을·시내", "category": "a_place2", "koreanSimilar": false},
+    {"id": "w860", "kana": "ろうか", "hangul": "", "meaning": "복도", "category": "a_place2", "koreanSimilar": false},
+    {"id": "w861", "kana": "よこ", "hangul": "", "meaning": "옆·가로", "category": "a_place2", "koreanSimilar": false},
+    {"id": "w862", "kana": "むこう", "hangul": "", "meaning": "건너편", "category": "a_place2", "koreanSimilar": false},
+    {"id": "w863", "kana": "ちず", "hangul": "", "meaning": "지도", "category": "a_place2", "koreanSimilar": false},
+    {"id": "w864", "kana": "ポスト", "hangul": "", "meaning": "우체통", "category": "a_place2", "koreanSimilar": false},
+    {"id": "w865", "kana": "かびん", "hangul": "", "meaning": "꽃병", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w866", "kana": "くつした", "hangul": "", "meaning": "양말", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w867", "kana": "じしょ", "hangul": "", "meaning": "사전", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w868", "kana": "じどうしゃ", "hangul": "", "meaning": "자동차", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w869", "kana": "テーブル", "hangul": "", "meaning": "테이블", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w870", "kana": "ボールペン", "hangul": "", "meaning": "볼펜", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w871", "kana": "ワイシャツ", "hangul": "", "meaning": "와이셔츠", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w872", "kana": "うわぎ", "hangul": "", "meaning": "겉옷", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w873", "kana": "スリッパ", "hangul": "", "meaning": "슬리퍼", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w874", "kana": "たばこ", "hangul": "", "meaning": "담배", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w875", "kana": "ニュース", "hangul": "", "meaning": "뉴스", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w876", "kana": "ページ", "hangul": "", "meaning": "페이지", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w877", "kana": "ようふく", "hangul": "", "meaning": "옷·양복", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w878", "kana": "きもの", "hangul": "", "meaning": "기모노", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w879", "kana": "ベッド", "hangul": "", "meaning": "침대", "category": "a_thing2", "koreanSimilar": false},
+    {"id": "w880", "kana": "ぎゅうにく", "hangul": "", "meaning": "소고기", "category": "a_food2", "koreanSimilar": false},
+    {"id": "w881", "kana": "ぶたにく", "hangul": "", "meaning": "돼지고기", "category": "a_food2", "koreanSimilar": false},
+    {"id": "w882", "kana": "とりにく", "hangul": "", "meaning": "닭고기", "category": "a_food2", "koreanSimilar": false},
+    {"id": "w883", "kana": "ぎゅうにゅう", "hangul": "", "meaning": "우유", "category": "a_food2", "koreanSimilar": false},
+    {"id": "w884", "kana": "こうちゃ", "hangul": "", "meaning": "홍차", "category": "a_food2", "koreanSimilar": false},
+    {"id": "w885", "kana": "しょうゆ", "hangul": "", "meaning": "간장", "category": "a_food2", "koreanSimilar": false},
+    {"id": "w886", "kana": "バター", "hangul": "", "meaning": "버터", "category": "a_food2", "koreanSimilar": false},
+    {"id": "w887", "kana": "たべもの", "hangul": "", "meaning": "음식", "category": "a_food2", "koreanSimilar": false},
+    {"id": "w888", "kana": "おさけ", "hangul": "", "meaning": "술", "category": "a_food2", "koreanSimilar": false},
+    {"id": "w889", "kana": "あさごはん", "hangul": "", "meaning": "아침밥", "category": "a_food2", "koreanSimilar": false},
+    {"id": "w890", "kana": "ひるごはん", "hangul": "", "meaning": "점심밥", "category": "a_food2", "koreanSimilar": false},
+    {"id": "w891", "kana": "ばんごはん", "hangul": "", "meaning": "저녁밥", "category": "a_food2", "koreanSimilar": false},
+    {"id": "w892", "kana": "おとこのこ", "hangul": "", "meaning": "남자아이", "category": "a_people2", "koreanSimilar": false},
+    {"id": "w893", "kana": "おんなのこ", "hangul": "", "meaning": "여자아이", "category": "a_people2", "koreanSimilar": false},
+    {"id": "w894", "kana": "おにいさん", "hangul": "", "meaning": "형·오빠 (남의)", "category": "a_people2", "koreanSimilar": false},
+    {"id": "w895", "kana": "おねえさん", "hangul": "", "meaning": "누나·언니 (남의)", "category": "a_people2", "koreanSimilar": false},
+    {"id": "w896", "kana": "おくさん", "hangul": "", "meaning": "부인 (남의)", "category": "a_people2", "koreanSimilar": false},
+    {"id": "w897", "kana": "せいと", "hangul": "", "meaning": "학생 (중·고)", "category": "a_people2", "koreanSimilar": false},
+    {"id": "w898", "kana": "みなさん", "hangul": "", "meaning": "여러분", "category": "a_people2", "koreanSimilar": false},
+    {"id": "w899", "kana": "じぶん", "hangul": "", "meaning": "자기 자신", "category": "a_people2", "koreanSimilar": false},
+    {"id": "w900", "kana": "こえ", "hangul": "", "meaning": "목소리", "category": "a_people2", "koreanSimilar": false},
+    {"id": "w901", "kana": "せ", "hangul": "", "meaning": "키", "category": "a_people2", "koreanSimilar": false},
+    {"id": "w902", "kana": "せんたく", "hangul": "", "meaning": "빨래", "category": "a_life", "koreanSimilar": false},
+    {"id": "w903", "kana": "そうじ", "hangul": "", "meaning": "청소", "category": "a_life", "koreanSimilar": false},
+    {"id": "w904", "kana": "しごと", "hangul": "", "meaning": "일", "category": "a_life", "koreanSimilar": false},
+    {"id": "w905", "kana": "れんしゅう", "hangul": "", "meaning": "연습", "category": "a_life", "koreanSimilar": false},
+    {"id": "w906", "kana": "さくぶん", "hangul": "", "meaning": "작문", "category": "a_life", "koreanSimilar": false},
+    {"id": "w907", "kana": "テスト", "hangul": "", "meaning": "테스트", "category": "a_life", "koreanSimilar": false},
+    {"id": "w908", "kana": "はなし", "hangul": "", "meaning": "이야기", "category": "a_life", "koreanSimilar": false},
+    {"id": "w909", "kana": "おと", "hangul": "", "meaning": "소리", "category": "a_life", "koreanSimilar": false},
+    {"id": "w910", "kana": "スポーツ", "hangul": "", "meaning": "스포츠", "category": "a_life", "koreanSimilar": false},
+    {"id": "w911", "kana": "ばんごう", "hangul": "", "meaning": "번호", "category": "a_life", "koreanSimilar": false},
+    {"id": "w912", "kana": "でんわばんごう", "hangul": "", "meaning": "전화번호", "category": "a_life", "koreanSimilar": false},
+    {"id": "w913", "kana": "きょねん", "hangul": "", "meaning": "작년", "category": "a_life", "koreanSimilar": false},
+    {"id": "w914", "kana": "やすみ", "hangul": "", "meaning": "휴일·쉼", "category": "a_life", "koreanSimilar": false},
+    {"id": "w915", "kana": "たんじょうび", "hangul": "", "meaning": "생일", "category": "a_life", "koreanSimilar": false},
+    {"id": "w916", "kana": "どうぶつ", "hangul": "", "meaning": "동물", "category": "a_life", "koreanSimilar": false},
+    {"id": "w917", "kana": "クラス", "hangul": "", "meaning": "반 (학급)", "category": "a_life", "koreanSimilar": false},
+    {"id": "w918", "kana": "ほか", "hangul": "", "meaning": "그 밖", "category": "a_life", "koreanSimilar": false},
+    {"id": "w919", "kana": "はんぶん", "hangul": "", "meaning": "절반", "category": "a_life", "koreanSimilar": false},
+    {"id": "w920", "kana": "キロ", "hangul": "", "meaning": "킬로", "category": "a_life", "koreanSimilar": false},
+    {"id": "w921", "kana": "メートル", "hangul": "", "meaning": "미터", "category": "a_life", "koreanSimilar": false},
+    {"id": "w922", "kana": "いちばん", "hangul": "", "meaning": "가장", "category": "a_adv2", "koreanSimilar": false},
+    {"id": "w923", "kana": "いっしょに", "hangul": "", "meaning": "함께", "category": "a_adv2", "koreanSimilar": false},
+    {"id": "w924", "kana": "ちょうど", "hangul": "", "meaning": "딱·마침", "category": "a_adv2", "koreanSimilar": false},
+    {"id": "w925", "kana": "はじめて", "hangul": "", "meaning": "처음으로", "category": "a_adv2", "koreanSimilar": false},
+    {"id": "w926", "kana": "ほんとうに", "hangul": "", "meaning": "정말로", "category": "a_adv2", "koreanSimilar": false},
+    {"id": "w927", "kana": "もちろん", "hangul": "", "meaning": "물론", "category": "a_adv2", "koreanSimilar": false},
+    {"id": "w928", "kana": "そして", "hangul": "", "meaning": "그리고", "category": "a_adv2", "koreanSimilar": false},
+    {"id": "w929", "kana": "それでは", "hangul": "", "meaning": "그러면", "category": "a_adv2", "koreanSimilar": false},
+    {"id": "w930", "kana": "だから", "hangul": "", "meaning": "그래서", "category": "a_adv2", "koreanSimilar": false},
+    {"id": "w931", "kana": "どうも", "hangul": "", "meaning": "정말·대단히", "category": "a_adv2", "koreanSimilar": false},
+    {"id": "w932", "kana": "これ", "hangul": "", "meaning": "이것", "category": "a_demo", "koreanSimilar": false},
+    {"id": "w933", "kana": "それ", "hangul": "", "meaning": "그것", "category": "a_demo", "koreanSimilar": false},
+    {"id": "w934", "kana": "あれ", "hangul": "", "meaning": "저것", "category": "a_demo", "koreanSimilar": false},
+    {"id": "w935", "kana": "ここ", "hangul": "", "meaning": "여기", "category": "a_demo", "koreanSimilar": false},
+    {"id": "w936", "kana": "そこ", "hangul": "", "meaning": "거기", "category": "a_demo", "koreanSimilar": false},
+    {"id": "w937", "kana": "あそこ", "hangul": "", "meaning": "저기", "category": "a_demo", "koreanSimilar": false},
+    {"id": "w938", "kana": "この", "hangul": "", "meaning": "이 ~", "category": "a_demo", "koreanSimilar": false},
+    {"id": "w939", "kana": "その", "hangul": "", "meaning": "그 ~", "category": "a_demo", "koreanSimilar": false},
+    {"id": "w940", "kana": "あの", "hangul": "", "meaning": "저 ~", "category": "a_demo", "koreanSimilar": false},
+    {"id": "w941", "kana": "どの", "hangul": "", "meaning": "어느 ~", "category": "a_demo", "koreanSimilar": false},
+    {"id": "w942", "kana": "こんな", "hangul": "", "meaning": "이런", "category": "a_demo", "koreanSimilar": false},
+    {"id": "w943", "kana": "むっつ", "hangul": "", "meaning": "여섯 (개)", "category": "a_count2", "koreanSimilar": false},
+    {"id": "w944", "kana": "ななつ", "hangul": "", "meaning": "일곱 (개)", "category": "a_count2", "koreanSimilar": false},
+    {"id": "w945", "kana": "やっつ", "hangul": "", "meaning": "여덟 (개)", "category": "a_count2", "koreanSimilar": false},
+    {"id": "w946", "kana": "ここのつ", "hangul": "", "meaning": "아홉 (개)", "category": "a_count2", "koreanSimilar": false},
+    {"id": "w947", "kana": "とお", "hangul": "", "meaning": "열 (개)", "category": "a_count2", "koreanSimilar": false},
+    {"id": "w948", "kana": "まん", "hangul": "", "meaning": "만 (10000)", "category": "a_count2", "koreanSimilar": false},
+    {"id": "w949", "kana": "ありがとうございます", "hangul": "", "meaning": "감사합니다", "category": "a_count2", "koreanSimilar": false},
+    {"id": "w950", "kana": "おやすみなさい", "hangul": "", "meaning": "안녕히 주무세요", "category": "a_count2", "koreanSimilar": false},
+    {"id": "w951", "kana": "おかえりなさい", "hangul": "", "meaning": "어서 와요", "category": "a_count2", "koreanSimilar": false}
   ]
 }
 </script>
@@ -1623,6 +1787,60 @@ const SENT_UNITS=[
     {id:"sj1606",ja:"えきまで じゅっぷん[ぐらい] かかります。",hg:"",ko:"역까지 10분쯤 걸려요."},
     {id:"sj1607",ja:"だれ[か] きましたか。",hg:"",ko:"누군가 왔어요?"},
     {id:"sj1608",ja:"すこし[だけ] たべました。",hg:"",ko:"조금만 먹었어요."}]},
+  {id:"n17",g:"j",title:"문장 끝 ね · よ / そして · それから",ko:"~네요 · ~요 / 그리고 · 그다음에",opts:["ね","よ","そして","それから"],tip:"문장 끝 ね는 상대도 아는 것에 맞장구(いい てんきですね), よ는 상대가 모르는 것을 알려 줄 때(あしたは やすみですよ). そして = 그리고(덧붙이기), それから = 그다음에(순서).",items:[
+    {id:"sj1701",ja:"きょう{は} いい てんきです[ね]。",hg:"",ko:"오늘은 날씨가 좋네요."},
+    {id:"sj1702",ja:"あした{は} やすみです[よ]。",hg:"",ko:"내일은 쉬는 날이에요(알려 줌)."},
+    {id:"sj1703",ja:"この ケーキ、おいしいです[ね]。",hg:"",ko:"이 케이크 맛있네요."},
+    {id:"sj1704",ja:"えき{は} あそこです[よ]。",hg:"",ko:"역은 저기예요(알려 줌)."},
+    {id:"sj1705",ja:"あさ シャワーを あびます。[それから]、ごはんを たべます。",hg:"",ko:"아침에 샤워를 해요. 그다음에 밥을 먹어요."},
+    {id:"sj1706",ja:"この へや{は} ひろいです。[そして]、あかるいです。",hg:"",ko:"이 방은 넓어요. 그리고 밝아요."},
+    {id:"sj1707",ja:"てを あらいました。[それから]、ばんごはんを たべました。",hg:"",ko:"손을 씻었어요. 그다음에 저녁을 먹었어요."},
+    {id:"sj1708",ja:"たなかさん{は} やさしいです。[そして]、おもしろいです。",hg:"",ko:"다나카 씨는 상냥해요. 그리고 재미있어요."}]},
+  {id:"n18",g:"j",title:"〜ましょうか / 〜に 行きます",ko:"~해 드릴까요? / ~하러 가요",opts:["ましょうか","ませんか","に","へ"],tip:"〜ましょうか = 내가 해 줄까요?(제안: まどを あけましょうか). 〜ませんか는 같이 하자는 권유. ます형 + に 行く·来る = ~하러 가다·오다(かいものに 行きます).",items:[
+    {id:"sj1801",ja:"さむいですね。まどを しめ[ましょうか]。",hg:"",ko:"춥네요. 창문을 닫아 드릴까요?"},
+    {id:"sj1802",ja:"にもつ{が} おもいですね。もち[ましょうか]。",hg:"",ko:"짐이 무겁네요. 들어 드릴까요?"},
+    {id:"sj1803",ja:"いっしょに えいがを み[ませんか]。",hg:"",ko:"같이 영화 보지 않을래요?"},
+    {id:"sj1804",ja:"デパートへ かいもの[に] いきます。",hg:"",ko:"백화점에 쇼핑하러 가요."},
+    {id:"sj1805",ja:"こうえんへ あそび[に] いきました。",hg:"",ko:"공원에 놀러 갔어요."},
+    {id:"sj1806",ja:"ともだちが うち{へ} あそび[に] きました。",hg:"",ko:"친구가 집에 놀러 왔어요."},
+    {id:"sj1807",ja:"わたし{が} しゃしんを とり[ましょうか]。",hg:"",ko:"제가 사진을 찍어 드릴까요?"},
+    {id:"sj1808",ja:"レストラン{へ} ひるごはんを たべ[に] いきます。",hg:"",ko:"레스토랑에 점심 먹으러 가요."}]},
+  {id:"n19",g:"j",title:"しか〜ない / 一つも〜ない / 〜や〜など",ko:"~밖에 없다 / 하나도 없다 / ~랑 ~ 등",opts:["しか","も","や","だけ"],tip:"しか + 부정 = ~밖에 ~않다(千円しか ありません). 一つも·一人も + 부정 = 하나도·한 명도 없다. 〜や〜など = ~랑 ~ 등(여러 개 중 몇 개). だけ는 긍정과 함께(千円だけ あります).",items:[
+    {id:"sj1901",ja:"さいふに せんえん[しか] ありません。",hg:"",ko:"지갑에 천 엔밖에 없어요."},
+    {id:"sj1902",ja:"きょうしつに がくせい{が} ひとり[しか] いません。",hg:"",ko:"교실에 학생이 한 명밖에 없어요."},
+    {id:"sj1903",ja:"りんご{が} ひとつ[も] ありません。",hg:"",ko:"사과가 하나도 없어요."},
+    {id:"sj1904",ja:"きょう{は} ひとり[も] きませんでした。",hg:"",ko:"오늘은 한 명도 오지 않았어요."},
+    {id:"sj1905",ja:"つくえの うえに ほん[や] ノートなどが あります。",hg:"",ko:"책상 위에 책이랑 노트 등이 있어요."},
+    {id:"sj1906",ja:"パン[や] たまごなどを かいました。",hg:"",ko:"빵이랑 달걀 등을 샀어요."},
+    {id:"sj1907",ja:"さいふに せんえん[だけ] あります。",hg:"",ko:"지갑에 천 엔만 있어요."},
+    {id:"sj1908",ja:"にほんごは すこし[しか] わかりません。",hg:"",ko:"일본어는 조금밖에 몰라요."}]},
+  {id:"n20",g:"j",title:"こ · そ · あ · ど (この · ここ · こちら)",ko:"이 · 그 · 저 · 어느",opts:["この","その","あの","どの"],tip:"こ = 나에게 가까운 것, そ = 상대에게 가까운 것, あ = 둘 다에게 먼 것, ど = 물을 때. これ(이것)·ここ(여기)·こちら(이쪽) / この + 명사(この ほん 이 책).",items:[
+    {id:"sj2001",ja:"[この] ほん{は} わたしのです。",hg:"",ko:"이 책은 제 거예요(내 손에 있음).",no:["その"]},
+    {id:"sj2002",ja:"[その] かばん{は} だれのですか。",hg:"",ko:"그 가방은 누구 거예요?(상대 가까이)",no:["あの","この"]},
+    {id:"sj2003",ja:"[あの] たてもの{は} びょういんです。",hg:"",ko:"저 건물은 병원이에요(멀리 있음).",no:["その"]},
+    {id:"sj2004",ja:"[どの] ひと{が} たなかさんですか。",hg:"",ko:"어느 사람이 다나카 씨예요?"},
+    {id:"sj2005",ja:"すみません、[この] でんしゃ{は} とうきょうへ いきますか。",hg:"",ko:"저기요, 이 전철은 도쿄에 가요?",no:["その","あの"]},
+    {id:"sj2006",ja:"[どの] くつが いいですか。",hg:"",ko:"어느 신발이 좋아요?"},
+    {id:"sj2007",ja:"[あの] やま{は} たかいですね。",hg:"",ko:"저 산은 높네요.",no:["その"]},
+    {id:"sj2008",ja:"「[その] ペン、かして ください。」",hg:"",ko:"\"그 펜 좀 빌려주세요.\"(상대가 들고 있음)",no:["あの","この"]}]},
+  {id:"n21",g:"j",title:"묻는 말: どう · どんな · どうして · どのくらい",ko:"어때요 · 어떤 · 왜 · 얼마나",opts:["どう","どんな","どうして","どのくらい"],tip:"どう = 어때요(상태·방법), どんな + 명사 = 어떤 ~, どうして = 왜(대답은 〜からです), どのくらい = 얼마나(시간·양).",items:[
+    {id:"sj2101",ja:"にほんの りょこう{は} [どう]でしたか。",hg:"",ko:"일본 여행은 어땠어요?"},
+    {id:"sj2102",ja:"[どんな] たべものが すきですか。",hg:"",ko:"어떤 음식을 좋아해요?"},
+    {id:"sj2103",ja:"[どうして] きのう やすみましたか。",hg:"",ko:"왜 어제 쉬었어요?"},
+    {id:"sj2104",ja:"えきまで [どのくらい] かかりますか。",hg:"",ko:"역까지 얼마나 걸려요?"},
+    {id:"sj2105",ja:"たなかさん{は} [どんな] ひとですか。",hg:"",ko:"다나카 씨는 어떤 사람이에요?"},
+    {id:"sj2106",ja:"この ふく、[どう]ですか。",hg:"",ko:"이 옷 어때요?"},
+    {id:"sj2107",ja:"[どうして] にほんごを べんきょうしますか。",hg:"",ko:"왜 일본어를 공부해요?"},
+    {id:"sj2108",ja:"まいにち [どのくらい] ねますか。",hg:"",ko:"매일 얼마나 자요?"}]},
+  {id:"n22",g:"j",title:"〜く / 〜に (어떻게 하다)",ko:"일찍 / 조용히",opts:["く","に","い","な"],tip:"동사를 꾸밀 때: い형용사는 い → く(はやい → はやく おきる 일찍 일어나다), な형용사는 に(しずか → しずかに する 조용히 하다). 명사 앞에서는 はやい·しずかな.",items:[
+    {id:"sj2201",ja:"あした{は} はや[く] おきます。",hg:"",ko:"내일은 일찍 일어나요."},
+    {id:"sj2202",ja:"としょかんでは しずか[に] して ください。",hg:"",ko:"도서관에서는 조용히 해 주세요."},
+    {id:"sj2203",ja:"なまえを おおき[く] かいて ください。",hg:"",ko:"이름을 크게 써 주세요."},
+    {id:"sj2204",ja:"へやを きれい[に] そうじしました。",hg:"",ko:"방을 깨끗하게 청소했어요."},
+    {id:"sj2205",ja:"もう すこし やさし[く] はなして ください。",hg:"",ko:"조금 더 쉽게 말해 주세요."},
+    {id:"sj2206",ja:"こども{が} げんき[に] あそんで います。",hg:"",ko:"아이가 힘차게 놀고 있어요."},
+    {id:"sj2207",ja:"はや[い] でんしゃに のりました。",hg:"",ko:"빠른 전철을 탔어요."},
+    {id:"sj2208",ja:"しずか[な] こうえんを さんぽしました。",hg:"",ko:"조용한 공원을 산책했어요."}]},
 ];
 const SENTS=SENT_UNITS.flatMap(u=>u.items.map(s=>({...s,unit:u.id})));
 const SENT_BY_ID=Object.fromEntries(SENTS.map(s=>[s.id,s]));
@@ -3261,7 +3479,7 @@ function mergeState(L,C){
   const LV={beg:0,mid:1,adv:2};if((LV[C.level]||0)>(LV[R.level]||0))R.level=C.level; // 예전 난이도 기록 (목표로 옮겨 읽는다)
   if(!R.goal&&C.goal)R.goal=C.goal; // 목표는 이 기기 것이 먼저, 없으면 다른 기기 것
   R.jl=R.jl||{};for(const id in C.jl||{}){const a=R.jl[id]||{},b=C.jl[id];R.jl[id]={r:max(a.r,b.r),w:max(a.w,b.w)}}
-  if(C.jx){const a=R.jx||{};R.jx={n:max(a.n,C.jx.n),best:max(a.best,C.jx.best),pass:(a.pass||C.jx.pass)?1:0,last:a.last??C.jx.last}}
+  if(C.jx){const a=R.jx||{};R.jx={n:max(a.n,C.jx.n),best:max(a.best,C.jx.best),pass:(a.pass||C.jx.pass)?1:0,last:a.last??C.jx.last,sets:(()=>{const s={...(C.jx.sets||{})};for(const k in a.sets||{})s[k]=max(s[k],a.sets[k]);return s})()}}
   const wk=x=>Number((x||{}).id)||0;
   if(C.wk){if(wk(C.wk)>wk(R.wk))R.wk=C.wk;else if(wk(C.wk)===wk(R.wk))R.wk={id:R.wk.id,xp:max(R.wk.xp,C.wk.xp)}}
   if(C.day&&(!R.day||C.day.id>R.day.id||(C.day.id===R.day.id&&(C.day.solved||0)>(R.day.solved||0))))R.day=C.day;
@@ -4174,7 +4392,7 @@ const JL_V=[
   ["v4","ctx","毎朝 （　）を みがきます。",["は","て","め","あし"],"매일 아침 <b>이</b>를 닦아요. は(歯) = 이, みがく = 닦다."],
   ["v5","ctx","コーヒーに さとうを （　）。",["いれます","のります","はいります","します"],"커피에 설탕을 <b>넣어요</b>. いれる = 넣다, はいる = 들어가다."],
   ["v6","ctx","あした テストが ありますから、こんばん （　）します。",["べんきょう","さんぽ","りょこう","せんたく"],"내일 시험이 있어서 오늘 밤 <b>공부</b>해요."],
-  ["v7","ctx","この りんごは 一つ 百（　）です。",["円","本","人","回"],"이 사과는 하나에 백 <b>엔</b>이에요. 円(えん) = 엔."],
+  ["v7","ctx","この りんごは 一つ 百（　）です。",["円","本","人","分"],"이 사과는 하나에 백 <b>엔</b>이에요. 円(えん) = 엔."],
   ["v8","ctx","駅の 前で タクシーに （　）。",["のりました","つきました","はいりました","でました"],"역 앞에서 택시를 <b>탔어요</b>. 탈것에는 〜に のる 를 써요."],
   ["v9","ctx","わたしの へやは 二（　）に あります。",["かい","ばん","まい","ほん"],"제 방은 <b>2층</b>에 있어요. 〜かい(階) = 〜층."],
   ["v10","ctx","すみません、もう すこし （　） 話して ください。",["ゆっくり","たくさん","いっぱい","だんだん"],"조금 더 <b>천천히</b> 말해 주세요. ゆっくり = 천천히."],
@@ -4328,7 +4546,7 @@ JL_L.push(
   ["l29","utt",[["N","友だちが 新しい くつを はいて います。何と 言いますか。"]],"친구가 새 신발을 신고 있어요.",["いい くつですね。","くつを ぬいで ください。","くつを かして ください。","くつが ありませんね。"],"칭찬할 때는 <b>いい くつですね</b>(좋은 신발이네요)."],
   ["l30","utt",[["N","駅が どこか わかりません。みちを 聞きます。何と 言いますか。"]],"역이 어디인지 몰라서 길을 물어요.",["すみません、駅は どこですか。","すみません、駅へ 行きましょう。","駅は あそこです。","駅まで あるきました。"],"길을 물을 때는 <b>すみません、駅は どこですか</b>."]);
 JL_V.push(
-  ["v47","kr","_毎朝_ コーヒーを 飲みます。",["まいあさ","まいにち","めいあさ","まいばん"],"毎朝 = <b>まいあさ</b>(매일 아침)."],
+  ["v47","kr","_毎月_ 本を 三さつ 読みます。",["まいつき","まいげつ","めいつき","まいがつ"],"毎月 = <b>まいつき</b>(매달)."],
   ["v48","kr","_今月_は いそがしいです。",["こんげつ","こんがつ","いまげつ","こんつき"],"今月 = <b>こんげつ</b>(이번 달). 月은 〜月(がつ)일 때와 달라요."],
   ["v49","kr","駅の _北口_で まって います。",["きたぐち","きたくち","ほくぐち","きたぐつ"],"北口 = <b>きたぐち</b>(북쪽 출구). 口가 뒤에 붙으면 ぐち로 읽어요."],
   ["v50","kr","_先週_ 友だちに あいました。",["せんしゅう","ぜんしゅう","さきしゅう","せんしゅ"],"先週 = <b>せんしゅう</b>(지난주)."],
@@ -4465,12 +4683,266 @@ JL_L.push(
   ["l43","resp",[["F","この かばん、だれのですか。"]],"",["田中さんのです。","かばんです。","あそこです。","きのう 買いました。"],"누구 거예요? → <b>다나카 씨 거예요</b>."],
   ["l44","resp",[["M","おげんきですか。"]],"",["はい、げんきです。","はい、どういたしまして。","いいえ、げんきでした。","はい、こちらこそ。"],"잘 지내요? → <b>네, 잘 지내요</b>."],
   ["l45","resp",[["F","コーヒーと こうちゃ、どちらが いいですか。"]],"",["こうちゃを おねがいします。","はい、そうです。","いいえ、ちがいます。","コーヒーは 高いです。"],"어느 쪽이 좋아요? → <b>홍차 주세요</b>."]);
+JL_V.push(
+  ["v99","kr","_九月_に 日本へ 行きます。",["くがつ","きゅうがつ","くげつ","きゅうげつ"],"九月 = <b>くがつ</b>. 9월만 きゅう가 아니라 く로 읽어요."],
+  ["v100","kr","_四月_から 大学生です。",["しがつ","よんがつ","よがつ","しげつ"],"四月 = <b>しがつ</b>. 4월은 し로 읽어요."],
+  ["v101","kr","_七時_に おきます。",["しちじ","ななじ","しじ","ひちじ"],"七時 = <b>しちじ</b>. 시각에서 7은 しち."],
+  ["v102","kr","_四時_に あいましょう。",["よじ","よんじ","しじ","よっじ"],"四時 = <b>よじ</b>. 시각에서 4는 よ."],
+  ["v103","kr","_九時_から じゅぎょうです。",["くじ","きゅうじ","くうじ","きゅじ"],"九時 = <b>くじ</b>. 시각에서 9는 く."],
+  ["v104","kr","_一日_に 三かい くすりを 飲みます。",["いちにち","ついたち","ひとひ","いっにち"],"하루 동안이라는 뜻의 一日 = <b>いちにち</b>. 날짜 1일은 ついたち."],
+  ["v105","kr","_二十日_は わたしの たんじょうびです。",["はつか","にじゅうにち","はっか","にじゅうか"],"二十日(20일) = <b>はつか</b>. 특별한 읽기예요."],
+  ["v106","kr","_八日_に 国へ かえります。",["ようか","はちにち","やっか","よおか"],"八日(8일) = <b>ようか</b>."],
+  ["v107","kr","_三日_ 休みました。",["みっか","さんにち","みか","さんか"],"三日 = <b>みっか</b>(3일·사흘)."],
+  ["v108","kr","この 本は _千円_です。",["せんえん","ぜんえん","せんねん","ちえん"],"千円 = <b>せんえん</b>(천 엔)."],
+  ["v109","kr","_三千円_ はらいました。",["さんぜんえん","さんせんえん","みせんえん","さんぜねん"],"三千 = <b>さんぜん</b>. 3 뒤에서 せん이 ぜん으로 바뀌어요."],
+  ["v110","kr","あの _男の人_は だれですか。",["おとこのひと","おとこのじん","だんのひと","おとこのにん"],"男の人 = <b>おとこのひと</b>(남자)."],
+  ["v111","kr","_女の子_が あそんで います。",["おんなのこ","じょのこ","おんなのし","めのこ"],"女の子 = <b>おんなのこ</b>(여자아이)."],
+  ["v112","kr","_外_で あそびましょう。",["そと","がい","うち","ほか"],"外 혼자 쓸 때는 <b>そと</b>(밖)."],
+  ["v113","kr","かばんの _中_に ペンが あります。",["なか","ちゅう","うち","じゅう"],"中 혼자 쓸 때는 <b>なか</b>(안)."],
+  ["v114","kr","つくえの _下_に ねこが います。",["した","しも","か","げ"],"下 혼자 쓸 때는 <b>した</b>(아래)."],
+  ["v115","kr","_後ろ_を 見て ください。",["うしろ","あと","ご","のち"],"後ろ = <b>うしろ</b>(뒤). 後で는 あとで."],
+  ["v116","kr","_東口_から 出て ください。",["ひがしぐち","ひがしくち","とうぐち","にしぐち"],"東口 = <b>ひがしぐち</b>(동쪽 출구)."],
+  ["v117","kr","_新しい_ くつを 買いました。",["あたらしい","あらたしい","しんしい","あたらい"],"新しい = <b>あたらしい</b>(새롭다)."],
+  ["v118","kr","この 町は _古い_です。",["ふるい","こい","ふるいい","ふるし"],"古い = <b>ふるい</b>(오래되다)."],
+  ["v119","kr","_五月_に 日本へ 行きます。",["ごがつ","ごげつ","いつがつ","ごつき"],"五月 = <b>ごがつ</b>(5월). 달 이름은 〜がつ."],
+  ["v120","kr","_高い_ ビルですね。",["たかい","こうい","たがい","ながい"],"高い = <b>たかい</b>(높다·비싸다)."],
+  ["v121","kr","_安い_ 店を 知って いますか。",["やすい","あんい","やさい","やすいい"],"安い = <b>やすい</b>(싸다). やさい는 채소."],
+  ["v122","kr","_白い_ ねこが います。",["しろい","はくい","しらい","くろい"],"白い = <b>しろい</b>."],
+  ["v123","kr","_少し_ 休みましょう。",["すこし","しょうし","すくし","すこしい"],"少し = <b>すこし</b>(조금)."],
+  ["v124","kr","駅に 人が _多い_です。",["おおい","おうい","たい","おおきい"],"多い = <b>おおい</b>(많다)."],
+  ["v125","kr","パンを _半分_ 食べました。",["はんぶん","はんふん","はんぷん","なかば"],"半分 = <b>はんぶん</b>(절반)."],
+  ["v126","kr","_先月_ 日本に 来ました。",["せんげつ","せんがつ","さきげつ","ぜんげつ"],"先月 = <b>せんげつ</b>(지난달)."],
+  ["v127","kr","_今週_は いそがしいです。",["こんしゅう","いましゅう","こんしゅ","きんしゅう"],"今週 = <b>こんしゅう</b>(이번 주)."],
+  ["v128","kr","_今年_ 二十さいに なりました。",["ことし","こんねん","いまとし","こんとし"],"今年 = <b>ことし</b>(올해). 특별한 읽기예요."],
+  ["v129","kr","_今日_は 雨です。",["きょう","こんにち","いまひ","きょお"],"今日 = <b>きょう</b>(오늘)."],
+  ["v130","kr","_来月_ 国へ かえります。",["らいげつ","らいがつ","きげつ","らいつき"],"来月 = <b>らいげつ</b>(다음 달)."],
+  ["v131","kw","_ちいさい_ かばんが ほしいです。",["小さい","少さい","小い","少い"],"ちいさい = <b>小さい</b>. 少(적을 소)와 헷갈리기 쉬워요."],
+  ["v132","kw","_ながい_ かわですね。",["長い","永い","長がい","張い"],"ながい = <b>長い</b>(길다)."],
+  ["v133","kw","_あめ_が ふって います。",["雨","両","雪","電"],"あめ = <b>雨</b>(비)."],
+  ["v134","kw","_き_の 下で 休みましょう。",["木","本","休","未"],"き = <b>木</b>(나무). 本과 모양이 비슷해요."],
+  ["v135","kw","_そら_が あおいです。",["空","究","穴","宝"],"そら = <b>空</b>(하늘)."],
+  ["v136","kw","_はな_が きれいです。",["花","化","華","茶"],"はな = <b>花</b>(꽃)."],
+  ["v137","kw","_かわ_で およぎました。",["川","州","三","水"],"かわ = <b>川</b>(강)."],
+  ["v138","kw","_くるま_で 行きます。",["車","東","単","軍"],"くるま = <b>車</b>(자동차)."],
+  ["v139","kw","_みせ_は 九時からです。",["店","庄","広","床"],"みせ = <b>店</b>(가게)."],
+  ["v140","kw","_こうこう_の 先生です。",["高校","高交","校高","高学"],"こうこう = <b>高校</b>(고등학교)."],
+  ["v141","kw","_がっこう_へ 行きます。",["学校","学交","字校","覚校"],"がっこう = <b>学校</b>."],
+  ["v142","kw","_にほんご_を 話します。",["日本語","日本話","日本言","目本語"],"にほんご = <b>日本語</b>. 日과 目을 헷갈리지 마세요."],
+  ["v143","kw","_まいにち_ さんぽします。",["毎日","海日","毎目","母日"],"まいにち = <b>毎日</b>."],
+  ["v144","kw","_いま_ 何時ですか。",["今","令","合","会"],"いま = <b>今</b>(지금). 令·合과 모양이 비슷해요."],
+  ["v145","kw","_みぎ_に まがって ください。",["右","左","石","若"],"みぎ = <b>右</b>(오른쪽). 左(ひだり)와 모양이 비슷해요."],
+  ["v146","kw","駅の _きた_に あります。",["北","比","化","此"],"きた = <b>北</b>(북쪽)."],
+  ["v147","kw","_ごご_ 二時に 来ます。",["午後","牛後","午彼","干後"],"ごご = <b>午後</b>(오후). 午와 牛(소 우)를 헷갈리지 마세요."],
+  ["v148","kw","_しろい_ シャツを 買いました。",["白い","百い","白しい","自い"],"しろい = <b>白い</b>. 百·自와 모양이 비슷해요."],
+  ["v149","ctx","この コーヒーは さとうが 入って いませんから、（　）です。",["にがい","あまい","からい","すっぱい"],"설탕이 안 들어서 <b>쓰다</b>(にがい)."],
+  ["v150","ctx","あさから なにも 食べて いませんから、おなかが （　）。",["すきました","いっぱいです","いたいです","おおきいです"],"아침부터 아무것도 안 먹어서 배가 <b>고파요</b>(おなかが すく)."],
+  ["v151","ctx","くらいですから、でんきを （　） ください。",["つけて","けして","しめて","はいって"],"어두우니까 불을 <b>켜</b> 주세요."],
+  ["v152","ctx","ねる まえに でんきを （　）。",["けします","つけます","あけます","かけます"],"자기 전에 불을 <b>꺼요</b>."],
+  ["v153","ctx","わたしは まいあさ はを （　）。",["みがきます","あらいます","きります","かきます"],"이는 <b>みがく</b>(닦다)."],
+  ["v154","ctx","田中さんに でんわを （　）。",["かけました","しました","とりました","いれました"],"전화를 <b>걸다</b> = でんわを かける."],
+  ["v155","ctx","かぜを （　）、学校を 休みました。",["ひいて","とって","もって","かいて"],"감기에 걸리다 = かぜを <b>ひく</b>."],
+  ["v156","ctx","すみません、しおを （　） ください。",["とって","きって","はいって","すわって"],"소금 좀 <b>집어</b> 주세요 = とって ください."],
+  ["v157","ctx","この みちを まっすぐ 行って、二つめの かどを 右に （　）。",["まがって ください","わたって ください","のって ください","おりて ください"],"모퉁이를 <b>돌아</b> 주세요 = まがって ください."],
+  ["v158","ctx","あの はしを （　）、右に まがって ください。",["わたって","のって","おりて","はいって"],"다리를 <b>건너서</b> 오른쪽으로 도세요. わたる = 건너다."],
+  ["v159","ctx","つぎの 駅で 電車を （　）。",["おります","でます","はいります","かえります"],"전철에서 <b>내리다</b> = おりる."],
+  ["v160","ctx","バスに （　）、駅まで 行きました。",["のって","おりて","まがって","わたって"],"버스를 <b>타고</b> 역까지 갔어요."],
+  ["v161","ctx","としょかんで 本を 二さつ （　）。",["かりました","かしました","うりました","あげました"],"도서관에서 책을 <b>빌렸어요</b>(かりる). かす는 빌려주다."],
+  ["v162","ctx","友だちに 千円 （　）。あした かえして もらいます。",["かしました","かりました","かいました","はらいました"],"친구에게 천 엔을 <b>빌려줬어요</b>(かす). 내일 돌려받아요."],
+  ["v163","ctx","この シャツは 小さいですから、もっと （　）のを ください。",["大きい","小さい","みじかい","ほそい"],"작아서 더 <b>큰</b> 것을 달라고 해요. 〜の = ~것."],
+  ["v164","ctx","あの 店の パンは とても （　）ですから、いつも 人が ならんで います。",["ゆうめい","へた","ひま","いや"],"<b>유명해서</b> 늘 사람이 줄 서 있어요."],
+  ["v165","ctx","この へやは まどが 大きくて （　）です。",["あかるい","くらい","せまい","うるさい"],"창문이 커서 <b>밝아요</b>."],
+  ["v166","ctx","日よう日は （　）ですから、どこへも 行きません。",["雨","はれ","げんき","ひま"],"<b>비</b>라서 아무 데도 안 가요."],
+  ["v167","ctx","わたしの へやは 三（　）に あります。",["がい","かい","ばん","まい"],"3층 = さん<b>がい</b>. 3 뒤에서는 がい로 읽어요."],
+  ["v168","ctx","ノートを 二（　） 買いました。",["さつ","まい","ほん","こ"],"공책은 <b>さつ</b>(권)으로 세요."],
+  ["v169","ctx","えんぴつが 三（　） あります。",["ぼん","さつ","まい","だい"],"연필처럼 긴 것은 ほん. 3 뒤에서는 さん<b>ぼん</b>."],
+  ["v170","ctx","この シャツを 一（　） ください。",["まい","ほん","さつ","ひき"],"셔츠처럼 얇은 것은 <b>まい</b>(장)."],
+  ["v171","ctx","いぬが 一（　） います。",["ぴき","ほん","まい","さつ"],"작은 동물은 ひき. 1 뒤에서는 いっ<b>ぴき</b>."],
+  ["v172","ctx","「何（　）ですか。」「二十さいです。」",["さい","にん","かい","じ"],"나이를 물을 때는 なん<b>さい</b>."],
+  ["v173","ctx","「ごかぞくは 何（　）ですか。」「四人です。」",["にん","さい","まい","こ"],"사람 수는 なん<b>にん</b>."],
+  ["v174","ctx","きのうは あたまが いたかったですから、（　）を 飲みました。",["くすり","おさけ","コーヒー","ジュース"],"머리가 아파서 <b>약</b>을 먹었어요. 약은 のむ를 써요."],
+  ["v175","para","_あには いしゃです_。",["あには びょういんで はたらいて います。","あには 学校で はたらいて います。","あには 店で はたらいて います。","あには ぎんこうで はたらいて います。"],"의사 = <b>병원에서 일한다</b>."],
+  ["v176","para","_この りょうりは まずいです_。",["この りょうりは おいしくないです。","この りょうりは おいしいです。","この りょうりは からくないです。","この りょうりは あたたかいです。"],"맛없다 = <b>맛있지 않다</b>."],
+  ["v177","para","_きのうは さむくなかったです_。",["きのうは あたたかかったです。","きのうは さむかったです。","きのうは あつくなかったです。","きのうは すずしくなかったです。"],"춥지 않았다 = <b>따뜻했다</b>."],
+  ["v178","para","わたしは _きょねん_ 大学を 出ました。",["わたしは 一年 前に 大学を 出ました。","わたしは 二年 前に 大学を 出ました。","わたしは ことし 大学を 出ました。","わたしは 一年 あとに 大学を 出ました。"],"きょねん = 작년 = <b>一年 前</b>."],
+  ["v179","para","_田中さんは 山田さんに 本を かしました_。",["山田さんは 田中さんに 本を かりました。","田中さんは 山田さんに 本を かりました。","山田さんは 田中さんに 本を かしました。","田中さんは 山田さんに 本を 買いました。"],"다나카가 빌려줬다 = <b>야마다가 다나카에게 빌렸다</b>."],
+  ["v180","para","_ここは きっさてんです_。",["ここで コーヒーを 飲みます。","ここで 本を かります。","ここで 薬を 買います。","ここで 電車に のります。"],"찻집 = <b>커피를 마시는 곳</b>."],
+  ["v181","para","_わたしは 毎朝 しんぶんを 読みます_。",["わたしは 朝は いつも しんぶんを 読みます。","わたしは ときどき しんぶんを 読みます。","わたしは 夜 しんぶんを 読みます。","わたしは しんぶんを 読みません。"],"毎朝 = <b>아침에는 늘</b>."],
+  ["v182","para","_えいがは つまらなかったです_。",["えいがは おもしろくなかったです。","えいがは おもしろかったです。","えいがは 長くなかったです。","えいがは みじかかったです。"],"재미없었다 = <b>재미있지 않았다</b>."],
+  ["v183","para","_この へやは きたないです_。",["この へやは きれいでは ありません。","この へやは きれいです。","この へやは ひろくないです。","この へやは しずかです。"],"더럽다 = <b>깨끗하지 않다</b>."],
+  ["v184","para","_リーさんは 日本語が じょうずです_。",["リーさんは 日本語を よく 話す ことが できます。","リーさんは 日本語を 話す ことが できません。","リーさんは 日本語が すきでは ありません。","リーさんは 日本語を べんきょうして いません。"],"일본어를 잘한다 = <b>일본어를 잘 말할 수 있다</b>."],
+  ["v185","para","_あさって_ テストが あります。",["二日 あとに テストが あります。","あした テストが あります。","二日 前に テストが あります。","来週 テストが あります。"],"あさって = 모레 = <b>二日 あと</b>."],
+  ["v186","para","_わたしは ひとりで すんで います_。",["わたしは かぞくと すんで いません。","わたしは かぞくと すんで います。","わたしは 友だちと すんで います。","わたしは りょうしんと すんで います。"],"혼자 산다 = <b>가족과 살지 않는다</b>."]);
+JL_G.push(
+  ["g59","form","きょうは いい 天気です（　）。",["ね","か","の","を"],"맞장구치는 문장 끝 <b>ね</b>: 날씨가 좋네요."],
+  ["g60","form","「駅は どこですか。」「あそこです（　）。」",["よ","ね","か","の"],"모르는 사람에게 알려 줄 때 <b>よ</b>."],
+  ["g61","form","おもそうですね。にもつを （　）。",["もちましょうか","もちませんか","もちました","もちたいです"],"〜ましょうか = (제가) ~해 드릴까요?"],
+  ["g62","form","日よう日に えいがを 見（　） 行きました。",["に","へ","を","で"],"ます형 + <b>に</b> 行く = ~하러 가다."],
+  ["g63","form","さいふに 百円（　） ありません。",["しか","だけ","も","が"],"뒤에 부정(ありません)이 오니까 <b>しか</b>(~밖에)."],
+  ["g64","form","さいふに 百円（　） あります。",["だけ","しか","も","か"],"긍정(あります)과 함께는 <b>だけ</b>(~만)."],
+  ["g65","form","きょうしつには 学生が 一人（　） いません。",["も","だけ","や","か"],"一人も + 부정 = 한 명도 없다."],
+  ["g66","form","かばんの 中に 本（　） ペンなどが あります。",["や","も","を","で"],"〜や〜など = ~랑 ~ 등."],
+  ["g67","form","「（　） かばんが 山田さんのですか。」「あの 赤いのです。」",["どの","どれ","どこ","どう"],"명사 앞에서 고를 때는 <b>どの</b> + 명사."],
+  ["g68","form","「（　） ひとですか。」「やさしい ひとです。」",["どんな","どう","どれ","どこ"],"어떤 사람인지 물을 때 <b>どんな</b> + 명사."],
+  ["g69","form","「日本の 生活は （　）ですか。」「たのしいです。」",["どう","どんな","どの","どちら"],"어떤지 물을 때 <b>どう</b>. どんな는 뒤에 명사가 와요."],
+  ["g70","form","「（　） 学校を 休みましたか。」「ねつが あったからです。」",["どうして","どう","いつ","どこ"],"이유를 물을 때 <b>どうして</b>."],
+  ["g71","form","「家から 駅まで （　） かかりますか。」「十分ぐらいです。」",["どのくらい","どれ","どう","いくつ"],"걸리는 시간을 물을 때 <b>どのくらい</b>."],
+  ["g72","form","あしたは はや（　） おきて ください。",["く","い","に","な"],"동사를 꾸미는 い형용사: はやい → <b>はやく</b> おきる."],
+  ["g73","form","へやを きれい（　） そうじしました。",["に","く","な","で"],"동사를 꾸미는 な형용사: きれい → <b>きれいに</b>."],
+  ["g74","form","あさ ごはんを 食べました。（　）、学校へ 行きました。",["それから","でも","だから","じゃあ"],"순서대로 이어질 때 <b>それから</b>(그다음에)."],
+  ["g75","form","この 店は 安いです。（　）、おいしいです。",["そして","でも","じゃあ","それでは"],"좋은 점을 덧붙일 때 <b>そして</b>(그리고)."],
+  ["g76","form","この 店は 安いです。（　）、おいしくないです。",["でも","そして","それから","だから"],"반대 내용이 이어질 때 <b>でも</b>(하지만)."],
+  ["g77","form","あめが ふって います。（　）、かさを もって 行きます。",["だから","でも","それに","しかし"],"이유 → 결과일 때 <b>だから</b>(그래서)."],
+  ["g78","form","わたしは まいばん 十一時（　） ねます。",["に","で","を","が"],"시각 뒤에는 <b>に</b>."],
+  ["g79","form","日本語の べんきょうは 月よう日（　） 金よう日までです。",["から","まで","に","で"],"〜から〜まで = ~부터 ~까지."],
+  ["g80","form","にわに ねこ（　） 二ひき います。",["が","を","で","へ"],"있는 것에는 <b>が</b>: ねこが います."],
+  ["g81","form","この ペンは 田中さん（　）です。",["の","が","を","に"],"田中さんの = 다나카 씨 것."],
+  ["g82","form","わたしは コーヒー（　） すきです。",["が","を","に","で"],"すき 앞에는 <b>が</b>."],
+  ["g83","form","兄は 東京（　） すんで います。",["に","で","を","へ"],"すむ(살다) 앞의 장소에는 <b>に</b>."],
+  ["g84","form","毎朝 こうえん（　） さんぽします。",["を","に","が","へ"],"지나가는 장소에는 <b>を</b>: こうえんを さんぽする."],
+  ["g85","form","わたしは 毎朝 七時に うち（　） 出ます。",["を","に","へ","で"],"나오는 곳에는 <b>を</b>: うちを 出る."],
+  ["g86","form","来年 大学（　） 入ります。",["に","を","で","が"],"들어가는 곳에는 <b>に</b>: 大学に 入る."],
+  ["g87","form","友だち（　） 電話を かけました。",["に","を","が","で"],"전화를 거는 상대에는 <b>に</b>."],
+  ["g88","form","バスは 電車（　） おそいです。",["より","ほど","まで","から"],"〜より = ~보다."],
+  ["g89","form","くだものの 中（　） りんごが いちばん すきです。",["で","に","を","が"],"〜の 中で = ~ 중에서."],
+  ["g90","form","この くつは 大きいですから、もっと 小さい（　）を ください。",["の","な","が","で"],"い형용사 + <b>の</b> = ~한 것."],
+  ["g91","form","わたしは 日本へ 行った こと（　） ありません。",["が","を","に","で"],"〜ことが ありません = ~한 적이 없어요. (N4에 가까운 표현이지만 자주 봐요)"],
+  ["g92","form","先生、ここに すわっ（　） いいですか。",["ても","ては","て","たら"],"〜ても いいですか = ~해도 돼요?"],
+  ["g93","form","ここで たばこを すっ（　） いけません。",["ては","ても","て","たり"],"〜ては いけません = ~하면 안 돼요."],
+  ["g94","form","日よう日は テニスを し（　）、本を 読んだり します。",["たり","て","ながら","でも"],"〜たり 〜たり する: <b>したり</b>."],
+  ["g95","form","おんがくを 聞き（　） しゅくだいを します。",["ながら","たり","ても","から"],"ます형 + <b>ながら</b> = ~하면서."],
+  ["g96","form","子ども（　） とき、よく 山へ 行きました。",["の","な","が","に"],"명사 + <b>の</b> とき: 子どもの とき."],
+  ["g97","form","ひま（　） とき、何を しますか。",["な","の","に","で"],"な형용사 + <b>な</b> とき: ひまな とき."],
+  ["g98","form","あしたは 雨が ふる（　）。",["でしょう","ましょう","ません","ました"],"짐작(~겠지요)은 <b>でしょう</b>."],
+  ["g99","form","へやが だんだん あたたかく （　）。",["なりました","しました","ありました","いました"],"〜く なる = ~해지다: あたたかく <b>なりました</b>."],
+  ["g100","form","兄は 先生（　） なりました。",["に","が","を","く"],"명사 + <b>に</b> なる: 先生に なりました."],
+  ["g101","form","しゅくだいが おわって（　） あそびに 行きます。",["から","まで","ので","より"],"〜てから = ~하고 나서."],
+  ["g102","form","ばんごはんを 食べた （　） テレビを 見ます。",["あとで","まえに","ながら","ときに"],"た형 + <b>あとで</b> = ~한 뒤에."],
+  ["g103","form","出かける （　） まどを しめて ください。",["まえに","あとで","ながら","から"],"사전형 + <b>まえに</b> = ~하기 전에."],
+  ["g104","form","あの 店の ケーキは 高くて （　）です。",["おいしい","おいしくて","おいしく","おいしかった"],"〜くて 뒤 문장 끝은 그대로: 高くて <b>おいしい</b>です."],
+  ["g105","form","この へやは しずか（　） ひろいです。",["で","くて","に","な"],"な형용사 잇기: しずか<b>で</b>."],
+  ["g106","form","きのうの テストは あまり むずかしく （　）。",["なかったです","ないでした","なくでした","ないかったです"],"い형용사 과거 부정: むずかしく<b>なかったです</b>."],
+  ["g107","form","わたしは まだ ひるごはんを 食べて （　）。",["いません","いました","います","いましょう"],"まだ 〜て いません = 아직 ~하지 않았어요."],
+  ["g108","form","「もう しゅくだいを しましたか。」「はい、（　） しました。」",["もう","まだ","また","よく"],"벌써 했다고 할 때 <b>もう</b>."],
+  ["g109","form","「もう ごはんを 食べましたか。」「いいえ、（　）です。」",["まだ","もう","また","すぐ"],"아직이라고 할 때 <b>まだ</b>です."],
+  ["g110","form","この 本は 三かい 読みましたが、（　） 読みたいです。",["また","まだ","もう","いつも"],"다시 한 번 = <b>また</b>(또)."],
+  ["g111","form","わたしは （　） 日本へ 行きました。とても たのしかったです。",["はじめて","いつも","まだ","ときどき"],"처음 가 봤다 = <b>はじめて</b>."],
+  ["g112","form","「田中さんは いますか。」「田中さんは （　） かえりました。」",["もう","まだ","これから","あとで"],"벌써 돌아갔다 = <b>もう</b>."],
+  ["g113","form","すみません、ちょっと （　） ください。",["まって","まち","まつ","まった"],"〜て ください: まつ → <b>まって</b>."],
+  ["g114","form","わたしは 日本の うたを （　）が すきです。",["聞くの","聞く","聞いて","聞きの"],"사전형 + <b>の</b> = ~하는 것: 聞くのが すきです."],
+  ["g115","form","「この 花は 何と いいますか。」「さくら（　） いいます。」",["と","を","に","が"],"〜と いいます = ~라고 해요."],
+  ["g116","form","兄は 本を 読むのが （　）です。",["すき","すきな","すきに","すきく"],"です 앞에서 な형용사는 그대로: <b>すき</b>です."],
+  ["g117","form","わたしの うちは 駅から （　） ちかいです。",["とても","あまり","ぜんぜん","すこしも"],"긍정 문장과 함께는 <b>とても</b>. あまり·ぜんぜん은 부정과 함께."],
+  ["g118","form","きのうは （　） さむくなかったです。",["あまり","とても","たくさん","もっと"],"<b>あまり</b> + 부정 = 별로 ~않다."],
+  ["s23","star","さむいですね。",["まどを","しめ","ましょう","か"],"。",2,"まどを しめ <b>ましょう</b> か. (창문을 닫아 드릴까요?)"],
+  ["s24","star","デパートへ",["くつを","買い","に","行きました"],"。",2,"デパートへ くつを 買い <b>に</b> 行きました. (백화점에 신발을 사러 갔어요)"],
+  ["s25","star","れいぞうこに",["たまごが","一つ","しか","ありません"],"。",2,"れいぞうこに たまごが 一つ <b>しか</b> ありません. (냉장고에 달걀이 하나밖에 없어요)"],
+  ["s26","star","あの",["赤い","かばんは","だれの","ですか"],"。",2,"あの 赤い かばんは <b>だれの</b> ですか. (저 빨간 가방은 누구 거예요?)"],
+  ["s27","star","あしたの",["あさは","はやく","おきて","ください"],"。",2,"あしたの あさは はやく <b>おきて</b> ください. (내일 아침에는 일찍 일어나 주세요)"],
+  ["s28","star","わたしは",["ひまな","とき","ゲームを","します"],"。",2,"わたしは ひまな とき <b>ゲームを</b> します. (저는 한가할 때 게임을 해요)"],
+  ["s29","star","この",["くすりは","ごはんを","食べた","あとで"],"飲んで ください。",2,"この くすりは ごはんを <b>食べた</b> あとで 飲んで ください. (이 약은 밥을 먹은 뒤에 드세요)"],
+  ["s30","star","ここで",["しゃしんを","とっても","いい","ですか"],"。",2,"ここで しゃしんを とっても <b>いい</b> ですか. (여기서 사진을 찍어도 돼요?)"],
+  ["s31","star","日よう日は",["へやの","そうじを","したり","せんたくを"],"したり します。",2,"へやの そうじを <b>したり</b> せんたくを したり します. (방 청소를 하거나 빨래를 하거나 해요)"],
+  ["s32","star","わたしは",["兄","より","せが","高い"],"です。",2,"わたしは 兄 より <b>せが</b> 高いです. (저는 형보다 키가 커요)"],
+  ["s33","star","きのうは",["雨","でしたから","どこへも","行きません"],"でした。",2,"きのうは 雨 でしたから <b>どこへも</b> 行きませんでした. (어제는 비가 와서 아무 데도 안 갔어요)"],
+  ["s34","star","いもうとは",["いま","へやで","本を","読んで"],"います。",2,"いもうとは いま へやで <b>本を</b> 読んで います. (여동생은 지금 방에서 책을 읽고 있어요)"],
+  ["s35","star","この",["しずかで","きれいな","こうえんが","すきです"],"。",2,"この しずかで きれいな <b>こうえんが</b> すきです. (이 조용하고 깨끗한 공원을 좋아해요)"],
+  ["s36","star","すみません、",["この","でんしゃは","東京へ","行きますか"],"。",2,"すみません、この でんしゃは <b>東京へ</b> 行きますか. (저기요, 이 전철은 도쿄에 가요?)"]);
+JL_PG.push(
+  ["pg8","わたしの へやは 二かいに あります。あまり ひろく {1}が、まどが 大きくて あかるいです。へやには ベッドと つくえが あります。つくえの 上には パソコン{2} 本などが あります。わたしは この へやが {3} すきです。",
+    [["ありません","あります","ないです","ありました"],["や","を","で","に"],["とても","あまり","ぜんぜん","すこしも"]],
+    ["あまり + 부정: ひろく <b>ありません</b>が = 넓지 않지만.","〜や〜など = ~랑 ~ 등: パソコン<b>や</b> 本など.","긍정(すきです)과 함께는 <b>とても</b>."],
+    "제 방은 2층에 있어요. 별로 넓지 않지만 창문이 커서 밝아요. 방에는 침대와 책상이 있어요. 책상 위에는 컴퓨터랑 책 등이 있어요. 저는 이 방이 아주 좋아요."],
+  ["pg9","先週の 土よう日、わたしは かぞくと 山へ 行きました。朝 六時に うちを {1}、電車で 二時間 かかりました。山の 上は とても さむかったです。{2}、山の 上から 見た けしきは とても きれいでした。また 来年も かぞくと {3}。",
+    [["出て","出た","出る","出ます"],["でも","だから","それから","そして"],["行きたいです","行きました","行きませんでした","行って います"]],
+    ["문장을 이을 때 て형: うちを <b>出て</b> = 집을 나와서.","추웠지만 경치는 예뻤다 → 반대를 잇는 <b>でも</b>.","来年(내년) 바람이니까 <b>行きたいです</b>."],
+    "지난주 토요일에 저는 가족과 산에 갔어요. 아침 6시에 집을 나와서 전철로 2시간 걸렸어요. 산 위는 아주 추웠어요. 하지만 산 위에서 본 경치는 아주 예뻤어요. 내년에도 가족과 가고 싶어요."],
+  ["pg10","わたしは 毎日 日本語を べんきょうして います。かんじは むずかしいですが、ひらがなと カタカナは もう {1}。先週から 日本の まんがを 読んで います。はじめは わからない ことばが 多かったですが、いまは {2} わかります。来年は 日本へ りょこうに {3}です。",
+    [["おぼえました","おぼえます","おぼえて","おぼえましょう"],["少し","あまり","ぜんぜん","すこしも"],["行きたい","行く","行った","行って"]],
+    ["もう(이미) 외웠으니까 과거형 <b>おぼえました</b>.","긍정(わかります)과 함께는 <b>少し</b>. あまり·ぜんぜん·すこしも는 부정과 함께.","바람을 말하니까 <b>行きたい</b>です."],
+    "저는 매일 일본어를 공부하고 있어요. 한자는 어렵지만 히라가나와 가타카나는 이미 외웠어요. 지난주부터 일본 만화를 읽고 있어요. 처음에는 모르는 말이 많았지만 지금은 조금 알아요. 내년에는 일본에 여행 가고 싶어요."],
+  ["pg11","きのう、わたしは はじめて すしを つくりました。友だちの マリアさんが つくりかたを {1}。すしは つくるのが むずかしかったですが、とても おいしかったです。マリアさんは すしの ほかに、みそしる{2} つくりました。こんどは わたしが マリアさんに かんこくの りょうりを {3}。",
+    [["おしえました","ならいました","聞きました","見せました"],["も","を","が","で"],["おしえたいです","おしえて いました","食べたいです","つくりました"]],
+    ["마리아 씨가(주어) 만드는 법을 <b>가르쳐 줬어요</b>. ならう(배우다)라면 주어가 '나'여야 해요.","초밥 말고 된장국<b>도</b> 만들었어요.","こんどは わたしが(이번엔 내가) → 가르쳐 주고 싶다 <b>おしえたいです</b>."],
+    "어제 저는 처음으로 초밥을 만들었어요. 친구 마리아 씨가 만드는 법을 가르쳐 줬어요. 초밥은 만들기 어려웠지만 아주 맛있었어요. 마리아 씨는 초밥 말고 된장국도 만들었어요. 이번에는 제가 마리아 씨에게 한국 요리를 가르쳐 주고 싶어요."]);
+JL_R.push(
+  ["r33","ジョンさん\nあしたの パーティーは 六時からです。わたしの うちは 駅から あるいて 十分です。駅の 北口を 出て、まっすぐ 行って ください。花屋の となりの 白い うちです。\nゆみ","ゆみさんの うちは どこですか。",["花屋の となりの 白い うち","駅の 北口の 白い うち","花屋の 中","駅の となりの うち"],"북쪽 출구로 나와 쭉 가면 <b>꽃집 옆 하얀 집</b>이에요."],
+  ["r34","わたしは 毎日 電車で 学校へ 行きます。うちから 駅まで あるいて 五分、電車で 二十分、駅から 学校まで あるいて 十分 かかります。","うちから 学校まで ぜんぶで 何分 かかりますか。",["三十五分","二十分","三十分","二十五分"],"5분 + 20분 + 10분 = <b>35분</b>."],
+  ["r35","パンや さくら\nあさ 七時から よる 七時まで\n日よう日は 休みです。\n毎週 月よう日は パンが ぜんぶ 一つ 百円です。","パンを 安く 買いたいです。いつ 行きますか。",["月よう日","日よう日","土よう日","毎日"],"매주 <b>월요일</b>은 빵이 모두 100엔이에요. 일요일은 쉬어요."],
+  ["r36","わたしの 兄は 二十五さいで、ぎんこうで はたらいて います。兄は スポーツが すきで、毎週 土よう日に テニスを します。日よう日は うちで 本を 読んだり、音楽を 聞いたり します。","兄は 土よう日に 何を しますか。",["テニスを します","本を 読みます","ぎんこうで はたらきます","音楽を 聞きます"],"매주 토요일에 <b>테니스</b>를 쳐요. 책·음악은 일요일이에요."],
+  ["r37","おしらせ\nあしたは 学校の そうじの 日です。じゅぎょうは 午前だけです。午後一時から そうじを します。そうじの あとで、うちへ かえって ください。","あしたの 午後、学生は まず 何を しますか。",["そうじを します","じゅぎょうを うけます","うちへ かえります","ひるごはんを つくります"],"오후 1시부터 <b>청소</b>를 하고, 그 뒤에 집에 가요."],
+  ["r38","きのうは 母の たんじょうびでした。わたしと 妹は いっしょに ケーキを 買いました。父は 花を 買いました。ばんごはんの あとで、みんなで ケーキを 食べました。母は とても よろこびました。","ケーキを 買ったのは だれですか。",["「わたし」と 妹","父","母","父と 母"],"<b>나와 여동생</b>이 케이크를 샀어요. 아버지는 꽃."],
+  ["r39","でんわばんごうの おしらせ\n田中医院は 4月1日から でんわばんごうが かわります。\nまえ：03-1234-5678\nあたらしい：03-8765-4321","4月10日に 田中医院に でんわを します。何ばんに かけますか。",["03-8765-4321","03-1234-5678","どちらでも いい","でんわは できない"],"4월 1일부터 번호가 바뀌니까 4월 10일에는 <b>새 번호</b>로 걸어요."],
+  ["r40","日本語クラスの じかんわり\n月・水：午前十時～十二時（かんじ）\n火・木：午後二時～四時（かいわ）\n金：午前十時～十二時（テスト）","かいわの じゅぎょうは いつですか。",["火よう日と 木よう日の 午後","月よう日と 水よう日の 午前","金よう日の 午前","毎日 午後"],"회화(かいわ)는 <b>화·목 오후 2~4시</b>예요."],
+  ["r41","わたしは 先月 日本に 来ました。はじめは 日本語が ぜんぜん わかりませんでしたが、いまは 少し わかります。毎日 学校で 友だちと 日本語で 話して います。","この 人に ついて、ただしい ものは どれですか。",["いまは 日本語が 少し わかる","日本語が ぜんぜん わからない","来月 日本に 来る","友だちと かんこくごで 話す"],"처음엔 몰랐지만 <b>지금은 조금 알아요</b>."],
+  ["r42","ゆうびんきょくの じかん\n月～金：9:00～17:00\n土：9:00～12:00\n日・休みの 日：休み","土よう日の 午後 二時に てがみを 出したいです。ゆうびんきょくは あいて いますか。",["あいて いない","あいて いる","五時まで あいて いる","日よう日だけ あいて いる"],"토요일은 12시까지라서 오후 2시에는 <b>닫혀 있어요</b>."],
+  ["r43","わたしの へやには まどが 二つ あります。まどの 前に つくえが あって、つくえの 上に パソコンが あります。ベッドは へやの 右に あります。","パソコンは どこに ありますか。",["つくえの 上","ベッドの 上","まどの 外","へやの 右"],"책상 위에 컴퓨터가 있어요."],
+  ["r44","マリアさん、ごめんなさい。きょうの えいがに 行く ことが できません。かぜを ひいて、ねつが あります。来週の 土よう日は どうですか。\nけん","けんさんは どうして えいがに 行きませんか。",["かぜを ひいたから","来週 いそがしいから","えいがが すきではないから","お金が ないから"],"<b>감기에 걸려서</b> 열이 있어요."],
+  ["r45","ごみの すてかた\n・かみ：火よう日\n・プラスチック：木よう日\n・びん・かん：毎月 一日と 十五日\n朝 八時までに 出して ください。","ジュースの かんは いつ 出しますか。",["毎月 一日と 十五日","毎週 水よう日","火よう日","木よう日"],"캔(かん)은 <b>매달 1일과 15일</b>이에요."],
+  ["r46","わたしは きのう デパートで シャツを 二まいと ネクタイを 一本 買いました。シャツは 一まい 三千円、ネクタイは 二千円でした。","ぜんぶで いくら はらいましたか。",["八千円","五千円","六千円","七千円"],"셔츠 3,000 × 2 = 6,000 + 넥타이 2,000 = <b>8,000엔</b>."],
+  ["r47","わたしは 毎朝 六時に おきて、こうえんを はしります。そのあと シャワーを あびて、七時に 朝ごはんを 食べます。八時に うちを 出ます。","この 人は 朝 はじめに 何を しますか。",["こうえんを はしります","シャワーを あびます","朝ごはんを 食べます","うちを 出ます"],"6시에 일어나서 먼저 <b>공원을 달려요</b>."],
+  ["r48","おしらせ\n来週の 水よう日は 先生が 休みですから、じゅぎょうは ありません。そのかわり、土よう日の 午前十時から じゅぎょうを します。","来週 じゅぎょうが あるのは いつですか。",["土よう日の 午前十時","水よう日の 午前十時","水よう日と 土よう日","ありません"],"수요일 대신 <b>토요일 오전 10시</b>에 수업해요."],
+  ["r49","わたしは ねこが 二ひき います。名前は タマと ミケです。タマは 白くて 大きいです。ミケは 小さくて、黒と 白と 茶色です。二ひきとも よく ねます。","ミケは どんな ねこですか。",["小さくて 三つの 色の ねこ","白くて 大きい ねこ","黒くて 大きい ねこ","白い 小さい ねこ"],"미케는 <b>작고, 검정·하양·갈색</b> 세 가지 색이에요."],
+  ["r50","やまだ先生\nきのうは じゅぎょうを 休んで、すみませんでした。あたまが いたくて、びょういんへ 行きました。きょうは もう げんきです。しゅくだいは あした 出します。\nキム","キムさんは しゅくだいを いつ 出しますか。",["あした","きょう","きのう","来週"],"숙제는 <b>내일</b> 낸대요."],
+  ["r51","スーパーの セール\n10日（土）・11日（日）\nやさい ぜんぶ 2わりびき\n11日は 肉も 2わりびき","肉を 安く 買いたいです。いつ 行きますか。",["11日","10日","10日と 11日","12日"],"고기는 <b>11일(일)</b>에만 할인해요. 2わりびき = 20% 할인."],
+  ["r52","日本の 学校は 四月に はじまります。かんこくの 学校は 三月に はじまります。わたしは 三月に 日本へ 来ましたから、学校が はじまるまで 一か月 ありました。","日本の 学校は 何月に はじまりますか。",["四月","三月","五月","一月"],"일본 학교는 <b>4월</b>에 시작해요."],
+  ["r53","わたしは 毎晩 ねる 前に 日記を 書きます。きょうは 友だちと えいがを 見て、そのあと レストランで カレーを 食べました。カレーは からかったですが、おいしかったです。","きょう この 人は えいがの あとで 何を しましたか。",["レストランで カレーを 食べた","日記を 書いた","友だちの うちへ 行った","カレーを つくった"],"영화 다음에 <b>레스토랑에서 카레</b>를 먹었어요."],
+  ["r54","じてんしゃの かしだし\n1時間：200円\n1日：800円\n※ 朝9時から 夕方6時まで","朝 九時から 午後 一時まで じてんしゃを かります。いくら はらいますか。",["800円","200円","400円","1,000円"],"4시간이면 200 × 4 = 800엔. 하루 요금(800엔)과 같아요. 답은 <b>800엔</b>."],
+  ["r55","わたしの 町には えきが 二つ あります。北駅と 南駅です。北駅の ちかくには デパートや レストランが たくさん あります。南駅の ちかくには 大きい こうえんが あります。","こうえんは どこに ありますか。",["南駅の ちかく","北駅の ちかく","デパートの 中","レストランの となり"],"큰 공원은 <b>남쪽 역 근처</b>예요."],
+  ["r56","リンさん\nあしたの テストは 九時からです。えんぴつと けしゴムを もって きて ください。じしょは つかっては いけません。\n先生","テストに もって 行っては いけない ものは どれですか。",["じしょ","えんぴつ","けしゴム","とけい"],"사전(じしょ)은 쓰면 안 돼요."]);
+JL_L.push(
+  ["l46","task",[["N","女の人と 男の人が 話して います。男の人は 何を 買いますか。"],["F","スーパーへ 行きますか。じゃあ、ぎゅうにゅうを 買って きて ください。"],["M","たまごは まだ ありますか。"],["F","たまごも ありません。おねがいします。"]],"男の人は 何を 買いますか。",["ぎゅうにゅうと たまご","ぎゅうにゅうだけ","たまごだけ","ぎゅうにゅうと パン"],"우유를 부탁했고, 달걀도 없다고 해서 <b>우유와 달걀</b>을 사요."],
+  ["l47","task",[["N","先生が 話して います。学生は あした 何時までに 学校に 来ますか。"],["M","あしたは しけんです。しけんは 九時からですが、八時半までに 来て ください。"]],"学生は あした 何時までに 学校に 来ますか。",["八時半","九時","八時","九時半"],"시험은 9시지만 <b>8시 반까지</b> 오래요."],
+  ["l48","task",[["N","男の人と 女の人が 話して います。女の人は どこで 男の人を まちますか。"],["M","駅に つきましたか。"],["F","はい、いま 南口に います。"],["M","南口は 人が 多いですから、北口の 本屋の 前で まって いて ください。"]],"女の人は どこで 男の人を まちますか。",["北口の 本屋の 前","南口","北口の 中","南口の 本屋の 前"],"남쪽 출구는 사람이 많아서 <b>북쪽 출구 서점 앞</b>에서 기다려요."],
+  ["l49","task",[["N","店で 男の人と 店の人が 話して います。男の人は いくら はらいますか。"],["M","この ノートを 三さつ ください。"],["F","一さつ 二百円ですから、六百円です。"],["M","あ、ペンも 一本 ください。"],["F","ペンは 百円です。"]],"男の人は いくら はらいますか。",["七百円","六百円","三百円","八百円"],"공책 200 × 3 = 600 + 펜 100 = <b>700엔</b>."],
+  ["l50","task",[["N","女の人と 男の人が 話して います。男の人は これから まず 何を しますか。"],["F","へやが きたないですね。そうじを して ください。"],["M","はい。でも、いま 電話を かけて いますから、あとで します。"],["F","じゃあ、電話の あとで おねがいします。"]],"男の人は これから まず 何を しますか。",["電話を する","そうじを する","へやを 出る","ごはんを 食べる"],"지금 전화 중이라 <b>전화</b>를 먼저 하고, 청소는 그다음이에요."],
+  ["l51","task",[["N","先生が 話して います。学生は しゅくだいを いつまでに 出しますか。"],["M","この しゅくだいは 来週の 月よう日までに 出して ください。月よう日は 休みですから、火よう日でも いいです。"]],"学生は しゅくだいを いつまでに 出しますか。",["来週の 火よう日","来週の 月よう日","あした","来週の 水よう日"],"월요일이 쉬는 날이라 <b>화요일</b>까지 내도 된대요."],
+  ["l52","task",[["N","女の人と 男の人が 話して います。二人は 何で 行きますか。"],["F","レストランまで あるいて 行きましょうか。"],["M","あるくと 三十分 かかりますよ。バスで 行きましょう。"],["F","バスは あまり ありませんよ。タクシーで 行きませんか。"],["M","そうですね。そう しましょう。"]],"二人は 何で 行きますか。",["タクシー","バス","あるいて","電車"],"버스가 별로 없어서 <b>택시</b>로 가기로 해요."],
+  ["l53","task",[["N","男の人と 女の人が 話して います。女の人は どの 本を かりますか。"],["M","この 赤い 本は おもしろいですよ。"],["F","それは もう 読みました。"],["M","じゃあ、この あおい 本は どうですか。"],["F","いいですね。それを かります。"]],"女の人は どの 本を かりますか。",["あおい 本","赤い 本","きいろい 本","白い 本"],"빨간 책은 이미 읽어서 <b>파란 책</b>을 빌려요."],
+  ["l54","task",[["N","店の人が 話して います。この 店は 何時に しまりますか。"],["F","いつもは よる 八時まで あいて いますが、きょうは 六時に しまります。"]],"この 店は きょう 何時に しまりますか。",["六時","八時","七時","九時"],"오늘은 <b>6시</b>에 닫아요."],
+  ["l55","task",[["N","男の人と 女の人が 電話で 話して います。男の人は 何を もって 行きますか。"],["M","もしもし、パーティーに 何を もって 行きましょうか。"],["F","のみものは たくさん ありますから、くだものを おねがいします。"],["M","わかりました。"]],"男の人は 何を もって 行きますか。",["くだもの","のみもの","ケーキ","何も もって 行かない"],"음료는 많아서 <b>과일</b>을 부탁해요."],
+  ["l56","point",[["N","女の人と 男の人が 話して います。男の人の しゅみは 何ですか。"],["F","しゅみは 何ですか。"],["M","前は テニスでしたが、いまは りょうりです。毎日 ばんごはんを つくります。"]],"男の人の しゅみは 何ですか。",["りょうり","テニス","えいが","さんぽ"],"예전엔 테니스, 지금은 <b>요리</b>예요."],
+  ["l57","point",[["N","男の人と 女の人が 話して います。女の人は きのう どこへ 行きましたか。"],["M","きのうは どこかへ 行きましたか。"],["F","はい、デパートへ 行く つもりでしたが、雨でしたから、うちの ちかくの 本屋へ 行きました。"]],"女の人は きのう どこへ 行きましたか。",["本屋","デパート","どこへも 行かなかった","こうえん"],"비가 와서 백화점 대신 <b>근처 서점</b>에 갔어요."],
+  ["l58","point",[["N","女の人が 話して います。女の人は 毎朝 何を 飲みますか。"],["F","前は 毎あさ コーヒーを 飲んで いました。でも、いまは こうちゃを 飲んで います。"]],"女の人は いま 毎朝 何を 飲みますか。",["こうちゃ","コーヒー","ジュース","ぎゅうにゅう"],"예전엔 커피, 지금은 <b>홍차</b>를 마셔요."],
+  ["l59","point",[["N","男の人と 女の人が 話して います。男の人は どうして げんきが ありませんか。"],["F","げんきが ありませんね。どう しましたか。"],["M","きのう おそくまで しごとを して、あまり ねませんでした。"]],"男の人は どうして げんきが ありませんか。",["あまり ねなかったから","かぜを ひいたから","ごはんを 食べなかったから","しごとが なかったから"],"늦게까지 일해서 <b>잠을 별로 못 잤어요</b>."],
+  ["l60","point",[["N","女の人と 男の人が 話して います。二人は 何時に あいますか。"],["F","あしたは 十時に 駅で あいましょう。"],["M","すみません、十時は ちょっと…。十一時は どうですか。"],["F","いいですよ。"]],"二人は 何時に あいますか。",["十一時","十時","九時","十二時"],"10시는 안 돼서 <b>11시</b>에 만나요."],
+  ["l61","point",[["N","男の人が 話して います。男の人の へやは 何かいですか。"],["M","ぼくの へやは この ビルの 五かいです。エレベーターが ありませんから、毎日 かいだんを のぼります。"]],"男の人の へやは 何かいですか。",["五かい","三かい","一かい","八かい"],"이 건물의 <b>5층</b>이에요."],
+  ["l62","point",[["N","女の人と 男の人が 話して います。女の人は 何人 きょうだいですか。"],["M","きょうだいは いますか。"],["F","はい、兄が 一人と おとうとが 二人 います。"]],"女の人は 何人 きょうだいですか。",["四人","三人","二人","五人"],"오빠 1명 + 남동생 2명 + 자기 자신 = <b>4남매</b>."],
+  ["l63","point",[["N","男の人と 女の人が 話して います。女の人は どうして 日本語を べんきょうして いますか。"],["M","どうして 日本語を べんきょうして いますか。"],["F","日本の アニメが すきですから。いつか 日本語で アニメを 見たいです。"]],"女の人は どうして 日本語を べんきょうして いますか。",["アニメが すきだから","しごとで つかうから","日本に すんで いるから","友だちが 日本人だから"],"<b>일본 애니메이션을 좋아해서</b>예요."],
+  ["l64","point",[["N","女の人と 男の人が 話して います。きょうの 天気は どうですか。"],["F","きょうは 雨ですか。"],["M","いいえ、朝は くもりですが、午後から はれますよ。"]],"きょうの 午後の 天気は どうですか。",["はれ","雨","くもり","ゆき"],"아침은 흐리고 <b>오후부터 맑아요</b>."],
+  ["l65","point",[["N","男の人と 女の人が 話して います。男の人は 何を 食べましたか。"],["F","おひるは 何を 食べましたか。"],["M","ラーメンを 食べたかったですが、店が 休みでしたから、カレーを 食べました。"]],"男の人は おひるに 何を 食べましたか。",["カレー","ラーメン","すし","パン"],"라멘집이 쉬어서 <b>카레</b>를 먹었어요."],
+  ["l66","utt",[["N","友だちの たんじょうびです。何と 言いますか。"]],"친구의 생일이에요.",["おたんじょうび おめでとう。","おやすみなさい。","いただきます。","おげんきで。"],"생일 축하는 <b>おたんじょうび おめでとう</b>."],
+  ["l67","utt",[["N","友だちの うちに 入ります。何と 言いますか。"]],"친구 집에 들어가요.",["おじゃまします。","いってきます。","ただいま。","いらっしゃいませ。"],"남의 집에 들어갈 때는 <b>おじゃまします</b>."],
+  ["l68","utt",[["N","先生が おもい にもつを もって います。何と 言いますか。"]],"선생님이 무거운 짐을 들고 계세요.",["もちましょうか。","もって ください。","もちませんか。","もちました。"],"도와드릴 때는 <b>もちましょうか</b>(들어 드릴까요?)."],
+  ["l69","utt",[["N","友だちに ペンを かして もらいました。何と 言いますか。"]],"친구에게 펜을 빌렸어요.",["ありがとう。","どういたしまして。","すみません、かしません。","いってらっしゃい。"],"빌려줬으니 <b>ありがとう</b>(고마워)."],
+  ["l70","utt",[["N","店に おきゃくさんが 入って きました。店の人は 何と 言いますか。"]],"가게에 손님이 들어왔어요. 점원은?",["いらっしゃいませ。","ごちそうさまでした。","おじゃまします。","いってきます。"],"점원은 <b>いらっしゃいませ</b>(어서 오세요)."],
+  ["l71","utt",[["N","へやが あついです。まどを あけたいです。先生に 何と 言いますか。"]],"방이 더워서 창문을 열고 싶어요. 선생님께?",["まどを あけても いいですか。","まどを あけて ください。","まどを しめましょうか。","まどが あいて います。"],"허락을 구할 때는 <b>〜ても いいですか</b>."],
+  ["l72","utt",[["N","しごとが おわって、先に かえります。何と 言いますか。"]],"일이 끝나서 먼저 집에 가요.",["おさきに しつれいします。","おかえりなさい。","いただきます。","はじめまして。"],"먼저 퇴근할 때는 <b>おさきに しつれいします</b>."],
+  ["l73","utt",[["N","みちで 人の 足を ふみました。何と 言いますか。"]],"길에서 다른 사람의 발을 밟았어요.",["すみません。","ありがとう。","どうぞ。","こちらこそ。"],"사과할 때는 <b>すみません</b>."],
+  ["l74","resp",[["M","すみません、トイレは どこですか。"]],"",["あそこです。","トイレです。","三時です。","はい、そうです。"],"화장실이 어디예요? → <b>저기예요</b>."],
+  ["l75","resp",[["F","しゅくだいを わすれました。"]],"",["あしたは わすれないで ください。","はい、どうぞ。","いってらっしゃい。","おめでとう。"],"숙제를 잊었어요 → <b>내일은 잊지 마세요</b>."],
+  ["l76","resp",[["M","いっしょに おちゃを 飲みませんか。"]],"",["ええ、いいですね。","はい、飲みませんでした。","いいえ、おちゃです。","どういたしまして。"],"차 마시지 않을래요? → <b>네, 좋아요</b>."],
+  ["l77","resp",[["F","きのうの えいがは どうでしたか。"]],"",["とても おもしろかったです。","きのうです。","えいがかんです。","二時間です。"],"영화 어땠어요? → <b>아주 재미있었어요</b>."],
+  ["l78","resp",[["M","どうぞ、たくさん 食べて ください。"]],"",["いただきます。","ごちそうさまでした。","いってきます。","おじゃましました。"],"많이 드세요 → <b>いただきます</b>(잘 먹겠습니다)."],
+  ["l79","resp",[["F","おそく なって、すみません。"]],"",["いいえ、だいじょうぶですよ。","はい、おそいです。","おかえりなさい。","いただきます。"],"늦어서 미안해요 → <b>괜찮아요</b>."],
+  ["l80","resp",[["M","日本に 来て どのくらいですか。"]],"",["三か月です。","三時です。","三人です。","三さいです。"],"일본에 온 지 얼마나 됐어요? → <b>석 달이에요</b>."],
+  ["l81","resp",[["F","この ケーキ、だれが つくりましたか。"]],"",["母が つくりました。","きのう つくりました。","うちで つくりました。","ケーキを つくりました。"],"누가 만들었어요? → <b>엄마가 만들었어요</b>."],
+  ["l82","resp",[["M","あした、ひまですか。"]],"",["すみません、あしたは いそがしいです。","はい、あしたです。","いいえ、きのうです。","ひまを ください。"],"내일 한가해요? → <b>미안해요, 내일은 바빠요</b>."],
+  ["l83","resp",[["F","ここに 名前を 書いて ください。"]],"",["はい、わかりました。","はい、書きました。ありがとう。","いいえ、名前です。","どういたしまして。"],"여기 이름 써 주세요 → <b>네, 알겠습니다</b>."],
+  ["l84","resp",[["M","しつれいします。"]],"",["どうぞ。","いってきます。","おめでとう。","いただきます。"],"실례합니다(들어갈 때) → <b>들어오세요</b>(どうぞ)."],
+  ["l85","resp",[["F","いってきます。"]],"",["いってらっしゃい。","おかえりなさい。","ただいま。","おやすみなさい。"],"다녀오겠습니다 → <b>다녀오세요</b>."],
+  ["l86","resp",[["M","ただいま。"]],"",["おかえりなさい。","いってらっしゃい。","いってきます。","はじめまして。"],"다녀왔습니다 → <b>어서 와요</b>(おかえりなさい)."],
+  ["l87","resp",[["F","でんわばんごうを おしえて ください。"]],"",["03-1234-5678です。","でんわです。","あしたです。","はい、おしえました。"],"전화번호 알려 주세요 → <b>번호</b>를 말해요."],
+  ["l88","resp",[["M","この バスは 駅へ 行きますか。"]],"",["はい、行きますよ。","はい、駅です。","いいえ、バスです。","二十分です。"],"이 버스 역에 가요? → <b>네, 가요</b>."],
+  ["l89","resp",[["F","何か のみますか。"]],"",["じゃあ、おちゃを おねがいします。","はい、のみませんでした。","いいえ、何です。","のみものです。"],"뭐 마실래요? → <b>그럼 차 주세요</b>."]);
 const JL={};
 JL_V.forEach(([id,t,q,ch,ex])=>JL[id]={id,a:"v",t,q,ch,ex});
 JL_G.forEach(x=>JL[x[0]]=x[1]==="star"?{id:x[0],a:"g",t:"star",pre:x[2],pc:x[3],post:x[4],at:x[5],ex:x[6]}:{id:x[0],a:"g",t:"form",q:x[2],ch:x[3],ex:x[4]});
 JL_R.forEach(([id,p,q,ch,ex])=>JL[id]={id,a:"r",t:"doc",p,q,ch,ex});
 JL_L.forEach(([id,t,lines,q,ch,ex])=>JL[id]={id,a:"l",t,lines,q,ch,ex});
 JL_PG.forEach(([pid,p,chs,exs,tr])=>chs.forEach((ch,i)=>{const id=pid+"-"+(i+1);JL[id]={id,a:"g",t:"pg",p,k:i+1,ch,ex:exs[i]+`<span class="tip">${tr}</span>`}}));
+const JL_KANA=[["東京","とうきょう"],["本屋","ほんや"],["花屋","はなや"],["音楽","おんがく"],["医院","いいん"],["日記","にっき"],["夕方","ゆうがた"],["茶色","ちゃいろ"],["生活","せいかつ"],["朝","あさ"],["夜","よる"],["町","まち"],["兄","あに"],["赤","あか"],["家","うち"],["妹","いもうと"],["黒","くろ"],["色","いろ"],["肉","にく"],["晩","ばん"],["知","し"],["回","かい"],["薬","くすり"],["短","みじか"],["細","ほそ"]];
+const jlKana=s=>typeof s!=="string"?s:JL_KANA.reduce((t,[k,v])=>t.split(k).join(v),s);
+Object.values(JL).forEach(q=>{for(const f of ["q","p","pre","post"])q[f]=jlKana(q[f]);if(q.pc)q.pc=q.pc.map(jlKana);if(q.ch&&q.t!=="kw")q.ch=q.ch.map(jlKana);if(q.lines)q.lines=q.lines.map(([w,t])=>[w,jlKana(t)])});
 const jlIds=a=>Object.keys(JL).filter(id=>JL[id].a===a);
 const jld=id=>((S.jl||{})[id]||{}).r>0; // 한 번이라도 맞힌 문제
 const JL_WORDS=(()=>{const seen={};return KANJI.filter(j=>j.lv==="N5").flatMap(j=>j.ex).filter(e=>/[一-龯]/.test(e[0])&&e[0]!==e[1]&&!seen[e[0]]&&(seen[e[0]]=1)).map(e=>({w:e[0],r:e[1],m:e[2]}))})();
@@ -4515,7 +4987,8 @@ function jlSay(lines,btn){try{
 const jlSum=s=>s.t==="pg"?`글 속 빈칸 （${s.k}） · `+s.p.replace(/\{\d\}/g,"（ ）").slice(0,24)+"…":s.t==="read"||s.t==="write"?s.w:s.t==="star"?s.pre+" … "+s.post:s.t==="resp"?"「"+s.lines[0][1]+"」":s.t==="utt"?s.q:(s.q||"").replace(/_/g,"");
 const jlStop=()=>{try{speechSynthesis.cancel()}catch(e){}};
 function jlRecord(id,ok){if(!JL[id])return;S.jl=S.jl||{};const r=S.jl[id]||{r:0,w:0};if(ok)r.r++;else r.w++;S.jl[id]=r}
-function jlPick(ids,n){const sc=id=>{const r=(S.jl||{})[id];return !r?0:r.w>r.r?1:r.r?3:2};return shuffle(ids.slice()).sort((a,b)=>sc(a)-sc(b)).slice(0,n)}
+let jlFixed=0;
+function jlPick(ids,n){if(jlFixed)return shuffle(ids.slice()).slice(0,n);const sc=id=>{const r=(S.jl||{})[id];return !r?0:r.w>r.r?1:r.r?3:2};return shuffle(ids.slice()).sort((a,b)=>sc(a)-sc(b)).slice(0,n)}
 function jlPractice(a){
   let qs;
   if(a==="v")qs=shuffle([...jlPick(jlIds("v"),4).map(jlQ),jlQ(jlAuto("read")),jlQ(jlAuto("read")),jlQ(jlAuto("read")),jlQ(jlAuto("read")),jlQ(jlAuto("write")),jlQ(jlAuto("write"))]);
@@ -4524,6 +4997,9 @@ function jlPractice(a){
 }
 const JL_INFO=["r3","r6","r7","r14","r20","r23","r26","r27","r31"];
 const JL_EXAM_MIN=35,JL_EXAM_N=30;
+const jlSeed=a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+function jlExamSet(k){const R=Math.random;Math.random=jlSeed(k*7919);jlFixed=1;try{return jlExam()}finally{Math.random=R;jlFixed=0}}
+function jlStartExam(k){const qs=k?jlExamSet(k):jlExam();jx={view:"exam",qs,ans:qs.map(()=>null),i:0,end:Date.now()+JL_EXAM_MIN*60e3,plays:{},set:k||0};renderJlptTab();window.scrollTo({top:0,behavior:"instant"})}
 function jlExam(){
   const v=jlIds("v"),g=jlIds("g");
   const l=jlIds("l"),lt=t=>l.filter(id=>t.includes(JL[id].t));
@@ -4557,13 +5033,15 @@ function renderJlpt(el){
         <p>실제 시험처럼 끝까지 푼 뒤에 점수와 합격선을 알려 줘요. 풀 때는 정답이 바로 나오지 않아요.</p>
         ${X.n?`<p class="jl-best">지금까지 ${X.n}번 · 최고 <b>${X.best}</b> / 180점${X.pass?' <span class="pill ok">합격선 통과</span>':""}</p>`:""}</div>
         <button class="next" id="jl-exam">${X.n?"다시 도전하기":"모의시험 시작"}</button></div>
+      <div class="jl-sets"><p>실전 1~3회는 늘 같은 문제가 나오는 고정 세트예요. 공부한 뒤 다시 풀어서 점수가 올랐는지 비교해 봐요.</p><div>${[1,2,3].map(k=>`<button type="button" class="ghost" data-jlset="${k}"><b>실전 ${k}회</b><small>${(X.sets||{})[k]!=null?`최고 ${X.sets[k]}점`:"아직 안 풀었어요"}</small></button>`).join("")}</div></div>
       <h3 class="jl-h">영역별 연습</h3><p class="intro">한 번에 10문제씩 풀고, 풀자마자 해설을 봐요. N5 코스에서는 한글 발음 없이 일본어로만 풀어요.</p>
       <div class="cats">${Object.keys(JL_AREAS).map(card).join("")}</div>
       <p class="tip s-note">JLPT(일본어능력시험) N5는 가장 쉬운 급수예요. 여기 문제는 실제 시험 형식을 참고해 하루카나가 직접 만든 연습 문제라서, 실제 점수와는 다를 수 있어요. 시험 전에는 JLPT 공식 사이트(jlpt.jp)의 문제 예시도 한 번 풀어 보세요. 실제 목소리와 속도에 익숙해질 수 있어요.</p>`;
     bindJlt(el);
     el.querySelectorAll("[data-jlgo]").forEach(b=>b.onclick=()=>{wv=b.dataset.jlgo==="a"?{view:"list",script:"a"}:{view:"slist",sg:"j"};navGo(b.dataset.jlgo==="a"?3:7)});
     el.querySelectorAll("[data-jla]").forEach(b=>b.onclick=()=>{jx={view:"prac",a:b.dataset.jla,qs:jlPractice(b.dataset.jla),i:0,right:0};renderJlptTab();window.scrollTo({top:0,behavior:"instant"})});
-    $("jl-exam").onclick=()=>{const qs=jlExam();jx={view:"exam",qs,ans:qs.map(()=>null),i:0,end:Date.now()+JL_EXAM_MIN*60e3,plays:{}};renderJlptTab();window.scrollTo({top:0,behavior:"instant"})};
+    $("jl-exam").onclick=()=>jlStartExam(0);
+    el.querySelectorAll("[data-jlset]").forEach(b=>b.onclick=()=>jlStartExam(+b.dataset.jlset));
     return;
   }
   const exitBtn=`<div style="text-align:left"><button class="back" id="jl-exit">← 그만하고 나가기</button></div>`;
@@ -4613,7 +5091,7 @@ function renderJlpt(el){
     const verdict=!r.pass?(r.total>=80?"총점은 넘었지만 한 영역이 기준보다 낮아요":"아직 합격선 아래예요"):r.total>=110?"합격 가능성이 높아요":"합격선을 넘었어요";
     const tip=!r.pass?(r.li<19?"청해가 기준(19점)보다 낮아요. 청해 연습을 더 해 봐요.":r.lk<38?"언어지식·독해가 기준(38점)보다 낮아요.":"틀린 문제 해설을 보고 다시 도전해 봐요."):r.total>=110?"이 정도면 실제 N5도 도전해 볼 만해요.":"조금만 더 다지면 안정적으로 합격할 수 있어요.";
     const wrong=jx.qs.map((q,i)=>({q,a:jx.ans[i]})).filter(x=>x.a!==x.q.correct);
-    el.innerHTML=`<div class="panel jl-result"><span class="jl-kicker">모의시험 결과</span>
+    el.innerHTML=`<div class="panel jl-result"><span class="jl-kicker">${jx.set?`실전 ${jx.set}회 결과`:"모의시험 결과"}</span>
       <div class="jl-score"><b>${r.total}</b><span>/ 180점</span></div>
       <p class="jl-verdict ${r.pass?"ok":""}">${verdict}</p><p class="intro">${tip}</p>
       <div class="jl-sub"><div><small>언어지식·독해</small><b>${r.lk}<span> / 120</span></b><em class="${r.lk>=38?"ok":""}">기준 38점</em></div><div><small>청해</small><b>${r.li}<span> / 60</span></b><em class="${r.li>=19?"ok":""}">기준 19점</em></div></div>
@@ -4622,7 +5100,7 @@ function renderJlpt(el){
       ${wrong.length?`<h3 class="jl-h">틀린 문제 ${wrong.length}개</h3><div class="jl-wrong">${wrong.map(({q,a})=>`<details><summary><span class="pill">${JL_AREAS[q.a]}</span> <span lang="ja">${esc(jlSum(q.src))}</span></summary><div class="jl-wbody"><p>${a==null?"안 풀었어요":`고른 답: <span lang="ja">${q.choices[a]}</span>`} · 정답: <b lang="ja">${esc(q.ans)}</b></p><p>${q.ex}</p>${q.lines?`<button type="button" class="ghost jl-replay" data-w="${jx.qs.indexOf(q)}">다시 듣기</button>`:""}</div></details>`).join("")}</div>`:'<p class="intro">모두 맞혔어요!</p>'}
       <div class="navrow"><button class="ghost" id="jl-back">시험 처음으로</button><button class="next" id="jl-retry">다시 도전하기</button></div></div>`;
     $("jl-back").onclick=jlHome;
-    $("jl-retry").onclick=()=>{const qs=jlExam();jx={view:"exam",qs,ans:qs.map(()=>null),i:0,end:Date.now()+JL_EXAM_MIN*60e3,plays:{}};renderJlptTab();window.scrollTo({top:0,behavior:"instant"})};
+    $("jl-retry").onclick=()=>jlStartExam(jx.set||0);
     el.querySelectorAll(".jl-replay").forEach(b=>b.onclick=()=>jlSay(jx.qs[+b.dataset.w].lines,b));
   }
 }
@@ -4633,10 +5111,11 @@ function jlFinish(){
   const X=S.jx=S.jx||{n:0,best:0,pass:0};
   const firstPass=res.pass&&!X.pass;
   X.n=(X.n||0)+1;X.best=Math.max(X.best||0,res.total);if(res.pass)X.pass=1;X.last=res.total;
+  if(jx.set){X.sets=X.sets||{};X.sets[jx.set]=Math.max(X.sets[jx.set]||0,res.total)}
   const xp=res.right*5+(firstPass?100:0);if(xp)addXp(xp);
   updateTitles();checkBadges();save();refreshSummary();syncScore();
   notifyText(`모의시험 채점 완료! +${xp} XP${firstPass?" (처음 합격선 통과 보너스 포함)":""}`);
-  jx={view:"result",qs:jx.qs,ans:jx.ans,res};
+  jx={view:"result",qs:jx.qs,ans:jx.ans,res,set:jx.set};
   if(tab===8){renderJlptTab();window.scrollTo({top:0,behavior:"instant"})}
 }
 let tab=0;
