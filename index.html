@@ -411,6 +411,7 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .jl-word{font-size:64px;font-weight:600;text-align:center;line-height:1.3}.jl-kana{font-size:44px}
 .jl-sent{font-size:22px;line-height:2;margin:0}
 .jl-blank{color:var(--accent);font-weight:700}
+.jl-blank2{color:var(--sub)}
 .jl-sent u{text-decoration-thickness:2px;text-underline-offset:5px;text-decoration-color:var(--accent)}
 .jl-slot{display:inline-block;min-width:64px;border-bottom:2px solid var(--sub);text-align:center;font-size:18px;color:var(--accent);vertical-align:baseline}
 .jl-slot.star{font-weight:700}
@@ -4331,11 +4332,33 @@ JL_V.push(
   ["v66","kw","ここに 名前を _かいて_ ください。",["書いて","言いて","読いて","話いて"],"かいて = <b>書いて</b>(써서). 書く = 쓰다."],
   ["v67","kw","_ともだち_と えいがを 見ました。",["友だち","支だち","反だち","有だち"],"ともだち = <b>友だち</b>(친구). 友(벗 우)."],
   ["v68","kw","_あたらしい_ かばんですね。",["新しい","親しい","新らしい","近しい"],"あたらしい = <b>新しい</b>(새롭다). 送りがな는 しい만 붙여요."]);
+const JL_PG=[
+  ["pg1","わたしは 毎朝 七時に おきます。{1}、シャワーを あびて、朝ごはんを 食べます。きのうは 日よう日でしたから、学校は 休みでした。わたしは 友だちと こうえん{2} 行きました。こうえんは 人が 多くて、とても にぎやか{3}。",
+    [["それから","でも","じゃあ","どうして"],["へ","を","が","で"],["でした","です","ではありません","でしょう"]],
+    ["일어난 다음에 하는 일이 이어지니까 <b>それから</b>(그다음에).","가는 곳에는 <b>へ</b>(~에).","きのう(어제) 이야기라서 과거형 <b>でした</b>."],
+    "저는 매일 아침 7시에 일어나요. 그다음에 샤워하고 아침을 먹어요. 어제는 일요일이라 학교가 쉬었어요. 친구와 공원에 갔어요. 공원은 사람이 많아서 아주 북적였어요."],
+  ["pg2","山田さん、おげんきですか。わたしは 先週 日本に 来ました。いま、東京の 学校で 日本語を {1} います。日本語は むずかしいです{2}、とても おもしろいです。こんど いっしょに ごはんを {3}。",
+    [["べんきょうして","べんきょうする","べんきょうした","べんきょうし"],["が","から","と","も"],["食べませんか","食べましたか","食べて いますか","食べたいでしたか"]],
+    ["〜て います(~하고 있어요): <b>べんきょうして</b> います.","어렵지만 재미있다 → 반대 내용을 잇는 <b>が</b>(~지만).","こんど(다음에) 같이 하자고 권하니까 <b>食べませんか</b>(먹지 않을래요?)."],
+    "야마다 씨, 잘 지내요? 저는 지난주에 일본에 왔어요. 지금 도쿄의 학교에서 일본어를 공부하고 있어요. 일본어는 어렵지만 아주 재미있어요. 다음에 같이 밥 먹지 않을래요?"],
+  ["pg3","きのうは 雨でした。わたしは どこ{1} 行きませんでした。うちで 本を 読んだり、おんがくを {2} しました。夜は 母と いっしょに カレーを つくりました。とても {3}です。",
+    [["へも","へが","へを","へと"],["聞いたり","聞いて","聞く","聞きます"],["おいしかった","おいしい","おいしくて","おいしく"]],
+    ["どこへも + 부정 = 아무 데도 ~않다.","〜たり 〜たり する: 読んだり、<b>聞いたり</b> しました.","어제 일이라 과거형 <b>おいしかった</b>です."],
+    "어제는 비가 왔어요. 저는 아무 데도 가지 않았어요. 집에서 책을 읽거나 음악을 듣거나 했어요. 밤에는 엄마와 같이 카레를 만들었어요. 아주 맛있었어요."],
+  ["pg4","はじめまして。キムです。かんこく{1} 来ました。いま 大学で 日本語を べんきょうして います。しゅみは りょうりです。かんこくの りょうり{2} 日本の りょうりも つくります。日本の 食べものの 中で、すしが {3} すきです。",
+    [["から","まで","に","を"],["も","が","を","に"],["いちばん","ほうが","より","もっと"]],
+    ["온 곳(출발점)에는 <b>から</b>(~에서).","〜も 〜も = ~도 ~도: かんこくの りょうり<b>も</b> 日本の りょうりも.","〜の 中で 〜が <b>いちばん</b> = ~ 중에서 ~가 가장."],
+    "처음 뵙겠습니다. 김이에요. 한국에서 왔어요. 지금 대학에서 일본어를 공부하고 있어요. 취미는 요리예요. 한국 요리도 일본 요리도 만들어요. 일본 음식 중에서 초밥을 가장 좋아해요."],
+  ["pg5","リンさん\nあしたの テストは 九時に はじまります。おくれないで ください。テストが {1} あとで、みんなで ひるごはんを 食べに 行きましょう。駅の 前に おいしい レストランが {2}。へんじを {3}。\n田中",
+    [["おわった","おわる","おわって","おわります"],["あります","います","ありました","いました"],["ください","あげます","もらいます","します"]],
+    ["〜た あとで = ~한 뒤에: <b>おわった</b> あとで.","가게·물건이 있다는 <b>あります</b>. 지금 있으니까 현재형.","답장을 달라고 할 때 <b>ください</b>(주세요)."],
+    "린 씨, 내일 시험은 9시에 시작해요. 늦지 마세요. 시험이 끝난 뒤에 다 같이 점심을 먹으러 가요. 역 앞에 맛있는 레스토랑이 있어요. 답장 주세요. 다나카"]];
 const JL={};
 JL_V.forEach(([id,t,q,ch,ex])=>JL[id]={id,a:"v",t,q,ch,ex});
 JL_G.forEach(x=>JL[x[0]]=x[1]==="star"?{id:x[0],a:"g",t:"star",pre:x[2],pc:x[3],post:x[4],at:x[5],ex:x[6]}:{id:x[0],a:"g",t:"form",q:x[2],ch:x[3],ex:x[4]});
 JL_R.forEach(([id,p,q,ch,ex])=>JL[id]={id,a:"r",t:"doc",p,q,ch,ex});
 JL_L.forEach(([id,t,lines,q,ch,ex])=>JL[id]={id,a:"l",t,lines,q,ch,ex});
+JL_PG.forEach(([pid,p,chs,exs,tr])=>chs.forEach((ch,i)=>{const id=pid+"-"+(i+1);JL[id]={id,a:"g",t:"pg",p,k:i+1,ch,ex:exs[i]+`<span class="tip">${tr}</span>`}}));
 const jlIds=a=>Object.keys(JL).filter(id=>JL[id].a===a);
 const jld=id=>((S.jl||{})[id]||{}).r>0; // 한 번이라도 맞힌 문제
 const JL_WORDS=(()=>{const seen={};return KANJI.filter(j=>j.lv==="N5").flatMap(j=>j.ex).filter(e=>/[一-龯]/.test(e[0])&&e[0]!==e[1]&&!seen[e[0]]&&(seen[e[0]]=1)).map(e=>({w:e[0],r:e[1],m:e[2]}))})();
@@ -4360,13 +4383,14 @@ function jlQ(src){
   if(q.t==="read")big=`<div class="jl-word ja-font" lang="ja">${q.w}</div>`;
   else if(q.t==="write")big=`<div class="jl-word jl-kana" lang="ja">${q.w}</div>`;
   else if(q.t==="star")big=`<p class="jl-sent" lang="ja">${esc(q.pre)} ${q.pc.map((_,i)=>`<span class="jl-slot${i===q.at?" star":""}">${i===q.at?"★":""}</span>`).join(" ")} ${esc(q.post)}</p>`;
+  else if(q.t==="pg")big=`<div class="jl-passage" lang="ja">${esc(q.p).replace(/\n/g,"<br>").replace(/\{(\d)\}/g,(m,d)=>+d===q.k?`<span class="jl-blank">（ ${d} ）</span>`:`<span class="jl-blank2">（ ${d} ）</span>`)}</div>`;
   else if(q.a==="r")big=`<div class="jl-passage" lang="ja">${esc(q.p).replace(/\n/g,"<br>")}</div><p class="jl-qline" lang="ja">${esc(q.q)}</p>`;
   else if(q.a==="l")big=`${q.t==="utt"?`<p class="jl-sit">${esc(q.q)}</p>`:""}<button type="button" class="jl-play" data-jlplay><span aria-hidden="true">▶</span> <span class="jl-play-t">듣기</span></button>${q.q&&q.t!=="utt"?`<p class="jl-qline" lang="ja">${esc(q.q)}</p>`:""}`;
   else big=`<p class="jl-sent" lang="ja">${blank(q.q)}</p>`;
   const script=q.a==="l"?`<div class="jl-script" lang="ja">${q.lines.map(([w,t])=>`<p><small>${w==="F"?"여자":w==="M"?"남자":"안내"}</small> ${esc(t)}</p>`).join("")}</div>`:"";
   const ansVoice=q.t==="resp"?(q.lines[0][0]==="F"?"M":"F"):"F";
   const examLines=q.a!=="l"?null:q.t==="resp"||q.t==="utt"?[...q.lines,...ch.flatMap((c,i)=>[["N",["いち","に","さん","よん"][i]],[ansVoice,c]])]:[...q.lines,["N",q.q]];
-  return {src:q,id:q.id,a:q.a,prompt:JL_PROMPT[q.t],big,choices:ch.map(c=>`<span lang="ja">${esc(c)}</span>`),correct:ch.indexOf(ans),ans,ex:q.ex+script,lines:q.lines,examLines,audioCh:q.t==="resp"||q.t==="utt"};
+  return {src:q,id:q.id,a:q.a,prompt:q.t==="pg"?`글을 읽고 （ ${q.k} ）에 들어갈 말을 골라요`:JL_PROMPT[q.t],big,choices:ch.map(c=>`<span lang="ja">${esc(c)}</span>`),correct:ch.indexOf(ans),ans,ex:q.ex+script,lines:q.lines,examLines,audioCh:q.t==="resp"||q.t==="utt"};
 }
 let jlUtts=[];
 function jlSay(lines,btn){try{
@@ -4376,7 +4400,7 @@ function jlSay(lines,btn){try{
   if(btn){btn.classList.add("on");const off=()=>btn.classList.remove("on");jlUtts[jlUtts.length-1].onend=off;jlUtts[jlUtts.length-1].onerror=off}
   setTimeout(()=>jlUtts.forEach(u=>ss.speak(u)),60);
 }catch(e){}}
-const jlSum=s=>s.t==="read"||s.t==="write"?s.w:s.t==="star"?s.pre+" … "+s.post:s.t==="resp"?"「"+s.lines[0][1]+"」":s.t==="utt"?s.q:(s.q||"").replace(/_/g,"");
+const jlSum=s=>s.t==="pg"?`글 속 빈칸 （${s.k}） · `+s.p.replace(/\{\d\}/g,"（ ）").slice(0,24)+"…":s.t==="read"||s.t==="write"?s.w:s.t==="star"?s.pre+" … "+s.post:s.t==="resp"?"「"+s.lines[0][1]+"」":s.t==="utt"?s.q:(s.q||"").replace(/_/g,"");
 const jlStop=()=>{try{speechSynthesis.cancel()}catch(e){}};
 function jlRecord(id,ok){if(!JL[id])return;S.jl=S.jl||{};const r=S.jl[id]||{r:0,w:0};if(ok)r.r++;else r.w++;S.jl[id]=r}
 function jlPick(ids,n){const sc=id=>{const r=(S.jl||{})[id];return !r?0:r.w>r.r?1:r.r?3:2};return shuffle(ids.slice()).sort((a,b)=>sc(a)-sc(b)).slice(0,n)}
@@ -4392,7 +4416,7 @@ function jlExam(){
   const l=jlIds("l"),lt=t=>l.filter(id=>t.includes(JL[id].t));
   return [jlAuto("read"),jlAuto("write"),...jlPick(v.filter(id=>JL[id].t==="kr"),3),...jlPick(v.filter(id=>JL[id].t==="kw"),1),
     ...jlPick(v.filter(id=>JL[id].t==="ctx"),3),...jlPick(v.filter(id=>JL[id].t==="para"),1),
-    ...jlPick(g.filter(id=>JL[id].t==="form"),6),...jlPick(g.filter(id=>JL[id].t==="star"),2),
+    ...jlPick(g.filter(id=>JL[id].t==="form"),4),...shuffle(JL_PG.map(x=>x[0])).slice(0,2).map(pid=>pid+"-"+(1+Math.floor(Math.random()*3))),...jlPick(g.filter(id=>JL[id].t==="star"),2),
     ...jlPick(jlIds("r"),4),...jlPick(lt(["task"]),2),...jlPick(lt(["point"]),2),...jlPick(lt(["utt"]),2),...jlPick(lt(["resp"]),2)].map(jlQ);
 }
 function jlScore(qs,ans){
