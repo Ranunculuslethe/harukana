@@ -383,7 +383,7 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .goal-pick button b{font-size:15px}.goal-pick button small{font-size:13px;color:var(--sub);line-height:1.4}
 .goal-pick button.on{border-color:var(--accent);background:var(--accent-soft)}.goal-pick button.on b{color:var(--accent-dark)}
 .goal-pick button:hover{border-color:var(--accent)}
-.goal-card>div{flex:1;min-width:0}
+.goal-choose>div{flex:1;min-width:0}
 .course-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
 .course-pill{display:flex;align-items:center;gap:10px;min-height:56px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);text-align:left}
 .course-pill>span:nth-child(2){flex:1;min-width:0;display:flex;flex-direction:column}.course-pill b{font-size:15px}.course-pill small{font-size:13px;color:var(--sub)}
@@ -3880,8 +3880,9 @@ function openSettings(){
 const GUIDE=[
   {mark:'<svg viewBox="0 0 180 190" class="fox" aria-hidden="true"><use href="#fox"/></svg>',t:"하루카나에 온 걸 환영해요",
    p:"일본어를 처음 시작하는 한국 사람을 위한 앱이에요. 히라가나 한 글자부터 시작해서, 일본 여행이든 JLPT N5 시험이든 내 목표대로 차근차근 가요."},
-  {mark:"✿",t:"어떤 목표로 배울까요?",goal:1,
-   p:"가나·단어·문장 기초는 모두 같이 해요. 기초를 마치면 고른 코스가 열려요. 나중에 바꾸거나 다른 코스를 더 열 수도 있으니 편하게 골라요."},
+  {mark:"✿",t:"기초 다음엔 목표대로 가요",
+   p:"가나·단어·문장 기초는 모두 같이 해요. 기초를 마치면 목표를 골라 코스를 열어요. 나중에 바꾸거나 다른 코스를 더 열 수도 있어요.",
+   list:[["旅","여행 코스","여행 회화·점원 말 알아듣기·표지판"],["試","N5 코스","N5 한자·단어·문법과 모의시험"],["✿","둘 다","두 코스를 원하는 순서로"]]},
   {mark:"道",t:"학습 길을 따라가면 돼요",
    p:"홈의 '나의 학습 길'은 기초 11단계부터 시작해요. 무엇부터 할지 고민하지 말고 위에서부터 차례로 하면 돼요. 히라가나와 가타카나를 합쳐 '가나'라고 해요.",
    list:[["あ","히라가나","일본어의 기본 글자"],["ア","가타카나","커피·버스처럼 외국에서 온 말"],["語","단어","매일 쓰는 기초 단어"],["文","문장","짧은 문장 읽고 말끝 바꾸기"]]},
@@ -3904,7 +3905,6 @@ function renderGuide(){
   d.innerHTML=`<div class="set-top"><span class="guide-step">${guideAt+1} / ${GUIDE.length}</span><button class="set-x" id="guide-x" aria-label="안내 닫기">×</button></div>
     <div class="guide-mark${g.mark.startsWith("<")?" fox-mark":""}" aria-hidden="true">${g.mark}</div>
     <h3 id="guide-title">${g.t}</h3><p class="guide-p">${g.p}</p>
-    ${g.goal?goalBtns(goalOf()):""}
     ${g.list?`<ul class="guide-list">${g.list.map(([m,b,s])=>`<li><span class="gl-m">${m}</span><span><b>${b}</b><small>${s}</small></span></li>`).join("")}</ul>`:""}
     <div class="guide-dots" aria-hidden="true">${GUIDE.map((_,i)=>`<i class="${i===guideAt?"on":""}"></i>`).join("")}</div>
     <div class="navrow">${guideAt?'<button class="ghost" id="guide-pv">이전</button>':'<button class="ghost" id="guide-skip">건너뛰기</button>'}<button class="next" id="guide-nx">${last?"첫 글자 배우러 가기":"다음"}</button></div>
@@ -3914,7 +3914,6 @@ function renderGuide(){
   if($("guide-skip"))$("guide-skip").onclick=close;
   if($("guide-pv"))$("guide-pv").onclick=()=>{guideAt--;renderGuide()};
   if($("guide-look"))$("guide-look").onclick=()=>{close();show(0)};
-  d.querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>{pickGoal(b.dataset.goal);renderGuide()});
   $("guide-nx").onclick=()=>{if(!last){guideAt++;renderGuide();return}close();ROAD_STEPS[0].go()};
   $("guide-nx").focus();
 }
@@ -4684,7 +4683,7 @@ function renderRoad(){
   $("road-pct").textContent=P.map(p=>`${p.title} ${p.pct}%`).join(" · ");
   $("road-bar").style.width=avg+"%";
   $("road-sum").textContent=(live.length?P.map(p=>`${p.title} ${p.done}/${p.n}단계`).join(" · "):`기초 ${ROAD_STEPS.length}단계 중 ${P[0].done}단계 완료`)+(cur?` · 지금 여기: ${cur.name}`:open&&g?" · 모든 여정을 마쳤어요!":"");
-  const pick=!g?`<div class="road-fin goal-card"><span class="road-fin-ic" aria-hidden="true">✿</span><div><b>${open?"기초를 모두 마쳤어요! 이제 목표를 골라요":"어떤 목표로 일본어를 배울까요?"}</b><small>${open?"고른 코스가 바로 열려요. 설정에서 언제든 바꿀 수 있어요.":"가나·단어·문장 기초는 모두 같이 해요. 기초를 마치면 고른 코스가 열려요."}</small>${goalBtns("")}</div></div>`:"";
+  const pick=open&&!g?`<div class="road-fin goal-choose"><span class="road-fin-ic" aria-hidden="true">✿</span><div><b>${open?"기초를 모두 마쳤어요! 이제 목표를 골라요":"어떤 목표로 일본어를 배울까요?"}</b><small>${open?"고른 코스가 바로 열려요. 설정에서 언제든 바꿀 수 있어요.":"가나·단어·문장 기초는 모두 같이 해요. 기초를 마치면 고른 코스가 열려요."}</small>${goalBtns("")}</div></div>`:"";
   const courseRow=open&&g?`<div class="course-row" role="group" aria-label="내 코스">${[[ROAD_MID,isMid(),6],[ROAD_ADV,isAdv(),8]].map(([sec,on,t])=>{const p=prog(sec);return on?`<button type="button" class="course-pill on" data-ctab="${t}"><span class="road-ic">${sec.icon}</span><span><b>${sec.title}</b><small>${p.title} ${p.pct}%</small></span><span class="cp-go" aria-hidden="true">›</span></button>`:`<button type="button" class="course-pill add" data-goal="both"><span class="road-ic">${sec.icon}</span><span><b>+ ${sec.title} 열기</b><small>${sec===ROAD_ADV?"JLPT N5 한자·문법·모의시험":"여행 회화·점원 말·표지판"}</small></span></button>`}).join("")}</div>`:"";
   let no=0;
   const secHtml=(sec,si,lock)=>{
