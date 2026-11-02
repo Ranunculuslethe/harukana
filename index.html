@@ -392,6 +392,7 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .course-pill .road-ic{flex:none}
 .tab.tab-add{opacity:.6}.tab.tab-add:hover{opacity:1}.tab.tab-add>span[data-s]::before{content:"+ "}
 @media(max-width:640px){.course-row{grid-template-columns:1fr}.tab.tab-add>span[data-s]::before{content:""}}
+.grad-ok{display:block;width:100%;max-width:340px;margin:10px auto 0;min-height:44px}
 .road-more{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;padding:14px 16px;border:1px dashed var(--line);border-radius:16px;background:var(--bg)}.road-more>div{flex:1 1 200px;display:flex;flex-direction:column;gap:2px}.road-more b{font-size:15px}.road-more small{font-size:13px;color:var(--sub);line-height:1.5}.road-more .ghost{min-height:44px}
 .road-sec.locked{opacity:.75}.road-sec.locked .lesson-node,.road-sec.locked .lesson-info{cursor:default}
 @media(max-width:640px){.goal-pick{grid-template-columns:1fr}.goal-pick button{min-height:48px}}
@@ -3928,10 +3929,12 @@ function openGrad(){
     <p class="guide-p">일본어를 처음 시작해서 여기까지 왔어요. 이제 히라가나·가타카나를 읽고, 기초 단어와 짧은 문장을 알아볼 수 있어요.</p>
     <div class="grad-stats">${stat(chars.filter(c=>cd(c.k)).length,"익힌 가나","히라가나·가타카나")}${stat(WORDS.filter(w=>wd(w.id)).length,"모은 단어","기초 단어")}${stat(SENTS.filter(s=>sxd(s.id)).length,"읽은 문장","짧은 문장")}${stat(Object.keys(S.daily||{}).length,"공부한 날","하루하루 쌓은 날")}</div>
     <p class="guide-p grad-next"><b>이제 여행 코스와 N5 코스가 함께 열렸어요.</b> 여행 회화든 N5 시험 준비든 하고 싶은 쪽부터 해요. 메뉴의 회화 칸과 시험 칸이에요.</p>
-    <div class="navrow"><button class="ghost" id="grad-trip">여행 코스로 가기</button><button class="next" id="grad-go">N5 코스로 가기</button></div>`;
+    <div class="navrow"><button class="ghost" id="grad-trip">여행 코스로 가기</button><button class="next" id="grad-go">N5 코스로 가기</button></div>
+    <button type="button" class="ghost grad-ok" id="grad-ok">확인</button>`;
   const close=()=>d.close();
   $("grad-x").onclick=close;
   $("grad-trip").onclick=()=>{close();show(6)};
+  $("grad-ok").onclick=close;
   $("grad-go").onclick=()=>{close();show(8)};
   if(!d.open)d.showModal();
   $("grad-go").focus();
