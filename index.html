@@ -472,7 +472,7 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 <rect x="59" y="164" width="27" height="13" rx="6" fill="#613F3E"/><rect x="101" y="164" width="27" height="13" rx="6" fill="#613F3E"/>
 </symbol></defs></svg>
 <aside class="sidebar"><a class="brand" href="#" aria-label="하루카나 홈" id="brand-home"><span class="brand-fox"><svg viewBox="0 0 180 190" class="fox " aria-hidden="true"><use href="#fox"/></svg></span><span>하루카나<small>harukana</small></span></a><p class="nav-label">나의 일본어 여행</p><nav class="tabs" role="tablist" aria-label="학습 메뉴" aria-orientation="vertical"><button class="tab on" id="t0" role="tab" aria-selected="true" aria-controls="v0" tabindex="0"><svg class="icon " aria-hidden="true"><use href="#i-home"/></svg><span data-s="홈">홈</span></button><button class="tab" id="t1" role="tab" aria-selected="false" aria-controls="v1" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-book"/></svg><span data-s="가나">가나</span></button><button class="tab" id="t2" role="tab" aria-selected="false" aria-controls="v2" tabindex="-1" hidden><svg class="icon " aria-hidden="true"><use href="#i-spark"/></svg><span data-s="퀴즈">글자 퀴즈</span></button><button class="tab" id="t3" role="tab" aria-selected="false" aria-controls="v3" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-cards"/></svg><span data-s="단어">단어</span></button><button class="tab" id="t7" role="tab" aria-selected="false" aria-controls="v3" tabindex="-1"><span class="icon tab-glyph" aria-hidden="true">文</span><span data-s="문장">문장</span></button><button class="tab" id="t6" role="tab" aria-selected="false" aria-controls="v6" tabindex="-1" hidden><span class="icon tab-glyph" aria-hidden="true">旅</span><span data-s="회화">회화</span></button><button class="tab" id="t8" role="tab" aria-selected="false" aria-controls="v8" tabindex="-1" hidden><span class="icon tab-glyph" aria-hidden="true">試</span><span data-s="시험">시험</span></button><button class="tab" id="t4" role="tab" aria-selected="false" aria-controls="v4" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-note"/></svg><span data-s="복습">복습</span><span class="badge" id="nbadge" hidden></span></button><button class="tab" id="t5" role="tab" aria-selected="false" aria-controls="v5" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-trophy"/></svg><span data-s="프로필">프로필</span></button></nav><div class="sidebar-bottom"><div class="little-note"><svg class="icon " aria-hidden="true"><use href="#i-flower"/></svg><p>작은 한 걸음이<br>새로운 세상을 열어요.</p><span>一日、一歩。</span></div><button class="utility" id="theme"><svg class="icon " aria-hidden="true"><use href="#i-moon"/></svg><span>밤 모드</span></button><button class="utility" id="reset"><svg class="icon " aria-hidden="true"><use href="#i-gear"/></svg><span>설정</span></button></div></aside>
-<div class="workspace"><header class="topbar"><div class="breadcrumb">나의 배움 <span>/</span> <b id="page-label">학습 길</b></div><div class="top-meta"><span class="language"><i class="japan-flag"></i> 일본어 <button type="button" class="lvl-btn" id="level-label" title="난이도 바꾸기 (설정)">초급</button></span><span class="top-divider"></span><button type="button" class="top-count" id="top-count" title="지금까지 익힌 가나 수 · 누르면 가나 도감으로"><svg class="icon " aria-hidden="true"><use href="#i-flower"/></svg><span>익힌 가나</span> <b id="header-count">0</b></button><button type="button" class="avatar" id="top-avatar" aria-label="프로필 열기" title="프로필">하</button></div></header>
+<div class="workspace"><header class="topbar"><div class="breadcrumb">나의 배움 <span>/</span> <b id="page-label">학습 길</b></div><div class="top-meta"><span class="language"><i class="japan-flag"></i> 일본어 <button type="button" class="lvl-btn" id="level-label" title="목표 바꾸기 (설정)">기초</button></span><span class="top-divider"></span><button type="button" class="top-count" id="top-count" title="지금까지 익힌 가나 수 · 누르면 가나 도감으로"><svg class="icon " aria-hidden="true"><use href="#i-flower"/></svg><span>익힌 가나</span> <b id="header-count">0</b></button><button type="button" class="avatar" id="top-avatar" aria-label="프로필 열기" title="프로필">하</button></div></header>
 <div class="content-layout"><main id="content" tabindex="-1">
 <section id="v0" role="tabpanel" aria-labelledby="t0"><div class="welcome"><p class="eyebrow">조금씩, 매일 더 가까이</p><h1>오늘도, 일본어 한 걸음<span class="heading-flower" aria-hidden="true">✿</span></h1><p>하루와 함께 나만의 속도로 배워요.</p></div>
 <div class="hero"><svg class="hero-scene" viewBox="0 0 800 300" preserveAspectRatio="xMaxYMax slice" role="img" aria-label="벚꽃이 핀 강가와 후지산, 오층탑이 보이는 풍경에서 반기는 여우 하루">
@@ -2781,7 +2781,7 @@ function renderKanji(el){
   const lvOfCat=id=>(KANJI_CATS.find(x=>x.id===id)||{}).lv||"N5",lv=jv.view==="jlist"?(jv.lv||"N5"):lvOfCat(jv.cat),lvKanji=KANJI.filter(j=>j.lv===lv);
   if(jv.cat&&KANJI_CATS.some(c=>c.id===jv.cat))jv.mode="kanji"; // 예전에 저장된 한자 화면은 mode가 없을 수 있다
   const mode=jv.mode||"talk";
-  const seg=mode==="kanji"?jlTabs("kanji"):`<div class="seg jlpt-seg top-tabs" role="group" aria-label="중급 공부 종류">${Object.keys(MID_MODES).map(m=>`<button data-mode="${m}" class="${m===mode?"on":""}" aria-pressed="${m===mode}">${MID_MODES[m]}</button>`).join("")}</div>`;
+  const seg=mode==="kanji"?jlTabs("kanji"):`<div class="seg jlpt-seg top-tabs" role="group" aria-label="회화 공부 종류">${Object.keys(MID_MODES).map(m=>`<button data-mode="${m}" class="${m===mode?"on":""}" aria-pressed="${m===mode}">${MID_MODES[m]}</button>`).join("")}</div>`;
   const bindLv=()=>el.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{jv={view:"jlist",mode:b.dataset.mode,lv:"N5"};kanjiHist();renderKanjiTab()});
   if(mode!=="kanji")return renderTravel(el,seg,bindLv);
   if(jv.view==="jlist"){
@@ -3879,9 +3879,11 @@ function openSettings(){
 }
 const GUIDE=[
   {mark:'<svg viewBox="0 0 180 190" class="fox" aria-hidden="true"><use href="#fox"/></svg>',t:"하루카나에 온 걸 환영해요",
-   p:"일본어를 처음 시작하는 사람을 위한 첫걸음 앱이에요. 히라가나 한 글자부터 시작해서 짧은 문장을 읽고, 나중에는 일본 여행에서 쓰는 말까지 차근차근 가요."},
+   p:"일본어를 처음 시작하는 한국 사람을 위한 앱이에요. 히라가나 한 글자부터 시작해서, 일본 여행이든 JLPT N5 시험이든 내 목표대로 차근차근 가요."},
+  {mark:"✿",t:"어떤 목표로 배울까요?",goal:1,
+   p:"가나·단어·문장 기초는 모두 같이 해요. 기초를 마치면 고른 코스가 열려요. 나중에 바꾸거나 다른 코스를 더 열 수도 있으니 편하게 골라요."},
   {mark:"道",t:"학습 길을 따라가면 돼요",
-   p:"홈의 '나의 학습 길'에 11단계가 있어요. 무엇부터 할지 고민하지 말고 위에서부터 차례로 하면 돼요. 히라가나와 가타카나를 합쳐 '가나'라고 해요.",
+   p:"홈의 '나의 학습 길'은 기초 11단계부터 시작해요. 무엇부터 할지 고민하지 말고 위에서부터 차례로 하면 돼요. 히라가나와 가타카나를 합쳐 '가나'라고 해요.",
    list:[["あ","히라가나","일본어의 기본 글자"],["ア","가타카나","커피·버스처럼 외국에서 온 말"],["語","단어","매일 쓰는 기초 단어"],["文","문장","짧은 문장 읽고 말끝 바꾸기"]]},
   {mark:"学",t:"이렇게 공부해요",
    p:"한 번에 조금씩, 보고 → 풀고 → 다시 보는 순서예요.",
@@ -3902,6 +3904,7 @@ function renderGuide(){
   d.innerHTML=`<div class="set-top"><span class="guide-step">${guideAt+1} / ${GUIDE.length}</span><button class="set-x" id="guide-x" aria-label="안내 닫기">×</button></div>
     <div class="guide-mark${g.mark.startsWith("<")?" fox-mark":""}" aria-hidden="true">${g.mark}</div>
     <h3 id="guide-title">${g.t}</h3><p class="guide-p">${g.p}</p>
+    ${g.goal?goalBtns(goalOf()):""}
     ${g.list?`<ul class="guide-list">${g.list.map(([m,b,s])=>`<li><span class="gl-m">${m}</span><span><b>${b}</b><small>${s}</small></span></li>`).join("")}</ul>`:""}
     <div class="guide-dots" aria-hidden="true">${GUIDE.map((_,i)=>`<i class="${i===guideAt?"on":""}"></i>`).join("")}</div>
     <div class="navrow">${guideAt?'<button class="ghost" id="guide-pv">이전</button>':'<button class="ghost" id="guide-skip">건너뛰기</button>'}<button class="next" id="guide-nx">${last?"첫 글자 배우러 가기":"다음"}</button></div>
@@ -3911,6 +3914,7 @@ function renderGuide(){
   if($("guide-skip"))$("guide-skip").onclick=close;
   if($("guide-pv"))$("guide-pv").onclick=()=>{guideAt--;renderGuide()};
   if($("guide-look"))$("guide-look").onclick=()=>{close();show(0)};
+  d.querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>{pickGoal(b.dataset.goal);renderGuide()});
   $("guide-nx").onclick=()=>{if(!last){guideAt++;renderGuide();return}close();ROAD_STEPS[0].go()};
   $("guide-nx").focus();
 }
@@ -4418,7 +4422,7 @@ function renderJlpt(el){
         <p>실제 시험처럼 끝까지 푼 뒤에 점수와 합격선을 알려 줘요. 풀 때는 정답이 바로 나오지 않아요.</p>
         ${X.n?`<p class="jl-best">지금까지 ${X.n}번 · 최고 <b>${X.best}</b> / 180점${X.pass?' <span class="pill ok">합격선 통과</span>':""}</p>`:""}</div>
         <button class="next" id="jl-exam">${X.n?"다시 도전하기":"모의시험 시작"}</button></div>
-      <h3 class="jl-h">영역별 연습</h3><p class="intro">한 번에 10문제씩 풀고, 풀자마자 해설을 봐요. 고급에서는 한글 발음 없이 일본어로만 풀어요.</p>
+      <h3 class="jl-h">영역별 연습</h3><p class="intro">한 번에 10문제씩 풀고, 풀자마자 해설을 봐요. N5 코스에서는 한글 발음 없이 일본어로만 풀어요.</p>
       <div class="cats">${Object.keys(JL_AREAS).map(card).join("")}</div>
       <p class="tip s-note">JLPT(일본어능력시험) N5는 가장 쉬운 급수예요. 여기 문제는 실제 시험 형식을 참고해 하루카나가 직접 만든 연습 문제라서, 실제 점수와는 다를 수 있어요. 시험 전에는 JLPT 공식 사이트(jlpt.jp)의 문제 예시도 한 번 풀어 보세요. 실제 목소리와 속도에 익숙해질 수 있어요.</p>`;
     bindJlt(el);
