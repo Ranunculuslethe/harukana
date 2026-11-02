@@ -385,6 +385,8 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .cats.compact .bar{margin-top:8px}.cats.compact .meta{font-size:13px}
 .cats-next{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 12px;padding:12px 16px;min-height:56px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:14px;background:var(--accent-soft);color:var(--accent-dark);text-align:left}
 .cats-next:hover{border-color:var(--accent)}.cats-next .cn-t{flex:1;min-width:0;display:flex;flex-direction:column}.cats-next b{font-size:15px}.cats-next small{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cats-next .cn-ic{font-size:14px}.cats-next .cn-go{font-size:18px}
+.cats-sum{display:flex;align-items:center;gap:14px;margin:0 0 12px;padding:10px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card)}.cats-sum>b{font-size:24px;line-height:1;white-space:nowrap}.cats-sum>b small{font-size:15px;color:var(--sub);font-weight:400}.cats-sum>div{flex:1;min-width:0;font-size:14px}.cats-sum .bar{margin-top:6px}
+.cats.compact .catcard.doing{border-color:var(--accent);background:color-mix(in srgb,var(--accent-soft) 45%,var(--card))}.doing-p{background:var(--accent-soft);color:var(--accent-dark)}
 .cats-done{margin-top:12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
 .cats-done summary{display:flex;align-items:center;gap:10px;min-height:44px;padding:10px 14px;cursor:pointer}
 .cats-done summary small{flex:1;min-width:0;font-size:13px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -2725,7 +2727,8 @@ function renderConf(){
 }
 
 const WSCRIPTS={h:"히라가나",k:"가타카나",m:"생활 단어",a:"N5 단어"}; // 예전 섞어 쓰기는 문장 쪽 "가타카나 넣은 문장"(u9~)으로 옮김. m 중급 생활 단어, a 고급 N5 단어
-const catNextBtn=(attr,title,sub)=>`<button type="button" class="cats-next" ${attr}><span class="cn-ic" aria-hidden="true">▶</span><span class="cn-t"><b>이어서: ${title}</b><small>${sub}</small></span><span class="cn-go" aria-hidden="true">→</span></button>`;
+const catSum=(done,total,what)=>`<div class="cats-sum"><b>${done}<small> / ${total}</small></b><div><span>${what} 완료</span><div class="bar"><i style="width:${total?done/total*100:0}%"></i></div></div></div>`;
+const doingPill='<span class="pill doing-p">하는 중</span>';
 const doneFold=(list,nameOf,cardOf)=>list.length?`<details class="cats-done"><summary><span class="cd-n">✓ 완료 ${list.length}개</span><small>${list.map(nameOf).join(" · ")}</small></summary><div class="cats compact">${list.map(cardOf).join("")}</div></details>`:"";
 const WLEVEL={h:"beg",k:"beg",m:"mid",a:"adv"},LV_NAMES={beg:"기초",mid:"생활",adv:"N5"};
 const lvOpen=l=>l==="beg"||(l==="mid"&&(isMid()||isAdv()))||(l==="adv"&&isAdv());
@@ -2794,7 +2797,7 @@ function renderWords(){
     const seg=lv==="beg"?`<div class="seg" role="group" aria-label="단어 글자 종류">${["h","k"].map(k=>`<button data-s="${k}" class="${k===s?"on":""}" aria-pressed="${k===s}">${WSCRIPTS[k]}</button>`).join("")}</div>`:"";
     const card=c=>{
         const ws=catWords(c.id),mf=ws.filter(w=>wdm(w.id,"fwd")).length,mr=ws.filter(w=>wdm(w.id,"rev")).length,mw=mf,all=mf===ws.length&&mr===ws.length; // 두 방향 진도를 같이 보여 준다
-        return `<button class="catcard" data-id="${c.id}"><div class="cat-top"><b>${c.name}</b>${c.recommended&&mw<ws.length?'<span class="pill">처음 추천</span>':""}${mf===ws.length?`<span class="pill ok">${all?"양방향 완료":"완료"}</span>`:""}</div>
+        return `<button class="catcard${mf>0&&mf<ws.length?" doing":""}" data-id="${c.id}"><div class="cat-top"><b>${c.name}</b>${mf>0&&mf<ws.length?doingPill:""}${c.recommended&&mw<ws.length?'<span class="pill">처음 추천</span>':""}${mf===ws.length?`<span class="pill ok">${all?"양방향 완료":"완료"}</span>`:""}</div>
           <div class="desc">${c.desc}</div><div class="bar"><i style="width:${ws.length?mf/ws.length*100:0}%"></i></div>
           <div class="meta">${mf}/${ws.length}</div></button>`};
     const catDoneW=c=>{const ws=catWords(c.id);return ws.length>0&&ws.every(w=>wdm(w.id,"fwd"))};
@@ -2805,13 +2808,14 @@ function renderWords(){
     let body;
     if(!lvOpen(lv))body=`<div class="lock-card"><b>${lv==="mid"?"기초를 마치면 열려요":"기초를 마치면 열려요"}</b><small>${lv==="mid"?"기초를 마치면 생활 단어 "+WORDS.filter(w=>w.category.startsWith("m_")).length+"개를 배울 수 있어요.":"기초를 마치면 N5 단어 "+WORDS.filter(w=>w.category.startsWith("a_")).length+"개를 배울 수 있어요."}</small><div class="kj-peek ja-font" lang="ja">${cats.map(c=>c.name).join(" · ")}</div></div>`;
     else{
-      const todo=must.filter(c=>!catDoneW(c)),done=must.filter(catDoneW),nx=todo[0],nws=nx?catWords(nx.id):[],nn=nws.filter(w=>wdm(w.id,"fwd")).length;
-      body=`<p class="intro">${intro}</p>${nx?catNextBtn(`data-id="${nx.id}"`,nx.name,`${nn} / ${nws.length} 맞힘 · 남은 단어 ${nws.length-nn}개`):""}<div class="cats compact">${todo.map(card).join("")}</div>${doneFold(done,c=>c.name,card)}${extra.length?`<h3 class="jl-h">더 모으기 <small class="h-note">하고 싶을 때만 · 학습 길에는 들어가지 않아요</small></h3><div class="cats compact">${extra.map(card).join("")}</div>`:""}`}
+      const started=c=>catWords(c.id).some(w=>wdm(w.id,"fwd")),todo=must.filter(c=>!catDoneW(c)),done=must.filter(catDoneW);
+      todo.sort((a,b)=>started(b)-started(a)); // 하는 중인 카테고리를 맨 앞으로
+      body=`<p class="intro">${intro}</p>${catSum(done.length,must.length,"카테고리")}<div class="cats compact">${todo.map(card).join("")}</div>${doneFold(done,c=>c.name,card)}${extra.length?`<h3 class="jl-h">더 모으기 <small class="h-note">하고 싶을 때만 · 학습 길에는 들어가지 않아요</small></h3><div class="cats compact">${extra.map(card).join("")}</div>`:""}`}
     const kindSeg=kindTabs("w");
     el.innerHTML=kindSeg+lvTabs+seg+body;
     bindKindTabs(el);
     el.querySelectorAll("[data-s],[data-wl]").forEach(b=>b.onclick=()=>{wv={view:"list",script:b.dataset.s||b.dataset.wl};wordsHist();renderWords()});
-    el.querySelectorAll(".catcard,.cats-next").forEach(b=>b.onclick=()=>{wv={view:"cat",cat:b.dataset.id};wordsHist();renderWords()});
+    el.querySelectorAll(".catcard").forEach(b=>b.onclick=()=>{wv={view:"cat",cat:b.dataset.id};wordsHist();renderWords()});
     return;
   }
   const cat=catOf(wv.cat);
@@ -2936,14 +2940,15 @@ function renderSent(el){
     const g=sentGroup,units=groupUnits(g),nx=units.findIndex(u=>!unitDone(u));
     const gseg=`<div class="seg top-tabs" role="group" aria-label="문장 종류">${Object.keys(SGROUPS).map(k=>`<button data-sg="${k}" class="${k===g?"on":""}" aria-pressed="${k===g}"><span class="tab-lg">${SGROUPS[k]}</span><span class="tab-sm">${SGROUP_SHORT[k]}</span>${k==="j"&&!lvOpen("adv")?' <small class="tab-lock">잠김</small>':""}</button>`).join("")}</div>`;
     const uCard=u=>{const i=units.indexOf(u),n=u.items.filter(s=>sxd(s.id)).length;
-      return `<button class="catcard" data-u="${u.id}"><div class="cat-top"><b>${i+1}. ${esc(u.title)}</b>${n===u.items.length?'<span class="pill ok">완료</span>':""}</div>
+      const doing=n>0&&n<u.items.length;
+      return `<button class="catcard${doing?" doing":""}" data-u="${u.id}"><div class="cat-top"><b>${i+1}. ${esc(u.title)}</b>${doing?doingPill:""}${n===u.items.length?'<span class="pill ok">완료</span>':""}</div>
         <div class="desc">${esc(u.ko)}</div><div class="bar"><i style="width:${n/u.items.length*100}%"></i></div><div class="meta">${n}/${u.items.length}</div></button>`};
     const intro=g==="j"?"N5 시험에 나오는 문법이에요. 동사·형용사의 끝을 바꾸는 법(했어요·아니에요·て형·ない형)과 〜ましょう, まえに·あとで, より·ほうが 같은 이어 주는 말을 배워요. 빈칸에는 말끝을 골라 넣어요.":g==="v"?"\"~ 주세요\", \"어디예요?\"처럼 바로 쓰는 표현과, 문장 끝(ます)을 바꿔 \"안 해요·했어요·있어요·하고 싶어요\"를 말해요. 조사 단원 다음에 하면 좋아요.":g==="n"?"가격과 시간을 읽고 들어요. 일본에서 계산할 때, 시간을 확인할 때 바로 써요. 소리만 듣고 고르는 문제도 나와요.":g==="k"?"コーヒー·テレビ처럼 가타카나로 쓰는 말을 히라가나 문장에 넣어 읽어요. 조사 단원을 먼저 하면 더 쉬워요."
       :"단어를 이어 짧은 문장을 만들어요. 조사(は·を·に…)를 하나씩, 위에서부터 차례로 익히면 좋아요.";
     if(g==="j"&&!lvOpen("adv")){el.innerHTML=seg+gseg+`<div class="lock-card"><b>N5 코스에서 열려요</b><small>기초를 마치고 목표로 N5(또는 둘 다)를 고르면 N5 문법 ${units.length}단원(${units.reduce((a,u)=>a+u.items.length,0)}문장)을 배울 수 있어요.</small><div class="kj-peek">${units.map(u=>esc(u.title)).join(" · ")}</div></div>`;toWords();el.querySelectorAll("[data-sg]").forEach(b=>b.onclick=()=>{wv={view:"slist",sg:b.dataset.sg};wordsHist();renderWords()});return}
     el.innerHTML=seg+gseg+`<p class="intro">${intro}</p>
-      ${nx>=0?catNextBtn(`data-u="${units[nx].id}"`,`${nx+1}. ${esc(units[nx].title)}`,`${units[nx].items.filter(s=>sxd(s.id)).length} / ${units[nx].items.length} 맞힘 · ${esc(units[nx].ko)}`):""}
-      <div class="cats compact">${units.filter(u=>!unitDone(u)).map(uCard).join("")}</div>${doneFold(units.filter(unitDone),u=>esc(u.title),uCard)}`;
+      ${catSum(units.filter(unitDone).length,units.length,"단원")}
+      <div class="cats compact">${units.filter(u=>!unitDone(u)).sort((a,b)=>(b.items.some(s=>sxd(s.id))?1:0)-(a.items.some(s=>sxd(s.id))?1:0)).map(uCard).join("")}</div>${doneFold(units.filter(unitDone),u=>esc(u.title),uCard)}`;
     toWords();
     el.querySelectorAll("[data-sg]").forEach(b=>b.onclick=()=>{wv={view:"slist",sg:b.dataset.sg};wordsHist();renderWords()});
     el.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{wv={view:"sunit",unit:b.dataset.u};wordsHist();renderWords()});
