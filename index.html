@@ -3347,10 +3347,11 @@ const CHATS=[
 const chatDone=id=>!!(S.chat||{})[id];
 function renderChat(el,seg,bindMode){
   const exitJ=`<div style="text-align:left"><button class="back" id="jexit">← 그만하고 나가기</button></div>`;
+  const chCard=c=>`<button class="catcard" data-chat="${c.id}"><div class="cat-top"><b>${c.title}</b>${chatDone(c.id)?'<span class="pill ok">완료</span>':""}</div><div class="desc">${c.desc}</div><div class="meta">${c.turns.length}번 주고받기</div></button>`;
   if(jv.view!=="chat"){
     el.innerHTML=seg+`<p class="intro">가게에 들어가서 나올 때까지 점원과 대화를 이어 가요. 점원 말을 듣고, 괄호 안의 하고 싶은 말에 맞는 대답을 골라요.</p>
       ${catSum(CHATS.filter(c=>chatDone(c.id)).length,CHATS.length,"대화")}
-      <div class="cats compact">${CHATS.map(c=>`<button class="catcard" data-chat="${c.id}"><div class="cat-top"><b>${c.title}</b>${chatDone(c.id)?'<span class="pill ok">완료</span>':""}</div><div class="desc">${c.desc}</div><div class="meta">${c.turns.length}번 주고받기</div></button>`).join("")}</div>`;
+      <div class="cats compact">${CHATS.filter(c=>!chatDone(c.id)).map(chCard).join("")}</div>${doneFold(CHATS.filter(c=>chatDone(c.id)),c=>c.title,chCard)}`;
     bindMode();
     el.querySelectorAll("[data-chat]").forEach(b=>b.onclick=()=>{jv={view:"chat",mode:"chat",chat:b.dataset.chat,t:0,miss:0};renderKanjiTab();window.scrollTo({top:0,behavior:"instant"})});
     return;
@@ -3389,11 +3390,12 @@ function renderTravel(el,seg,bindMode){
   if(jv.mode==="book")return renderBook(el,seg,bindMode);
   if(jv.mode==="chat")return renderChat(el,seg,bindMode);
   const mode=jv.mode,cats=TRAVEL_CATS.filter(c=>c.mode===mode),sign=mode==="sign";
+  const tcard=c=>{const ts=travelOf(c.id),n=ts.filter(t=>tvd(t.id)).length,doing=n>0&&n<ts.length;
+    return `<button class="catcard${doing?" doing":""}" data-tc="${c.id}"><div class="cat-top"><b>${c.name}</b>${doing?doingPill:""}${n===ts.length?'<span class="pill ok">완료</span>':""}</div><div class="desc">${c.desc}</div><div class="bar"><i style="width:${n/ts.length*100}%"></i></div><div class="meta">${n}/${ts.length}</div></button>`};
+  const tdone=c=>travelOf(c.id).every(t=>tvd(t.id)),done=cats.filter(tdone),todo=cats.filter(c=>!tdone(c)).sort((a,b)=>(travelOf(b.id).some(t=>tvd(t.id))?1:0)-(travelOf(a.id).some(t=>tvd(t.id))?1:0));
   if(jv.view==="jlist"){
     el.innerHTML=seg+`<p class="intro">${sign?"일본 역·가게·화장실에서 실제로 보는 표지판이에요. 읽는 법을 몰라도 뜻만 알면 길을 덜 헤매요.":mode==="ear"?"가게·역·호텔에서 점원과 안내 방송이 하는 말이에요. 소리만 듣고 알아듣는 연습을 하고, 뭐라고 대답하면 되는지도 같이 봐요.":"일본 여행에서 바로 쓰는 짧은 말이에요. 소리를 들으며 따라 해 보세요."}</p>
-      <div class="cats">${cats.map(c=>{const ts=travelOf(c.id),n=ts.filter(t=>tvd(t.id)).length;
-        return `<button class="catcard" data-tc="${c.id}"><div class="cat-top"><b>${c.name}</b>${n===ts.length?'<span class="pill ok">완료</span>':""}</div>
-          <div class="desc">${c.desc}</div>${sign?`<div class="kj-peek ja-font" lang="ja">${ts.slice(0,5).map(t=>esc(t.ja)).join(" · ")}</div>`:""}<div class="bar"><i style="width:${n/ts.length*100}%"></i></div><div class="meta">맞힌 ${sign?"표지판":"표현"} ${n}/${ts.length}</div></button>`}).join("")}</div>`;
+      ${catSum(done.length,cats.length,"상황")}<div class="cats compact">${todo.map(tcard).join("")}</div>${doneFold(done,c=>c.name,tcard)}`;
     bindMode();
     el.querySelectorAll("[data-tc]").forEach(b=>b.onclick=()=>{jv={view:"jcat",mode,cat:b.dataset.tc};kanjiHist();renderKanjiTab()});
     return;
