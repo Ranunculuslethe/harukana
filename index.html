@@ -383,12 +383,12 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .bk-chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px;scrollbar-width:thin}
 .bk-chips button{flex:none;min-height:40px;padding:6px 12px;border:1px solid var(--line);border-radius:20px;background:var(--card);color:var(--ink);font-size:14px;white-space:nowrap}
 .bk-chips button.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-dark);font-weight:700}
-.bk-list{display:grid;gap:6px}
+.bk-list{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(max(240px,calc((100% - 16px) / 3)),1fr))}
 .bk-row{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}
 .bk-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 14px;text-align:left;background:none;border:0;color:var(--ink)}
 .bk-main b{font-size:15px}.bk-main span{font-size:17px}.bk-main small{font-size:13px;color:var(--sub)}
 .bk-main:hover{background:var(--accent-soft)}
-.bk-star{flex:none;width:52px;border:0;border-left:1px solid var(--line);background:none;font-size:22px;color:var(--sub)}
+.bk-star{flex:none;width:44px;border:0;border-left:1px solid var(--line);background:none;font-size:22px;color:var(--sub)}
 .bk-star.on{color:#c99a5b}
 .show-dlg{text-align:center;width:min(560px,calc(100vw - 24px))}
 .show-ja{font-size:clamp(30px,8vw,46px);line-height:1.45;font-weight:600;margin:18px 0 8px;word-break:keep-all}
