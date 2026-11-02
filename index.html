@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="하루카나 - 일본어를 처음 시작하는 한국인을 위한 히라가나·가타카나·기초 단어 학습 웹">
 <meta name="theme-color" content="#FAF9F5">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="하루카나">
 <title>하루카나</title>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
@@ -2023,7 +2028,9 @@ const TRAVEL_CATS=[
   {id:"e1",mode:"ear",name:"식당",desc:"어서 오세요, 몇 분이세요?, 주문 정하셨어요?"},
   {id:"e2",mode:"ear",name:"편의점·가게",desc:"봉투 필요하세요?, 데워 드릴까요?"},
   {id:"e3",mode:"ear",name:"역·교통 방송",desc:"곧 전철이 들어옵니다, 문이 닫힙니다"},
-  {id:"e4",mode:"ear",name:"호텔·안내",desc:"여권 보여 주세요, 방은 5층입니다"}
+  {id:"e4",mode:"ear",name:"호텔·안내",desc:"여권 보여 주세요, 방은 5층입니다"},
+  {id:"e5",mode:"ear",name:"공항·입국",desc:"탑승 안내, 입국 목적, 며칠 머무르세요?"},
+  {id:"e6",mode:"ear",name:"카페·약국·관광",desc:"여기서 드세요?, 식후에 드세요, 촬영 금지"}
 ];
 const TRAVEL=[
   ...[
@@ -2260,7 +2267,23 @@ const TRAVEL=[
     ["こちらに おなまえを おねがいします。","여기에 이름을 적어 주세요","종이를 내밀며 하는 말","e4"],
     ["おへやは ごかいです。","방은 5층입니다","かい = 층 (さんがい = 3층)","e4"],
     ["ちょうしょくは しちじからです。","아침 식사는 7시부터예요","〜から = ~부터","e4"],
-    ["ありがとう ございました。","감사했습니다","가게를 나갈 때 들어요. 같이 → ありがとう ございます","e4"]
+    ["ありがとう ございました。","감사했습니다","가게를 나갈 때 들어요. 같이 → ありがとう ございます","e4"],
+    ["まもなく とうじょうを かいし いたします。","곧 탑승을 시작합니다","공항 안내 방송. とうじょう = 탑승","e5"],
+    ["パスポートと とうじょうけんを おねがいします。","여권과 탑승권 보여 주세요","탑승구·체크인에서. とうじょうけん = 탑승권","e5"],
+    ["にゅうこくの もくてきは なんですか。","입국 목적이 뭐예요?","입국 심사 → かんこうです (관광이에요)","e5"],
+    ["なんにち たいざい しますか。","며칠 머무르세요?","입국 심사 → みっかです (3일이에요)","e5"],
+    ["どちらに おとまりですか。","어디에 묵으세요?","→ 호텔 이름 + です","e5"],
+    ["おあずけの にもつは ありますか。","맡기실 짐 있으세요?","체크인 → はい、ひとつです","e5"],
+    ["この にもつは きないに もちこめません。","이 짐은 기내에 가지고 탈 수 없어요","보안 검색·체크인에서","e5"],
+    ["ごばん ゲートへ おこし ください。","5번 게이트로 와 주세요","공항 안내 방송","e5"],
+    ["こちらで おめしあがりですか。","여기서 드세요?","카페·패스트푸드 → はい / もちかえりで","e6"],
+    ["サイズは いかが なさいますか。","사이즈는 어떻게 하시겠어요?","카페 → おおきい サイズで","e6"],
+    ["おのみものは なにに なさいますか。","음료는 뭐로 하시겠어요?","→ 음료 이름 + で おねがいします","e6"],
+    ["しょくごに のんで ください。","식후에 드세요","약국. しょくご = 식후","e6"],
+    ["いちにち さんかい のんで ください。","하루 세 번 드세요","약국","e6"],
+    ["おだいじに。","몸조리 잘하세요","약국·병원을 나갈 때 들어요","e6"],
+    ["さつえいは ごえんりょ ください。","촬영은 삼가 주세요","관광지·박물관 안내","e6"],
+    ["へいかんは ごご ごじです。","폐관은 오후 5시예요","미술관·박물관 안내","e6"]
   ].map(([ja,ko,tip,cat],i)=>({id:"ve"+(i+1),mode:"ear",ja,rd:ja.replace(/[。、？]/g," ").trim(),hg:null,ko,tip,cat}))
 ];
 const TRAVEL_BY=Object.fromEntries(TRAVEL.map(t=>[t.id,t]));
@@ -3300,7 +3323,7 @@ function drawBook(){
 }
 function renderBook(el,seg,bindMode){
   const f=jv.f||"all",cats=TRAVEL_CATS.filter(c=>c.mode==="talk"),nFav=BOOK_ALL().filter(t=>favOn(t.id)).length;
-  el.innerHTML=seg+`<p class="intro">여행 중에 바로 꺼내 쓰는 표현집이에요. 찾아서 누르면 일본어가 크게 떠서 점원에게 화면을 보여 줄 수 있고, 소리도 들려줘요.</p>
+  el.innerHTML=seg+`<p class="intro">여행 중에 바로 꺼내 쓰는 표현집이에요. 찾아서 누르면 일본어가 크게 떠서 점원에게 화면을 보여 줄 수 있고, 소리도 들려줘요. 한 번 열어 둔 휴대폰에서는 인터넷이 없어도 열려요. 브라우저 메뉴의 '홈 화면에 추가'를 누르면 앱처럼 쓸 수 있어요.</p>
     <input type="search" class="bk-q" id="bk-q" placeholder="한국어나 일본어로 찾기 (예: 화장실, 카드)" value="${esc(jv.q||"")}" aria-label="표현 찾기">
     <div class="bk-chips" role="group" aria-label="상황">${[["fav",`★ 즐겨찾기 ${nFav}`],["all","전체"],...cats.map(c=>[c.id,c.name])].map(([k,t])=>`<button type="button" data-bf="${k}" class="${k===f?"on":""}" aria-pressed="${k===f}">${t}</button>`).join("")}</div>
     <div class="bk-list" id="bk-list"></div>`;
@@ -5466,6 +5489,7 @@ function navMark(){
   h.querySelector(".section-mark").textContent=s?"文":"語";
 }
 (()=>{const b=document.createElement("button");b.id="to-top";b.type="button";b.setAttribute("aria-label","맨 위로");b.title="맨 위로";b.textContent="↑";b.hidden=true;document.body.appendChild(b);b.onclick=()=>window.scrollTo({top:0,behavior:"smooth"});addEventListener("scroll",()=>{b.hidden=scrollY<700},{passive:true})})();
+if("serviceWorker" in navigator&&location.protocol==="https:"&&!IN_CLAUDE)navigator.serviceWorker.register("sw.js").catch(()=>{});
 NAV.forEach(i=>{$("t"+i).onclick=()=>navGo(i);$("t"+i).onkeydown=e=>{const vis=NAV.filter(t=>!$("t"+t).hidden),N=vis.length,p=vis.indexOf(i);let next;if(['ArrowDown','ArrowRight'].includes(e.key))next=vis[(p+1)%N];else if(['ArrowUp','ArrowLeft'].includes(e.key))next=vis[(p+N-1)%N];else if(e.key==='Home')next=vis[0];else if(e.key==='End')next=vis[N-1];else return;e.preventDefault();navGo(next);$("t"+next).focus()}});
 document.querySelectorAll("[data-kv]").forEach(b=>b.onclick=()=>show(+b.dataset.kv));
 function openLesson(stage,script){qScript=script;startStage(stage);renderStageBar();renderCharQuiz();show(2);$("content").focus({preventScroll:true});fitQuiz($("quiz"))}

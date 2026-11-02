@@ -1,0 +1,14 @@
+{
+  "name": "하루카나 - 일본어 첫걸음",
+  "short_name": "하루카나",
+  "description": "가나부터 여행 회화, JLPT N5까지. 한국인을 위한 일본어 학습",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F7F4EE",
+  "theme_color": "#53705F",
+  "lang": "ko",
+  "icons": [
+    {"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}
+  ]
+}
