@@ -378,7 +378,7 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 @media(max-width:760px){.topbar,.topbar *{white-space:nowrap}.language{font-size:0;gap:6px}.language .lvl-btn{font-size:13px}.top-count{padding:3px 4px}}
 #words .seg.top-tabs button,#kanji .seg.top-tabs button{padding:12px 8px 10px;font-size:15px}
 .reply-line{font-size:22px;margin-top:12px;line-height:1.5}
-.cats.compact{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.cats.compact{grid-template-columns:repeat(auto-fill,minmax(max(180px,calc((100% - 30px) / 4)),1fr));gap:10px}
 .cats.compact .catcard{padding:12px 14px;border-bottom-width:3px;border-radius:12px}
 .cats.compact .cat-top b{font-size:15px}
 .cats.compact .desc{font-size:13px;color:var(--sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
