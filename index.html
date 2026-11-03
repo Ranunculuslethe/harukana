@@ -3313,12 +3313,13 @@ function openShow(id){
     $("show-fav").onclick=()=>{toggleFav(id);draw();if(tab===6&&jv.mode==="book")drawBook()}};
   draw();if(!d.open)d.showModal();speak(t.rd||t.ja);
 }
+const bkNorm=s=>[...String(s)].map(ch=>{const c=ch.charCodeAt(0);return c>=0x30A1&&c<=0x30F6?String.fromCharCode(c-0x60):ch}).join("").replace(/[\s、。，．,.？?！!・ー\-~·…「」()（）]/g,"").toLowerCase();
 function drawBook(){
   const box=$("bk-list");if(!box)return;
   const q=(jv.q||"").trim(),f=jv.f||"all";
   let list=BOOK_ALL();
   if(f==="fav")list=list.filter(t=>favOn(t.id));else if(f!=="all")list=list.filter(t=>t.cat===f);
-  if(q)list=list.filter(t=>[t.ja,t.ko,t.hg||"",t.tip||""].some(s=>s.includes(q)));
+  if(q){const nq=bkNorm(q);list=list.filter(t=>[t.ja,t.rd||"",t.ko,t.hg||"",t.tip||""].some(s=>bkNorm(s).includes(nq)))}
   box.innerHTML=list.length?list.map(t=>`<div class="bk-row"><button type="button" class="bk-main" data-bk="${t.id}"><b>${esc(t.ko)}</b><span class="ja-font" lang="ja">${esc(t.ja)}</span><small class="hgx">${esc(t.hg||"")}</small></button><button type="button" class="bk-star${favOn(t.id)?" on":""}" data-fav="${t.id}" aria-label="${favOn(t.id)?"즐겨찾기에서 빼기":"즐겨찾기에 넣기"}" aria-pressed="${favOn(t.id)}">${favOn(t.id)?"★":"☆"}</button></div>`).join("")
     :`<p class="intro">${f==="fav"?"아직 즐겨찾기한 표현이 없어요. 자주 쓸 표현의 ☆를 눌러 모아 두세요.":"찾는 표현이 없어요. 다른 말로 찾아보세요."}</p>`;
   box.querySelectorAll("[data-bk]").forEach(b=>b.onclick=()=>openShow(b.dataset.bk));
@@ -3327,7 +3328,7 @@ function drawBook(){
 function renderBook(el,seg,bindMode){
   const f=jv.f||"all",cats=TRAVEL_CATS.filter(c=>c.mode==="talk"),nFav=BOOK_ALL().filter(t=>favOn(t.id)).length;
   el.innerHTML=seg+`<p class="intro">여행 중에 바로 꺼내 쓰는 표현집이에요. 찾아서 누르면 일본어가 크게 떠서 점원에게 화면을 보여 줄 수 있고, 소리도 들려줘요. 한 번 열어 둔 휴대폰에서는 인터넷이 없어도 열려요. 브라우저 메뉴의 '홈 화면에 추가'를 누르면 앱처럼 쓸 수 있어요.</p>
-    <input type="search" class="bk-q" id="bk-q" placeholder="한국어나 일본어로 찾기 (예: 화장실, 카드)" value="${esc(jv.q||"")}" aria-label="표현 찾기">
+    <input type="search" class="bk-q" id="bk-q" placeholder="뜻·일본어·발음으로 찾기 (예: 화장실, トイレ, 토이레)" value="${esc(jv.q||"")}" aria-label="표현 찾기">
     <div class="bk-chips" role="group" aria-label="상황">${[["fav",`★ 즐겨찾기 ${nFav}`],["all","전체"],...cats.map(c=>[c.id,c.name])].map(([k,t])=>`<button type="button" data-bf="${k}" class="${k===f?"on":""}" aria-pressed="${k===f}">${t}</button>`).join("")}</div>
     <div class="bk-list" id="bk-list"></div>`;
   bindMode();
