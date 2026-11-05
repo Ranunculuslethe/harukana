@@ -5331,11 +5331,11 @@ function renderJlpt(el){
     const X=S.jx||{},card=a=>{const ids=jlIds(a),n=ids.filter(jld).length;
       return `<button class="catcard" data-jla="${a}"><div class="cat-top"><b>${JL_AREAS[a]}</b>${n===ids.length?'<span class="pill ok">완료</span>':""}</div>
         <div class="desc">${{v:"한자 읽기·쓰기, 빈칸 낱말, 같은 뜻 고르기",g:"조사·활용 빈칸, ★ 문장 만들기",r:"메모·안내문·일기를 읽고 답하기",l:"짧은 대화를 듣고 답하기, 바로 대답하기"}[a]}</div>
-        <div class="bar"><i style="width:${n/ids.length*100}%"></i></div><div class="meta">${n}/${ids.length}</div></button>`};
+        <div class="bar"><i style="width:${n/ids.length*100}%"></i></div><div class="meta">맞힌 문제 ${n}/${ids.length}${a==="v"?" · 한자 문제는 매번 새로 나와요":""}</div></button>`};
     const wr=jlWrong(),wby=Object.keys(JL_AREAS).map(a=>[a,wr.filter(id=>JL[id].a===a).length]).filter(x=>x[1]);
     el.innerHTML=`${jlTabs("home")}
       <h3 class="jl-h">영역별 연습 <small class="h-note">10문제씩 · 풀자마자 해설</small></h3>
-      <div class="cats compact">${Object.keys(JL_AREAS).map(card).join("")}</div>
+      <div class="cats">${Object.keys(JL_AREAS).map(card).join("")}</div>
       ${wr.length?`<div class="jl-wrongbox"><div class="jw-top"><div><b>틀린 문제 ${wr.length}개</b><small>${wby.map(([a,k])=>`${JL_AREAS[a]} ${k}`).join(" · ")}</small></div><button class="next" id="jl-wx">다시 풀기</button></div>
         <details class="jl-wlist"><summary>목록과 해설 보기</summary><div class="jl-wrong">${wr.map(id=>{const s=JL[id],q=jlQ(id);return `<details><summary><span class="pill">${JL_AREAS[s.a]}</span> <span lang="ja">${esc(jlSum(s))}</span></summary><div class="jl-wbody"><p>정답: <b lang="ja">${esc(q.ans)}</b></p><p>${s.ex}</p></div></details>`}).join("")}</div></details></div>`:""}
       <div class="jl-exam-card"><div class="je-info"><span class="jl-kicker">모의시험</span><b>${JL_EXAM_N}문제 · ${JL_EXAM_MIN}분</b><small>${X.n?`최고 ${X.best} / 180점${X.pass?" · 합격선 통과":""}`:"끝까지 풀면 점수와 합격선을 알려 줘요"}</small></div>
