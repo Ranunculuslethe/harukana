@@ -3205,9 +3205,10 @@ function renderKanji(el){
   if(mode!=="kanji")return renderTravel(el,seg,bindLv);
   if(jv.view==="jlist"){
     el.innerHTML=seg+`<p class="intro">일본어를 처음 배울 때 가장 먼저 만나는 기초 한자(N5) ${lvKanji.length}자예요. 숫자·요일·사람처럼 여행에서도 자주 보여요. 카테고리를 골라 카드로 익히고 퀴즈로 확인해요.</p>
-      <div class="cats">${KANJI_CATS.filter(c=>(c.lv||"N5")===lv).map(c=>{const ks=kanjiOf(c.id),n=ks.filter(j=>kjd(j.k)).length;
-        return `<button class="catcard" data-jc="${c.id}"><div class="cat-top"><b>${c.name}</b>${n===ks.length?'<span class="pill ok">완료</span>':""}</div>
-          <div class="desc">${c.desc}</div><div class="kj-peek ja-font" lang="ja">${ks.slice(0,8).map(j=>j.k).join(" ")}</div><div class="bar"><i style="width:${n/ks.length*100}%"></i></div><div class="meta">맞힌 한자 ${n}/${ks.length}</div></button>`}).join("")}</div>`;
+      ${(()=>{const cs=KANJI_CATS.filter(c=>(c.lv||"N5")===lv),prog=c=>{const ks=kanjiOf(c.id);return [ks.filter(j=>kjd(j.k)).length,ks.length,ks]};
+        const kc=c=>{const [n,t,ks]=prog(c),doing=n>0&&n<t;return `<button class="catcard${doing?" doing":""}" data-jc="${c.id}"><div class="cat-top"><b>${c.name}</b>${doing?doingPill:""}${n===t?'<span class="pill ok">완료</span>':""}</div><div class="desc"><span class="ja-font" lang="ja">${ks.slice(0,6).map(j=>j.k).join(" ")}</span> · ${c.desc}</div><div class="bar"><i style="width:${n/t*100}%"></i></div><div class="meta">${n}/${t}</div></button>`};
+        const done=cs.filter(c=>{const [n,t]=prog(c);return n===t}),todo=cs.filter(c=>!done.includes(c)).sort((a,b)=>(prog(b)[0]>0)-(prog(a)[0]>0));
+        return catSum(done.length,cs.length,"카테고리")+`<div class="cats compact">${todo.map(kc).join("")}</div>`+doneFold(done,c=>c.name,kc)})()}`;
     
     bindLv();
     el.querySelectorAll("[data-jc]").forEach(b=>b.onclick=()=>{jv={mode:"kanji",view:"jcat",cat:b.dataset.jc,lv};kanjiHist();renderKanjiTab()});
@@ -5331,11 +5332,11 @@ function renderJlpt(el){
     const X=S.jx||{},card=a=>{const ids=jlIds(a),n=ids.filter(jld).length;
       return `<button class="catcard" data-jla="${a}"><div class="cat-top"><b>${JL_AREAS[a]}</b>${n===ids.length?'<span class="pill ok">완료</span>':""}</div>
         <div class="desc">${{v:"한자 읽기·쓰기, 빈칸 낱말, 같은 뜻 고르기",g:"조사·활용 빈칸, ★ 문장 만들기",r:"메모·안내문·일기를 읽고 답하기",l:"짧은 대화를 듣고 답하기, 바로 대답하기"}[a]}</div>
-        <div class="bar"><i style="width:${n/ids.length*100}%"></i></div><div class="meta">맞힌 문제 ${n}/${ids.length}${a==="v"?" · 한자 문제는 매번 새로 나와요":""}</div></button>`};
+        <div class="bar"><i style="width:${n/ids.length*100}%"></i></div><div class="meta">${n}/${ids.length}</div></button>`};
     const wr=jlWrong(),wby=Object.keys(JL_AREAS).map(a=>[a,wr.filter(id=>JL[id].a===a).length]).filter(x=>x[1]);
     el.innerHTML=`${jlTabs("home")}
       <h3 class="jl-h">영역별 연습 <small class="h-note">10문제씩 · 풀자마자 해설</small></h3>
-      <div class="cats">${Object.keys(JL_AREAS).map(card).join("")}</div>
+      <div class="cats compact">${Object.keys(JL_AREAS).map(card).join("")}</div>
       ${wr.length?`<div class="jl-wrongbox"><div class="jw-top"><div><b>틀린 문제 ${wr.length}개</b><small>${wby.map(([a,k])=>`${JL_AREAS[a]} ${k}`).join(" · ")}</small></div><button class="next" id="jl-wx">다시 풀기</button></div>
         <details class="jl-wlist"><summary>목록과 해설 보기</summary><div class="jl-wrong">${wr.map(id=>{const s=JL[id],q=jlQ(id);return `<details><summary><span class="pill">${JL_AREAS[s.a]}</span> <span lang="ja">${esc(jlSum(s))}</span></summary><div class="jl-wbody"><p>정답: <b lang="ja">${esc(q.ans)}</b></p><p>${s.ex}</p></div></details>`}).join("")}</div></details></div>`:""}
       <div class="jl-exam-card"><div class="je-info"><span class="jl-kicker">모의시험</span><b>${JL_EXAM_N}문제 · ${JL_EXAM_MIN}분</b><small>${X.n?`최고 ${X.best} / 180점${X.pass?" · 합격선 통과":""}`:"끝까지 풀면 점수와 합격선을 알려 줘요"}</small></div>
