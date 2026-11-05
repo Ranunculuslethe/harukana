@@ -383,6 +383,8 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 @media(max-width:760px){.topbar,.topbar *{white-space:nowrap}.language{font-size:0;gap:6px}.language .lvl-btn{font-size:13px}.top-count{padding:3px 4px}}
 #words .seg.top-tabs button,#kanji .seg.top-tabs button{padding:12px 8px 10px;font-size:15px}
 .reply-line{font-size:22px;margin-top:12px;line-height:1.5}
+[lang="ja"]{overflow-wrap:anywhere}
+.ch-log,.ch-b,.ch-hint,.ch-ch button{white-space:normal}.ch-b{min-width:0}.ch-b span{overflow-wrap:anywhere}
 .back{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:8px 16px 8px 12px;margin-bottom:14px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:20px;background:var(--accent-soft);color:var(--accent-dark);font-size:14px;font-weight:700}
 .back:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,var(--card))}
 @media(max-width:640px){.back{min-height:44px}}
@@ -4399,7 +4401,7 @@ function testClear(lv){
   updateTitles();checkBadges();save();
   if(lv==="mid")setGoal("both"); // 기초 클리어 = 학습 길 기초 완료(목표는 수료 창에서 고름), 여행 코스 클리어 = 여행 코스까지 마치고 두 코스 모두 열기
   else{applyLevel();renderRoad();renderSettings()}
-  notifyText(lv==="mid"?"여행 코스까지 클리어했어요 (테스트). N5 코스도 열었어요.":"기초를 클리어했어요 (테스트). 이제 목표를 고를 수 있어요.");
+  notifyText(lv==="mid"?"여행 코스까지 클리어했어요 (테스트). N5 코스도 열었어요.":"기초를 클리어했어요 (테스트). 이제 여행·N5 코스가 열려요.");
   if(lv==="beg"){document.querySelector("dialog[open]")?.close();checkGrad()}
 }
 function openSettings(){
@@ -4411,7 +4413,7 @@ function openSettings(){
 }
 const GUIDE=[
   {mark:'<svg viewBox="0 0 180 190" class="fox" aria-hidden="true"><use href="#fox"/></svg>',t:"하루카나에 온 걸 환영해요",
-   p:"일본어를 처음 시작하는 한국 사람을 위한 앱이에요. 히라가나 한 글자부터 시작해서, 일본 여행이든 JLPT N5 시험이든 내 목표대로 차근차근 가요."},
+   p:"일본어를 처음 시작하는 한국 사람을 위한 앱이에요. 히라가나 한 글자부터 시작해서, 일본 여행 회화와 JLPT N5 시험까지 차근차근 가요."},
   {mark:"✿",t:"기초 다음엔 하고 싶은 공부를",
    p:"가나·단어·문장 기초는 모두 같이 해요. 기초를 마치면 두 코스가 함께 열려요. 그날 하고 싶은 쪽부터 하면 돼요.",
    list:[["旅","여행 코스","여행 회화·점원 말 알아듣기·표지판"],["試","N5 코스","N5 한자·단어·문법과 모의시험"]]},
@@ -5554,7 +5556,7 @@ function askConfirm(title,body,ok,cb){
 function applyLevel(){
   const t=isMid(),n=isAdv();
   $("level-label").textContent=t&&n?"여행·N5":t?"여행":n?"N5":"기초";
-  $("level-label").title=t||n?"여행 코스와 N5 코스가 열려 있어요":`기초 · 학습 길 ${ROAD_STEPS.length}단계를 마치면 고른 코스가 열려요`;
+  $("level-label").title=t||n?"여행 코스와 N5 코스가 열려 있어요":`기초 · 학습 길 ${ROAD_STEPS.length}단계를 마치면 여행 코스와 N5 코스가 열려요`;
   const pre=basicDone()&&!!goalOf(); // 안 열린 코스도 메뉴에 "+"로 보여 준다
   $("t6").hidden=!(t||pre);$("t8").hidden=!(n||pre);$("t6").classList.toggle("tab-add",!t);$("t8").classList.toggle("tab-add",!n);
   $("t6").title=t?"":"누르면 여행 코스가 열려요";$("t8").title=n?"":"누르면 N5 코스가 열려요";
