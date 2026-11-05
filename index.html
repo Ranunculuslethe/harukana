@@ -455,6 +455,9 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 @media(max-width:640px){#words .seg.top-tabs button,#kanji .seg.top-tabs button{padding:12px 2px 10px;font-size:14px;letter-spacing:-.02em}}
 .jl-wrongbox{margin:0 0 20px;padding:14px 16px;border:1px solid color-mix(in srgb,var(--bad) 30%,var(--line));border-radius:16px;background:color-mix(in srgb,var(--badbg) 55%,var(--card))}
 .jw-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}.jw-top>div{display:flex;flex-direction:column;gap:2px;flex:1 1 220px}.jw-top b{font-size:17px;color:var(--bad)}.jw-top small{font-size:13px;color:var(--sub)}
+.jl-exam-card{padding:12px 16px;margin:12px 0;gap:12px}.jl-exam-card>.je-info{display:flex;flex-direction:column;gap:2px;flex:1 1 200px}.je-info .jl-kicker{align-self:flex-start}.je-info b{font-size:16px}.je-info small{font-size:13px;color:var(--sub)}
+.jl-exam-card>.je-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;flex:0 1 auto}.je-btns .next{min-height:44px}.je-btns .ghost{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:44px;padding:4px 12px;line-height:1.3}.je-btns .ghost small{font-size:12px;color:var(--sub);font-weight:400}
+.jl-wrongbox{padding:10px 14px;margin:12px 0}
 .jl-wlist{margin-top:10px}.jl-wlist>summary{cursor:pointer;font-size:14px;font-weight:700;color:var(--accent-dark);min-height:40px;display:flex;align-items:center}
 .jl-learn{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}.jl-learn span{font-weight:700;color:var(--sub);font-size:14px}.jl-learn .ghost{min-height:44px}
 .jl-exam-card{display:flex;align-items:center;gap:18px;justify-content:space-between;flex-wrap:wrap;padding:20px 22px;border:1px solid color-mix(in srgb,#c99a5b 45%,var(--line));border-radius:18px;background:linear-gradient(160deg,color-mix(in srgb,#ffd7a0 20%,var(--card)),var(--card));margin-bottom:22px}
@@ -5328,18 +5331,17 @@ function renderJlpt(el){
     const X=S.jx||{},card=a=>{const ids=jlIds(a),n=ids.filter(jld).length;
       return `<button class="catcard" data-jla="${a}"><div class="cat-top"><b>${JL_AREAS[a]}</b>${n===ids.length?'<span class="pill ok">완료</span>':""}</div>
         <div class="desc">${{v:"한자 읽기·쓰기, 빈칸 낱말, 같은 뜻 고르기",g:"조사·활용 빈칸, ★ 문장 만들기",r:"메모·안내문·일기를 읽고 답하기",l:"짧은 대화를 듣고 답하기, 바로 대답하기"}[a]}</div>
-        <div class="bar"><i style="width:${n/ids.length*100}%"></i></div><div class="meta">맞힌 문제 ${n}/${ids.length}${a==="v"?" · 한자 문제는 매번 새로 나와요":""}</div></button>`};
-    el.innerHTML=`${jlTabs("home")}<div class="jl-learn"><span>먼저 배우기</span><button type="button" class="ghost" data-jlgo="a">N5 단어 ${WORDS.filter(w=>w.category.startsWith("a_")).length}개</button><button type="button" class="ghost" data-jlgo="j">N5 문법 ${groupUnits("j").length}단원</button></div><div class="jl-exam-card"><div><span class="jl-kicker">모의시험</span><h3>N5 모의시험 · ${JL_EXAM_N}문제 · ${JL_EXAM_MIN}분</h3>
-        <p>실제 시험처럼 끝까지 푼 뒤에 점수와 합격선을 알려 줘요. 풀 때는 정답이 바로 나오지 않아요.</p>
-        ${X.n?`<p class="jl-best">지금까지 ${X.n}번 · 최고 <b>${X.best}</b> / 180점${X.pass?' <span class="pill ok">합격선 통과</span>':""}</p>`:""}</div>
-        <button class="next" id="jl-exam">${X.n?"다시 도전하기":"모의시험 시작"}</button></div>
-      <div class="jl-sets"><p>실전 1~3회는 늘 같은 문제가 나오는 고정 세트예요. 공부한 뒤 다시 풀어서 점수가 올랐는지 비교해 봐요.</p><div>${[1,2,3].map(k=>`<button type="button" class="ghost" data-jlset="${k}"><b>실전 ${k}회</b><small>${(X.sets||{})[k]!=null?`최고 ${X.sets[k]}점`:"아직 안 풀었어요"}</small></button>`).join("")}</div></div>
-      ${(()=>{const w=jlWrong();if(!w.length)return "";const by=Object.keys(JL_AREAS).map(a=>[a,w.filter(id=>JL[id].a===a).length]).filter(x=>x[1]);
-        return `<div class="jl-wrongbox"><div class="jw-top"><div><b>틀린 문제 ${w.length}개</b><small>${by.map(([a,k])=>`${JL_AREAS[a]} ${k}`).join(" · ")} · 다시 맞히면 목록에서 빠져요</small></div><button class="next" id="jl-wx">틀린 문제 풀기</button></div>
-          <details class="jl-wlist"><summary>목록과 해설 보기</summary><div class="jl-wrong">${w.map(id=>{const s=JL[id],q=jlQ(id);return `<details><summary><span class="pill">${JL_AREAS[s.a]}</span> <span lang="ja">${esc(jlSum(s))}</span></summary><div class="jl-wbody"><p>정답: <b lang="ja">${esc(q.ans)}</b></p><p>${s.ex}</p></div></details>`}).join("")}</div></details></div>`})()}
-      <h3 class="jl-h">영역별 연습</h3><p class="intro">한 번에 10문제씩 풀고, 풀자마자 해설을 봐요. N5 코스에서는 한글 발음 없이 일본어로만 풀어요.</p>
-      <div class="cats">${Object.keys(JL_AREAS).map(card).join("")}</div>
-      <p class="tip s-note">JLPT(일본어능력시험) N5는 가장 쉬운 급수예요. 여기 문제는 실제 시험 형식을 참고해 하루카나가 직접 만든 연습 문제라서, 실제 점수와는 다를 수 있어요. 시험 전에는 JLPT 공식 사이트(jlpt.jp)의 문제 예시도 한 번 풀어 보세요. 실제 목소리와 속도에 익숙해질 수 있어요.</p>`;
+        <div class="bar"><i style="width:${n/ids.length*100}%"></i></div><div class="meta">${n}/${ids.length}</div></button>`};
+    const wr=jlWrong(),wby=Object.keys(JL_AREAS).map(a=>[a,wr.filter(id=>JL[id].a===a).length]).filter(x=>x[1]);
+    el.innerHTML=`${jlTabs("home")}
+      <h3 class="jl-h">영역별 연습 <small class="h-note">10문제씩 · 풀자마자 해설</small></h3>
+      <div class="cats compact">${Object.keys(JL_AREAS).map(card).join("")}</div>
+      ${wr.length?`<div class="jl-wrongbox"><div class="jw-top"><div><b>틀린 문제 ${wr.length}개</b><small>${wby.map(([a,k])=>`${JL_AREAS[a]} ${k}`).join(" · ")}</small></div><button class="next" id="jl-wx">다시 풀기</button></div>
+        <details class="jl-wlist"><summary>목록과 해설 보기</summary><div class="jl-wrong">${wr.map(id=>{const s=JL[id],q=jlQ(id);return `<details><summary><span class="pill">${JL_AREAS[s.a]}</span> <span lang="ja">${esc(jlSum(s))}</span></summary><div class="jl-wbody"><p>정답: <b lang="ja">${esc(q.ans)}</b></p><p>${s.ex}</p></div></details>`}).join("")}</div></details></div>`:""}
+      <div class="jl-exam-card"><div class="je-info"><span class="jl-kicker">모의시험</span><b>${JL_EXAM_N}문제 · ${JL_EXAM_MIN}분</b><small>${X.n?`최고 ${X.best} / 180점${X.pass?" · 합격선 통과":""}`:"끝까지 풀면 점수와 합격선을 알려 줘요"}</small></div>
+        <div class="je-btns"><button class="next" id="jl-exam">${X.n?"다시 도전":"시작"}</button>${[1,2,3].map(k=>`<button type="button" class="ghost" data-jlset="${k}" title="늘 같은 문제가 나오는 고정 세트">실전 ${k}회<small>${(X.sets||{})[k]!=null?X.sets[k]+"점":"–"}</small></button>`).join("")}</div></div>
+      <div class="jl-learn"><span>먼저 배우기</span><button type="button" class="ghost" data-jlgo="a">N5 단어 ${WORDS.filter(w=>w.category.startsWith("a_")).length}개</button><button type="button" class="ghost" data-jlgo="j">N5 문법 ${groupUnits("j").length}단원</button></div>
+      <p class="tip s-note">여기 문제는 실제 JLPT N5 형식을 참고해 하루카나가 직접 만든 연습 문제라 실제 점수와 다를 수 있어요. 실전 1~3회는 늘 같은 문제가 나와서 실력이 늘었는지 비교할 수 있어요. 시험 전에는 JLPT 공식 사이트(jlpt.jp)의 문제 예시도 풀어 보세요.</p>`;
     bindJlt(el);
     el.querySelectorAll("[data-jlgo]").forEach(b=>b.onclick=()=>{wv=b.dataset.jlgo==="a"?{view:"list",script:"a"}:{view:"slist",sg:"j"};navGo(b.dataset.jlgo==="a"?3:7)});
     if($("jl-wx"))$("jl-wx").onclick=()=>{jx={view:"prac",a:"x",qs:jlPractice("x"),i:0,right:0};renderJlptTab();window.scrollTo({top:0,behavior:"instant"})};
