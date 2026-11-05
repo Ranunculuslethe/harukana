@@ -385,6 +385,20 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .reply-line{font-size:22px;margin-top:12px;line-height:1.5}
 [lang="ja"]{overflow-wrap:anywhere}
 .ch-log,.ch-b,.ch-hint,.ch-ch button{white-space:normal}.ch-b{min-width:0}.ch-b span{overflow-wrap:anywhere}
+.jl-wlist>summary,.cats-done>summary,.jl-wrong details>summary{list-style:none;cursor:pointer}
+.jl-wlist>summary::-webkit-details-marker,.cats-done>summary::-webkit-details-marker,.jl-wrong details>summary::-webkit-details-marker{display:none}
+.jl-wlist>summary::after,.cats-done>summary::after,.jl-wrong details>summary::after{content:"›";margin-left:auto;padding-left:8px;font-size:22px;line-height:1;color:var(--accent);transition:transform .2s;font-family:sans-serif}
+.jl-wlist[open]>summary::after,.cats-done[open]>summary::after,.jl-wrong details[open]>summary::after{transform:rotate(90deg)}
+.jl-wlist>summary{display:inline-flex;align-items:center;gap:6px;min-height:42px;margin-top:10px;padding:6px 14px 6px 16px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:21px;background:var(--card);color:var(--accent-dark);font-size:14px;font-weight:700}
+.jl-wlist>summary:hover,.jl-wlist[open]>summary{border-color:var(--accent);background:var(--accent-soft)}
+.jl-wlist[open]>summary{margin-bottom:8px}
+.jl-wrong details>summary{display:flex;align-items:center;gap:6px;min-height:44px}
+.jl-wrong details:hover,.jl-wrong details[open]{border-color:var(--accent)}
+.cats-done>summary:hover{background:var(--accent-soft);border-radius:12px}
+.link{color:var(--accent-dark);font-size:14px;font-weight:700;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px;min-height:40px}
+.link:hover{color:var(--accent)}
+.catcard:active,.next:active,.ghost:active,.back:active,.bk-main:active,.cats-sum:active,.jl-star:active,.lesson-info:active,.wrow:active,.kj-tile:active,.choices button:not(:disabled):active,.bd-tile:active,.course-pill:active,.jl-wlist>summary:active{transform:scale(.97)}
+.catcard{cursor:pointer}.catcard .meta::after{content:" ›";color:var(--accent);font-weight:700}
 .back{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:8px 16px 8px 12px;margin-bottom:14px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:20px;background:var(--accent-soft);color:var(--accent-dark);font-size:14px;font-weight:700}
 .back:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,var(--card))}
 @media(max-width:640px){.back{min-height:44px}}
@@ -5345,14 +5359,14 @@ function renderJlpt(el){
         <div class="bar"><i style="width:${n/ids.length*100}%"></i></div><div class="meta">${n}/${ids.length}</div></button>`};
     const wr=jlWrong(),wby=Object.keys(JL_AREAS).map(a=>[a,wr.filter(id=>JL[id].a===a).length]).filter(x=>x[1]);
     el.innerHTML=`${jlTabs("home")}
-      <h3 class="jl-h">영역별 연습 <small class="h-note">10문제씩 · 풀자마자 해설</small></h3>
-      <div class="cats compact">${Object.keys(JL_AREAS).map(card).join("")}</div>
-      ${(()=>{const st=jlStars();if(!st.length)return "";return `<div class="jl-starbox"><div class="jw-top"><div><b>★ 별표한 문제 ${st.length}개</b><small>중요하다고 표시한 문제예요 · ☆를 다시 누르면 빠져요</small></div><button class="next" id="jl-sx">풀기</button></div>
-        <details class="jl-wlist"><summary>목록과 해설 보기</summary><div class="jl-wrong">${st.map(id=>{const s=JL[id],q=jlQ(id);return `<details><summary><span class="pill">${JL_AREAS[s.a]}</span> <span lang="ja">${esc(jlSum(s))}</span></summary><div class="jl-wbody">${jlStarBtn(id)}<p>정답: <b lang="ja">${esc(q.ans)}</b></p><p>${s.ex}</p></div></details>`}).join("")}</div></details></div>`})()}
-      ${wr.length?`<div class="jl-wrongbox"><div class="jw-top"><div><b>틀린 문제 ${wr.length}개</b><small>${wby.map(([a,k])=>`${JL_AREAS[a]} ${k}`).join(" · ")}</small></div><button class="next" id="jl-wx">다시 풀기</button></div>
-        <details class="jl-wlist"><summary>목록과 해설 보기</summary><div class="jl-wrong">${wr.map(id=>{const s=JL[id],q=jlQ(id);return `<details><summary><span class="pill">${JL_AREAS[s.a]}</span> <span lang="ja">${esc(jlSum(s))}</span></summary><div class="jl-wbody">${jlStarBtn(id)}<p>정답: <b lang="ja">${esc(q.ans)}</b></p><p>${s.ex}</p></div></details>`}).join("")}</div></details></div>`:""}
       <div class="jl-exam-card"><div class="je-info"><span class="jl-kicker">모의시험</span><b>${JL_EXAM_N}문제 · ${JL_EXAM_MIN}분</b><small>${X.n?`최고 ${X.best} / 180점${X.pass?" · 합격선 통과":""}`:"끝까지 풀면 점수와 합격선을 알려 줘요"}</small></div>
         <div class="je-btns"><button class="next" id="jl-exam">${X.n?"다시 도전":"시작"}</button>${[1,2,3].map(k=>`<button type="button" class="ghost" data-jlset="${k}" title="늘 같은 문제가 나오는 고정 세트">실전 ${k}회<small>${(X.sets||{})[k]!=null?X.sets[k]+"점":"–"}</small></button>`).join("")}</div></div>
+      ${(()=>{const st=jlStars();if(!st.length)return "";return `<div class="jl-starbox"><div class="jw-top"><div><b>★ 별표한 문제 ${st.length}개</b><small>중요하다고 표시한 문제예요 · ☆를 다시 누르면 빠져요</small></div><button class="next" id="jl-sx">풀기</button></div>
+        <details class="jl-wlist"><summary>목록과 해설 보기</summary><div class="jl-wrong">${st.map(id=>{const s=JL[id],q=jlQ(id);return `<details><summary><span class="pill">${JL_AREAS[s.a]}</span> <span lang="ja">${esc(jlSum(s))}</span></summary><div class="jl-wbody">${jlStarBtn(id)}<p>정답: <b lang="ja">${esc(q.ans)}</b></p><p>${s.ex}</p></div></details>`}).join("")}</div></details></div>`})()}
+      <h3 class="jl-h">영역별 연습 <small class="h-note">10문제씩 · 풀자마자 해설</small></h3>
+      <div class="cats compact">${Object.keys(JL_AREAS).map(card).join("")}</div>
+      ${wr.length?`<div class="jl-wrongbox"><div class="jw-top"><div><b>틀린 문제 ${wr.length}개</b><small>${wby.map(([a,k])=>`${JL_AREAS[a]} ${k}`).join(" · ")}</small></div><button class="next" id="jl-wx">다시 풀기</button></div>
+        <details class="jl-wlist"><summary>목록과 해설 보기</summary><div class="jl-wrong">${wr.map(id=>{const s=JL[id],q=jlQ(id);return `<details><summary><span class="pill">${JL_AREAS[s.a]}</span> <span lang="ja">${esc(jlSum(s))}</span></summary><div class="jl-wbody">${jlStarBtn(id)}<p>정답: <b lang="ja">${esc(q.ans)}</b></p><p>${s.ex}</p></div></details>`}).join("")}</div></details></div>`:""}
       <div class="jl-learn"><span>먼저 배우기</span><button type="button" class="ghost" data-jlgo="a">N5 단어 ${WORDS.filter(w=>w.category.startsWith("a_")).length}개</button><button type="button" class="ghost" data-jlgo="j">N5 문법 ${groupUnits("j").length}단원</button></div>
       <p class="tip s-note">여기 문제는 실제 JLPT N5 형식을 참고해 하루카나가 직접 만든 연습 문제라 실제 점수와 다를 수 있어요. 실전 1~3회는 늘 같은 문제가 나와서 실력이 늘었는지 비교할 수 있어요. 시험 전에는 JLPT 공식 사이트(jlpt.jp)의 문제 예시도 풀어 보세요.</p>`;
     bindJlt(el);
