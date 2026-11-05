@@ -453,6 +453,9 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .lock-card b{font-size:18px}.lock-card small{color:var(--sub);font-size:14px;line-height:1.6}.lock-card .kj-peek{font-size:14px;letter-spacing:0;line-height:1.7}
 .h-note{font-size:13px;font-weight:400;color:var(--sub);margin-left:6px}
 @media(max-width:640px){#words .seg.top-tabs button,#kanji .seg.top-tabs button{padding:12px 2px 10px;font-size:14px;letter-spacing:-.02em}}
+.jl-wrongbox{margin:0 0 20px;padding:14px 16px;border:1px solid color-mix(in srgb,var(--bad) 30%,var(--line));border-radius:16px;background:color-mix(in srgb,var(--badbg) 55%,var(--card))}
+.jw-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}.jw-top>div{display:flex;flex-direction:column;gap:2px;flex:1 1 220px}.jw-top b{font-size:17px;color:var(--bad)}.jw-top small{font-size:13px;color:var(--sub)}
+.jl-wlist{margin-top:10px}.jl-wlist>summary{cursor:pointer;font-size:14px;font-weight:700;color:var(--accent-dark);min-height:40px;display:flex;align-items:center}
 .jl-learn{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}.jl-learn span{font-weight:700;color:var(--sub);font-size:14px}.jl-learn .ghost{min-height:44px}
 .jl-exam-card{display:flex;align-items:center;gap:18px;justify-content:space-between;flex-wrap:wrap;padding:20px 22px;border:1px solid color-mix(in srgb,#c99a5b 45%,var(--line));border-radius:18px;background:linear-gradient(160deg,color-mix(in srgb,#ffd7a0 20%,var(--card)),var(--card));margin-bottom:22px}
 .jl-exam-card>div{flex:1 1 280px}.jl-exam-card h3{margin:4px 0 6px;font-size:20px}.jl-exam-card p{margin:0;color:var(--sub)}
@@ -3773,7 +3776,7 @@ function mergeState(L,C){
   const LV={beg:0,mid:1,adv:2};if((LV[C.level]||0)>(LV[R.level]||0))R.level=C.level; // 예전 난이도 기록 (목표로 옮겨 읽는다)
   if(!R.goal&&C.goal)R.goal=C.goal; // 목표는 이 기기 것이 먼저, 없으면 다른 기기 것
   R.fav={...(C.fav||{}),...(R.fav||{})};R.chat={...(C.chat||{}),...(R.chat||{})}; // 즐겨찾기·끝낸 상황 대화는 합친다
-  R.jl=R.jl||{};for(const id in C.jl||{}){const a=R.jl[id]||{},b=C.jl[id];R.jl[id]={r:max(a.r,b.r),w:max(a.w,b.w)}}
+  R.jl=R.jl||{};for(const id in C.jl||{}){const a=R.jl[id]||{},b=C.jl[id];R.jl[id]={r:max(a.r,b.r),w:max(a.w,b.w),...((a.l??b.l)!==undefined?{l:a.l??b.l}:{})}}
   if(C.jx){const a=R.jx||{};R.jx={n:max(a.n,C.jx.n),best:max(a.best,C.jx.best),pass:(a.pass||C.jx.pass)?1:0,last:a.last??C.jx.last,sets:(()=>{const s={...(C.jx.sets||{})};for(const k in a.sets||{})s[k]=max(s[k],a.sets[k]);return s})()}}
   const wk=x=>Number((x||{}).id)||0;
   if(C.wk){if(wk(C.wk)>wk(R.wk))R.wk=C.wk;else if(wk(C.wk)===wk(R.wk))R.wk={id:R.wk.id,xp:max(R.wk.xp,C.wk.xp)}}
@@ -5281,11 +5284,13 @@ function jlSay(lines,btn){try{
 }catch(e){}}
 const jlSum=s=>s.t==="pg"?`글 속 빈칸 （${s.k}） · `+s.p.replace(/\{\d\}/g,"（ ）").slice(0,24)+"…":s.t==="read"||s.t==="write"?s.w:s.t==="star"?s.pre+" … "+s.post:s.t==="resp"?"「"+s.lines[0][1]+"」":s.t==="utt"?s.q:(s.q||"").replace(/_/g,"");
 const jlStop=()=>{try{speechSynthesis.cancel()}catch(e){}};
-function jlRecord(id,ok){if(!JL[id])return;S.jl=S.jl||{};const r=S.jl[id]||{r:0,w:0};if(ok)r.r++;else r.w++;S.jl[id]=r}
+function jlRecord(id,ok){if(!JL[id])return;S.jl=S.jl||{};const r=S.jl[id]||{r:0,w:0};if(ok)r.r++;else r.w++;r.l=ok?1:0;S.jl[id]=r}
+const jlWrong=()=>Object.keys(JL).filter(id=>{const r=(S.jl||{})[id];return r&&(r.l===0||(r.l===undefined&&r.w>r.r))});
 let jlFixed=0;
 function jlPick(ids,n){if(jlFixed)return shuffle(ids.slice()).slice(0,n);const sc=id=>{const r=(S.jl||{})[id];return !r?0:r.w>r.r?1:r.r?3:2};return shuffle(ids.slice()).sort((a,b)=>sc(a)-sc(b)).slice(0,n)}
 function jlPractice(a){
   let qs;
+  if(a==="x")return shuffle(jlWrong()).slice(0,10).map(jlQ);
   if(a==="v")qs=shuffle([...jlPick(jlIds("v"),4).map(jlQ),jlQ(jlAuto("read")),jlQ(jlAuto("read")),jlQ(jlAuto("read")),jlQ(jlAuto("read")),jlQ(jlAuto("write")),jlQ(jlAuto("write"))]);
   else qs=jlPick(jlIds(a),a==="r"?5:a==="l"?6:10).map(jlQ);
   return qs;
@@ -5329,11 +5334,15 @@ function renderJlpt(el){
         ${X.n?`<p class="jl-best">지금까지 ${X.n}번 · 최고 <b>${X.best}</b> / 180점${X.pass?' <span class="pill ok">합격선 통과</span>':""}</p>`:""}</div>
         <button class="next" id="jl-exam">${X.n?"다시 도전하기":"모의시험 시작"}</button></div>
       <div class="jl-sets"><p>실전 1~3회는 늘 같은 문제가 나오는 고정 세트예요. 공부한 뒤 다시 풀어서 점수가 올랐는지 비교해 봐요.</p><div>${[1,2,3].map(k=>`<button type="button" class="ghost" data-jlset="${k}"><b>실전 ${k}회</b><small>${(X.sets||{})[k]!=null?`최고 ${X.sets[k]}점`:"아직 안 풀었어요"}</small></button>`).join("")}</div></div>
+      ${(()=>{const w=jlWrong();if(!w.length)return "";const by=Object.keys(JL_AREAS).map(a=>[a,w.filter(id=>JL[id].a===a).length]).filter(x=>x[1]);
+        return `<div class="jl-wrongbox"><div class="jw-top"><div><b>틀린 문제 ${w.length}개</b><small>${by.map(([a,k])=>`${JL_AREAS[a]} ${k}`).join(" · ")} · 다시 맞히면 목록에서 빠져요</small></div><button class="next" id="jl-wx">틀린 문제 풀기</button></div>
+          <details class="jl-wlist"><summary>목록과 해설 보기</summary><div class="jl-wrong">${w.map(id=>{const s=JL[id],q=jlQ(id);return `<details><summary><span class="pill">${JL_AREAS[s.a]}</span> <span lang="ja">${esc(jlSum(s))}</span></summary><div class="jl-wbody"><p>정답: <b lang="ja">${esc(q.ans)}</b></p><p>${s.ex}</p></div></details>`}).join("")}</div></details></div>`})()}
       <h3 class="jl-h">영역별 연습</h3><p class="intro">한 번에 10문제씩 풀고, 풀자마자 해설을 봐요. N5 코스에서는 한글 발음 없이 일본어로만 풀어요.</p>
       <div class="cats">${Object.keys(JL_AREAS).map(card).join("")}</div>
       <p class="tip s-note">JLPT(일본어능력시험) N5는 가장 쉬운 급수예요. 여기 문제는 실제 시험 형식을 참고해 하루카나가 직접 만든 연습 문제라서, 실제 점수와는 다를 수 있어요. 시험 전에는 JLPT 공식 사이트(jlpt.jp)의 문제 예시도 한 번 풀어 보세요. 실제 목소리와 속도에 익숙해질 수 있어요.</p>`;
     bindJlt(el);
     el.querySelectorAll("[data-jlgo]").forEach(b=>b.onclick=()=>{wv=b.dataset.jlgo==="a"?{view:"list",script:"a"}:{view:"slist",sg:"j"};navGo(b.dataset.jlgo==="a"?3:7)});
+    if($("jl-wx"))$("jl-wx").onclick=()=>{jx={view:"prac",a:"x",qs:jlPractice("x"),i:0,right:0};renderJlptTab();window.scrollTo({top:0,behavior:"instant"})};
     el.querySelectorAll("[data-jla]").forEach(b=>b.onclick=()=>{jx={view:"prac",a:b.dataset.jla,qs:jlPractice(b.dataset.jla),i:0,right:0};renderJlptTab();window.scrollTo({top:0,behavior:"instant"})});
     $("jl-exam").onclick=()=>jlStartExam(0);
     el.querySelectorAll("[data-jlset]").forEach(b=>b.onclick=()=>jlStartExam(+b.dataset.jlset));
@@ -5342,9 +5351,9 @@ function renderJlpt(el){
   const exitBtn=`<div style="text-align:left"><button class="back" id="jl-exit">← 그만하고 나가기</button></div>`;
   if(jx.view==="prac"){
     if(jx.i>=jx.qs.length){
-      el.innerHTML=`<div class="panel"><h2>${JL_AREAS[jx.a]} 연습을 마쳤어요</h2><p class="intro">${jx.qs.length}문제 중 <b>${jx.right}문제</b>를 맞혔어요.</p>
+      el.innerHTML=`<div class="panel"><h2>${jx.a==="x"?"틀린 문제 다시 풀기를":JL_AREAS[jx.a]+" 연습을"} 마쳤어요</h2>${jx.a==="x"?`<p class="intro">남은 틀린 문제: ${jlWrong().length}개</p>`:""}<p class="intro">${jx.qs.length}문제 중 <b>${jx.right}문제</b>를 맞혔어요.</p>
         <div class="navrow"><button class="ghost" id="jl-back">시험 처음으로</button><button class="next" id="jl-again">한 번 더 풀기</button></div></div>`;
-      $("jl-back").onclick=jlHome;$("jl-again").onclick=()=>{jx={view:"prac",a:jx.a,qs:jlPractice(jx.a),i:0,right:0};renderJlptTab()};
+      $("jl-back").onclick=jlHome;$("jl-again").onclick=()=>{if(jx.a==="x"&&!jlWrong().length)return jlHome();jx={view:"prac",a:jx.a,qs:jlPractice(jx.a),i:0,right:0};renderJlptTab()};
       return;
     }
     const q=jx.qs[jx.i];
