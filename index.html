@@ -211,6 +211,7 @@ body.ph-drop #v6{outline:3px dashed var(--accent);outline-offset:6px;border-radi
 .bk-tool .bt-ic{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--accent);color:var(--onaccent);font-size:16px}
 .bk-tool b{display:block;font-size:14px}.bk-tool small{display:block;font-size:12px;color:var(--sub);line-height:1.35}
 .ph-img{display:block;max-width:100%;max-height:200px;margin:4px auto 10px;border-radius:12px;border:1px solid var(--line);object-fit:contain}
+.ph-seen{font-size:13px;color:var(--sub);margin-bottom:6px;padding:6px 10px;border-radius:10px;background:var(--bg)}
 .ph-sum{font-size:14px;line-height:1.6;margin-bottom:8px}
 .ph-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 .ph-list li{position:relative;padding:8px 44px 8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
@@ -3504,19 +3505,24 @@ async function readPhoto(sample,file){
   photoCtl=new AbortController();$("ph-stop").onclick=()=>photoCtl&&photoCtl.abort();
   const out=$("ph-out");
   try{
-    const r=await sample.json(`이 사진은 한국인 초보 여행자가 일본에서 찍은 사진이야(메뉴판, 표지판, 안내문 등). 사진 속 일본어를 읽고 도와줘.
+    const r=await sample.json(`한국인 일본어 초보자가 사진 한 장을 보냈어. 사진 속 일본어를 읽고 도와줘.
+순서:
+1. 먼저 사진에 실제로 무엇이 보이는지 한국어 한 문장으로 그대로 적어(seen). 메뉴판·표지판이라고 미리 가정하지 마. 화면 캡처, 상품, 책, 간판 등 무엇이든 될 수 있어.
+2. 사진 속에 실제로 쓰여 있는 일본어만 읽어. 사진에 없는 글자를 추측해서 채우지 마. 흐려서 못 읽는 글자는 빼.
+3. 사진에 일본어가 없으면 hasJapanese를 false로 하고 items·say를 비워 둬.
 규칙:
-- 사진에 실제로 보이는 글자만 읽어. 안 보이거나 흐리면 그렇다고 말하고 지어내지 마.
-- 중요한 것부터 최대 10개. 일본어는 사진 속 그대로, yomi는 히라가나, ko는 한국어 뜻, note는 짧은 설명(가격·주의할 점 등, 없으면 "").
-- say는 이 상황에서 여행자가 쓸 만한 짧은 일본어 문장 0~3개(쉬운 말, ます형).
-JSON 하나로만 답해: {"kind":"메뉴판|표지판|안내문|기타","summary":"한국어 한두 문장 요약","items":[{"ja":"","yomi":"","ko":"","note":""}],"say":[{"ja":"","yomi":"","ko":"","when":"언제 쓰는지"}]}`,{images:[file],signal:photoCtl.signal,cache:false});
+- items는 중요한 것부터 최대 10개. ja는 사진 속 글자 그대로, yomi는 히라가나, ko는 한국어 뜻, note는 짧은 설명(가격·주의할 점 등, 없으면 "").
+- say는 이 사진의 상황에서 쓸 만한 짧고 쉬운 일본어 문장 0~3개(ます형). 상황이 분명하지 않으면 비워 둬.
+JSON 하나로만 답해: {"seen":"사진에 보이는 것(한국어 한 문장)","hasJapanese":true,"kind":"메뉴판|표지판|안내문|상품|화면|기타","summary":"한국어 한두 문장 요약","items":[{"ja":"","yomi":"","ko":"","note":""}],"say":[{"ja":"","yomi":"","ko":"","when":"언제 쓰는지"}]}`,{images:[file],signal:photoCtl.signal,cache:false});
     const s=(x,n)=>String(x||"").slice(0,n);
     const items=(Array.isArray(r&&r.items)?r.items:[]).slice(0,10).map(i=>({ja:s(i.ja,40),yomi:s(i.yomi,60),ko:s(i.ko,60),note:s(i.note,100)})).filter(i=>i.ja||i.ko);
     const say=(Array.isArray(r&&r.say)?r.say:[]).slice(0,3).map(i=>({ja:s(i.ja,60),yomi:s(i.yomi,80),ko:s(i.ko,60),when:s(i.when,60)})).filter(i=>i.ja);
     const match=ja=>{const n=bkNorm(ja);return BOOK_ALL().find(t=>{const m=bkNorm(t.ja);return m===n||(n.length>=4&&(m.includes(n)||n.includes(m)))})};
     const sayBtn=(ja,yomi)=>`<button type="button" class="ph-say" data-say="${esc(yomi||ja)}" aria-label="소리 듣기">🔊</button>`;
-    out.innerHTML=`<p class="ph-sum"><span class="pill">${esc(s(r&&r.kind,10)||"사진")}</span> ${esc(s(r&&r.summary,200))}</p>
-      ${items.length?`<ul class="ph-list">${items.map(i=>`<li><div><b lang="ja" class="ja-font">${esc(i.ja)}</b> <small class="hgx">${esc(i.yomi)}</small></div><div class="ph-ko">${esc(i.ko)}${i.note?` <small>· ${esc(i.note)}</small>`:""}</div>${sayBtn(i.ja,i.yomi)}</li>`).join("")}</ul>`:`<p class="rk-note">읽을 수 있는 일본어를 찾지 못했어요. 글자가 크게 나오게 다시 찍어 보세요.</p>`}
+    out.innerHTML=`${r&&r.seen?`<p class="ph-seen">👀 AI가 본 것: ${esc(s(r.seen,150))}</p>`:""}
+      ${r&&r.hasJapanese===false?`<p class="rk-note">이 사진에서는 일본어를 찾지 못했어요. 일본어 글자가 크게 나오게 다시 찍거나 잘라서 올려 주세요.</p>`:""}
+      <p class="ph-sum"><span class="pill">${esc(s(r&&r.kind,10)||"사진")}</span> ${esc(s(r&&r.summary,200))}</p>
+      ${items.length?`<ul class="ph-list">${items.map(i=>`<li><div><b lang="ja" class="ja-font">${esc(i.ja)}</b> <small class="hgx">${esc(i.yomi)}</small></div><div class="ph-ko">${esc(i.ko)}${i.note?` <small>· ${esc(i.note)}</small>`:""}</div>${sayBtn(i.ja,i.yomi)}</li>`).join("")}</ul>`:r&&r.hasJapanese===false?"":`<p class="rk-note">읽을 수 있는 일본어를 찾지 못했어요. 글자가 크게 나오게 다시 찍어 보세요.</p>`}
       ${say.length?`<h4 class="ar-h">이럴 때 이렇게 말해요</h4><ul class="ph-list say">${say.map(i=>{const m=match(i.ja);return `<li><div><b lang="ja" class="ja-font">${esc(i.ja)}</b> <small class="hgx">${esc(i.yomi)}</small></div><div class="ph-ko">${esc(i.ko)}${i.when?` <small>· ${esc(i.when)}</small>`:""}</div>${sayBtn(i.ja,i.yomi)}${m?`<button type="button" class="ar-go" data-show="${m.id}">표현집에서 크게 보기 ›</button>`:""}</li>`}).join("")}</ul>`:""}
       <p class="ai-note">AI가 읽은 내용이라 틀릴 수 있어요. 사진은 저장하지 않아요.</p>`;
     out.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak(b.dataset.say));
