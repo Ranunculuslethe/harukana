@@ -3489,13 +3489,15 @@ function openTripMaker(){
     const plan=$("trip-in").value.trim().slice(0,300);if(!plan){$("trip-msg").textContent="여행 계획을 한 줄이라도 적어 주세요.";return}
     const sample=await aiGet();if(!sample){$("trip-msg").textContent="지금은 AI를 쓸 수 없어요.";return}
     const book=BOOK_ALL(),cats=Object.fromEntries(TRAVEL_CATS.map(c=>[c.id,c.name]));
-    $("trip-go").disabled=true;$("trip-msg").textContent="하루가 표현을 고르고 있어요…";
+    $("trip-go").disabled=true;$("trip-msg").textContent="하루가 표현을 고르고 있어요… (30초~1분쯤 걸릴 수 있어요. 창을 닫아도 끝나면 표현집에 들어가요)";
     try{
       const r=await sample.json(`너는 일본어 학습 앱 '하루카나'의 여행 도우미야. 한국인 초보 여행자의 여행 계획에 맞춰, 아래 표현 목록에서만 필요한 표현을 골라 줘.
 규칙:
 - 목록에 있는 id만 써. 표현을 새로 만들지 마.
-- 15~25개를 골라서 여행 순서(도착·이동 → 숙소 → 먹기 → 쇼핑·관광 → 곤란할 때)대로 3~6개 묶음으로 나눠.
-- 묶음 이름은 한국어로 짧게. tips는 이 여행에 맞는 짧은 조언 0~3개(한국어).
+- 여행 계획에 적힌 장소·활동(예: 편의점, 지하철, 호텔)마다 묶음을 하나씩 만들어. 묶음 이름은 그 말을 그대로 써. 적힌 것은 하나도 빠뜨리지 마.
+- 목록에 그 장소 전용 표현이 없으면 그 상황에서 쓸 수 있는 비슷한 표현(인사·계산·길 묻기 등)을 골라.
+- 묶음마다 3~8개, 모두 합쳐 15~40개. 같은 id를 두 번 쓰지 마. 마지막에 "곤란할 때" 묶음을 하나 더해도 돼.
+- tips는 이 여행에 맞는 짧은 조언 0~3개(한국어).
 JSON 하나로만 답해: {"title":"여행 제목(한국어, 20자 이내)","groups":[{"name":"묶음 이름","ids":["vt1","vt5"]}],"tips":["..."]}
 
 여행 계획: ${plan}
@@ -3503,11 +3505,14 @@ JSON 하나로만 답해: {"title":"여행 제목(한국어, 20자 이내)","gro
 표현 목록 (id | 상황 | 뜻 | 일본어):
 ${book.map(t=>`${t.id} | ${cats[t.cat]||""} | ${t.ko} | ${t.ja}`).join("\n")}`,{cache:false});
       const ok=new Set(book.map(t=>t.id)),seen=new Set();
-      const groups=(Array.isArray(r&&r.groups)?r.groups:[]).slice(0,6).map(g=>({name:String(g.name||"").slice(0,20),ids:(Array.isArray(g.ids)?g.ids:[]).map(String).filter(id=>ok.has(id)&&!seen.has(id)&&seen.add(id)).slice(0,10)})).filter(g=>g.name&&g.ids.length);
-      if(!groups.length)throw{code:"invalid_json"};
+      const idOf=x=>String(x&&typeof x==="object"?(x.id||x.ID||""):x||"").trim();
+      const rawGroups=Array.isArray(r)?r:Array.isArray(r&&r.groups)?r.groups:Array.isArray(r&&r.sections)?r.sections:[];
+      const groups=rawGroups.slice(0,8).map(g=>({name:String(g.name||g.title||g.place||"").slice(0,20),ids:(g.ids||g.phrases||g.items||[]).map(idOf).filter(id=>ok.has(id)&&!seen.has(id)&&seen.add(id)).slice(0,10)})).filter(g=>g.ids.length).map((g,i)=>({...g,name:g.name||`묶음 ${i+1}`}));
+      if(!groups.length){console.warn("맞춤 표현집: 알아볼 수 없는 답",r);throw{code:"invalid_json"}}
       S.trip={plan,title:String(r.title||"내 여행").slice(0,20),groups,tips:(Array.isArray(r.tips)?r.tips:[]).slice(0,3).map(x=>String(x).slice(0,120)),at:Date.now()};save();
       d.close();jv.f="trip";jv.q="";renderKanjiTab();notifyText(`「${S.trip.title}」 표현 ${tripIds().length}개를 골랐어요!`);
-    }catch(e){$("trip-msg").textContent=aiFail(e)}finally{if($("trip-go"))$("trip-go").disabled=false}
+    }catch(e){const m=aiFail(e)+(e&&e.code&&e.code!=="cancelled"?` (${e.code})`:"");if($("trip-msg")&&d.open)$("trip-msg").textContent=m;else notifyText("맞춤 표현집: "+m)}
+    finally{if($("trip-go"))$("trip-go").disabled=false}
   };
   if(!d.open)d.showModal();
 }
