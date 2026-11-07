@@ -696,8 +696,8 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 
 <section id="v3" role="tabpanel" aria-labelledby="t3" hidden><div class="section-intro"><div><p class="section-kicker">VOCABULARY / 03</p><h2>단어 모으기</h2><p class="section-copy">기초 단어를 익히고, 확인 퀴즈로 내 것으로 만들어 보세요.</p></div><div class="section-mark" aria-hidden="true">語</div></div><div id="words"></div></section><section id="v6" role="tabpanel" aria-labelledby="t6" hidden><div class="section-intro"><div><p class="section-kicker">CONVERSATION / 여행 코스</p><h2>회화</h2><p class="section-copy">일본에서 바로 쓰는 말, 상황 대화, 점원 말 알아듣기, 표지판을 익히고, 여행 중에는 표현집을 꺼내 써요.</p></div><div class="section-mark" aria-hidden="true">旅</div></div><div id="kanji"></div></section><section id="v8" role="tabpanel" aria-labelledby="t8" hidden><div class="section-intro"><div><p class="section-kicker">JLPT N5 / N5 코스</p><h2>시험</h2><p class="section-copy">일본어능력시험 N5와 같은 형식으로 문자·어휘, 문법, 독해, 청해를 연습하고 모의시험을 봐요.</p></div><div class="section-mark" aria-hidden="true">試</div></div><div id="jlpt"></div></section>
 
-<section id="v4" role="tabpanel" aria-labelledby="t4" hidden><div class="section-intro"><div><p class="section-kicker">REVIEW</p><h2>복습</h2><p class="section-copy">오늘의 복습과 오답노트로 잊기 전에 다시 풀어 빈틈을 채워요.</p></div><div class="section-mark" aria-hidden="true">復</div></div><div id="review"></div><div id="ai-report"></div><div id="note"></div></section>
-<section id="v5" role="tabpanel" aria-labelledby="t5" hidden><div class="section-intro"><div><p class="section-kicker">PROFILE / 05</p><h2>나의 프로필</h2><p class="section-copy">칭호와 배지를 모으고, 분야마다 기록을 따로 관리해요. 문제를 맞히면 XP가 쌓여요.</p></div><div class="section-mark" aria-hidden="true">賞</div></div><div id="me-card"></div><div id="board"></div><div id="grass"></div><div id="records"></div><div id="badges"></div></section>
+<section id="v4" role="tabpanel" aria-labelledby="t4" hidden><div class="section-intro"><div><p class="section-kicker">REVIEW</p><h2>복습</h2><p class="section-copy">오늘의 복습과 오답노트로 잊기 전에 다시 풀어 빈틈을 채워요.</p></div><div class="section-mark" aria-hidden="true">復</div></div><div id="review"></div><div id="note"></div></section>
+<section id="v5" role="tabpanel" aria-labelledby="t5" hidden><div class="section-intro"><div><p class="section-kicker">PROFILE / 05</p><h2>나의 프로필</h2><p class="section-copy">칭호와 배지를 모으고, 분야마다 기록을 따로 관리해요. 문제를 맞히면 XP가 쌓여요.</p></div><div class="section-mark" aria-hidden="true">賞</div></div><div id="me-card"></div><div id="ai-report"></div><div id="board"></div><div id="grass"></div><div id="records"></div><div id="badges"></div></section>
 
 
 </main><aside class="rightbar" aria-label="나의 학습 현황"><div class="goal-card" id="goal-card"></div>
@@ -4646,6 +4646,7 @@ function renderRank(){
     </div></div>
     ${pickingAv?`<div class="av-pick" role="group" aria-label="프로필 사진 고르기">${AVATARS.map(a=>`<button class="av-opt${a.id===avatarOf(S.avatar).id?" on":""}" data-av="${a.id}" aria-pressed="${a.id===avatarOf(S.avatar).id}"><span class="av-c">${avatarSvg(a.id)}</span><small>${a.name}</small></button>`).join("")}</div>`:""}`;
   if($("pf-nick"))$("pf-nick").textContent=nickName();
+  try{renderAiReport()}catch(e){console.warn("약점 리포트",e)}
   const recs=RECORDS.filter(r=>!r.mid||isMid()||isAdv()); // 한자·여행 칭호는 코스가 열렸을 때만
   const rank=r=>{const p=recProgress(r),f=p.t?p.n/p.t:1;return f>0&&f<1?2-f:f===0?3:4};
   const shownRecs=recAll?recs:recs.slice().sort((a,b)=>rank(a)-rank(b)).slice(0,REC_SHOW);
@@ -4693,7 +4694,6 @@ const dueKeys=()=>Object.keys(S.sr).filter(k=>S.sr[k].due<=today()&&noteOn(k)&&n
 let rv=null;
 function renderReview(){
   const el=$("review");if(!el)return;
-  try{renderAiReport()}catch(e){console.warn("약점 리포트",e)}
   if(!rv){
     const due=dueKeys().length,all=Object.keys(S.sr).filter(noteItem);
     const next=all.length?Math.min(...all.map(k=>S.sr[k].due))-today():0;
@@ -5491,7 +5491,8 @@ function renderAiReport(){
       ${R.plan.length?`<h4 class="ar-h">공부 계획</h4><ol class="ar-plan">${R.plan.map(p=>`<li><span class="ar-day">${esc(p.day)}</span><span class="ar-task">${esc(p.task)}</span>${go(p.go)}</li>`).join("")}</ol>`:""}
       ${R.cheer?`<p class="ar-cheer">🦊 ${esc(R.cheer)}</p>`:""}
       <p class="ai-note">AI가 만든 분석이라 틀릴 수 있어요.</p></div>`:"";
-  el.innerHTML=`<details class="ar"${R||aiRepBusy?" open":""}><summary><span class="ar-title"><b>약점 리포트</b><small>${worst&&worst[1].p<85?`가장 약한 곳: ${worst[0]} ${worst[1].p}%`:"영역별 정답률과 자주 틀린 것"}</small></span></summary>
+  const wasOpen=!!el.querySelector("details.ar[open]");
+  el.innerHTML=`<details class="ar"${wasOpen||aiRepBusy?" open":""}><summary><span class="ar-title"><b>약점 리포트</b><small>${worst&&worst[1].p<85?`가장 약한 곳: ${worst[0]} ${worst[1].p}%`:"영역별 정답률과 자주 틀린 것"}</small></span></summary>
     <h4 class="ar-h">내 기록 한눈에</h4>${mine}
     ${top.length?`<h4 class="ar-h">자주 틀린 것</h4><ul class="ar-top">${top.map(it=>`<li><span lang="ja">${it.jp}</span> <small>${esc(aiPlain(it.mean))} · ${S.n[it.key].wr}번</small></li>`).join("")}</ul>`:""}
     ${aiPart}${rep}</details>`;
