@@ -134,6 +134,21 @@
 .goal-ring>span{font-size:13px;font-weight:800;color:var(--accent)}
 .big.sound{font-size:64px}
 .big.ear{font-size:16px;padding:18px 0}
+.fr-list .fr-row{flex-wrap:wrap;row-gap:4px}
+.fr-row .rk-name{flex:1 1 120px}
+.fr-stats{display:flex;flex-direction:column;align-items:flex-end;gap:1px;font-size:13px;color:var(--sub);text-align:right}
+.fr-when{font-weight:700;color:var(--sub)}.fr-row.today .fr-when{color:var(--ok)}
+.fr-row.today{border-color:color-mix(in srgb,var(--ok) 45%,var(--line))}
+.fr-del{margin:0;padding:4px 6px;font-size:13px}
+.fr-empty{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:22px 18px;border:2px dashed var(--line);border-radius:18px;background:var(--card)}
+.fr-empty p{font-size:14px;color:var(--sub);line-height:1.7}.fr-empty b{color:var(--ink);font-size:16px}.fr-empty .next{margin:0}
+.fr-empty-ic{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:var(--accent-soft);color:var(--accent-dark);font-size:26px;font-weight:700}
+.fr-invite{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;padding:14px 16px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:16px;background:var(--accent-soft)}
+.fr-code{flex:1 1 140px;display:flex;flex-direction:column}.fr-code small{font-size:13px;color:var(--sub)}.fr-code b{font-size:22px;letter-spacing:.08em;font-family:ui-monospace,Consolas,monospace;user-select:all}
+.fr-invite .next{margin:0}
+.fr-add{display:flex;gap:8px;margin-top:10px}.fr-add input{flex:1;min-width:0;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;font-size:16px}
+.fr-add input:focus{outline:2px solid var(--accent);outline-offset:1px}.fr-add .ghost{min-height:44px}
+@media(max-width:520px){.fr-stats{align-items:flex-start;text-align:left;flex-basis:100%;padding-left:42px}}
 .ai-home{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:18px;background:var(--accent-soft);color:var(--ink);text-align:left;cursor:pointer;box-shadow:0 2px 0 var(--panel-shadow)}
 .ai-home:hover{border-color:var(--accent)}.ai-home:active{transform:scale(.98)}
 .ai-home-ic{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--accent);color:var(--onaccent);font-size:20px}
@@ -159,6 +174,12 @@
 .ai-form{display:flex;gap:8px}.ai-form input{flex:1;min-width:0;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;font-size:16px}
 .ai-form input:focus{outline:2px solid var(--accent);outline-offset:1px}
 .ai-note{margin:8px 0 0;font-size:13px;color:var(--sub)}
+:root:not([data-theme=dark])[data-tod=morning]{--sky1:#F2D3CC;--sky2:#FBF1EA;--sun:#FFE6CC;--water1:#EED8D2;--water2:#F7E9E2;--hero-fade:rgba(250,243,239,.94)}
+:root:not([data-theme=dark])[data-tod=evening]{--sky1:#EFB49A;--sky2:#F8DFC6;--sun:#FFC98F;--fuji:#9A8794;--snow:#FBEBE0;--hill2:#D8BFB4;--town:#C6AFA8;--water1:#EDC0AC;--water2:#F5DACA;--bank:#B9A39C;--hero-fade:rgba(250,240,232,.94)}
+:root:not([data-theme=dark])[data-tod=night]{--sky1:#2E365C;--sky2:#5E5C88;--sun:#FFF3D6;--fuji:#48527B;--snow:#D8DDEE;--hill2:#3E4772;--town:#505980;--roof:#2A2F45;--water1:#3B4572;--water2:#6B608A;--ripple:#FFD9E4;--bank:#4B5479;--trunk:#3E3340;--hero-fade:rgba(250,245,240,.93)}
+html:root[data-season=summer]{--bl1:#B8D3AE;--bl2:#8FB986;--bl3:#DCEBD5;--bl4:#76A26C;--petal:#BFD9B6}
+html:root[data-season=autumn]{--bl1:#EDB58C;--bl2:#DA8A5C;--bl3:#F6DCC6;--bl4:#C06E48;--petal:#E2A47A}
+html:root[data-season=winter]{--bl1:#E6EDF2;--bl2:#C7D4DD;--bl3:#F7FAFC;--bl4:#AEBFCB;--petal:#FFFFFF}
 .doors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
 .door{display:flex;align-items:center;gap:10px;min-height:88px;padding:12px 10px 12px 12px;border:1px solid var(--line);border-radius:18px;background:var(--card);text-align:left;color:var(--ink);box-shadow:0 2px 0 var(--panel-shadow);cursor:pointer;transition:border-color .15s,transform .1s}
 .door:hover{border-color:var(--accent)}.door:active{transform:scale(.97)}
@@ -2557,6 +2578,7 @@ function refreshSummary(){
   $("header-count").textContent=mc;
   $("nbadge").hidden=!nn;$("nbadge").textContent=nn;
   renderMissions();
+  try{renderScene();renderFoxSay();renderPhrase()}catch(e){} // 홈 장식 (처음 그릴 때 아직 준비 안 된 것이 있으면 다음 번에)
   $("continue").innerHTML=(S.last||mc?'이어서 학습하기':'학습 시작하기')+' <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>';
   $("continue").title=lastPlace();
   applyLevel(); // 상단 초급·중급 표시와 한자 칸
@@ -3632,7 +3654,6 @@ function addXp(n){
 function afterAnswer(ok,o){if(ok)addXp(XP_RIGHT);checkGrad();trackAnswer(ok,o||{});updateTitles();checkBadges();save();refreshSummary();syncScore();if(tab===5)renderRank()}
 
 const TOP_N=50;
-const WEEK_REWARDS=[3000,2500,2000,1600,1300,1000,800,600,400,200]; // 주간 리그 1~10등 보상 XP
 const rk={db:null,fb:null,user:null,me:null,canWrite:null,blocked:false,state:"loading",rows:null,weekRows:null,lastRows:null,myLast:null,myRank:{all:null,week:null,last:null},names:{},timer:0,last:"",busy:false,count:{week:null,last:null},banned:null,nickN:0,nickKey:null};
 const FB_CONFIG={apiKey:"AIzaSyDxJXq2AXCmTzJ-czbHEO5fKhrvn9NjKmg",authDomain:"harukana-74b43.firebaseapp.com",projectId:"harukana-74b43",storageBucket:"harukana-74b43.firebasestorage.app",messagingSenderId:"235663999566",appId:"1:235663999566:web:18e65cb4ee65b2c37c391f"};
 const REST_BASE=`https://firestore.googleapis.com/v1/projects/${FB_CONFIG.projectId}/databases/(default)/documents`;
@@ -3644,12 +3665,6 @@ async function restTop(parent,collectionId,field){
     body:JSON.stringify({structuredQuery:{from:[{collectionId}],orderBy:[{field:{fieldPath:field},direction:"DESCENDING"}],limit:TOP_N}})});
   if(!r.ok)throw new Error("REST "+r.status);
   return (await r.json()).filter(x=>x.document).map(x=>docOf(x.document));
-}
-async function restCountAbove(parent,collectionId,field,v){
-  const r=await fetch(`${REST_BASE}${parent}:runAggregationQuery?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{...await authHeader(),"Content-Type":"application/json"},
-    body:JSON.stringify({structuredAggregationQuery:{structuredQuery:{from:[{collectionId}],where:{fieldFilter:{field:{fieldPath:field},op:"GREATER_THAN",value:{integerValue:String(v)}}}},aggregations:[{alias:"n",count:{}}]}})});
-  if(!r.ok)throw new Error("REST "+r.status);
-  const j=await r.json();return Number(((j[0]||{}).result||{}).aggregateFields?.n?.integerValue||0);
 }
 async function restGet(path){
   const r=await fetch(`${REST_BASE}/${path}?key=${FB_CONFIG.apiKey}`,{headers:await authHeader()});
@@ -3709,51 +3724,13 @@ async function restWrite(method,path,body,keepalive){
   }
 }
 
-const RANK_CACHE="harukana-rank-cache";
-const BOARD_SRC={all:["","scores","xp","rows"],week:[null,"players","weekXp","weekRows"],last:[null,"players","weekXp","lastRows"]};
-const boardParent=m=>m==="all"?"":`/weeks/${m==="week"?rk.wn:rk.wn-1}`;
-function loadRankCache(){
-  try{const c=JSON.parse(localStorage.getItem(RANK_CACHE));
-    if(c&&c.wn===weekNum()){rk.rows=c.rows||null;rk.weekRows=c.weekRows||null;rk.lastRows=c.lastRows||null;rk.me=rk.me||c.me||null;rk.state="ready";rk.cached=true;if(c.lastRows)rk.lastFresh=true}
-  }catch(e){}
-}
-function saveRankCache(){
-  try{localStorage.setItem(RANK_CACHE,JSON.stringify({wn:rk.wn,me:rk.me,rows:rk.rows,weekRows:rk.weekRows,lastRows:rk.lastRows}))}catch(e){}
-}
+const RANK_CACHE="harukana-rank-cache"; // 예전 랭킹 캐시 이름 (로그아웃할 때 지운다)
 let rankFrame=0;
 function scheduleRank(){if(tab!==5||rankFrame)return;rankFrame=requestAnimationFrame(()=>{rankFrame=0;renderRank()})}
-rk.fetchedAt={all:0,week:0,last:0};
-async function loadBoard(mode,force){
-  if(!rk.fb||!S.account)return; // 랭킹은 Google로 로그인한 사람만 본다
-  mode=mode||"week";
-  if(mode==="last"&&rk.lastFresh&&rk.lastRows)return;
-  if(!force&&Date.now()-rk.fetchedAt[mode]<20000)return;
-  rk.fetchedAt[mode]=Date.now();
-  const [,col,field,key]=BOARD_SRC[mode];
-  try{
-    rk[key]=await restTop(boardParent(mode),col,field);
-    if(mode!=="all")rk.count[mode]=rk[key].length<TOP_N?rk[key].length:await restCountAbove(boardParent(mode),"players","weekXp",0);
-    if(mode==="last")rk.lastFresh=true;
-    rk.cached=false;rk.state="ready";saveRankCache();
-  }catch(e){if(!rk[key])rk.state="offline"}
-  scheduleRank();
-  await refreshMine(mode);
-}
-const rankIn=async(rows,parent,col,field,v)=>{const i=(rows||[]).findIndex(r=>r.id===rk.me);return i>=0?rows.filter(r=>(Number(r[field])||0)>v).length+1:(await restCountAbove(parent,col,field,v))+1};
-async function refreshMine(mode){
-  if(!rk.me)return;
-  const on=S.rank&&!S.rankOff;
-  try{
-    if(mode==="all"&&rk.rows)rk.myRank.all=on&&S.xp>0?await rankIn(rk.rows,"","scores","xp",S.xp):null;
-    if(mode==="week"&&rk.weekRows)rk.myRank.week=on&&weekXp()>0?await rankIn(rk.weekRows,boardParent("week"),"players","weekXp",weekXp()):null;
-  }catch(e){}
-  scheduleRank();
-}
 async function initFirebase(){
   const wn=weekNum();rk.wn=wn;rk.lastWn=wn-1;rk.fb={rest:true};
-  loadRankCache();
-  if(tab===5)loadBoard(rk.mode);
-  setInterval(()=>{if(tab===5&&!document.hidden)loadBoard(rk.mode,true)},180000);
+  if(tab===5)loadFriends();
+  setInterval(()=>{if(tab===5&&!document.hidden)loadFriends(true)},180000);
   if(!S.account){rk.state="guest";rk.rows=rk.weekRows=rk.lastRows=null;try{localStorage.removeItem(RANK_CACHE)}catch(e){}dropGuestRecords();scheduleRank();return}
   try{rk.auth=await restAuth();rk.me=rk.auth.uid;rk.canWrite=true}catch(e){console.warn("로그인 갱신 실패",e)}
   if(!rk.me){scheduleRank();return}
@@ -3776,13 +3753,8 @@ async function memberInit(){
   try{const b=await cachedGet(`bans/${rk.me}`);rk.banned=b?{reason:b.reason||""}:null;if(b)rk.blocked=true}catch(e){}
   await ensureNick();
   syncScore();
-  if(tab===5)refreshMine(rk.mode||"week");
-  try{
-    const mine=await restGet(`weeks/${wn-1}/players/${rk.me}`);
-    if(mine){rk.myLast=mine;rk.myRank.last=(await restCountAbove(boardParent("last"),"players","weekXp",mine.weekXp))+1;
-      rk.count.last=await restCountAbove(boardParent("last"),"players","weekXp",0)}
-  }catch(e){}
-  claimWeekReward();
+  addPendingFriend();
+  if(tab===5)loadFriends(true);
   cleanupOldWeeks();
   scheduleRank();
 }
@@ -3801,9 +3773,9 @@ async function setRankHidden(hide){
       else if(rk.db)await rk.db.doc("scores/"+rk.me).delete();
     }catch(e){}
     rk.myRank.all=rk.myRank.week=null;
-    if(rk.fb)loadBoard(rk.mode,true);
+    if(rk.fb)loadFriends(true);
   }else syncScore();
-  notifyText(hide?"랭킹에서 내 기록을 숨겼어요.":"랭킹에 다시 참가했어요.");
+  notifyText(hide?"친구에게 내 기록을 숨겼어요.":"친구에게 내 기록이 다시 보여요.");
   renderRank();
 }
 const AUTH_SDK="https://www.gstatic.com/firebasejs/10.12.2/";
@@ -3820,6 +3792,7 @@ function mergeState(L,C){
   R.xp=max(R.xp,C.xp);
   R.badges={...(C.badges||{}),...(R.badges||{})};R.flags={...(C.flags||{}),...(R.flags||{})};
   R.claimed={...(C.claimed||{}),...(R.claimed||{})};
+  R.fr=R.fr||{};for(const k in C.fr||{})if(Math.abs(C.fr[k])>Math.abs(R.fr[k]||0))R.fr[k]=C.fr[k]; // 친구: 나중에 추가·뺀 쪽
   R.titles=R.titles||{};for(const k in C.titles||{})R.titles[k]=Math.max(R.titles[k]??-1,C.titles[k]??-1);
   R.co=R.co||{};for(const k in C.co||{})R.co[k]=max(R.co[k],C.co[k]);
   R.cf=R.cf||{};for(const k in C.cf||{})R.cf[k]=max(R.cf[k],C.cf[k]);
@@ -3952,7 +3925,7 @@ async function finishLogin(a,account){
   S.rankOff=S.rankOff||0;save();rk.last="";rk.blocked=false;rk.syncErr=null;rk.myRank={all:null,week:null,last:null};
   await pushProgress(false);
   if(rk.state==="guest")rk.state="loading";
-  memberInit();if(tab===5)loadBoard(rk.mode,true);
+  memberInit();if(tab===5)loadFriends(true);
   notifyText(merged?"로그인했어요. 계정에 있던 기록과 이 기기 기록을 합쳤어요.":"로그인했어요. 이제 기록이 계정에 저장돼요.");
   rerenderAll();
 }
@@ -4028,7 +4001,7 @@ function openIdDialog(mode,arg){
     login:`<label>이메일<input id="id-name" type="email" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="name@example.com"></label>${pw("id-pw","current-password")}
       <p class="id-note"><button type="button" class="link" id="id-forgot">비밀번호를 잊었어요</button> · 예전 아이디 계정은 이메일 칸에 아이디를 넣으세요.</p>`,
     signup:`<label>이메일<input id="id-name" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="name@example.com"></label>${pw("id-pw","new-password")}${pw("id-pw2","new-password","비밀번호 한 번 더")}
-      <p class="id-note">가입하면 이 주소로 인증 메일이 가요. 메일의 링크를 눌러야 기록 저장과 랭킹을 쓸 수 있어요. 이메일은 로그인·인증·비밀번호 재설정에만 써요.</p>`,
+      <p class="id-note">가입하면 이 주소로 인증 메일이 가요. 메일의 링크를 눌러야 기록 저장과 친구 기능을 쓸 수 있어요. 이메일은 로그인·인증·비밀번호 재설정에만 써요.</p>`,
     reset:`<label>가입한 이메일<input id="id-name" type="email" autocomplete="email" autocapitalize="none" spellcheck="false"></label><p class="id-note">비밀번호를 새로 정하는 링크를 메일로 보내 드려요.</p>`,
     verify:`<p class="id-note"><b>${esc(arg&&arg.email||"")}</b>로 인증 메일을 보냈어요. 메일의 링크를 누른 뒤 아래 <b>인증했어요</b>를 눌러 주세요.<br>메일이 안 보이면 스팸함도 확인해 주세요.</p>
       <p class="id-note"><button type="button" class="link" id="id-resend">인증 메일 다시 보내기</button></p>`,
@@ -4245,20 +4218,94 @@ async function saveNick(raw){
   return "";
 }
 
-const MIN_LEAGUE_XP=50;
-function leagueRewards(n){
-  n=Number(n)||0;const places=Math.min(WEEK_REWARDS.length,Math.floor(n/2)),scale=Math.min(1,n/20);
-  return WEEK_REWARDS.slice(0,places).map(x=>Math.max(10,Math.round(x*scale/10)*10));
+const FR_MAX=30,FR_KEY="harukana-pending-friend";
+const frIds=()=>Object.keys(S.fr||{}).filter(k=>S.fr[k]>0);
+const myFrCode=()=>rk.me?rk.me.slice(0,8):"";
+const frLink=()=>rk.me?`${SITE_URL}?friend=${encodeURIComponent(rk.me)}`:"";
+rk.friends={};rk.frAt=0;
+(()=>{try{const p=new URLSearchParams(location.search),f=p.get("friend");
+  if(f&&/^[A-Za-z0-9]{20,40}$/.test(f)){localStorage.setItem(FR_KEY,f);p.delete("friend");history.replaceState(history.state,"",location.pathname+(p.toString()?"?"+p:"")+location.hash)}}catch(e){}})();
+async function addPendingFriend(){
+  let f=null;try{f=localStorage.getItem(FR_KEY)}catch(e){}
+  if(!f||!rk.me)return;
+  try{localStorage.removeItem(FR_KEY)}catch(e){}
+  if(f===rk.me)return;
+  const msg=await addFriendUid(f);notifyText(msg);
 }
-const rewardText=n=>{const r=leagueRewards(n);return r.length>1?`1~${r.length}등 보상 (1등 ${r[0]} · ${r.length}등 ${r[r.length-1]} XP)`:r.length?`1등 보상 ${r[0]} XP`:"참가자가 2명 이상이면 보상이 생겨요"};
-function claimWeekReward(){
-  const r=rk.myRank.last,key=String(rk.lastWn),list=leagueRewards(rk.count.last);
-  if(!r||r>list.length||S.claimed[key]||rk.banned)return;
-  if((Number(rk.myLast&&rk.myLast.weekXp)||0)<MIN_LEAGUE_XP)return;
-  const x=list[r-1];
-  S.claimed[key]={rank:r,xp:x};S.xp+=x;
-  updateTitles();checkBadges();save();refreshSummary();rk.last="";syncScore();
-  notifyText(`지난주 리그 ${r}등! 보상 +${x} XP를 받았어요.`);
+async function addFriendUid(uid){
+  S.fr=S.fr||{};
+  if(uid===rk.me)return "내 코드예요. 친구의 코드를 넣어 주세요.";
+  if(S.fr[uid]>0)return "이미 친구예요.";
+  if(frIds().length>=FR_MAX)return `친구는 ${FR_MAX}명까지 추가할 수 있어요.`;
+  let d=null;try{d=await restGet(`scores/${uid}`)}catch(e){return "연결이 끊겼어요. 잠시 뒤 다시 해 주세요."}
+  if(!d)return "아직 기록이 없는 친구예요. 친구가 로그인하고 문제를 하나 맞히면 추가할 수 있어요.";
+  S.fr[uid]=Date.now();rk.friends[uid]=d;save();
+  if(tab===5)renderRank();
+  return `「${maskBad(String(d.nick||"학습자").slice(0,12))}」님을 친구로 추가했어요!`;
+}
+async function addFriendCode(code){
+  code=String(code||"").trim().replace(/^.*[?&]friend=/,"");
+  if(/^[A-Za-z0-9]{20,40}$/.test(code))return addFriendUid(code); // 초대 링크나 긴 번호를 붙여 넣은 경우
+  if(!/^[A-Za-z0-9]{8}$/.test(code))return "친구 코드는 영어·숫자 8글자예요. 대문자·소문자를 구분해요.";
+  if(code===myFrCode())return "내 코드예요. 친구의 코드를 넣어 주세요.";
+  const ref=x=>({referenceValue:`projects/${FB_CONFIG.projectId}/databases/(default)/documents/scores/${x}`});
+  let rows;
+  try{
+    const r=await fetch(`${REST_BASE}:runQuery?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{...await authHeader(),"Content-Type":"application/json"},
+      body:JSON.stringify({structuredQuery:{from:[{collectionId:"scores"}],where:{compositeFilter:{op:"AND",filters:[
+        {fieldFilter:{field:{fieldPath:"__name__"},op:"GREATER_THAN_OR_EQUAL",value:ref(code)}},
+        {fieldFilter:{field:{fieldPath:"__name__"},op:"LESS_THAN",value:ref(code+"")}}]}},limit:2}})});
+    if(!r.ok)throw new Error("REST "+r.status);
+    rows=(await r.json()).filter(x=>x.document).map(x=>docOf(x.document));
+  }catch(e){return "연결이 끊겼어요. 잠시 뒤 다시 해 주세요."}
+  if(!rows.length)return "그 코드의 친구를 찾지 못했어요. 친구가 로그인하고 문제를 하나 맞혀야 찾을 수 있어요.";
+  if(rows.length>1)return "같은 코드가 여러 명이에요. 친구에게 초대 링크를 받아 눌러 주세요.";
+  return addFriendUid(rows[0].id);
+}
+function removeFriend(uid){S.fr[uid]=-Date.now();delete rk.friends[uid];save();renderRank()}
+async function loadFriends(force){
+  if(IN_CLAUDE||!rk.fb||!S.account||!rk.me)return;
+  if(!force&&Date.now()-rk.frAt<20000)return;
+  rk.frAt=Date.now();
+  const ids=frIds();
+  await Promise.all(ids.map(async id=>{try{rk.friends[id]=await restGet(`scores/${id}`)}catch(e){}}));
+  scheduleRank();
+}
+function agoText(ms){
+  if(!ms)return "";const m=Math.floor((Date.now()-ms)/60000);
+  return m<2?"방금":m<60?`${m}분 전`:m<1440?`${Math.floor(m/60)}시간 전`:m<43200?`${Math.floor(m/1440)}일 전`:"한 달 넘게 전";
+}
+const sameDayKst=ms=>ms&&new Date(ms+KST).toISOString().slice(0,10)===new Date(Date.now()+KST).toISOString().slice(0,10);
+function renderFriends(){
+  const el=$("board");if(!el)return;
+  const head=`<h3 class="rk-h">친구 <small>서로 공부하는 모습을 봐요</small></h3>`;
+  if(IN_CLAUDE){el.innerHTML=head+`<div class="rk-join"><p>친구 기능은 하루카나 사이트에서 쓸 수 있어요. 이 claude.ai 링크와 사이트의 기록은 따로 저장돼요.</p><a class="next" style="text-decoration:none" href="${SITE_URL}" target="_blank" rel="noopener">하루카나 사이트 열기</a></div>`;return}
+  if(!S.account){el.innerHTML=head+`<div class="fr-empty"><span class="fr-empty-ic" aria-hidden="true">友</span><p><b>친구와 함께 공부해요</b><br>친구를 추가하면 친구가 오늘 공부했는지, 몇 일째 이어 가는지 볼 수 있어요. 친구 기능은 로그인한 뒤 쓸 수 있어요.</p><button type="button" class="next" onclick="openSettings()">로그인하러 가기</button></div>`;return}
+  if(!rk.me){el.innerHTML=head+`<p class="rk-note">친구 정보를 불러오는 중이에요…</p>`;return}
+  const ids=frIds(),rows=ids.map(id=>({id,d:rk.friends[id]})).sort((a,b)=>((b.d&&b.d.t)||0)-((a.d&&a.d.t)||0));
+  const card=(r)=>{const d=r.d;
+    if(d===undefined)return `<li class="fr-row"><span class="rk-av">${avatarSvg("fox")}</span><span class="rk-name">불러오는 중…</span></li>`;
+    if(d===null)return `<li class="fr-row"><span class="rk-av">${avatarSvg("fox")}</span><span class="rk-name">기록을 숨긴 친구<small>친구가 기록을 숨겼거나 계정을 지웠어요</small></span><button type="button" class="link fr-del" data-frdel="${esc(r.id)}">빼기</button></li>`;
+    const nm=maskBad(String(d.nick||"").slice(0,12))||"학습자",tt=String(d.title||"").slice(0,20),today=sameDayKst(d.t),wk=d.week===weekId()?Number(d.weekXp)||0:0;
+    return `<li class="fr-row${today?" today":""}"><span class="rk-av">${avatarSvg(AVATARS.some(a=>a.id===d.avatar)?d.avatar:"fox")}</span>
+      <span class="rk-name">${esc(nm)}${tt?`<small>${esc(tt)}</small>`:""}</span>
+      <span class="fr-stats"><span class="fr-when">${today?"✿ 오늘 공부했어요":d.t?`마지막 공부 ${agoText(d.t)}`:""}</span><span>Lv.${Number(d.level)||1} · ${Number(d.streak)||0}일 연속 · 이번 주 ${wk} XP</span></span>
+      <button type="button" class="link fr-del" data-frdel="${esc(r.id)}" aria-label="${esc(nm)} 친구에서 빼기">빼기</button></li>`};
+  const me=`<li class="fr-row me"><span class="rk-av">${avatarSvg(S.avatar)}</span><span class="rk-name">${esc(nickName())} <em>나</em></span><span class="fr-stats"><span class="fr-when">${S.rankOff?"친구에게 숨김":"친구에게 보여요"}</span><span>Lv.${lvOf(S.xp)} · ${streak()}일 연속 · 이번 주 ${weekXp()} XP</span></span></li>`;
+  const invite=`<div class="fr-invite"><div class="fr-code"><small>내 친구 코드</small><b>${esc(myFrCode())}</b></div>
+      <button type="button" class="next" id="fr-share">초대 링크 ${navigator.share?"보내기":"복사"}</button></div>
+    <form class="fr-add" id="fr-add"><input id="fr-in" maxlength="200" placeholder="친구 코드 8글자 또는 초대 링크" aria-label="친구 코드" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="ghost" id="fr-go">추가</button></form>
+    <p class="set-note" id="fr-msg" aria-live="polite"></p>`;
+  el.innerHTML=head+(ids.length?`<ul class="rk-list fr-list">${me}${rows.map(card).join("")}</ul>`:`<div class="fr-empty"><span class="fr-empty-ic" aria-hidden="true">友</span><p><b>아직 친구가 없어요</b><br>초대 링크를 보내거나 친구 코드를 넣으면, 서로 오늘 공부했는지 볼 수 있어요.</p></div>`)
+    +invite+(S.rankOff?`<p class="rk-note">지금은 친구에게 내 기록이 숨겨져 있어요. <button type="button" class="link rk-set" id="rk-join">다시 보이기</button></p>`:"");
+  $("fr-share").onclick=async()=>{const url=frLink();
+    try{if(navigator.share){await navigator.share({title:"하루카나 친구 초대",text:"하루카나에서 같이 일본어 공부해요!",url});return}
+      await navigator.clipboard.writeText(url);$("fr-msg").textContent="초대 링크를 복사했어요. 친구에게 보내 주세요.";}
+    catch(e){if(e&&e.name==="AbortError")return;$("fr-msg").textContent="복사하지 못했어요. 이 주소를 직접 보내 주세요: "+url}};
+  $("fr-add").onsubmit=async e=>{e.preventDefault();const v=$("fr-in").value;if(!v.trim())return;$("fr-go").disabled=true;$("fr-msg").textContent="찾는 중…";
+    const m=await addFriendCode(v);if($("fr-msg")){$("fr-msg").textContent=m;$("fr-go").disabled=false;if(/추가했어요/.test(m))$("fr-in").value=""}};
+  el.querySelectorAll("[data-frdel]").forEach(b=>b.onclick=()=>{if(b.dataset.armed){removeFriend(b.dataset.frdel);return}b.dataset.armed="1";b.textContent="한 번 더 누르면 빼요"});
+  if(rows.some(r=>r.d===undefined))loadFriends(); // 20초에 한 번까지만 (실패해도 계속 다시 부르지 않게)
 }
 const SITE_URL="https://ranunculuslethe.github.io/harukana/";
 const IN_CLAUDE=!!(window.claude&&typeof claude.use==="function");
@@ -4320,7 +4367,6 @@ async function pushScore(leaving){
     rk.syncErr=null;rk.retried=false;
     if(partial){rk.last=JSON.stringify(data);if(!leaving)rk.timer=setTimeout(()=>pushScore(false),SYNC_GAP)}
     else rk.last=sig;
-    if(!leaving)patchMyRows(data);
   }catch(e){
     rk.syncErr=String(e&&(e.status||e.message));
     if(e&&e.status===403&&!rk.retried&&!leaving){
@@ -4332,23 +4378,6 @@ async function pushScore(leaving){
     else if(!leaving)rk.timer=setTimeout(()=>pushScore(false),15000); // 통신 오류면 잠시 뒤 다시 시도
   }
   rk.busy=false;
-}
-function patchMyRows(d){
-  const put=(key,field,v,extra)=>{
-    const list=rk[key];if(!list)return;
-    const i=list.findIndex(r=>r.id===rk.me),wasIn=i>=0;
-    if(wasIn)Object.assign(list[i],extra,{[field]:v});
-    else if(v>0&&(list.length<TOP_N||v>(Number(list[list.length-1][field])||0)))list.push({id:rk.me,...extra,[field]:v});
-    else return;
-    list.sort((a,b)=>(Number(b[field])||0)-(Number(a[field])||0));
-    if(list.length>TOP_N)list.length=TOP_N;
-    if(key==="weekRows"&&!wasIn&&rk.count.week!=null&&list.length<TOP_N)rk.count.week=list.length;
-  };
-  const base={nick:d.nick,title:d.title,avatar:d.avatar,level:d.level};
-  put("rows","xp",d.xp,{...base,streak:d.streak});
-  if(d.weekXp>0)put("weekRows","weekXp",d.weekXp,base);
-  saveRankCache();
-  if(tab===5)refreshMine(rk.mode||"week"); // 50위 밖이면 내 순위만 다시 센다 (읽기 1건)
 }
 document.addEventListener("visibilitychange",()=>{if(document.hidden)pushScore(true)});
 window.addEventListener("pagehide",()=>pushScore(true));
@@ -4434,7 +4463,7 @@ document.addEventListener("click",e=>{
 function acctRow(p){
   const privacy=`<a class="link" href="${PRIVACY_URL}" target="_blank" rel="noopener">개인정보 처리방침</a>`;
   if(IN_CLAUDE)return `<div class="pf-acct off"><span>로그인은 하루카나 사이트에서 할 수 있어요.</span><a class="link" href="${SITE_URL}" target="_blank" rel="noopener">사이트 열기</a>${privacy}</div>`;
-  if(!S.account)return `<p class="acct-why"><b>지금은 이 브라우저에만 저장돼요.</b> 로그인하면 기록이 계정에 저장돼서 브라우저를 지우거나 기기를 바꿔도 그대로 이어서 할 수 있고, 랭킹에도 참가할 수 있어요. 학습 기록에는 이름·이메일을 저장하지 않아요.</p>
+  if(!S.account)return `<p class="acct-why"><b>지금은 이 브라우저에만 저장돼요.</b> 로그인하면 기록이 계정에 저장돼서 브라우저를 지우거나 기기를 바꿔도 그대로 이어서 할 수 있고, 친구와 서로 공부하는 모습을 볼 수 있어요. 학습 기록에는 이름·이메일을 저장하지 않아요.</p>
     <div class="pf-acct off">${loginBtns(p+"login")}${privacy}</div>`;
   const k=S.account.kind,pw=k==="id"||k==="email";
   return `<div class="pf-acct"><span class="g">${k==="id"?"ID":k==="email"?"@":"G"}</span><span>${esc(acctLabel(S.account))} · 기록이 계정에 저장돼요</span><button class="link" id="${p}logout">${rk.logoutArmed?"한 번 더 누르면 로그아웃":"로그아웃"}</button>${k==="id"?`<button class="link" id="${p}link">이메일 연결 필요</button>`:""}${pw?`<button class="link" id="${p}pw">비밀번호 바꾸기</button>`:""}<button class="link" id="${p}delete">${rk.deleteArmed?`한 번 더 누르면 삭제 (${pw?"비밀번호":"Google"} 확인)`:"계정 기록 삭제"}</button>${privacy}</div>`;
@@ -4566,9 +4595,9 @@ function renderSettings(force){
     <div class="rec-etc">
       <div><b>XP · 배지</b><small>${S.xp} XP · 배지 ${nb}개를 0으로 되돌려요</small>${resetBtn("reward","XP·배지 초기화")}</div>
       <div><b>모든 학습 기록</b><small>글자·단어·문장·한자·오답노트를 처음부터 다시 해요. 목표 코스도 다시 기초부터 열려요. 쌓은 XP·배지·연속 학습일·프로필은 남아요.</small>${resetBtn("all","모두 초기화")}</div>
-      ${IN_CLAUDE||S.account?`<div><b>랭킹 참가</b><small>${S.rankOff?"지금은 랭킹에서 숨겨져 있어요.":"문제를 맞히면 닉네임·레벨·XP가 랭킹에 보여요."}</small><button class="rec-reset" id="rk-hide">${S.rankOff?"다시 참가하기":"랭킹에서 숨기기"}</button></div>`:""}
+      ${IN_CLAUDE||S.account?`<div><b>친구에게 내 기록 보이기</b><small>${S.rankOff?"지금은 친구에게 내 기록이 숨겨져 있어요.":"친구가 내 닉네임·레벨·연속 공부일·이번 주 XP를 볼 수 있어요."}</small><button class="rec-reset" id="rk-hide">${S.rankOff?"다시 보이기":"친구에게 숨기기"}</button></div>`:""}
     </div>${TEST_MODE?`<h4 class="set-h">테스트 도구 <small>(테스트 주소에서만 보여요)</small></h4>
-    <div class="set-sound test-tools">${S.account?`<p class="set-note">로그인한 상태에서는 쓸 수 없어요. 계정 기록과 랭킹에 섞이지 않게, 로그아웃한 뒤 써 주세요.</p>`:`<div class="test-btns"><button type="button" class="rec-reset" data-clear="beg">기초 클리어</button><button type="button" class="rec-reset" data-clear="mid">코스 열기 (여행 클리어)</button></div>
+    <div class="set-sound test-tools">${S.account?`<p class="set-note">로그인한 상태에서는 쓸 수 없어요. 계정 기록과 친구에게 보이는 기록에 섞이지 않게, 로그아웃한 뒤 써 주세요.</p>`:`<div class="test-btns"><button type="button" class="rec-reset" data-clear="beg">기초 클리어</button><button type="button" class="rec-reset" data-clear="mid">코스 열기 (여행 클리어)</button></div>
       <p class="set-note">이 브라우저의 학습 기록만 바꿔요. 처음으로 돌리려면 위의 '모두 초기화'를 눌러요.</p>`}
       <div class="test-btns" style="margin-top:12px"><button type="button" class="rec-reset" id="data-check">데이터 검사</button></div><div id="data-check-out" class="set-note" aria-live="polite"></div></div>`:""}`;
   if($("data-check"))$("data-check").onclick=()=>{const r=runDataCheck();$("data-check-out").innerHTML=r.ok?`✿ 문제없어요 · ${r.sum}`:`<b>${r.bad.length}개 확인 필요</b> · ${r.sum}<br>${r.bad.slice(0,30).map(esc).join("<br>")}`};
@@ -4618,56 +4647,7 @@ function renderRank(){
   renderSettings();
   $("badges").innerHTML=`<h3 class="rk-h">배지</h3><div class="badge-grid">${BADGES.map(([id,name,desc,icon])=>{const on=!!S.badges[id];
     return `<div class="bdg${on?" on":""}" title="${esc(desc)}"><span class="bi">${on?icon:"?"}</span><b>${name}</b><small>${on?desc:"아직 못 받았어요 · "+desc}</small></div>`}).join("")}</div>`;
-  let body;
-  if(rk.state==="elsewhere")body=`<div class="rk-join"><p>이 claude.ai 링크에서는 다른 사람과의 랭킹을 불러올 수 없어요. 모두의 랭킹과 주간 리그는 하루카나 사이트에서 함께 볼 수 있어요.</p><a class="next" style="text-decoration:none" href="${SITE_URL}" target="_blank" rel="noopener">하루카나 사이트에서 랭킹 보기</a><p style="margin-top:8px;font-size:13px;color:var(--sub)">주소: ${SITE_URL} · 사이트와 이 링크의 학습 기록은 따로 저장돼요.</p></div>`;
-  else if(rk.state==="local")body=`<p class="rk-note">이 화면에서는 다른 사람과의 순위를 불러올 수 없어요. 지금은 내 기록만 보여요.</p>`;
-  else if(rk.state==="offline")body=`<p class="rk-note">랭킹 서버에 연결하지 못했어요. 인터넷 연결을 확인하고 새로 고쳐 주세요. 내 기록은 그대로 저장돼요.</p>`;
-  else if(rk.state==="loading")body=`<p class="rk-note">랭킹을 불러오는 중이에요…</p>`;
-  else if(rk.state==="error")body=`<p class="rk-note">랭킹을 불러오지 못했어요. 페이지를 새로 고쳐 보세요.</p>`;
-  else{
-    const join=!rk.me?(window.claude&&typeof claude.use==="function"&&!rk.fb?`<p class="rk-note">claude.ai에 로그인하면 랭킹에 참가할 수 있어요.</p>`:"")
-      :rk.banned?`<div class="rk-join rk-ban"><p><b>랭킹 참가가 제한된 계정이에요.</b><br>점수가 비정상적으로 올라 운영자가 랭킹 참가를 막았어요.${rk.banned.reason?` (사유: ${esc(rk.banned.reason)})`:""} 공부 기록은 그대로 저장돼요. 잘못된 제재라면 개인정보 처리방침의 연락처로 알려 주세요.</p></div>`
-      :S.rankOff?`<div class="rk-join"><p>지금은 랭킹에서 내 기록이 숨겨져 있어요.</p><button class="next" id="rk-join">다시 참가하기</button></div>`
-      :S.xp<=0?`<p class="rk-note">문제를 하나 맞히면 「${esc(S.nick)}」 이름으로 랭킹에 올라가요. 닉네임은 위 프로필에서 바꿀 수 있어요.</p>`
-      :(rk.blocked||rk.canWrite===false)?`<p class="rk-note">${rk.fb?`내 기록을 랭킹에 올리지 못했어요 (오류 ${esc(rk.syncErr||"")}). 잠시 뒤 다시 시도해 주세요.`:"순위는 볼 수 있지만, 내 기록을 올리려면 이 페이지의 편집 권한이 필요해요."}</p>`
-      :rk.syncErr?`<p class="rk-note">내 기록을 올리는 중 연결 문제가 있었어요 (오류 ${esc(rk.syncErr)}). 15초 뒤 자동으로 다시 시도해요.</p>`:"";
-    const mode=rk.mode||"week",league=mode!=="all";
-    const tieRank=(list,i,f)=>{const v=Number(list[i][f])||0;let r=i;while(r>0&&(Number(list[r-1][f])||0)===v)r--;return r+1};
-    const meRow={id:rk.me,nick:S.nick,title:mainTitle(),avatar:S.avatar,level:lvOf(S.xp),xp:S.xp,weekXp:weekXp(),streak:streak()};
-    const src=mode==="all"?rk.rows:mode==="week"?rk.weekRows:rk.lastRows,rows=src||[];
-    const mine=mode==="all"?(S.rank?meRow:null):mode==="week"?(S.rank&&weekXp()>0?meRow:null):rk.myLast;
-    const myRank=rk.myRank[mode];
-    const rewards=league?leagueRewards(rk.count[mode]):[];
-    const row=(r,rank)=>{const me=r.id===rk.me,nm=maskBad(String(r.nick||"").slice(0,12))||rk.names[r.id]||"학습자",tt=String(r.title||"").slice(0,20),rw=league&&rank<=rewards.length&&(Number(r.weekXp)||0)>=MIN_LEAGUE_XP?rewards[rank-1]:0;
-      return `<li class="${me?"me":""}"><span class="rk-n r${rank}">${rank}</span><span class="rk-av">${avatarSvg(AVATARS.some(a=>a.id===r.avatar)?r.avatar:"fox")}</span><span class="rk-name">${esc(nm)}${me?' <em>나</em>':""}${tt?`<small>${esc(tt)}</small>`:""}</span><span class="rk-lv">Lv.${Number(r.level)||1}</span><span class="rk-xp">${Number(league?r.weekXp:r.xp)||0} XP</span>${rw?`<span class="rk-rw" title="${rank}등 보상">+${rw}</span>`:!league?`<span class="rk-st">${Number(r.streak)||0}일</span>`:""}</li>`};
-    const emptyMsg={week:"이번 주 리그에 아직 아무도 없어요. 문제를 풀어 첫 번째가 되어 보세요!",last:"지난주 리그 기록이 없어요.",all:"아직 랭킹에 아무도 없어요. 첫 번째가 되어 보세요!"}[mode];
-    let list;
-    if(mode==="last"&&!rk.fb)list=`<p class="rk-note">지난주 리그는 GitHub 사이트(ranunculuslethe.github.io/harukana)에서 볼 수 있어요.</p>`;
-    else if(!src)list=`<p class="rk-note">랭킹을 불러오는 중이에요…</p>`;
-    else if(!rows.length&&!mine)list=`<p class="rk-note">${emptyMsg}</p>`;
-    else list=`<ol class="rk-list">${rows.map((r,i)=>row(r,tieRank(rows,i,league?"weekXp":"xp"))).join("")}${mine&&myRank&&!rows.some(r=>r.id===rk.me)?`<li class="rk-gap" aria-hidden="true">⋯</li>${row(mine,myRank)}`:""}</ol>`
-      +(mode==="last"&&rk.fb&&!rk.myLast&&S.rank?`<p class="rk-note" style="margin-top:10px">지난주에는 내 리그 기록이 없어요.</p>`:"");
-    body=(mode==="last"?"":join)+list;
-  }
-  const wn=weekNum(),left=Math.max(1,Math.ceil((weekStart(wn+1)-Date.now())/DAYMS));
-  const md=ms=>{const d=new Date(ms+KST);return `${d.getUTCMonth()+1}/${d.getUTCDate()}`};
-  const claimed=S.claimed[String(wn-1)];
-  const subs={
-    week:`이번 주 XP 순이에요 · 마감까지 ${left}일 · 내 이번 주 XP <b>${weekXp()}</b><br>${rk.count.week!=null?`참가자 ${rk.count.week}명 · ${rewardText(rk.count.week)}${leagueRewards(rk.count.week).length?` · 리그 XP ${MIN_LEAGUE_XP} 이상이면 다음 주에 받아요`:""}<br><small>보상은 참가자가 많을수록 커져요 (20명 이상이면 1등 3000 XP)</small>`:"참가자 수에 따라 1~10등이 다음 주에 보상 XP를 받아요"}`,
-    last:`지난주(${md(weekStart(wn-1))}~${md(weekStart(wn)-DAYMS)}) 최종 순위예요.${claimed?` 나는 <b>${claimed.rank}등</b>, 보상 <b>+${claimed.xp} XP</b>를 받았어요.`:""}`,
-    all:"지금까지 모은 전체 XP 순이에요 · 상위 50명과 내 순위가 보여요."};
-  const m=rk.mode||"week";
-  if(!IN_CLAUDE&&rk.fb&&!S.account){
-    const stat=(n,l)=>`<span><b>${n}</b>${l}</span>`;
-    $("board").innerHTML=`<h3 class="rk-h">랭킹</h3>
-      <p class="rk-note">랭킹에 참가하려면 <button class="link rk-set" type="button" onclick="openSettings()">설정</button>에서 로그인해 주세요.</p>
-      <h3 class="rk-h" style="margin-top:14px">내 기록</h3>
-      <div class="me-stats rk-guest">${stat(weekXp()," 이번 주 XP")}${stat(S.xp," 전체 XP")}${stat("Lv."+lvOf(S.xp),"")}${stat(streak(),"일 연속")}</div>`;
-  }else
-  $("board").innerHTML=`<h3 class="rk-h">랭킹</h3>
-    <div class="seg rk-seg" role="group" aria-label="랭킹 종류">${[["week","이번 주 리그"],["last","지난주 리그"],["all","전체 랭킹"]].map(([k,t])=>`<button data-rm="${k}" class="${m===k?"on":""}">${t}</button>`).join("")}</div>
-    <p class="rk-sub">${subs[m]}${rk.cached?' <span class="rk-live">· 최신 순위로 바꾸는 중…</span>':""}</p>${body}`;
-  document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{rk.mode=b.dataset.rm;renderRank();loadBoard(rk.mode)});
+  renderFriends();
   renderGrass();
   if($("rk-join"))$("rk-join").onclick=()=>setRankHidden(false);
   if($("nick-edit"))$("nick-edit").onclick=()=>{editingNick=true;renderRank();$("nick-in").focus()};
@@ -5651,7 +5631,7 @@ function show(n){
   if(n===3&&(["list","cat","slist","sunit"].includes(wv.view)||!$("words").innerHTML))renderWords();
   if(n===4)renderReview();
   if(n===4&&!nq)renderNote();
-  if(n===5){renderRank();loadBoard(rk.mode)}
+  if(n===5){renderRank();loadFriends()}
   if(n===6){if(jv.mode==="kanji")jv={view:"jlist",mode:"talk"};renderKanjiTab()}
   if(n===8)renderJlptTab();
   window.scrollTo({top:0,behavior:'instant'});
@@ -5794,6 +5774,35 @@ document.querySelector('.brand').onclick=e=>{e.preventDefault();show(0)};
 let toastTimer;
 let toastAt=0;
 function notifyText(text){if(!$("toast").hidden&&Date.now()-toastAt<800)text=$("toast").textContent+" · "+text;toastAt=Date.now();$("toast").textContent=text;$("toast").hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").hidden=true,Math.max(2600,text.length*80))}
+function sceneTime(){
+  const h=new Date().getHours(),m=new Date().getMonth()+1;
+  const tod=h>=5&&h<10?"morning":h>=10&&h<17?"day":h>=17&&h<20?"evening":"night";
+  const season=m>=3&&m<=5?"spring":m>=6&&m<=8?"summer":m>=9&&m<=11?"autumn":"winter";
+  return {tod,season};
+}
+const SCENE_NAME={morning:"아침",day:"낮",evening:"저녁",night:"밤",spring:"벚꽃",summer:"초록 잎",autumn:"단풍",winter:"눈꽃"};
+function renderScene(){
+  const h=document.querySelector(".hero");if(!h)return;
+  const {tod,season}=sceneTime(),R=document.documentElement;R.dataset.tod=tod;R.dataset.season=season; // 그림의 색 정의가 hero 밖(svg-library)에 있어서 문서 전체에 단다
+  const svg=h.querySelector(".hero-scene");if(svg)svg.setAttribute("aria-label",`${SCENE_NAME[season]}이 있는 강가와 후지산, 오층탑이 보이는 ${SCENE_NAME[tod]} 풍경에서 반기는 여우 하루`);
+}
+function foxSay(){
+  const d=dayState(),done=d.m.filter(id=>d.got[id]).length,st=streak(),due=typeof dueKeys==="function"?dueKeys().length:0;
+  const studied=!!S.daily[dayKey()],h=new Date().getHours(),X=S.jx||{};
+  const list=[];
+  if(due)list.push([`오늘 복습할 문제가 ${due}개 있어요`,"잊기 전에 다시 보면 오래 기억해요!"]);
+  if(done&&done===d.m.length)list.push(["오늘 목표를 모두 해냈어요!","내일도 이 자리에서 기다릴게요."]);
+  if(st>=2)list.push([`${st}일째 이어 가고 있어요`,studied?"오늘도 한 걸음, 멋져요!":"오늘도 하나만 하면 이어져요."]);
+  if(!studied&&!st&&Object.keys(S.daily).length)list.push(["어제는 쉬었네요, 괜찮아요","오늘 한 문제만 같이 풀어요!"]);
+  if(X.best)list.push([`N5 모의시험 최고 ${X.best}점`,X.pass?"합격선을 넘었어요. 실전도 할 수 있어요!":"합격선(80점)까지 조금만 더!"]);
+  if(S.account&&frIds().length){const t=frIds().map(id=>rk.friends[id]).filter(x=>x&&sameDayKst(x.t)).length;if(t)list.push([`오늘 친구 ${t}명이 공부했어요`,"같이 한 걸음 해요!"])}
+  if(!list.length)list.push(h<10?["좋은 아침이에요!","아침에 본 글자는 오래 남아요."]:h>=20?["오늘 하루도 수고했어요","자기 전에 한 문제, 어때요?"]:["서두르지 않아도 괜찮아.","어제보다 한 걸음이면 충분해!"]);
+  return list[Math.floor((Date.now()+9*36e5)/36e5)%list.length]; // 한 시간마다 다른 말
+}
+function renderFoxSay(){
+  const sp=document.querySelector(".companion .speech");if(!sp)return;
+  const [b,s]=foxSay();sp.innerHTML=`<b>${esc(b)}</b><span>${esc(s)}</span>`;
+}
 const PHRASES=[
   ["おはよう ございます","오하요우 고자이마스","안녕하세요 (아침)"],
   ["こんにちは","콘니치와","안녕하세요 (낮)","끝의 は는 조사라서 '하'가 아니라 '와'로 읽어요."],
@@ -5811,15 +5820,20 @@ const PHRASES=[
   ["だいじょうぶです","다이조우부데스","괜찮아요"],
   ["おげんきですか","오겐키데스카","잘 지내세요?"]
 ];
-const todayPhrase=()=>PHRASES[Math.floor((Date.now()+9*36e5)/864e5)%PHRASES.length];
+const dayNo=()=>Math.floor((Date.now()+9*36e5)/864e5);
+const todayPhrase=()=>{
+  if(basicDone()){const tv=TRAVEL.filter(t=>t.mode==="talk"),t=tv[dayNo()%tv.length];return [t.ja,null,t.ko,null,"오늘의 여행 한마디",t.rd||t.ja]}
+  const p=PHRASES[dayNo()%PHRASES.length];return [p[0],null,p[2],p[3],"오늘의 한마디",p[0]];
+};
 function renderPhrase(){
-  const [ja,,ko,tip]=todayPhrase(),hg=jaHangul(ja); // 발음은 공통 규칙으로 (길게 읽는 소리 "-")
+  const [ja,,ko,tip,label]=todayPhrase(),hg=jaHangul(ja);
+  const lb=document.querySelector(".phrase-label");if(lb)lb.textContent=label; // 발음은 공통 규칙으로 (길게 읽는 소리 "-")
   $("phrase-jp").textContent=ja;
   $("phrase-jp").style.fontSize=!/\s/.test(ja)&&ja.length>=8?"20px":"";
   $("phrase-sub").innerHTML=`<span class="hgx">${esc(hg)}</span> <span>·</span> ${esc(ko)}${tip?`<small class="phrase-tip">${esc(tip)}</small>`:""}`;
 }
 renderPhrase();
-$("phrase-listen").onclick=()=>{if(!('speechSynthesis' in window)){notifyText('이 브라우저에서는 음성 재생을 지원하지 않아요.');return}speak(todayPhrase()[0])};
+$("phrase-listen").onclick=()=>{if(!('speechSynthesis' in window)){notifyText('이 브라우저에서는 음성 재생을 지원하지 않아요.');return}speak(todayPhrase()[5])};
 const hideHg=()=>{try{return localStorage.getItem("harukana-hidehg")==="1"}catch(e){return false}};
 function setHideHg(on){try{localStorage.setItem("harukana-hidehg",on?"1":"0")}catch(e){}document.body.classList.toggle("hide-hg",on)}
 document.body.classList.toggle("hide-hg",hideHg());
