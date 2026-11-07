@@ -218,7 +218,10 @@ body.ph-drop #v6{outline:3px dashed var(--accent);outline-offset:6px;border-radi
 .ph-list b{font-size:17px}.ph-list small{color:var(--sub)}.ph-ko{font-size:14px;margin-top:2px}
 .ph-list .ar-go{margin-top:6px}
 .ph-say{position:absolute;right:6px;top:6px;width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer}
-.go-steps{margin:4px 0 6px;padding-left:22px;font-size:14px;line-height:1.8;color:var(--ink)}
+.go-steps{margin:10px 0 0;padding-left:22px;font-size:13px;line-height:1.8;color:var(--sub)}
+.go-flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:12px 0 4px}.go-flow .next,.go-flow .ghost{margin:0;text-decoration:none;min-height:46px;display:inline-flex;align-items:center}
+.go-arrow{color:var(--sub);font-weight:700}.go-next.ready{animation:goPulse 1.4s ease-in-out 3}@keyframes goPulse{50%{transform:scale(1.05)}}
+.go-msg{text-align:center;margin:6px 0 0}@media(max-width:520px){.go-arrow{display:none}.go-flow>*{flex:1 1 100%;justify-content:center}}
 .move-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.move-row .next{margin:0}.move-row small{flex:1 1 200px;font-size:13px;color:var(--sub)}
 .move-ta{width:100%;margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:12px/1.4 ui-monospace,Consolas,monospace;resize:vertical;word-break:break-all}
 .ai-home{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:18px;background:var(--accent-soft);color:var(--ink);text-align:left;cursor:pointer;box-shadow:0 2px 0 var(--panel-shadow)}
@@ -4142,18 +4145,13 @@ function openMoveDlg(){
   const other=IN_CLAUDE?"하루카나 사이트":"claude.ai 버전";
   d.innerHTML=`<div class="set-top"><h3 id="move-title">기록 옮기기</h3><button class="set-x" id="move-x" aria-label="닫기">×</button></div>
     <p class="guide-p" style="text-align:left;max-width:none">하루카나 사이트와 claude.ai 버전은 기록이 따로 저장돼요. 한쪽에서 <b>기록 코드를 복사</b>해서 다른 쪽에 <b>붙여 넣으면</b> 두 기록이 합쳐져요. 맞힌 문제·XP·스탬프는 더 많이 한 쪽 기록으로 남아요.</p>
-    <h4 class="set-h">1. 이 기록 보내기</h4>
-    <div class="move-row"><button type="button" class="next" id="move-copy">기록 코드 복사</button><small id="move-copy-msg">복사한 뒤 ${other}의 '기록 옮기기'에 붙여 넣어요</small></div>
-    <textarea id="move-out" class="move-ta" rows="3" readonly hidden aria-label="기록 코드"></textarea>
+    <h4 class="set-h">1. 이 기록 보내기 <small>복사한 뒤 ${other}의 '기록 옮기기'에 붙여 넣어요</small></h4>
+    ${goSteps("move",IN_CLAUDE?SITE_URL:ARTIFACT_URL,IN_CLAUDE?"하루카나 사이트 열기":"claude.ai로 가서 로그인하기")}
     <h4 class="set-h">2. 다른 쪽 기록 받기</h4>
     <textarea id="move-in" class="move-ta" rows="3" placeholder="${other}에서 복사한 기록 코드를 여기에 붙여 넣어요 (Ctrl+V 또는 길게 눌러 붙여넣기)" aria-label="받을 기록 코드"></textarea>
     <div class="move-row"><button type="button" class="next" id="move-merge">기록 합치기</button><small id="move-msg" aria-live="polite"></small></div>`;
   $("move-x").onclick=()=>d.close();
-  $("move-copy").onclick=async()=>{
-    const code=await makeMoveCode(),ta=$("move-out");
-    try{await navigator.clipboard.writeText(code);$("move-copy-msg").textContent=`복사했어요! (${Math.ceil(code.length/1024)}KB) ${other}에 붙여 넣어 주세요.`}
-    catch(e){ta.hidden=false;ta.value=code;ta.focus();ta.select();$("move-copy-msg").textContent="자동 복사가 막혀 있어요. 아래 코드가 모두 선택돼 있으니 Ctrl+C(휴대폰은 길게 눌러 복사)로 복사해 주세요."}
-  };
+  bindGoSteps("move");
   $("move-merge").onclick=async()=>{
     const msg=$("move-msg");
     try{
@@ -4174,21 +4172,25 @@ function openClaudeGo(){
   goCode=null;makeMoveCode().then(c=>goCode=c).catch(()=>{});
   d.innerHTML=`<div class="set-top"><h3 id="go-title">✦ claude.ai 버전으로 가기</h3><button class="set-x" id="go-x" aria-label="닫기">×</button></div>
     <p class="guide-p" style="text-align:left;max-width:none">AI 기능은 claude.ai에서 여는 하루카나에서 써요. 그런데 <b>이 사이트와 claude.ai 버전은 학습 기록이 따로 저장돼요.</b> 지금까지 한 공부를 이어 가려면 <b>먼저 기록을 복사해 가세요.</b></p>
-    <ol class="go-steps"><li><b>아래 버튼</b>을 누르면 기록이 복사되고 claude.ai가 열려요</li><li>claude.ai에 <b>로그인</b>해요 (처음 한 번)</li><li>하루카나에서 <b>설정 → 기록 옮기기</b> → 붙여 넣기 → <b>기록 합치기</b></li></ol>
-    <div class="navrow"><button type="button" class="next" id="go-copy">기록 복사하고 claude.ai 열기</button></div>
-    <textarea id="go-out" class="move-ta" rows="3" readonly hidden aria-label="기록 코드"></textarea>
-    <p class="set-note" id="go-msg" aria-live="polite" style="text-align:center"></p>
-    <p style="text-align:center;margin:6px 0 0"><a class="link" id="go-plain" href="${ARTIFACT_URL}" target="_blank" rel="noopener">기록 없이 그냥 열기</a></p>`;
+    ${goSteps("go",ARTIFACT_URL,"claude.ai로 가서 로그인하기")}
+    <ol class="go-steps"><li>①을 눌러 기록을 복사해요</li><li>②를 눌러 claude.ai로 가서 <b>로그인</b>해요 (처음 한 번)</li><li>열린 하루카나에서 <b>설정 → 기록 옮기기</b> → 붙여 넣기 → <b>기록 합치기</b></li></ol>`;
   $("go-x").onclick=()=>d.close();
-  $("go-copy").onclick=async()=>{
-    const code=goCode||await makeMoveCode();
-    try{await navigator.clipboard.writeText(code)}
-    catch(e){const ta=$("go-out");ta.hidden=false;ta.value=code;ta.focus();ta.select();
-      $("go-msg").innerHTML=`자동 복사가 막혀 있어요. 위 코드가 모두 선택돼 있으니 <b>Ctrl+C</b>(휴대폰은 길게 눌러 복사)로 복사한 뒤 <a class="link" href="${ARTIFACT_URL}" target="_blank" rel="noopener">claude.ai 열기</a>를 눌러 주세요.`;return}
-    const w=window.open(ARTIFACT_URL,"_blank","noopener");
-    $("go-msg").innerHTML=w===null?`기록을 복사했어요! 창이 자동으로 안 열리면 <a class="link" href="${ARTIFACT_URL}" target="_blank" rel="noopener">여기</a>를 눌러 주세요.`:"기록을 복사했어요! 열린 claude.ai에서 설정 → 기록 옮기기에 붙여 넣어 주세요.";
-  };
+  bindGoSteps("go",()=>goCode);
   if(!d.open)d.showModal();
+}
+function goSteps(p,url,label){
+  return `<div class="go-flow"><button type="button" class="next" id="${p}-copy">① 기록 복사하기</button><span class="go-arrow" aria-hidden="true">→</span><a class="ghost go-next" id="${p}-next" href="${url}" target="_blank" rel="noopener">② ${label} ›</a></div>
+    <textarea id="${p}-out" class="move-ta" rows="3" readonly hidden aria-label="기록 코드"></textarea>
+    <p class="set-note go-msg" id="${p}-msg" aria-live="polite"></p>`;
+}
+function bindGoSteps(p,ready){
+  const nx=$(p+"-next"),done=m=>{const c=$(p+"-copy");c.textContent="✓ 복사했어요";c.className="ghost";nx.className="next go-next ready";$(p+"-msg").innerHTML=m};
+  $(p+"-copy").onclick=async()=>{
+    const code=(ready&&ready())||await makeMoveCode();
+    try{await navigator.clipboard.writeText(code);done(`기록을 복사했어요 (${Math.ceil(code.length/1024)}KB). 이제 <b>②</b>를 눌러 주세요.`)}
+    catch(e){const ta=$(p+"-out");ta.hidden=false;ta.value=code;ta.focus();ta.select();
+      done("자동 복사가 막혀 있어요. 위 코드가 모두 선택돼 있으니 <b>Ctrl+C</b>(휴대폰은 길게 눌러 복사)로 복사한 뒤 <b>②</b>를 눌러 주세요.")}
+  };
 }
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-goclaude]");if(!b)return;e.preventDefault();openClaudeGo()});
 function rerenderAll(){refreshSummary();show(tab)}
