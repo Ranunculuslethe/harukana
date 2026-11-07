@@ -218,6 +218,8 @@ body.ph-drop #v6{outline:3px dashed var(--accent);outline-offset:6px;border-radi
 .ph-list b{font-size:17px}.ph-list small{color:var(--sub)}.ph-ko{font-size:14px;margin-top:2px}
 .ph-list .ar-go{margin-top:6px}
 .ph-say{position:absolute;right:6px;top:6px;width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer}
+.move-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.move-row .next{margin:0}.move-row small{flex:1 1 200px;font-size:13px;color:var(--sub)}
+.move-ta{width:100%;margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:12px/1.4 ui-monospace,Consolas,monospace;resize:vertical;word-break:break-all}
 .ai-home{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:18px;background:var(--accent-soft);color:var(--ink);text-align:left;cursor:pointer;box-shadow:0 2px 0 var(--panel-shadow)}
 .ai-home:hover{border-color:var(--accent)}.ai-home:active{transform:scale(.98)}
 .ai-home-ic{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--accent);color:var(--onaccent);font-size:20px}
@@ -4113,6 +4115,57 @@ document.addEventListener("visibilitychange",()=>{
   if(document.hidden){pushProgress(true);return}
   if(S.account&&rk.auth&&Date.now()>rk.auth.exp-5*60e3)restAuth().then(a=>{rk.auth=a;rk.me=a.uid}).catch(()=>{});
 });
+const MOVE_TAG="HARUKANA1:";
+const b64=u=>{let s="";for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s)};
+const unb64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
+async function zipText(txt,dir){
+  if(typeof CompressionStream==="undefined")return null;
+  const st=new Blob([txt]).stream().pipeThrough(dir==="in"?new DecompressionStream("gzip"):new CompressionStream("gzip"));
+  return new Uint8Array(await new Response(st).arrayBuffer());
+}
+async function makeMoveCode(){
+  const {account,fr,...rest}=S,json=JSON.stringify(rest);
+  const z=await zipText(json);
+  return MOVE_TAG+(z?"z":"j")+b64(z||new TextEncoder().encode(json));
+}
+async function readMoveCode(code){
+  code=String(code||"").replace(/\s+/g,"");
+  const i=code.indexOf(MOVE_TAG);if(i<0)throw new Error("tag");
+  const body=code.slice(i+MOVE_TAG.length),kind=body[0],bytes=unb64(body.slice(1));
+  const txt=kind==="z"?new TextDecoder().decode(await zipText(bytes,"in")):new TextDecoder().decode(bytes);
+  const o=JSON.parse(txt);if(!o||typeof o!=="object"||!o.c||!o.w)throw new Error("shape");
+  return o;
+}
+function openMoveDlg(){
+  let d=$("move-dlg");if(!d){d=document.createElement("dialog");d.id="move-dlg";d.className="set-dlg";d.setAttribute("aria-labelledby","move-title");document.body.appendChild(d)}
+  const other=IN_CLAUDE?"하루카나 사이트":"claude.ai 버전";
+  d.innerHTML=`<div class="set-top"><h3 id="move-title">기록 옮기기</h3><button class="set-x" id="move-x" aria-label="닫기">×</button></div>
+    <p class="guide-p" style="text-align:left;max-width:none">하루카나 사이트와 claude.ai 버전은 기록이 따로 저장돼요. 한쪽에서 <b>기록 코드를 복사</b>해서 다른 쪽에 <b>붙여 넣으면</b> 두 기록이 합쳐져요. 맞힌 문제·XP·스탬프는 더 많이 한 쪽 기록으로 남아요.</p>
+    <h4 class="set-h">1. 이 기록 보내기</h4>
+    <div class="move-row"><button type="button" class="next" id="move-copy">기록 코드 복사</button><small id="move-copy-msg">복사한 뒤 ${other}의 '기록 옮기기'에 붙여 넣어요</small></div>
+    <textarea id="move-out" class="move-ta" rows="3" readonly hidden aria-label="기록 코드"></textarea>
+    <h4 class="set-h">2. 다른 쪽 기록 받기</h4>
+    <textarea id="move-in" class="move-ta" rows="3" placeholder="${other}에서 복사한 기록 코드를 여기에 붙여 넣어요 (Ctrl+V 또는 길게 눌러 붙여넣기)" aria-label="받을 기록 코드"></textarea>
+    <div class="move-row"><button type="button" class="next" id="move-merge">기록 합치기</button><small id="move-msg" aria-live="polite"></small></div>`;
+  $("move-x").onclick=()=>d.close();
+  $("move-copy").onclick=async()=>{
+    const code=await makeMoveCode(),ta=$("move-out");
+    try{await navigator.clipboard.writeText(code);$("move-copy-msg").textContent=`복사했어요! (${Math.ceil(code.length/1024)}KB) ${other}에 붙여 넣어 주세요.`}
+    catch(e){ta.hidden=false;ta.value=code;ta.focus();ta.select();$("move-copy-msg").textContent="자동 복사가 막혀 있어요. 아래 코드가 모두 선택돼 있으니 Ctrl+C(휴대폰은 길게 눌러 복사)로 복사해 주세요."}
+  };
+  $("move-merge").onclick=async()=>{
+    const msg=$("move-msg");
+    try{
+      const o=await readMoveCode($("move-in").value),acct=S.account,fr=S.fr,before={xp:S.xp,stamps:stampN()};
+      S=mergeState(S,o);S.account=acct;if(fr)S.fr=fr;
+      try{checkStamps()}catch(e){}
+      save();rerenderAll();syncScore();
+      msg.textContent=`합쳤어요! XP ${before.xp} → ${S.xp}, 스탬프 ${before.stamps} → ${stampN()}개`;$("move-in").value="";
+      notifyText("기록을 합쳤어요.");
+    }catch(e){msg.textContent="코드를 읽지 못했어요. 처음부터 끝까지 빠짐없이 복사했는지 확인해 주세요."}
+  };
+  if(!d.open)d.showModal();
+}
 function rerenderAll(){refreshSummary();show(tab)}
 let authLib=null,authLibP=null;
 function preloadAuth(){
@@ -4824,6 +4877,7 @@ function renderSettings(force){
     <h4 class="set-h">도움말</h4><div class="set-sound"><p class="set-note" style="margin-top:0">하루카나를 어떻게 쓰는지 처음 안내를 다시 볼 수 있어요.</p><button type="button" class="rec-reset" id="guide-open">처음 안내 다시 보기</button>${S.flags.grad?' <button type="button" class="rec-reset" id="grad-open">기초 수료 다시 보기</button>':""}</div>
     <h4 class="set-h">학습 기록</h4>
     <div class="rec-etc">
+      <div><b>기록 옮기기</b><small>${IN_CLAUDE?"하루카나 사이트에서 공부한 기록을 여기로 가져와요":"claude.ai 버전(AI 기능)으로 기록을 옮기거나 가져와요"}</small><button class="rec-reset" id="move-open">기록 옮기기</button></div>
       <div><b>XP · 스탬프</b><small>${S.xp} XP · 스탬프 ${stampN()}개를 0으로 되돌려요</small>${resetBtn("reward","XP·스탬프 초기화")}</div>
       <div><b>모든 학습 기록</b><small>글자·단어·문장·한자·오답노트를 처음부터 다시 해요. 목표 코스도 다시 기초부터 열려요. 쌓은 XP·스탬프·연속 학습일·프로필은 남아요.</small>${resetBtn("all","모두 초기화")}</div>
     </div>${TEST_MODE?`<h4 class="set-h">테스트 도구 <small>(테스트 주소에서만 보여요)</small></h4>
@@ -4832,6 +4886,7 @@ function renderSettings(force){
       <div class="test-btns" style="margin-top:12px"><button type="button" class="rec-reset" id="data-check">데이터 검사</button></div><div id="data-check-out" class="set-note" aria-live="polite"></div></div>`:""}`;
   if($("data-check"))$("data-check").onclick=()=>{const r=runDataCheck();$("data-check-out").innerHTML=r.ok?`✿ 문제없어요 · ${r.sum}`:`<b>${r.bad.length}개 확인 필요</b> · ${r.sum}<br>${r.bad.slice(0,30).map(esc).join("<br>")}`};
   $("set-close").onclick=()=>d.close();
+  if($("move-open"))$("move-open").onclick=openMoveDlg;
   d.querySelectorAll("[data-clear]").forEach(b=>b.onclick=()=>testClear(b.dataset.clear));
   $("guide-open").onclick=()=>{d.close();openGuide()};
   $("hide-hg").onchange=e=>setHideHg(e.target.checked);
@@ -6147,6 +6202,7 @@ function renderPhrase(){
 }
 renderPhrase();
 try{checkStamps()}catch(e){} // 스탬프북: 처음 열면 지금까지 한 공부만큼 조용히 찍어 둔다
+if(IN_CLAUDE&&!S.xp)setTimeout(()=>{try{if(!localStorage.getItem("harukana-move-hint")){localStorage.setItem("harukana-move-hint","1");notifyText("사이트에서 공부한 기록이 있다면 설정 → '기록 옮기기'로 가져올 수 있어요.")}}catch(e){}},2500);
 $("phrase-listen").onclick=()=>{if(!('speechSynthesis' in window)){notifyText('이 브라우저에서는 음성 재생을 지원하지 않아요.');return}speak(todayPhrase()[5])};
 const hideHg=()=>{try{return localStorage.getItem("harukana-hidehg")==="1"}catch(e){return false}};
 function setHideHg(on){try{localStorage.setItem("harukana-hidehg",on?"1":"0")}catch(e){}document.body.classList.toggle("hide-hg",on)}
