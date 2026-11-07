@@ -3486,7 +3486,18 @@ async function photoFile(f){
   if(!f||!/^image\//.test(f.type)){notifyText("사진 파일(JPG·PNG)만 읽을 수 있어요.");return}
   const sample=await aiGet();
   if(!sample){notifyText("지금은 AI를 쓸 수 없어요. claude.ai에 로그인한 상태로 열었는지 확인해 주세요.");return}
-  readPhoto(sample,f);
+  let lim=null;try{lim=await sample.limits()}catch(e){}
+  if(lim&&!lim.images){notifyText("이 화면에서는 사진을 AI에게 보낼 수 없어요. 컴퓨터나 휴대폰 브라우저에서 claude.ai를 열어 주세요.");return}
+  readPhoto(sample,await enlargePhoto(f));
+}
+async function enlargePhoto(f){
+  try{
+    const bmp=await createImageBitmap(f),w=bmp.width,h=bmp.height,side=Math.max(w,h);
+    if(side>=1000){bmp.close&&bmp.close();return f}
+    const k=Math.min(3,1600/side),c=document.createElement("canvas");c.width=Math.round(w*k);c.height=Math.round(h*k);
+    const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.imageSmoothingQuality="high";x.drawImage(bmp,0,0,c.width,c.height);bmp.close&&bmp.close();
+    const b=await new Promise(r=>c.toBlob(r,"image/png"));return b?new File([b],"photo.png",{type:"image/png"}):f;
+  }catch(e){return f}
 }
 const bookOpen=()=>tab===6&&jv&&jv.mode==="book"&&!document.querySelector("dialog[open]");
 document.addEventListener("paste",e=>{if(!bookOpen())return;const it=[...((e.clipboardData&&e.clipboardData.items)||[])].find(x=>x.kind==="file"&&/^image\//.test(x.type));if(!it)return;e.preventDefault();photoFile(it.getAsFile())});
@@ -3506,19 +3517,21 @@ async function readPhoto(sample,file){
   const out=$("ph-out");
   try{
     const live=document.createElement("p");live.className="ai-bot";
-    const {text}=await sample(`사진 속 일본어를 한국어로 해석해 줘. 보는 사람은 일본어 초보 한국인이야.
+    const {text}=await sample(`함께 보낸 사진(이미지) 속 글자를 읽고, 그중 일본어를 한국어로 해석해 줘. 보는 사람은 일본어 초보 한국인이야.
 규칙:
-- 사진에 실제로 쓰여 있는 일본어만 읽어. 사진에 없는 글자를 추측해서 채우지 마. 흐려서 못 읽는 글자는 빼.
+- 사진에는 일본어와 영어·숫자·기호가 섞여 있을 수 있어. 히라가나·가타카나·한자가 한 글자라도 있으면 일본어가 있는 거야.
+- 사진에 실제로 쓰여 있는 글자만 읽어. 사진에 없는 글자를 추측해서 채우지 마.
 - 아래 형식 그대로, 다른 말 없이 답해.
-첫 줄: 전체 뜻: (사진 속 일본어 전체가 무슨 뜻인지 한국어 한두 문장)
-그 다음 줄부터 사진 속 일본어를 위에서 아래 순서로 한 덩어리씩, 최대 15줄:
+첫 줄: 전체 뜻: (사진 속 글 전체가 무슨 뜻인지 한국어 한두 문장)
+그 다음 줄부터 사진 속 일본어를 앞에서부터 의미 덩어리로 나눠 한 줄씩, 최대 15줄:
 일본어 원문 | 히라가나 읽기 | 한국어 뜻
-사진에 일본어가 없으면 "일본어 없음" 한 줄만 써.`,{images:[file],signal:photoCtl.signal,cache:false,onText:({text})=>{if(!live.isConnected){out.innerHTML="";out.appendChild(live)}live.textContent=text}});
+예외: 이미지가 아예 보이지 않으면 "사진 없음", 이미지는 보이는데 일본어 글자가 정말 하나도 없으면 "일본어 없음" 한 줄만 써.`,{images:[file],signal:photoCtl.signal,cache:false,onText:({text})=>{if(!live.isConnected){out.innerHTML="";out.appendChild(live)}live.textContent=text}});
     const raw=String(text||"").trim(),rows=raw.split(/\r?\n/).map(l=>l.replace(/^[\s\-*·•\d.)]+/,"").trim()).filter(Boolean);
     const meaningLine=rows.find(l=>/^전체\s*뜻\s*[:：]/.test(l));
     const lines=rows.filter(l=>l.includes("|")).map(l=>l.split("|").map(x=>x.trim())).filter(p=>p.length>=3&&p[0]&&!/^일본어|원문$/.test(p[0])).slice(0,15).map(p=>({ja:p[0].slice(0,60),yomi:p[1].slice(0,80),ko:p.slice(2).join(" ").slice(0,100)}));
-    const none=/^일본어\s*없음/.test(raw);
-    out.innerHTML=none?`<p class="rk-note">이 사진에서는 읽을 수 있는 일본어를 찾지 못했어요. 일본어 글자가 크게 나오게 다시 찍거나 잘라서 올려 주세요.</p>`
+    const none=/^["“]?일본어\s*없음/.test(raw),noImg=/^["“]?사진\s*없음/.test(raw);
+    out.innerHTML=noImg?`<p class="ai-err">사진이 AI에게 전달되지 않았어요. claude.ai 페이지를 새로 고친 뒤 다시 해 보거나, 다른 브라우저(크롬 등)에서 열어 주세요.</p>`
+      :none?`<p class="rk-note">이 사진에서는 읽을 수 있는 일본어를 찾지 못했어요. 일본어 글자가 크게 나오게 다시 찍거나 잘라서 올려 주세요.</p>`
       :lines.length?`${meaningLine?`<p class="ph-sum"><b>전체 뜻</b> ${esc(meaningLine.replace(/^전체\s*뜻\s*[:：]\s*/,"").slice(0,250))}</p>`:""}
       <ul class="ph-list">${lines.map(i=>`<li><div><b lang="ja" class="ja-font">${esc(i.ja)}</b> <small class="hgx">${esc(i.yomi)}</small></div><div class="ph-ko">${esc(i.ko)}</div><button type="button" class="ph-say" data-say="${esc(i.yomi||i.ja)}" aria-label="소리 듣기">🔊</button></li>`).join("")}</ul>
       <p class="ai-note">AI가 해석한 내용이라 틀릴 수 있어요. 사진은 저장하지 않아요.</p>`
