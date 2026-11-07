@@ -149,6 +149,39 @@
 .fr-add{display:flex;gap:8px;margin-top:10px}.fr-add input{flex:1;min-width:0;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;font-size:16px}
 .fr-add input:focus{outline:2px solid var(--accent);outline-offset:1px}.fr-add .ghost{min-height:44px}
 @media(max-width:520px){.fr-stats{align-items:flex-start;text-align:left;flex-basis:100%;padding-left:42px}}
+.ar{margin-top:18px;border:1px solid var(--line);border-bottom:4px solid var(--panel-shadow);border-radius:18px;background:var(--card);padding:0 18px}
+.ar>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:16px 0}
+.ar>summary::-webkit-details-marker{display:none}
+.ar>summary::before{content:"析";flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:var(--accent-soft);color:var(--accent-dark);font-size:22px;font-weight:800}
+.ar>summary::after{content:"›";margin-left:auto;font-size:22px;font-weight:700;color:var(--accent);transition:transform .15s}
+.ar[open]>summary::after{transform:rotate(90deg)}
+.ar-title{display:flex;flex-direction:column;min-width:0}.ar-title b{font-size:16px}.ar-title small{font-size:13px;color:var(--sub)}
+.ar[open]{padding-bottom:16px}
+.ar-h{font-size:14px;margin:14px 0 8px;color:var(--ink)}
+.ar-grid{display:grid;gap:6px}
+.ar-row{display:grid;grid-template-columns:minmax(80px,120px) 1fr 44px 56px;align-items:center;gap:10px;font-size:13px;padding:4px 6px;border-radius:8px}
+.ar-row b{text-align:right}.ar-row small{color:var(--sub);text-align:right}
+.ar-row.weak{background:var(--badbg)}.ar-row.weak .bar i{background:var(--bad)}
+.ar-top{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.ar-top li{padding:5px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:14px}.ar-top small{color:var(--sub)}
+.ar-ai{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:14px;background:var(--accent-soft)}
+.ar-ai>div{flex:1 1 200px;display:flex;flex-direction:column}.ar-ai b{font-size:15px}.ar-ai small{font-size:13px;color:var(--sub)}
+.ar-ai .next,.ar-ai .ghost{margin:0;text-decoration:none}
+.ar-ai-ic{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--accent);color:var(--onaccent);font-size:18px}
+.ar-ai-ic.thinking{animation:aiPulse 1.2s ease-in-out infinite}
+.ar-ai.off{background:var(--bg);border-style:dashed}.ar-ai.off .ar-ai-ic{background:var(--line);color:var(--sub)}
+.ar-result{margin-top:14px}
+.ar-sum{font-size:15px;line-height:1.7;font-weight:700}
+.ar-good{margin-top:8px;font-size:14px;color:var(--ok)}.ar-good b{margin-right:6px}
+.ar-weak{margin-top:10px;padding:12px 14px;border-left:4px solid var(--bad);border-radius:10px;background:var(--badbg)}
+.ar-weak b{font-size:15px}.ar-weak p{margin-top:4px;font-size:14px;line-height:1.6}.ar-tip{color:var(--ink)}
+.ar-plan{margin:0;padding-left:0;list-style:none;display:grid;gap:6px;counter-reset:none}
+.ar-plan li{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);font-size:14px}
+.ar-day{flex:none;font-weight:800;color:var(--accent-dark);min-width:52px}.ar-task{flex:1 1 180px;min-width:0}
+.ar-go{margin:6px 0 0;padding:5px 12px;min-height:34px;border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));border-radius:16px;background:var(--card);color:var(--accent-dark);font-weight:700;font-size:13px;cursor:pointer}
+.ar-plan .ar-go{margin:0}.ar-go:hover{border-color:var(--accent)}.ar-go:active{transform:scale(.97)}
+.ar-cheer{margin-top:12px;font-size:14px;color:var(--sub)}
+@media(max-width:520px){.ar{padding:0 14px}.ar-row{grid-template-columns:80px 1fr 40px}.ar-row small{display:none}}
 .ai-home{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:18px;background:var(--accent-soft);color:var(--ink);text-align:left;cursor:pointer;box-shadow:0 2px 0 var(--panel-shadow)}
 .ai-home:hover{border-color:var(--accent)}.ai-home:active{transform:scale(.98)}
 .ai-home-ic{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--accent);color:var(--onaccent);font-size:20px}
@@ -663,7 +696,7 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 
 <section id="v3" role="tabpanel" aria-labelledby="t3" hidden><div class="section-intro"><div><p class="section-kicker">VOCABULARY / 03</p><h2>단어 모으기</h2><p class="section-copy">기초 단어를 익히고, 확인 퀴즈로 내 것으로 만들어 보세요.</p></div><div class="section-mark" aria-hidden="true">語</div></div><div id="words"></div></section><section id="v6" role="tabpanel" aria-labelledby="t6" hidden><div class="section-intro"><div><p class="section-kicker">CONVERSATION / 여행 코스</p><h2>회화</h2><p class="section-copy">일본에서 바로 쓰는 말, 상황 대화, 점원 말 알아듣기, 표지판을 익히고, 여행 중에는 표현집을 꺼내 써요.</p></div><div class="section-mark" aria-hidden="true">旅</div></div><div id="kanji"></div></section><section id="v8" role="tabpanel" aria-labelledby="t8" hidden><div class="section-intro"><div><p class="section-kicker">JLPT N5 / N5 코스</p><h2>시험</h2><p class="section-copy">일본어능력시험 N5와 같은 형식으로 문자·어휘, 문법, 독해, 청해를 연습하고 모의시험을 봐요.</p></div><div class="section-mark" aria-hidden="true">試</div></div><div id="jlpt"></div></section>
 
-<section id="v4" role="tabpanel" aria-labelledby="t4" hidden><div class="section-intro"><div><p class="section-kicker">REVIEW</p><h2>복습</h2><p class="section-copy">오늘의 복습과 오답노트로 잊기 전에 다시 풀어 빈틈을 채워요.</p></div><div class="section-mark" aria-hidden="true">復</div></div><div id="review"></div><div id="note"></div></section>
+<section id="v4" role="tabpanel" aria-labelledby="t4" hidden><div class="section-intro"><div><p class="section-kicker">REVIEW</p><h2>복습</h2><p class="section-copy">오늘의 복습과 오답노트로 잊기 전에 다시 풀어 빈틈을 채워요.</p></div><div class="section-mark" aria-hidden="true">復</div></div><div id="review"></div><div id="ai-report"></div><div id="note"></div></section>
 <section id="v5" role="tabpanel" aria-labelledby="t5" hidden><div class="section-intro"><div><p class="section-kicker">PROFILE / 05</p><h2>나의 프로필</h2><p class="section-copy">칭호와 배지를 모으고, 분야마다 기록을 따로 관리해요. 문제를 맞히면 XP가 쌓여요.</p></div><div class="section-mark" aria-hidden="true">賞</div></div><div id="me-card"></div><div id="board"></div><div id="grass"></div><div id="records"></div><div id="badges"></div></section>
 
 
@@ -4660,6 +4693,7 @@ const dueKeys=()=>Object.keys(S.sr).filter(k=>S.sr[k].due<=today()&&noteOn(k)&&n
 let rv=null;
 function renderReview(){
   const el=$("review");if(!el)return;
+  try{renderAiReport()}catch(e){console.warn("약점 리포트",e)}
   if(!rv){
     const due=dueKeys().length,all=Object.keys(S.sr).filter(noteItem);
     const next=all.length?Math.min(...all.map(k=>S.sr[k].due))-today():0;
@@ -5408,6 +5442,105 @@ function openAiTutor(kind,id){
   if(!d.open)d.showModal();
 }
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-ai]");if(!b)return;e.preventDefault();e.stopPropagation();const i=b.dataset.ai.indexOf(":");openAiTutor(b.dataset.ai.slice(0,i),b.dataset.ai.slice(i+1))},true);
+const accOf=recs=>{let r=0,w=0;for(const k in recs||{}){r+=Number(recs[k].r)||0;w+=Number(recs[k].w)||0}return{r,w,n:r+w,p:r+w?Math.round(r/(r+w)*100):null}};
+function studyStats(){
+  const jl={};for(const a in JL_AREAS){const recs={};for(const id in S.jl||{})if(JL[id]&&JL[id].a===a)recs[id]=S.jl[id];jl[a]=accOf(recs)}
+  const areas=[["글자(가나)",accOf(S.c)],["단어",accOf(S.w)],["문장·문법",accOf(S.sx)],
+    ...(isMid()?[["여행 표현",accOf(S.tv)]]:[]),...(isAdv()?[["N5 한자",accOf(S.kj)],...Object.keys(JL_AREAS).map(a=>["N5 "+JL_AREAS[a],jl[a]])]:[])];
+  const notes=Object.keys(S.n).filter(noteOn).map(noteItem).filter(Boolean).sort((a,b)=>S.n[b.key].wr-S.n[a.key].wr);
+  const noteTxt=it=>{const k=it.key[0],kind={c:"글자",w:"단어",s:"문장",j:"한자",v:"여행"}[k]||"단어";return `${kind} ${aiPlain(it.jp)} (${aiPlain(it.mean)}) ${S.n[it.key].wr}번 틀림`};
+  const jw=jlWrong().slice(0,12).map(id=>{const q=JL[id],ans=q.t==="star"?q.pc[q.at]:q.ch[0];return `N5 ${JL_AREAS[q.a]}·${q.t}: ${jlSum(q).replace(/_/g,"")} → 정답 ${ans}`});
+  const days=[...Array(14)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-i);return S.daily[keyOf(d)]||0}).reverse();
+  return {areas,notes,noteTxt,jw,days,X:S.jx||{},streak:streak(),due:dueKeys().length};
+}
+function aiGoList(){
+  const g={kana:"가나 퀴즈",words:"단어 퀴즈",sents:"문장 연습",note:"오답노트",review:"오늘의 복습"};
+  if(isMid())Object.assign(g,{"travel:talk":"여행 회화","travel:ear":"점원 말 알아듣기","travel:sign":"표지판 읽기","travel:chat":"상황 대화"});
+  if(isAdv())Object.assign(g,{"jl:v":"N5 문자·어휘 연습","jl:g":"N5 문법 연습","jl:r":"N5 독해 연습","jl:l":"N5 청해 연습","jl:x":"N5 틀린 문제 다시 풀기","jl:home":"N5 모의시험","kanji":"N5 한자"});
+  return g;
+}
+function aiGo(k){
+  if(k==="kana")return show(1);if(k==="words")return show(3);if(k==="sents")return show(7);
+  if(k==="review"){show(4);return}
+  if(k==="note"){show(4);setTimeout(()=>{const n=$("note");if(n)n.scrollIntoView({block:"start"})},80);return}
+  if(k.startsWith("travel:")&&isMid()){jv={view:"jlist",mode:k.slice(7)};return show(6)}
+  if(k==="kanji"&&isAdv()){jv={view:"jlist",mode:"kanji",lv:"N5"};jx={view:"kanji"};return show(8)}
+  if(k==="jl:x"&&isAdv()&&jlWrong().length){jx={view:"prac",a:"x",qs:jlPractice("x"),i:0,right:0};return show(8)}
+  if(k.startsWith("jl:")&&isAdv()){const a=k.slice(3);return jlGo(JL_AREAS[a]?a:null)()}
+  show(0);
+}
+let aiRepBusy=null;
+function renderAiReport(){
+  const el=$("ai-report");if(!el)return;
+  const st=studyStats(),rows=st.areas.filter(([,a])=>a.n>=5);
+  const worst=rows.slice().sort((a,b)=>a[1].p-b[1].p)[0];
+  const bar=p=>`<span class="bar"><i style="width:${p}%"></i></span>`;
+  const mine=rows.length?`<div class="ar-grid">${rows.map(([n,a])=>`<div class="ar-row${worst&&n===worst[0]&&a.p<85?" weak":""}"><span>${n}</span>${bar(a.p)}<b>${a.p}%</b><small>${a.n}문제</small></div>`).join("")}</div>`
+    :`<p class="rk-note">문제를 조금 더 풀면 영역별 정답률이 보여요. (영역마다 5문제 이상)</p>`;
+  const top=st.notes.slice(0,5);
+  const R=S.aiRep&&S.aiRep.r;
+  const aiPart=!IN_CLAUDE
+    ?`<div class="ar-ai off"><span class="ar-ai-ic" aria-hidden="true">✦</span><div><b>AI 약점 진단</b><small>AI가 내 기록을 읽고 약점과 3~5일 공부 계획을 만들어 줘요. claude.ai에서 여는 하루카나에서 쓸 수 있어요.</small></div><a class="ghost" href="${ARTIFACT_URL}" target="_blank" rel="noopener">claude.ai 버전</a></div>`
+    :aiRepBusy?`<div class="ar-ai"><span class="ar-ai-ic thinking" aria-hidden="true">✦</span><div><b>하루가 기록을 읽고 있어요…</b><small>${esc(aiRepBusy)}</small></div><button class="ghost" id="ar-stop">멈추기</button></div>`
+    :`<div class="ar-ai"><span class="ar-ai-ic" aria-hidden="true">✦</span><div><b>AI 약점 진단</b><small>${R?`마지막 분석: ${agoText(S.aiRep.at)}`:"AI가 내 기록을 읽고 약점과 3~5일 공부 계획을 만들어 줘요"}</small></div><button class="next" id="ar-run">${R?"다시 분석":"분석 받기"}</button></div>`;
+  const go=k=>{const g=aiGoList();return g[k]?`<button type="button" class="ar-go" data-argo="${esc(k)}">${esc(g[k])} ›</button>`:""};
+  const rep=R?`<div class="ar-result">
+      <p class="ar-sum">${esc(R.summary)}</p>
+      ${R.strengths&&R.strengths.length?`<p class="ar-good"><b>잘하고 있어요</b> ${R.strengths.map(esc).join(" · ")}</p>`:""}
+      ${R.weak.map(w=>`<div class="ar-weak"><b>${esc(w.title)}</b><p>${esc(w.why)}</p><p class="ar-tip">💡 ${esc(w.tip)}</p>${go(w.go)}</div>`).join("")}
+      ${R.plan.length?`<h4 class="ar-h">공부 계획</h4><ol class="ar-plan">${R.plan.map(p=>`<li><span class="ar-day">${esc(p.day)}</span><span class="ar-task">${esc(p.task)}</span>${go(p.go)}</li>`).join("")}</ol>`:""}
+      ${R.cheer?`<p class="ar-cheer">🦊 ${esc(R.cheer)}</p>`:""}
+      <p class="ai-note">AI가 만든 분석이라 틀릴 수 있어요.</p></div>`:"";
+  el.innerHTML=`<details class="ar"${R||aiRepBusy?" open":""}><summary><span class="ar-title"><b>약점 리포트</b><small>${worst&&worst[1].p<85?`가장 약한 곳: ${worst[0]} ${worst[1].p}%`:"영역별 정답률과 자주 틀린 것"}</small></span></summary>
+    <h4 class="ar-h">내 기록 한눈에</h4>${mine}
+    ${top.length?`<h4 class="ar-h">자주 틀린 것</h4><ul class="ar-top">${top.map(it=>`<li><span lang="ja">${it.jp}</span> <small>${esc(aiPlain(it.mean))} · ${S.n[it.key].wr}번</small></li>`).join("")}</ul>`:""}
+    ${aiPart}${rep}</details>`;
+  el.querySelectorAll("[data-argo]").forEach(b=>b.onclick=()=>aiGo(b.dataset.argo));
+  if($("ar-run"))$("ar-run").onclick=runAiReport;
+  if($("ar-stop"))$("ar-stop").onclick=()=>{if(aiRepCtl)aiRepCtl.abort()};
+}
+let aiRepCtl=null;
+async function runAiReport(){
+  const sample=await aiGet();
+  if(!sample){notifyText("지금은 AI를 쓸 수 없어요. claude.ai에 로그인한 상태로 열었는지 확인해 주세요.");return}
+  const st=studyStats(),goList=aiGoList();
+  const data=[
+    `진도: 익힌 가나 ${[...ALL,...ALL_K].filter(c=>cd(c.k)).length}/${ALL.length+ALL_K.length}자, 모은 단어 ${WORDS.filter(w=>wd(w.id)).length}/${WORDS.length}개, ${basicDone()?"기초 수료(여행·N5 코스 공부 중)":"기초(가나·단어·문장) 공부 중"}`,
+    `연속 공부 ${st.streak}일, 최근 14일 하루 공부 횟수: ${st.days.join(",")}, 오늘 복습할 문제 ${st.due}개`,
+    `영역별 정답률: ${st.areas.filter(([,a])=>a.n).map(([n,a])=>`${n} ${a.p}%(${a.n}문제)`).join(", ")||"아직 기록 적음"}`,
+    st.X.n?`N5 모의시험: ${st.X.n}번 봄, 최고 ${st.X.best}점/180, 합격선 ${st.X.pass?"넘음":"아직"}, 실전 세트 ${JSON.stringify(st.X.sets||{})}`:"",
+    st.notes.length?`오답노트에서 자주 틀린 것:\n${st.notes.slice(0,15).map(st.noteTxt).join("\n")}`:"",
+    st.jw.length?`N5에서 마지막에 틀린 문제:\n${st.jw.join("\n")}`:""].filter(Boolean).join("\n");
+  const prompt=`너는 일본어 학습 앱 '하루카나'의 튜터 여우 '하루'야. 아래는 한국인 초보 학습자의 실제 학습 기록이야.
+기록을 보고 약점을 진단하고 앞으로 며칠 공부 계획을 세워 줘.
+규칙:
+- 한국어로, 짧고 구체적으로. 기록에 있는 것만 근거로 삼고 지어내지 마. 기록이 적으면 적다고 말해.
+- 틀린 것들의 공통점(예: 비슷한 글자, 특정 조사, 탁음, 장음)을 찾아 설명해.
+- go에는 아래 바로 가기 키 중 하나만 써: ${Object.keys(goList).join(", ")}
+- 일본어를 쓸 때는 읽는 법(히라가나)을 같이 적어.
+JSON 하나로만 답해:
+{"summary":"전체 진단 1~2문장","strengths":["잘하는 점 최대 2개"],"weak":[{"title":"약점 이름","why":"기록에서 보이는 근거","tip":"고치는 요령 한두 문장","go":"바로 가기 키"}],"plan":[{"day":"1일째","task":"할 일 한 문장","go":"바로 가기 키"}],"cheer":"응원 한 문장"}
+weak는 1~3개, plan은 3~5개.
+
+학습 기록:
+${data}`;
+  aiRepBusy="처음이면 AI 사용 허락을 한 번 물어봐요";aiRepCtl=new AbortController();renderAiReport();
+  try{
+    const r=await sample.json(prompt,{signal:aiRepCtl.signal,cache:false});
+    const s=(x,n)=>String(x||"").slice(0,n),okGo=k=>goList[k]?k:"";
+    const clean={summary:s(r&&r.summary,300),strengths:(Array.isArray(r&&r.strengths)?r.strengths:[]).slice(0,2).map(x=>s(x,80)),
+      weak:(Array.isArray(r&&r.weak)?r.weak:[]).slice(0,3).map(w=>({title:s(w.title,40),why:s(w.why,200),tip:s(w.tip,200),go:okGo(w.go)})).filter(w=>w.title),
+      plan:(Array.isArray(r&&r.plan)?r.plan:[]).slice(0,5).map(p=>({day:s(p.day,12),task:s(p.task,120),go:okGo(p.go)})).filter(p=>p.task),
+      cheer:s(r&&r.cheer,120)};
+    if(!clean.summary&&!clean.weak.length)throw{code:"invalid_json"};
+    S.aiRep={at:Date.now(),r:clean};save();
+  }catch(e){
+    const code=e&&e.code;
+    if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(code)){aiOff=true;notifyText("AI 사용을 허락하지 않았거나 이 계정에서는 쓸 수 없어요.")}
+    else if(code==="rate_limited")notifyText("AI 사용량이 많아요. 조금 쉬었다가 다시 해 주세요.");
+    else if(code!=="cancelled")notifyText("분석을 받지 못했어요. 다시 눌러 주세요.");
+  }finally{aiRepBusy=null;aiRepCtl=null;renderAiReport()}
+}
 const jlSum=s=>s.t==="pg"?`글 속 빈칸 （${s.k}） · `+s.p.replace(/\{\d\}/g,"（ ）").slice(0,24)+"…":s.t==="read"||s.t==="write"?s.w:s.t==="star"?s.pre+" … "+s.post:s.t==="resp"?"「"+s.lines[0][1]+"」":s.t==="utt"?s.q:(s.q||"").replace(/_/g,"");
 const jlStop=()=>{try{speechSynthesis.cancel()}catch(e){}};
 function jlRecord(id,ok){if(!JL[id])return;S.jl=S.jl||{};const r=S.jl[id]||{r:0,w:0};if(ok)r.r++;else r.w++;r.l=ok?1:0;S.jl[id]=r}
