@@ -4221,7 +4221,7 @@ async function addFriendUid(uid){
   if(S.fr[uid]>0)return "이미 친구예요.";
   if(frIds().length>=FR_MAX)return `친구는 ${FR_MAX}명까지 추가할 수 있어요.`;
   let d=null;try{d=await restGet(`scores/${uid}`)}catch(e){return "연결이 끊겼어요. 잠시 뒤 다시 해 주세요."}
-  if(!d)return "아직 기록이 없는 친구예요. 친구가 로그인하고 문제를 하나 맞히면 추가할 수 있어요.";
+  if(!d)return "아직 기록이 없는 친구예요. 친구가 하루카나에서 문제를 하나 맞히면 추가할 수 있어요.";
   S.fr[uid]=Date.now();rk.friends[uid]=d;save();
   if(tab===5)renderRank();
   return `「${maskBad(String(d.nick||"학습자").slice(0,12))}」님을 친구로 추가했어요!`;
@@ -4241,7 +4241,7 @@ async function addFriendCode(code){
     if(!r.ok)throw new Error("REST "+r.status);
     rows=(await r.json()).filter(x=>x.document).map(x=>docOf(x.document));
   }catch(e){return "연결이 끊겼어요. 잠시 뒤 다시 해 주세요."}
-  if(!rows.length)return "그 코드의 친구를 찾지 못했어요. 친구가 로그인하고 문제를 하나 맞혀야 찾을 수 있어요.";
+  if(!rows.length)return "그 코드의 친구를 찾지 못했어요. 코드를 다시 확인하거나, 친구가 문제를 하나 맞힌 뒤 다시 해 주세요.";
   if(rows.length>1)return "같은 코드가 여러 명이에요. 친구에게 초대 링크를 받아 눌러 주세요.";
   return addFriendUid(rows[0].id);
 }
