@@ -218,6 +218,7 @@ body.ph-drop #v6{outline:3px dashed var(--accent);outline-offset:6px;border-radi
 .ph-list b{font-size:17px}.ph-list small{color:var(--sub)}.ph-ko{font-size:14px;margin-top:2px}
 .ph-list .ar-go{margin-top:6px}
 .ph-say{position:absolute;right:6px;top:6px;width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer}
+.go-steps{margin:4px 0 6px;padding-left:22px;font-size:14px;line-height:1.8;color:var(--ink)}
 .move-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.move-row .next{margin:0}.move-row small{flex:1 1 200px;font-size:13px;color:var(--sub)}
 .move-ta{width:100%;margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:12px/1.4 ui-monospace,Consolas,monospace;resize:vertical;word-break:break-all}
 .ai-home{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:18px;background:var(--accent-soft);color:var(--ink);text-align:left;cursor:pointer;box-shadow:0 2px 0 var(--panel-shadow)}
@@ -3462,7 +3463,7 @@ function aiOnlyNotice(title,what){
   let d=$("ai-dlg");if(!d){d=document.createElement("dialog");d.id="ai-dlg";d.className="set-dlg ai-dlg";document.body.appendChild(d)}
   d.innerHTML=`<div class="set-top"><h3><span class="ai-mark" aria-hidden="true">✦</span> ${esc(title)}</h3><button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
     <p class="guide-p">${esc(what)} 이 기능은 <b>claude.ai에서 여는 하루카나</b>에서만 쓸 수 있어요. 보는 사람의 Claude 계정으로 동작해서 하루카나는 따로 돈이 들지 않고, 내용도 저장하지 않아요.</p>
-    <div class="navrow"><button type="button" class="ghost" id="ai-no">닫기</button><a class="next" href="${ARTIFACT_URL}" target="_blank" rel="noopener">claude.ai 버전 열기</a></div>`;
+    <div class="navrow"><button type="button" class="ghost" id="ai-no">닫기</button><button type="button" class="next" data-goclaude>claude.ai 버전 열기</button></div>`;
   $("ai-x").onclick=$("ai-no").onclick=()=>d.close();if(!d.open)d.showModal();
 }
 const aiFail=e=>{const c=e&&e.code;
@@ -4166,6 +4167,30 @@ function openMoveDlg(){
   };
   if(!d.open)d.showModal();
 }
+let goCode=null;
+function openClaudeGo(){
+  document.querySelectorAll("dialog[open]").forEach(x=>x.close());
+  let d=$("go-dlg");if(!d){d=document.createElement("dialog");d.id="go-dlg";d.className="set-dlg";d.setAttribute("aria-labelledby","go-title");document.body.appendChild(d)}
+  goCode=null;makeMoveCode().then(c=>goCode=c).catch(()=>{});
+  d.innerHTML=`<div class="set-top"><h3 id="go-title">✦ claude.ai 버전으로 가기</h3><button class="set-x" id="go-x" aria-label="닫기">×</button></div>
+    <p class="guide-p" style="text-align:left;max-width:none">AI 기능은 claude.ai에서 여는 하루카나에서 써요. 그런데 <b>이 사이트와 claude.ai 버전은 학습 기록이 따로 저장돼요.</b> 지금까지 한 공부를 이어 가려면 <b>먼저 기록을 복사해 가세요.</b></p>
+    <ol class="go-steps"><li><b>아래 버튼</b>을 누르면 기록이 복사되고 claude.ai가 열려요</li><li>claude.ai에 <b>로그인</b>해요 (처음 한 번)</li><li>하루카나에서 <b>설정 → 기록 옮기기</b> → 붙여 넣기 → <b>기록 합치기</b></li></ol>
+    <div class="navrow"><button type="button" class="next" id="go-copy">기록 복사하고 claude.ai 열기</button></div>
+    <textarea id="go-out" class="move-ta" rows="3" readonly hidden aria-label="기록 코드"></textarea>
+    <p class="set-note" id="go-msg" aria-live="polite" style="text-align:center"></p>
+    <p style="text-align:center;margin:6px 0 0"><a class="link" id="go-plain" href="${ARTIFACT_URL}" target="_blank" rel="noopener">기록 없이 그냥 열기</a></p>`;
+  $("go-x").onclick=()=>d.close();
+  $("go-copy").onclick=async()=>{
+    const code=goCode||await makeMoveCode();
+    try{await navigator.clipboard.writeText(code)}
+    catch(e){const ta=$("go-out");ta.hidden=false;ta.value=code;ta.focus();ta.select();
+      $("go-msg").innerHTML=`자동 복사가 막혀 있어요. 위 코드가 모두 선택돼 있으니 <b>Ctrl+C</b>(휴대폰은 길게 눌러 복사)로 복사한 뒤 <a class="link" href="${ARTIFACT_URL}" target="_blank" rel="noopener">claude.ai 열기</a>를 눌러 주세요.`;return}
+    const w=window.open(ARTIFACT_URL,"_blank","noopener");
+    $("go-msg").innerHTML=w===null?`기록을 복사했어요! 창이 자동으로 안 열리면 <a class="link" href="${ARTIFACT_URL}" target="_blank" rel="noopener">여기</a>를 눌러 주세요.`:"기록을 복사했어요! 열린 claude.ai에서 설정 → 기록 옮기기에 붙여 넣어 주세요.";
+  };
+  if(!d.open)d.showModal();
+}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-goclaude]");if(!b)return;e.preventDefault();openClaudeGo()});
 function rerenderAll(){refreshSummary();show(tab)}
 let authLib=null,authLibP=null;
 function preloadAuth(){
@@ -5656,7 +5681,7 @@ function openAiTutor(kind,id){
   if(!IN_CLAUDE){
     d.innerHTML=top+`<p class="guide-p">AI 튜터는 <b>claude.ai에서 여는 하루카나</b>에서만 쓸 수 있어요. 질문은 보는 사람의 Claude 계정으로 보내져서, 하루카나는 따로 돈이 들지 않고 대화 내용도 저장하지 않아요.</p>
       <p class="guide-p s-note">이 사이트의 학습 기록은 claude.ai 버전으로 옮겨지지 않아요. 궁금한 문제가 있을 때 열어서 물어보세요.</p>
-      <div class="navrow"><button type="button" class="ghost" id="ai-no">닫기</button><a class="next" href="${ARTIFACT_URL}" target="_blank" rel="noopener">claude.ai 버전 열기</a></div>`;
+      <div class="navrow"><button type="button" class="ghost" id="ai-no">닫기</button><button type="button" class="next" data-goclaude>claude.ai 버전 열기</button></div>`;
     $("ai-x").onclick=$("ai-no").onclick=()=>d.close();if(!d.open)d.showModal();return;
   }
   const turns=[];
@@ -5735,7 +5760,7 @@ function renderAiReport(){
   const top=st.notes.slice(0,5);
   const R=S.aiRep&&S.aiRep.r;
   const aiPart=!IN_CLAUDE
-    ?`<div class="ar-ai off"><span class="ar-ai-ic" aria-hidden="true">✦</span><div><b>AI 약점 진단</b><small>AI가 내 기록을 읽고 약점과 3~5일 공부 계획을 만들어 줘요. claude.ai에서 여는 하루카나에서 쓸 수 있어요.</small></div><a class="ghost" href="${ARTIFACT_URL}" target="_blank" rel="noopener">claude.ai 버전</a></div>`
+    ?`<div class="ar-ai off"><span class="ar-ai-ic" aria-hidden="true">✦</span><div><b>AI 약점 진단</b><small>AI가 내 기록을 읽고 약점과 3~5일 공부 계획을 만들어 줘요. claude.ai에서 여는 하루카나에서 쓸 수 있어요.</small></div><button type="button" class="ghost" data-goclaude>claude.ai 버전</button></div>`
     :aiRepBusy?`<div class="ar-ai"><span class="ar-ai-ic thinking" aria-hidden="true">✦</span><div><b>하루가 기록을 읽고 있어요…</b><small>${esc(aiRepBusy)}</small></div><button class="ghost" id="ar-stop">멈추기</button></div>`
     :`<div class="ar-ai"><span class="ar-ai-ic" aria-hidden="true">✦</span><div><b>AI 약점 진단</b><small>${R?`마지막 분석: ${agoText(S.aiRep.at)}`:"AI가 내 기록을 읽고 약점과 3~5일 공부 계획을 만들어 줘요"}</small></div><button class="next" id="ar-run">${R?"다시 분석":"분석 받기"}</button></div>`;
   const go=k=>{const g=aiGoList();return g[k]?`<button type="button" class="ar-go" data-argo="${esc(k)}">${esc(g[k])} ›</button>`:""};
