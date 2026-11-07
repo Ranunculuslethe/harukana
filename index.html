@@ -620,9 +620,6 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 <div class="doors" id="home-doors" role="group" aria-label="공부 입구"></div>
 <button type="button" class="ai-home" data-ai="free:"><span class="ai-home-ic" aria-hidden="true">✦</span><span class="ai-home-t"><b>AI 튜터 하루에게 물어보기</b><small>문법·단어·여행 표현, 일본어라면 무엇이든 물어봐요</small></span><span class="door-go" aria-hidden="true">›</span></button>
 <div class="goal-card home-goal" id="home-goal" aria-label="오늘의 작은 목표"></div>
-<div class="journey-heading"><div><span class="section-kicker" id="road-kicker">LEARNING PATH</span><h2>나의 학습 길</h2></div><span class="journey-badge" id="road-pct">전체 여정 0%</span></div>
-<div class="road-overall"><div class="bar"><i id="road-bar"></i></div><small id="road-sum"></small></div>
-<div class="road" id="road"></div>
 <p class="path-footer">한 글자씩 쌓이는 나의 일본어 <span>·</span> 一日、一歩。</p></section>
 <section id="v1" role="tabpanel" aria-labelledby="t1" hidden>
   <div class="seg kana-sub top-tabs" role="group" aria-label="가나 공부 방법"><button data-kv="1" class="on" aria-pressed="true">도감</button><button data-kv="2" aria-pressed="false">퀴즈</button></div>
@@ -5751,41 +5748,21 @@ const roadCourses=()=>[ROAD_MID,ROAD_ADV];
 const roadSecs=()=>basicDone()?[...ROAD,...roadCourses()]:ROAD;
 const roadSteps=()=>roadSecs().flatMap(sec=>sec.steps);
 const roadCurrent=()=>roadSteps().find(st=>!st.soon&&stepProg(st).f<1)||null;
-function renderRoad(){
-  const el=$("road");if(!el)return;
-  const open=basicDone(),live=open?roadCourses():[],cur=roadCurrent();
-  const prog=sec=>{const ps=sec.steps.map(stepProg);return{title:sec===ROAD_MID?"여행 준비":sec===ROAD_ADV?"N5 합격까지":"기초",pct:Math.floor(ps.reduce((a,p)=>a+p.f,0)/ps.length*100),done:ps.filter(p=>p.f>=1).length,n:ps.length}};
-  const P=(live.length?live:[{steps:ROAD_STEPS}]).map(prog),avg=Math.floor(P.reduce((a,p)=>a+p.pct,0)/P.length);
-  $("road").closest("section").classList.toggle("road-is-mid",live.length>0);
-  $("road-kicker").textContent=live.length?"LEARNING PATH · 여행 · N5":"LEARNING PATH · 기초";
-  $("road-pct").textContent=P.map(p=>`${p.title} ${p.pct}%`).join(" · ");
-  $("road-bar").style.width=avg+"%";
-  $("road-sum").textContent=(live.length?P.map(p=>`${p.title} ${p.done}/${p.n}단계`).join(" · "):`기초 ${ROAD_STEPS.length}단계 중 ${P[0].done}단계 완료`)+(cur?` · 지금 여기: ${cur.name}`:open?" · 모든 여정을 마쳤어요!":"");
-  let no=0;
-  const secHtml=(sec,si,lock)=>{
-    const sp=sec.steps.map(stepProg),real=sec.steps.filter(st=>!st.soon),secDone=!lock&&real.length>0&&real.every(st=>stepProg(st).f>=1),here=sec.steps.includes(cur);
-    return `<details class="road-sec${secDone?" done":""}${here?" here":""}${sec.mid?" mid":""}${sec.adv?" adv":""}${lock?" locked":""}"${here||(!lock&&!cur&&(sec.mid||sec.adv))?" open":""}><summary><span class="road-ic">${sec.icon}</span><span class="road-title"><b>${si+1}구간 · ${sec.title}${sec.mid?' <em class="mid-tag">여행</em>':sec.adv?' <em class="adv-tag">N5</em>':""}</b><small>${lock?`기초를 마치면 열려요 · ${sec.steps.length}단계`:`${real.filter(st=>stepProg(st).f>=1).length} / ${real.length}단계 완료`}</small></span><span class="road-state">${secDone?"✿ 완료":here?"지금 여기":lock?"잠김":""}</span></summary><div class="journey">${sec.steps.map((st,i)=>{
-      no++;const p=sp[i],complete=!lock&&p.f>=1,active=st===cur,cls=lock?"soon":active?"current":complete?"complete":"upcoming";
-      return `<div class="lesson ${cls}"><div class="lesson-track"><button class="lesson-node" data-step="${st.id}" aria-label="${st.name} 열기"${lock?" disabled":""}>${complete?"✿":st.mark}</button>${active?'<svg class="here-fox" viewBox="0 0 180 190" aria-hidden="true"><use href="#fox"/></svg>':""}</div><button class="lesson-info" data-step="${st.id}"${lock?" disabled":""}><span class="lesson-eyebrow">STEP ${String(no).padStart(2,"0")}${lock?" <em>잠김</em>":active?" <em>지금 여기</em>":complete?" <em>완료</em>":""}</span><h3>${st.name}</h3><p>${st.desc}</p><span class="lesson-meta">${lock?"기초를 마치면 열려요":`${p.n} / ${p.t} 완료`}</span>${!lock&&(active||(p.n&&!complete))?`<div class="bar"><i style="width:${p.f*100}%"></i></div>`:""}</button><span class="lesson-chevron" aria-hidden="true">›</span></div>`}).join("")}</div></details>`};
-  const begDone=ROAD_STEPS.filter(st=>stepProg(st).f>=1).length;
-  renderDoors(prog,cur);
-  el.innerHTML=(live.length
-    ?`<details class="road-group"><summary><span class="road-ic">初</span><span class="road-title"><b>기초 여정 · 1~4구간</b><small>${begDone} / ${ROAD_STEPS.length}단계 완료 · 가나·단어·문장</small></span><span class="road-state">${begDone===ROAD_STEPS.length?"✿ 완료":""}</span></summary>${ROAD.map((s,i)=>secHtml(s,i)).join("")}</details>${live.map((s,i)=>secHtml(s,ROAD.length+i)).join("")}`
-    :ROAD.map((s,i)=>secHtml(s,i)).join("")+roadCourses().map((s,i)=>secHtml(s,ROAD.length+i,true)).join(""));
-  el.querySelectorAll("[data-step]:not([disabled])").forEach(b=>b.onclick=()=>roadSteps().find(s=>s.id===b.dataset.step).go());
-}
-function renderDoors(prog,cur){
+function renderRoad(){renderDoors()}
+function renderDoors(){
   const el=$("home-doors");if(!el)return;
-  const open=basicDone(),b=prog({steps:ROAD_STEPS}),left=b.n-b.done,bcur=ROAD_STEPS.find(st=>stepProg(st).f<1);
+  const open=basicDone(),left=ROAD_STEPS.filter(st=>stepProg(st).f<1).length;
+  const info=steps=>{const ps=steps.map(stepProg),next=steps.find(st=>!st.soon&&stepProg(st).f<1);return{pct:Math.floor(ps.reduce((a,p)=>a+p.f,0)/ps.length*100),done:ps.filter(p=>p.f>=1).length,n:ps.length,next}};
+  const B=info(ROAD_STEPS),T=info(ROAD_MID.steps),N=info(ROAD_ADV.steps);
+  const note=(x,on)=>!on?`기초 ${left}단계 남음`:x.next?`다음: ${x.next.name}`:"✿ 모두 마쳤어요";
   const doors=[
-    {k:"b",ic:"初",t:"기초",s:"가나 · 단어 · 문장",pct:b.pct,note:open?"✿ 수료":bcur?`다음: ${bcur.name}`:"",on:true},
-    {k:"t",ic:"旅",t:"여행 코스",s:"회화 · 듣기 · 표지판",pct:prog(ROAD_MID).pct,note:open?"":`기초 ${left}단계 남음`,on:open},
-    {k:"n",ic:"試",t:"N5 코스",s:"문자 · 문법 · 독해 · 청해",pct:prog(ROAD_ADV).pct,note:open?"":`기초 ${left}단계 남음`,on:open}];
-  el.innerHTML=doors.map(d=>`<button type="button" class="door door-${d.k}${d.on?"":" locked"}" data-door="${d.k}" aria-label="${d.t}${d.on?" 열기":" (잠김, 기초를 마치면 열려요)"}"><span class="door-ic" aria-hidden="true">${d.ic}</span><span class="door-txt"><b>${d.t}${d.on?"":' <em class="door-lock">잠김</em>'}</b><small>${d.s}</small><span class="bar"><i style="width:${d.on?d.pct:0}%"></i></span><span class="door-note">${d.on?d.pct+"%":""}${d.on&&d.note?" · ":""}${d.note}</span></span><span class="door-go" aria-hidden="true">${d.on?"›":"🔒"}</span></button>`).join("");
-  el.querySelectorAll("[data-door]").forEach(x=>x.onclick=()=>{const k=x.dataset.door;
-    if(k==="b"){const st=bcur;if(st)st.go();else show(1);return}
-    if(!open)return notifyText(`여행 코스와 N5 코스는 기초를 마치면 함께 열려요. ${left}단계 남았어요!`);
-    show(k==="t"?6:8)});
+    {k:"b",ic:"初",t:"기초",s:"가나 · 단어 · 문장",x:B,on:true,tab:1},
+    {k:"t",ic:"旅",t:"여행 코스",s:"회화 · 듣기 · 표지판",x:T,on:open,tab:6},
+    {k:"n",ic:"試",t:"N5 코스",s:"문자 · 문법 · 독해 · 청해",x:N,on:open,tab:8}];
+  el.innerHTML=doors.map(d=>`<button type="button" class="door door-${d.k}${d.on?"":" locked"}" data-door="${d.k}" aria-label="${d.t}${d.on?(d.x.next?`, 다음 단계 ${d.x.next.name}`:""):" (잠김, 기초를 마치면 열려요)"}"><span class="door-ic" aria-hidden="true">${d.ic}</span><span class="door-txt"><b>${d.t}${d.on?"":' <em class="door-lock">잠김</em>'}</b><small>${d.s}</small><span class="bar"><i style="width:${d.on?d.x.pct:0}%"></i></span><span class="door-note">${d.on?`${d.x.done}/${d.x.n}단계 · `:""}${note(d.x,d.on)}</span></span><span class="door-go" aria-hidden="true">${d.on?"›":"🔒"}</span></button>`).join("");
+  el.querySelectorAll("[data-door]").forEach(b=>b.onclick=()=>{const d=doors.find(x=>x.k===b.dataset.door);
+    if(!d.on)return notifyText(`여행 코스와 N5 코스는 기초를 마치면 함께 열려요. ${left}단계 남았어요!`);
+    if(d.x.next)d.x.next.go();else show(d.tab)});
 }
 function setLast(o){if(JSON.stringify(S.last)!==JSON.stringify(o)){S.last=o;save()}}
 function lastPlace(){const L=S.last;if(!L)return"";
