@@ -3687,26 +3687,28 @@ const BADGES=[
 const STAMP_XP=30;
 const titleTier=id=>(S.titles||{})[id]??-1;
 const STAMPS=[
-  {id:"narita",ja:"東京タワー",ko:"도쿄 타워",ink:"#B54A3C",hint:"첫 문제를 맞히면",was:["first"],test:()=>S.xp>0},
-  {id:"tokyo",ja:"スカイツリー",ko:"도쿄 스카이트리",ink:"#3D5A99",hint:"기본 히라가나 46자",was:["hira46"],test:()=>allCd(catChars("h",1))},
-  {id:"asakusa",ja:"浅草",ko:"아사쿠사 가미나리몬",ink:"#B54A3C",hint:"기본 가타카나 46자",was:["kata46"],test:()=>allCd(catChars("k",1))},
-  {id:"shibuya",ja:"お台場",ko:"레인보우 브리지",ink:"#3D5A99",hint:"히라가나·가타카나 전부",was:["hiraAll","kataAll"],all:1,test:()=>(allCd(ALL)||titleTier("hc")>=2)&&(allCd(ALL_K)||titleTier("kc")>=2)},
-  {id:"shinjuku",ja:"横浜",ko:"요코하마 관람차",ink:"#3D5A99",hint:"단어 50개",was:["w50"],test:()=>WORDS.filter(w=>wd(w.id)).length>=50},
-  {id:"yokohama",ja:"鎌倉大仏",ko:"가마쿠라 대불",ink:"#2F7458",hint:"단어 200개",test:()=>WORDS.filter(w=>wd(w.id)).length>=200},
-  {id:"kamakura",ja:"箱根温泉",ko:"하코네 온천",ink:"#8A5A2B",hint:"문장 100개",test:()=>SENTS.filter(s=>sxd(s.id)).length>=100},
-  {id:"fuji",ja:"富士山",ko:"후지산",ink:"#2F7458",hint:"기초(가나·단어·문장) 수료",test:()=>basicDone()},
-  {id:"hakone",ja:"奈良公園",ko:"나라 사슴 공원",ink:"#8A5A2B",hint:"3일 연속 공부",was:["s3"],test:()=>streak()>=3},
-  {id:"nara",ja:"日光",ko:"닛코 세 원숭이",ink:"#8A5A2B",hint:"7일 연속 공부",was:["s7"],test:()=>streak()>=7},
-  {id:"sapporo",ja:"雪まつり",ko:"삿포로 눈축제",ink:"#3D5A99",hint:"30일 연속 공부",test:()=>streak()>=30},
-  {id:"nikko",ja:"清水寺",ko:"교토 기요미즈데라",ink:"#6B4E9B",hint:"오답노트 모두 비우기",was:["note"],test:()=>!!S.flags.noteClear},
-  {id:"dotonbori",ja:"大阪城",ko:"오사카성",ink:"#2F7458",hint:"여행 회화 50개",course:"t",test:()=>TRAVEL.filter(t=>t.mode==="talk"&&tvd(t.id)).length>=50},
-  {id:"inari",ja:"伏見稲荷",ko:"교토 후시미 이나리",ink:"#C0612B",hint:"상황 대화 6개 모두",course:"t",test:()=>CHATS.every(c=>chatDone(c.id))},
-  {id:"okinawa",ja:"沖縄",ko:"오키나와 바다",ink:"#2A7F8F",hint:"여행 표현 모두",course:"t",test:()=>TRAVEL.every(t=>tvd(t.id))||titleTier("tv")>=2},
-  {id:"miyajima",ja:"宮島",ko:"미야지마 도리이",ink:"#C0612B",hint:"N5 한자 104자",course:"n",test:()=>KANJI.filter(j=>j.lv==="N5").every(j=>kjd(j.k))||titleTier("kj")>=2},
-  {id:"nagoya",ja:"嵐山",ko:"교토 아라시야마",ink:"#2F7458",hint:"N5 문제 200개 맞히기",course:"n",test:()=>Object.keys(JL).filter(jld).length>=200},
-  {id:"kinkaku",ja:"金閣寺",ko:"교토 금각사",ink:"#A2802B",hint:"N5 모의시험 합격선",course:"n",test:()=>!!(S.jx&&S.jx.pass)},
-  {id:"kobe",ja:"白川郷",ko:"시라카와고",ink:"#6B4E9B",hint:"XP 1000 모으기",was:["xp1000"],test:()=>S.xp>=1000}
+  {id:"narita",art:"shinjuku",ja:"横浜",ko:"요코하마 관람차",ink:"#3D5A99",hint:"첫 문제를 맞히면",was:["first"],test:()=>S.xp>0},
+  {id:"tokyo",art:"okinawa",ja:"沖縄",ko:"오키나와 바다",ink:"#2A7F8F",hint:"기본 히라가나 46자",was:["hira46"],test:()=>allCd(catChars("h",1))},
+  {id:"asakusa",art:"kamakura",ja:"箱根温泉",ko:"하코네 온천",ink:"#8A5A2B",hint:"기본 가타카나 46자",was:["kata46"],test:()=>allCd(catChars("k",1))},
+  {id:"shibuya",art:"yokohama",ja:"鎌倉大仏",ko:"가마쿠라 대불",ink:"#2F7458",hint:"히라가나·가타카나 전부",was:["hiraAll","kataAll"],all:1,test:()=>(allCd(ALL)||titleTier("hc")>=2)&&(allCd(ALL_K)||titleTier("kc")>=2)},
+  {id:"shinjuku",art:"sapporo",ja:"雪まつり",ko:"삿포로 눈축제",ink:"#3D5A99",hint:"단어 50개",was:["w50"],test:()=>WORDS.filter(w=>wd(w.id)).length>=50},
+  {id:"yokohama",art:"tokyo",ja:"スカイツリー",ko:"도쿄 스카이트리",ink:"#3D5A99",hint:"단어 200개",test:()=>WORDS.filter(w=>wd(w.id)).length>=200},
+  {id:"kamakura",art:"asakusa",ja:"浅草",ko:"아사쿠사 가미나리몬",ink:"#B54A3C",hint:"문장 100개",test:()=>SENTS.filter(s=>sxd(s.id)).length>=100},
+  {id:"fuji",art:"narita",ja:"東京タワー",ko:"도쿄 타워",ink:"#B54A3C",hint:"기초(가나·단어·문장) 수료",test:()=>basicDone()},
+  {id:"hakone",art:"shibuya",ja:"お台場",ko:"레인보우 브리지",ink:"#3D5A99",hint:"3일 연속 공부",was:["s3"],test:()=>streak()>=3},
+  {id:"nara",art:"nara",ja:"日光",ko:"닛코 세 원숭이",ink:"#8A5A2B",hint:"7일 연속 공부",was:["s7"],test:()=>streak()>=7},
+  {id:"sapporo",art:"miyajima",ja:"宮島",ko:"미야지마 도리이",ink:"#C0612B",hint:"30일 연속 공부",test:()=>streak()>=30},
+  {id:"nikko",art:"nagoya",ja:"嵐山",ko:"교토 아라시야마",ink:"#2F7458",hint:"오답노트 모두 비우기",was:["note"],test:()=>!!S.flags.noteClear},
+  {id:"dotonbori",art:"hakone",ja:"奈良公園",ko:"나라 사슴 공원",ink:"#8A5A2B",hint:"여행 회화 50개",course:"t",test:()=>TRAVEL.filter(t=>t.mode==="talk"&&tvd(t.id)).length>=50},
+  {id:"inari",art:"dotonbori",ja:"大阪城",ko:"오사카성",ink:"#2F7458",hint:"상황 대화 6개 모두",course:"t",test:()=>CHATS.every(c=>chatDone(c.id))},
+  {id:"okinawa",art:"kinkaku",ja:"金閣寺",ko:"교토 금각사",ink:"#A2802B",hint:"여행 표현 모두",course:"t",test:()=>TRAVEL.every(t=>tvd(t.id))||titleTier("tv")>=2},
+  {id:"miyajima",art:"inari",ja:"伏見稲荷",ko:"교토 후시미 이나리",ink:"#C0612B",hint:"N5 한자 104자",course:"n",test:()=>KANJI.filter(j=>j.lv==="N5").every(j=>kjd(j.k))||titleTier("kj")>=2},
+  {id:"nagoya",art:"nikko",ja:"清水寺",ko:"교토 기요미즈데라",ink:"#6B4E9B",hint:"N5 문제 200개 맞히기",course:"n",test:()=>Object.keys(JL).filter(jld).length>=200},
+  {id:"kinkaku",art:"fuji",ja:"富士山",ko:"후지산",ink:"#2F7458",hint:"N5 모의시험 합격선",course:"n",test:()=>!!(S.jx&&S.jx.pass)},
+  {id:"kobe",art:"kobe",ja:"白川郷",ko:"시라카와고",ink:"#6B4E9B",hint:"XP 1000 모으기",was:["xp1000"],test:()=>S.xp>=1000}
 ];
+const STAMP_ORDER=["narita","hakone","tokyo","shinjuku","asakusa","nara","shibuya","kamakura","yokohama","nikko","fuji","dotonbori","kobe","inari","nagoya","sapporo","miyajima","okinawa","kinkaku"];
+STAMPS.sort((a,b)=>STAMP_ORDER.indexOf(a.id)-STAMP_ORDER.indexOf(b.id));
 const stampN=()=>STAMPS.filter(s=>(S.stamps||{})[s.id]).length;
 const stampTitle=()=>{const n=stampN();return n?`스탬프 ${n}개`:""};
 const T='fill="currentColor" fill-opacity=".18"',D='fill="currentColor" fill-opacity=".5"',W='fill="#fff"',N='fill="none"';
@@ -3737,7 +3739,7 @@ function stampSvg(s,on,big){
   if(!on)return `<svg class="stamp-svg${big?" big":""}" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" fill="none" stroke="var(--line)" stroke-width="4" stroke-dasharray="6 6"/><text x="60" y="71" text-anchor="middle" font-size="30" font-weight="700" fill="var(--sub)">?</text></svg>`;
   return `<svg class="stamp-svg on${big?" big":""}" viewBox="0 0 120 120" aria-hidden="true"><g transform="rotate(${rot} 60 60)" style="color:${s.ink}" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="60" cy="60" r="55" fill="currentColor" fill-opacity=".06" stroke-width="4"/><circle cx="60" cy="60" r="49" fill="none" stroke-width="1.2" stroke-dasharray="2 3"/>
-    <g transform="translate(60 54) scale(.82) translate(-60 -54)">${STAMP_ART[id]||""}</g>
+    <g transform="translate(60 54) scale(.82) translate(-60 -54)">${STAMP_ART[s.art||id]||""}</g>
     <text x="60" y="103" text-anchor="middle" font-size="${s.ja.length>=5?11:s.ja.length>=4?11:13}"${s.ja.length>=5?' textLength="48" lengthAdjust="spacingAndGlyphs"':""} font-weight="800" fill="currentColor" stroke="none" font-family="var(--ja-font)" letter-spacing="1">${s.ja}</text></g></svg>`;
 }
 let stampQueue=[];
