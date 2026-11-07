@@ -223,6 +223,7 @@ body.ph-drop #v6{outline:3px dashed var(--accent);outline-offset:6px;border-radi
 .go-arrow{color:var(--sub);font-weight:700}.go-next.ready{animation:goPulse 1.4s ease-in-out 3}@keyframes goPulse{50%{transform:scale(1.05)}}
 .go-msg{text-align:center;margin:6px 0 0}@media(max-width:520px){.go-arrow{display:none}.go-flow>*{flex:1 1 100%;justify-content:center}}
 .move-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.move-row .next{margin:0}.move-row small{flex:1 1 200px;font-size:13px;color:var(--sub)}
+.move-res{font-weight:700}.move-res.ok{color:var(--ok)}.move-res.bad{color:var(--bad)}
 .move-ta{width:100%;margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:12px/1.4 ui-monospace,Consolas,monospace;resize:vertical;word-break:break-all}
 .ai-home{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:18px;background:var(--accent-soft);color:var(--ink);text-align:left;cursor:pointer;box-shadow:0 2px 0 var(--panel-shadow)}
 .ai-home:hover{border-color:var(--accent)}.ai-home:active{transform:scale(.98)}
@@ -4149,19 +4150,19 @@ function openMoveDlg(){
     ${goSteps("move",IN_CLAUDE?SITE_URL:ARTIFACT_URL,IN_CLAUDE?"하루카나 사이트 열기":"claude.ai로 가서 로그인하기")}
     <h4 class="set-h">2. 다른 쪽 기록 받기</h4>
     <textarea id="move-in" class="move-ta" rows="3" placeholder="${other}에서 복사한 기록 코드를 여기에 붙여 넣어요 (Ctrl+V 또는 길게 눌러 붙여넣기)" aria-label="받을 기록 코드"></textarea>
-    <div class="move-row"><button type="button" class="next" id="move-merge">기록 합치기</button><small id="move-msg" aria-live="polite"></small></div>`;
+    <div class="move-row"><button type="button" class="next" id="move-merge">기록 합치기</button><small id="move-res" class="move-res" aria-live="polite"></small></div>`;
   $("move-x").onclick=()=>d.close();
   bindGoSteps("move");
   $("move-merge").onclick=async()=>{
-    const msg=$("move-msg");
+    const msg=$("move-res");msg.className="move-res";
     try{
       const o=await readMoveCode($("move-in").value),acct=S.account,fr=S.fr,before={xp:S.xp,stamps:stampN()};
       S=mergeState(S,o);S.account=acct;if(fr)S.fr=fr;
       try{checkStamps()}catch(e){}
       save();rerenderAll();syncScore();
-      msg.textContent=`합쳤어요! XP ${before.xp} → ${S.xp}, 스탬프 ${before.stamps} → ${stampN()}개`;$("move-in").value="";
+      msg.classList.add("ok");msg.textContent=`✓ 합쳤어요! XP ${before.xp} → ${S.xp}, 스탬프 ${before.stamps} → ${stampN()}개`;$("move-in").value="";
       notifyText("기록을 합쳤어요.");
-    }catch(e){msg.textContent="코드를 읽지 못했어요. 처음부터 끝까지 빠짐없이 복사했는지 확인해 주세요."}
+    }catch(e){msg.classList.add("bad");msg.textContent=$("move-in").value.trim()?"코드를 읽지 못했어요. 처음부터 끝까지 빠짐없이 복사했는지 확인해 주세요.":"먼저 위 칸에 기록 코드를 붙여 넣어 주세요."}
   };
   if(!d.open)d.showModal();
 }
