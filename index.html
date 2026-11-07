@@ -3731,27 +3731,20 @@ async function initFirebase(){
   const wn=weekNum();rk.wn=wn;rk.lastWn=wn-1;rk.fb={rest:true};
   if(tab===5)loadFriends();
   setInterval(()=>{if(tab===5&&!document.hidden)loadFriends(true)},180000);
-  if(!S.account){rk.state="guest";rk.rows=rk.weekRows=rk.lastRows=null;try{localStorage.removeItem(RANK_CACHE)}catch(e){}dropGuestRecords();scheduleRank();return}
   try{rk.auth=await restAuth();rk.me=rk.auth.uid;rk.canWrite=true}catch(e){console.warn("로그인 갱신 실패",e)}
   if(!rk.me){scheduleRank();return}
+  if(!S.account){memberInit();return}
   if(await pullProgress())rerenderAll();
   memberInit();
 }
-async function dropGuestRecords(){
-  let a=null;try{a=JSON.parse(localStorage.getItem(AUTH_KEY))}catch(e){}
-  if(!a||!a.refreshToken)return;
-  try{
-    const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(a.refreshToken)});
-    if(!r.ok){if(!S.account)localStorage.removeItem(AUTH_KEY);return}
-    const j=await r.json(),g={uid:j.user_id,idToken:j.id_token},h={Authorization:"Bearer "+g.idToken};
-    for(const p of [`scores/${g.uid}`,`weeks/${rk.wn}/players/${g.uid}`,`weeks/${rk.wn-1}/players/${g.uid}`])await fetch(`${REST_BASE}/${p}`,{method:"DELETE",headers:h}).catch(()=>{});
-    if(!S.account)localStorage.removeItem(AUTH_KEY);
-  }catch(e){}
+function dropGuestDocs(prev){
+  if(!prev||!prev.idToken)return;const h={Authorization:"Bearer "+prev.idToken};
+  for(const p of [`scores/${prev.uid}`,`weeks/${weekId()}/players/${prev.uid}`])fetch(`${REST_BASE}/${p}`,{method:"DELETE",headers:h}).catch(()=>{});
 }
 async function memberInit(){
   const wn=rk.wn;
   try{const b=await cachedGet(`bans/${rk.me}`);rk.banned=b?{reason:b.reason||""}:null;if(b)rk.blocked=true}catch(e){}
-  await ensureNick();
+  if(S.account)await ensureNick(); // 이름 등록은 로그인한 사람만. 임시 번호는 자동 이름(학습자1234)으로 올린다
   syncScore();
   addPendingFriend();
   if(tab===5)loadFriends(true);
@@ -3905,10 +3898,12 @@ const loginErrText=(c,e,what)=>c==="harukana/not-ready"?"Google 확인 준비가
   :c==="auth/operation-not-supported-in-this-environment"||c==="auth/web-storage-unsupported"?"이 브라우저에서는 Google 로그인을 쓸 수 없어요. Chrome이나 Safari로 열어 주세요."
   :what+"하지 못했어요 ("+(c||e.message)+")";
 async function finishLogin(a,account){
+  const prev=!S.account&&rk.auth&&rk.auth.uid!==a.uid?rk.auth:null;
   rk.auth={uid:a.uid,refreshToken:a.refreshToken,idToken:a.idToken,exp:Date.now()+50*60e3};
   try{localStorage.setItem(AUTH_KEY,JSON.stringify({uid:a.uid,refreshToken:a.refreshToken}))}catch(e){}
   rk.me=a.uid;S.account=account;rk.pulled=false;rk.progSig=null;rk.srv=undefined;rk.retried=false;
   const merged=await pullProgress();
+  dropGuestDocs(prev);
   S.rankOff=S.rankOff||0;save();rk.last="";rk.blocked=false;rk.syncErr=null;rk.myRank={all:null,week:null,last:null};
   await pushProgress(false);
   if(rk.state==="guest")rk.state="loading";
@@ -4150,6 +4145,7 @@ function maskBad(s){
 }
 const nickKey=n=>n.toLowerCase();
 const pseudoNick=()=>"학습자"+String(Math.floor(1000+Math.random()*9000));
+const guestNick=()=>{if(!/^학습자[0-9]{4}$/.test(S.nick||"")){S.nick=pseudoNick();save()}return S.nick};
 const DOC=p=>`projects/${FB_CONFIG.projectId}/databases/(default)/documents/${p}`;
 async function restCommit(writes,keepalive){
   const r=await fetch(`${REST_BASE}:commit`,{method:"POST",keepalive:!!keepalive,headers:{...await authHeader(),"Content-Type":"application/json"},body:JSON.stringify({writes})});
@@ -4251,7 +4247,7 @@ async function addFriendCode(code){
 }
 function removeFriend(uid){S.fr[uid]=-Date.now();delete rk.friends[uid];save();renderRank()}
 async function loadFriends(force){
-  if(IN_CLAUDE||!rk.fb||!S.account||!rk.me)return;
+  if(IN_CLAUDE||!rk.fb||!rk.me)return;
   if(!force&&Date.now()-rk.frAt<20000)return;
   rk.frAt=Date.now();
   const ids=frIds();
@@ -4267,7 +4263,6 @@ function renderFriends(){
   const el=$("board");if(!el)return;
   const head=`<h3 class="rk-h">친구 <small>서로 공부하는 모습을 봐요</small></h3>`;
   if(IN_CLAUDE){el.innerHTML=head+`<div class="rk-join"><p>친구 기능은 하루카나 사이트에서 쓸 수 있어요. 이 claude.ai 링크와 사이트의 기록은 따로 저장돼요.</p><a class="next" style="text-decoration:none" href="${SITE_URL}" target="_blank" rel="noopener">하루카나 사이트 열기</a></div>`;return}
-  if(!S.account){el.innerHTML=head+`<div class="fr-empty"><span class="fr-empty-ic" aria-hidden="true">友</span><p><b>친구와 함께 공부해요</b><br>친구를 추가하면 친구가 오늘 공부했는지, 몇 일째 이어 가는지 볼 수 있어요. 친구 기능은 로그인한 뒤 쓸 수 있어요.</p><button type="button" class="next" onclick="openSettings()">로그인하러 가기</button></div>`;return}
   if(!rk.me){el.innerHTML=head+`<p class="rk-note">친구 정보를 불러오는 중이에요…</p>`;return}
   const ids=frIds(),rows=ids.map(id=>({id,d:rk.friends[id]})).sort((a,b)=>((b.d&&b.d.t)||0)-((a.d&&a.d.t)||0));
   const card=(r)=>{const d=r.d;
@@ -4284,7 +4279,7 @@ function renderFriends(){
     <form class="fr-add" id="fr-add"><input id="fr-in" maxlength="200" placeholder="친구 코드 8글자 또는 초대 링크" aria-label="친구 코드" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="ghost" id="fr-go">추가</button></form>
     <p class="set-note" id="fr-msg" aria-live="polite"></p>`;
   el.innerHTML=head+(ids.length?`<ul class="rk-list fr-list">${me}${rows.map(card).join("")}</ul>`:`<div class="fr-empty"><span class="fr-empty-ic" aria-hidden="true">友</span><p><b>아직 친구가 없어요</b><br>초대 링크를 보내거나 친구 코드를 넣으면, 서로 오늘 공부했는지 볼 수 있어요.</p></div>`)
-    +invite;
+    +invite+(S.account?"":`<p class="rk-note">로그인하지 않으면 친구 목록과 기록이 이 브라우저에만 있어요. 브라우저 기록을 지우거나 기기를 바꾸면 처음부터예요. <button type="button" class="link rk-set" onclick="openSettings()">로그인하기</button></p>`);
   $("fr-share").onclick=async()=>{const url=frLink();
     try{if(navigator.share){await navigator.share({title:"하루카나 친구 초대",text:"하루카나에서 같이 일본어 공부해요!",url});return}
       await navigator.clipboard.writeText(url);$("fr-msg").textContent="초대 링크를 복사했어요. 친구에게 보내 주세요.";}
@@ -4302,10 +4297,10 @@ async function initRank(){
 }
 const SYNC_GAP=60000;
 function scoreData(){
-  return{xp:S.xp,level:lvOf(S.xp),streak:streak(),chars:[...ALL,...ALL_K].filter(c=>cd(c.k)).length,words:WORDS.filter(w=>wd(w.id)).length,badges:Object.keys(S.badges).length,nick:(S.nick||"").slice(0,12),title:mainTitle(),avatar:avatarOf(S.avatar).id,week:weekId(),weekXp:weekXp()};
+  return{xp:S.xp,level:lvOf(S.xp),streak:streak(),chars:[...ALL,...ALL_K].filter(c=>cd(c.k)).length,words:WORDS.filter(w=>wd(w.id)).length,badges:Object.keys(S.badges).length,nick:S.account?(S.nick||"").slice(0,12):guestNick(),title:mainTitle(),avatar:avatarOf(S.avatar).id,week:weekId(),weekXp:weekXp()};
 }
 function syncScore(){
-  if(!rk.fb||!rk.me||!S.account||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
+  if(!rk.fb||!rk.me||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
   if(JSON.stringify(scoreData())===rk.last)return;
   clearTimeout(rk.timer);
   const wait=Math.max(1200,SYNC_GAP-(Date.now()-(rk.wroteAt||0)));
@@ -4337,7 +4332,7 @@ function clampScore(d){
   return{...d,xp,weekXp,level:lvOf(xp)};
 }
 async function pushScore(leaving){
-  if(!rk.fb||!rk.me||!S.account||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
+  if(!rk.fb||!rk.me||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
   const full=scoreData(),sig=JSON.stringify(full);
   if(sig===rk.last)return;
   if(rk.busy&&!leaving){rk.timer=setTimeout(()=>pushScore(false),3000);return}
@@ -5779,7 +5774,7 @@ function foxSay(){
   if(st>=2)list.push([`${st}일째 이어 가고 있어요`,studied?"오늘도 한 걸음, 멋져요!":"오늘도 하나만 하면 이어져요."]);
   if(!studied&&!st&&Object.keys(S.daily).length)list.push(["어제는 쉬었네요, 괜찮아요","오늘 한 문제만 같이 풀어요!"]);
   if(X.best)list.push([`N5 모의시험 최고 ${X.best}점`,X.pass?"합격선을 넘었어요. 실전도 할 수 있어요!":"합격선(80점)까지 조금만 더!"]);
-  if(S.account&&frIds().length){const t=frIds().map(id=>rk.friends[id]).filter(x=>x&&sameDayKst(x.t)).length;if(t)list.push([`오늘 친구 ${t}명이 공부했어요`,"같이 한 걸음 해요!"])}
+  if(frIds().length){const t=frIds().map(id=>rk.friends[id]).filter(x=>x&&sameDayKst(x.t)).length;if(t)list.push([`오늘 친구 ${t}명이 공부했어요`,"같이 한 걸음 해요!"])}
   if(!list.length)list.push(h<10?["좋은 아침이에요!","아침에 본 글자는 오래 남아요."]:h>=20?["오늘 하루도 수고했어요","자기 전에 한 문제, 어때요?"]:["서두르지 않아도 괜찮아.","어제보다 한 걸음이면 충분해!"]);
   return list[Math.floor((Date.now()+9*36e5)/36e5)%list.length]; // 한 시간마다 다른 말
 }
