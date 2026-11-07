@@ -182,6 +182,22 @@
 .ar-plan .ar-go{margin:0}.ar-go:hover{border-color:var(--accent)}.ar-go:active{transform:scale(.97)}
 .ar-cheer{margin-top:12px;font-size:14px;color:var(--sub)}
 @media(max-width:520px){.ar{padding:0 14px}.ar-row{grid-template-columns:80px 1fr 40px}.ar-row small{display:none}}
+.stamp-book{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;padding:16px;border:1px solid var(--line);border-radius:18px;background:repeating-linear-gradient(0deg,transparent 0 27px,color-mix(in srgb,var(--line) 45%,transparent) 27px 28px),var(--card)}
+.stamp{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;padding:6px 4px}
+.stamp-svg{width:78px;height:78px}
+.stamp-svg.on{filter:saturate(.95)}
+[data-theme=dark] .stamp-svg.on{filter:brightness(1.7) saturate(.85)} /* 어두운 바탕에서도 잉크가 보이게 */
+.stamp b{font-size:13px;margin-top:2px}.stamp small{font-size:12px;color:var(--sub);line-height:1.35}
+.stamp:not(.on) b{color:var(--sub)}
+.me-stats .stamp-chip b{color:var(--accent-dark)}
+.stamp-pop{position:fixed;inset:0;z-index:60;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .2s}
+.stamp-pop.show{opacity:1;pointer-events:auto}
+.stamp-pop-in{display:flex;flex-direction:column;align-items:center;gap:4px;padding:22px 28px;border-radius:22px;background:var(--card);border:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.18)}
+.stamp-pop-in b{font-size:18px}.stamp-pop-in small{font-size:13px;color:var(--sub)}
+.stamp-svg.big{width:150px;height:150px}
+.stamp-pop.show .stamp-svg.big{animation:stampHit .45s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes stampHit{0%{transform:scale(2.2);opacity:0}60%{transform:scale(.92);opacity:1}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.stamp-pop.show .stamp-svg.big{animation:none}}
 .ai-home{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:18px;background:var(--accent-soft);color:var(--ink);text-align:left;cursor:pointer;box-shadow:0 2px 0 var(--panel-shadow)}
 .ai-home:hover{border-color:var(--accent)}.ai-home:active{transform:scale(.98)}
 .ai-home-ic{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--accent);color:var(--onaccent);font-size:20px}
@@ -697,7 +713,7 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 <section id="v3" role="tabpanel" aria-labelledby="t3" hidden><div class="section-intro"><div><p class="section-kicker">VOCABULARY / 03</p><h2>단어 모으기</h2><p class="section-copy">기초 단어를 익히고, 확인 퀴즈로 내 것으로 만들어 보세요.</p></div><div class="section-mark" aria-hidden="true">語</div></div><div id="words"></div></section><section id="v6" role="tabpanel" aria-labelledby="t6" hidden><div class="section-intro"><div><p class="section-kicker">CONVERSATION / 여행 코스</p><h2>회화</h2><p class="section-copy">일본에서 바로 쓰는 말, 상황 대화, 점원 말 알아듣기, 표지판을 익히고, 여행 중에는 표현집을 꺼내 써요.</p></div><div class="section-mark" aria-hidden="true">旅</div></div><div id="kanji"></div></section><section id="v8" role="tabpanel" aria-labelledby="t8" hidden><div class="section-intro"><div><p class="section-kicker">JLPT N5 / N5 코스</p><h2>시험</h2><p class="section-copy">일본어능력시험 N5와 같은 형식으로 문자·어휘, 문법, 독해, 청해를 연습하고 모의시험을 봐요.</p></div><div class="section-mark" aria-hidden="true">試</div></div><div id="jlpt"></div></section>
 
 <section id="v4" role="tabpanel" aria-labelledby="t4" hidden><div class="section-intro"><div><p class="section-kicker">REVIEW</p><h2>복습</h2><p class="section-copy">오늘의 복습과 오답노트로 잊기 전에 다시 풀어 빈틈을 채워요.</p></div><div class="section-mark" aria-hidden="true">復</div></div><div id="review"></div><div id="note"></div></section>
-<section id="v5" role="tabpanel" aria-labelledby="t5" hidden><div class="section-intro"><div><p class="section-kicker">PROFILE / 05</p><h2>나의 프로필</h2><p class="section-copy">칭호와 배지를 모으고, 분야마다 기록을 따로 관리해요. 문제를 맞히면 XP가 쌓여요.</p></div><div class="section-mark" aria-hidden="true">賞</div></div><div id="me-card"></div><div id="ai-report"></div><div id="board"></div><div id="grass"></div><div id="records"></div><div id="badges"></div></section>
+<section id="v5" role="tabpanel" aria-labelledby="t5" hidden><div class="section-intro"><div><p class="section-kicker">PROFILE / 05</p><h2>나의 프로필</h2><p class="section-copy">공부하면 일본 곳곳의 여행 스탬프가 찍혀요. 친구와 서로 공부하는 모습도 볼 수 있어요.</p></div><div class="section-mark" aria-hidden="true">賞</div></div><div id="me-card"></div><div id="ai-report"></div><div id="board"></div><div id="grass"></div><div id="records"></div><div id="badges"></div></section>
 
 
 </main><aside class="rightbar" aria-label="나의 학습 현황"><div class="goal-card" id="goal-card"></div>
@@ -3667,10 +3683,66 @@ const BADGES=[
   ["note","오답 정복","오답노트를 모두 비웠어요","✓",()=>!!S.flags.noteClear],
   ["xp1000","1000 XP","XP 1000을 모았어요","★",()=>S.xp>=1000]
 ];
-function checkBadges(){
-  const got=[];
-  BADGES.forEach(([id,name,,,test])=>{if(!S.badges[id]&&test()){S.badges[id]=Date.now();addXp(XP_BADGE);got.push(name)}});
-  if(got.length)notifyText(`배지를 받았어요: ${got.join(", ")} (+${XP_BADGE*got.length} XP)`);
+const STAMP_XP=30;
+const titleTier=id=>(S.titles||{})[id]??-1;
+const STAMPS=[
+  {id:"narita",ja:"成田",ko:"나리타 공항",ink:"#B54A3C",hint:"첫 문제를 맞히면",was:["first"],test:()=>S.xp>0},
+  {id:"tokyo",ja:"東京駅",ko:"도쿄역",ink:"#B54A3C",hint:"기본 히라가나 46자",was:["hira46"],test:()=>allCd(catChars("h",1))},
+  {id:"asakusa",ja:"浅草",ko:"아사쿠사",ink:"#B54A3C",hint:"기본 가타카나 46자",was:["kata46"],test:()=>allCd(catChars("k",1))},
+  {id:"shibuya",ja:"渋谷",ko:"시부야",ink:"#3D5A99",hint:"히라가나·가타카나 전부",was:["hiraAll","kataAll"],all:1,test:()=>(allCd(ALL)||titleTier("hc")>=2)&&(allCd(ALL_K)||titleTier("kc")>=2)},
+  {id:"shinjuku",ja:"新宿",ko:"신주쿠",ink:"#3D5A99",hint:"단어 50개",was:["w50"],test:()=>WORDS.filter(w=>wd(w.id)).length>=50},
+  {id:"yokohama",ja:"横浜",ko:"요코하마",ink:"#3D5A99",hint:"단어 200개",test:()=>WORDS.filter(w=>wd(w.id)).length>=200},
+  {id:"kamakura",ja:"鎌倉",ko:"가마쿠라",ink:"#2F7458",hint:"문장 100개",test:()=>SENTS.filter(s=>sxd(s.id)).length>=100},
+  {id:"fuji",ja:"富士山",ko:"후지산",ink:"#2F7458",hint:"기초(가나·단어·문장) 수료",test:()=>basicDone()},
+  {id:"hakone",ja:"箱根",ko:"하코네",ink:"#8A5A2B",hint:"3일 연속 공부",was:["s3"],test:()=>streak()>=3},
+  {id:"nara",ja:"奈良",ko:"나라",ink:"#8A5A2B",hint:"7일 연속 공부",was:["s7"],test:()=>streak()>=7},
+  {id:"sapporo",ja:"札幌",ko:"삿포로",ink:"#8A5A2B",hint:"30일 연속 공부",test:()=>streak()>=30},
+  {id:"nikko",ja:"日光",ko:"닛코",ink:"#6B4E9B",hint:"오답노트 모두 비우기",was:["note"],test:()=>!!S.flags.noteClear},
+  {id:"dotonbori",ja:"道頓堀",ko:"오사카 도톤보리",ink:"#C0612B",hint:"여행 회화 50개",course:"t",test:()=>TRAVEL.filter(t=>t.mode==="talk"&&tvd(t.id)).length>=50},
+  {id:"inari",ja:"伏見稲荷",ko:"교토 후시미 이나리",ink:"#C0612B",hint:"상황 대화 6개 모두",course:"t",test:()=>CHATS.every(c=>chatDone(c.id))},
+  {id:"okinawa",ja:"沖縄",ko:"오키나와",ink:"#C0612B",hint:"여행 표현 모두",course:"t",test:()=>TRAVEL.every(t=>tvd(t.id))||titleTier("tv")>=2},
+  {id:"miyajima",ja:"宮島",ko:"히로시마 미야지마",ink:"#A23B5E",hint:"N5 한자 104자",course:"n",test:()=>KANJI.filter(j=>j.lv==="N5").every(j=>kjd(j.k))||titleTier("kj")>=2},
+  {id:"nagoya",ja:"名古屋",ko:"나고야",ink:"#A23B5E",hint:"N5 문제 200개 맞히기",course:"n",test:()=>Object.keys(JL).filter(jld).length>=200},
+  {id:"kinkaku",ja:"金閣寺",ko:"교토 금각사",ink:"#A23B5E",hint:"N5 모의시험 합격선",course:"n",test:()=>!!(S.jx&&S.jx.pass)},
+  {id:"kobe",ja:"神戸",ko:"고베",ink:"#6B4E9B",hint:"XP 1000 모으기",was:["xp1000"],test:()=>S.xp>=1000}
+];
+const stampN=()=>STAMPS.filter(s=>(S.stamps||{})[s.id]).length;
+const stampTitle=()=>{const n=stampN();return n?`스탬프 ${n}개`:""};
+function stampSvg(s,on,big){
+  const id=s.id,rot=on?((id.charCodeAt(0)*7+id.length*13)%17)-8:0,c=on?s.ink:"var(--line)",fs=s.ja.length>=4?20:s.ja.length===3?24:30;
+  return `<svg class="stamp-svg${on?" on":""}${big?" big":""}" viewBox="0 0 120 120" aria-hidden="true"><g transform="rotate(${rot} 60 60)" fill="none" stroke="${c}">
+    <circle cx="60" cy="60" r="54" stroke-width="5"${on?"":' stroke-dasharray="6 6"'}/><circle cx="60" cy="60" r="45" stroke-width="1.5"/>
+    ${on?`<text x="60" y="${60+fs*0.36}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${c}" stroke="none" font-family="var(--ja-font)">${s.ja}</text>
+    <text x="60" y="30" text-anchor="middle" font-size="9" letter-spacing="2" fill="${c}" stroke="none" font-weight="700">HARUKANA</text>
+    <text x="60" y="98" text-anchor="middle" font-size="9" fill="${c}" stroke="none" font-weight="700">${String(STAMPS.indexOf(s)+1).padStart(2,"0")} · ✿</text>`
+    :`<text x="60" y="71" text-anchor="middle" font-size="30" font-weight="700" fill="var(--sub)" stroke="none">?</text>`}</g></svg>`;
+}
+let stampQueue=[];
+function checkStamps(){
+  const first=!S.stamps;S.stamps=S.stamps||{};const got=[];
+  STAMPS.forEach(s=>{if(S.stamps[s.id])return;
+    const old=s.was&&(s.all?s.was.every(b=>S.badges[b]):s.was.some(b=>S.badges[b]));
+    let ok=false;try{ok=!!old||s.test()}catch(e){}
+    if(ok){S.stamps[s.id]=Date.now();if(!old&&!first)addXp(STAMP_XP);got.push(s)}});
+  if(first){if(got.length)save();return}
+  if(got.length){stampQueue.push(...got);if(stampQueue.length===got.length)playStamp()}
+}
+function checkBadges(){checkStamps()}
+function playStamp(){
+  const s=stampQueue[0];if(!s)return;
+  let el=$("stamp-pop");if(!el){el=document.createElement("div");el.id="stamp-pop";el.className="stamp-pop";el.setAttribute("role","status");document.body.appendChild(el)}
+  el.innerHTML=`<div class="stamp-pop-in">${stampSvg(s,true,true)}<b>${esc(s.ko)} 스탬프!</b><small>${esc(s.hint)} · +${STAMP_XP} XP</small></div>`;
+  el.classList.remove("show");void el.offsetWidth;el.classList.add("show");
+  el.onclick=()=>{el.classList.remove("show")};
+  setTimeout(()=>{el.classList.remove("show");stampQueue.shift();if(stampQueue.length)setTimeout(playStamp,250)},1900);
+}
+function renderStamps(){
+  const el=$("records");if(!el)return;
+  const list=STAMPS,n=stampN(); // 코스 도장도 모두 보여 준다 (잠긴 것은 "기초를 마치면")
+  el.innerHTML=`<h3 class="rk-h">여행 스탬프북 <small>${n} / ${STAMPS.length}개 · 공부하면 일본 곳곳의 도장이 찍혀요</small></h3>
+    <div class="stamp-book">${list.map(s=>{const on=!!(S.stamps||{})[s.id],lock=!on&&s.course&&!(s.course==="t"?isMid():isAdv());
+      return `<div class="stamp${on?" on":""}" title="${esc(on?`${s.ko} · ${s.hint}`:s.hint)}">${stampSvg(s,on)}<b>${esc(s.ko)}</b><small>${lock?"기초를 마치면":esc(s.hint)}</small></div>`}).join("")}</div>`;
+  const b=$("badges");if(b)b.innerHTML="";
 }
 const KST=9*3600e3,DAYMS=864e5;
 const weekNum=(ms=Date.now())=>Math.floor(((ms+KST)/DAYMS+3)/7);
@@ -3805,6 +3877,7 @@ function mergeState(L,C){
   R.xp=max(R.xp,C.xp);
   R.badges={...(C.badges||{}),...(R.badges||{})};R.flags={...(C.flags||{}),...(R.flags||{})};
   R.claimed={...(C.claimed||{}),...(R.claimed||{})};
+  if(C.stamps||R.stamps)R.stamps={...(C.stamps||{}),...(R.stamps||{})}; // 스탬프는 합친다
   R.fr=R.fr||{};for(const k in C.fr||{})if(Math.abs(C.fr[k])>Math.abs(R.fr[k]||0))R.fr[k]=C.fr[k]; // 친구: 나중에 추가·뺀 쪽
   R.titles=R.titles||{};for(const k in C.titles||{})R.titles[k]=Math.max(R.titles[k]??-1,C.titles[k]??-1);
   R.co=R.co||{};for(const k in C.co||{})R.co[k]=max(R.co[k],C.co[k]);
@@ -4330,7 +4403,7 @@ async function initRank(){
 }
 const SYNC_GAP=60000;
 function scoreData(){
-  return{xp:S.xp,level:lvOf(S.xp),streak:streak(),chars:[...ALL,...ALL_K].filter(c=>cd(c.k)).length,words:WORDS.filter(w=>wd(w.id)).length,badges:Object.keys(S.badges).length,nick:S.account?(S.nick||"").slice(0,12):guestNick(),title:mainTitle(),avatar:avatarOf(S.avatar).id,week:weekId(),weekXp:weekXp()};
+  return{xp:S.xp,level:lvOf(S.xp),streak:streak(),chars:[...ALL,...ALL_K].filter(c=>cd(c.k)).length,words:WORDS.filter(w=>wd(w.id)).length,badges:Object.keys(S.badges).length,nick:S.account?(S.nick||"").slice(0,12):guestNick(),title:stampTitle(),avatar:avatarOf(S.avatar).id,week:weekId(),weekXp:weekXp()};
 }
 function syncScore(){
   if(!rk.fb||!rk.me||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
@@ -4453,8 +4526,8 @@ function resetRecord(id){
   else if(r&&r.kind==="sent"){r.items().forEach(id=>{delete S.sx[id];delete S.n["s:"+id];delete S.sr["s:"+id]});wv={view:"slist"};label=r.name}
   else if(r){r.items().forEach(w=>{delete S.w[w];delete S.n["w:"+w]});S.co[r.script]=1;wv={view:"list",script:r.script};label=r.name}
   else if(id==="note"){S.n={};nq=null;label="오답노트"}
-  else if(id==="reward"){S.xp=0;S.badges={};S.flags={};label="XP·배지"}
-  else if(id==="all"){const keep={xp:S.xp,badges:S.badges,flags:S.flags,daily:S.daily,nick:S.nick,avatar:S.avatar,rank:S.rank,titles:S.titles,title:S.title,wk:S.wk,day:S.day,claimed:S.claimed,account:S.account};S=fresh();Object.assign(S,keep);delete S.flags.grad;qScript="h";qStage=1;cq=null;wv={view:"list"};nq=null;jv={view:"jlist",lv:"N5"};try{localStorage.removeItem("harukana-jsess")}catch(e){}label="학습"}
+  else if(id==="reward"){S.xp=0;S.badges={};S.stamps={};S.flags={};label="XP·스탬프"}
+  else if(id==="all"){const keep={xp:S.xp,badges:S.badges,stamps:S.stamps,flags:S.flags,daily:S.daily,nick:S.nick,avatar:S.avatar,rank:S.rank,titles:S.titles,title:S.title,wk:S.wk,day:S.day,claimed:S.claimed,account:S.account};S=fresh();Object.assign(S,keep);delete S.flags.grad;qScript="h";qStage=1;cq=null;wv={view:"list"};nq=null;jv={view:"jlist",lv:"N5"};try{localStorage.removeItem("harukana-jsess")}catch(e){}label="학습"}
   save();refreshSummary();rk.last="";syncScore();
   if(tab===0)renderHome();
   if(tab===2){$("quiz").innerHTML="";startStage(qStage);renderStageBar();renderCharQuiz()}
@@ -4608,8 +4681,8 @@ function renderSettings(force){
     <h4 class="set-h">도움말</h4><div class="set-sound"><p class="set-note" style="margin-top:0">하루카나를 어떻게 쓰는지 처음 안내를 다시 볼 수 있어요.</p><button type="button" class="rec-reset" id="guide-open">처음 안내 다시 보기</button>${S.flags.grad?' <button type="button" class="rec-reset" id="grad-open">기초 수료 다시 보기</button>':""}</div>
     <h4 class="set-h">학습 기록</h4>
     <div class="rec-etc">
-      <div><b>XP · 배지</b><small>${S.xp} XP · 배지 ${nb}개를 0으로 되돌려요</small>${resetBtn("reward","XP·배지 초기화")}</div>
-      <div><b>모든 학습 기록</b><small>글자·단어·문장·한자·오답노트를 처음부터 다시 해요. 목표 코스도 다시 기초부터 열려요. 쌓은 XP·배지·연속 학습일·프로필은 남아요.</small>${resetBtn("all","모두 초기화")}</div>
+      <div><b>XP · 스탬프</b><small>${S.xp} XP · 스탬프 ${stampN()}개를 0으로 되돌려요</small>${resetBtn("reward","XP·스탬프 초기화")}</div>
+      <div><b>모든 학습 기록</b><small>글자·단어·문장·한자·오답노트를 처음부터 다시 해요. 목표 코스도 다시 기초부터 열려요. 쌓은 XP·스탬프·연속 학습일·프로필은 남아요.</small>${resetBtn("all","모두 초기화")}</div>
     </div>${TEST_MODE?`<h4 class="set-h">테스트 도구 <small>(테스트 주소에서만 보여요)</small></h4>
     <div class="set-sound test-tools">${S.account?`<p class="set-note">로그인한 상태에서는 쓸 수 없어요. 계정 기록과 친구에게 보이는 기록에 섞이지 않게, 로그아웃한 뒤 써 주세요.</p>`:`<div class="test-btns"><button type="button" class="rec-reset" data-clear="beg">기초 클리어</button><button type="button" class="rec-reset" data-clear="mid">코스 열기 (여행 클리어)</button></div>
       <p class="set-note">이 브라우저의 학습 기록만 바꿔요. 처음으로 돌리려면 위의 '모두 초기화'를 눌러요.</p>`}
@@ -4627,8 +4700,7 @@ const resetBar=(id,label,note)=>`<div class="reset-bar"><span>${note}</span>${re
 
 function renderRank(){
   try{$("top-avatar").innerHTML=avatarSvg(S.avatar)}catch(e){}
-  const xp=S.xp,lv=lvOf(xp),inLv=xp%XP_PER_LEVEL,st=streak(),nb=Object.keys(S.badges).length;
-  const titles=earnedTitles(),main=mainTitle();
+  const xp=S.xp,lv=lvOf(xp),inLv=xp%XP_PER_LEVEL,st=streak(),nb=stampN();
   $("me-card").innerHTML=`<div class="pf-card">
     <div class="pf-side"><div class="pf-avatar">${avatarSvg(S.avatar)}<span class="pf-lv">Lv.${lv}</span></div><button class="link" id="av-edit">${pickingAv?"닫기":"사진 바꾸기"}</button></div>
     <div class="pf-main">
@@ -4639,28 +4711,14 @@ function renderRank(){
           :!S.account?`<small class="nick-help">로그인하면 이름을 정할 수 있어요</small>`
           :nickLeft()?`<button class="link" id="nick-edit">${nickLeft()===2?"이름 정하기":"이름 바꾸기 (1번 남음)"}</button>`
           :`<small class="nick-help">이름은 더 바꿀 수 없어요</small>`}</div>`}
-      <div class="pf-title">${main?`<span class="title-chip">${esc(main)}</span>`:`<span class="title-none">아직 칭호가 없어요. 문제를 맞히면 첫 칭호를 받아요.</span>`}
-        ${titles.length>1?`<label class="pf-pick">대표 칭호 <select id="title-pick">${titles.map(t=>`<option value="${t.id}"${t.title===main?" selected":""}>${esc(t.title)}</option>`).join("")}</select></label>`:""}</div>
       <div class="me-line"><b>${xp} XP</b><span>다음 레벨까지 ${XP_PER_LEVEL-inLv} XP</span></div><div class="bar"><i style="width:${inLv}%"></i></div>
-      <div class="me-stats"><span><b>${st}</b>일 연속</span><span><b>${nb}</b> / ${BADGES.length} 배지</span><span><b>${titles.length}</b> / ${RECORDS.length} 칭호</span></div>
+      <div class="me-stats"><span><b>${st}</b>일 연속</span><span class="stamp-chip"><b>${nb}</b> / ${STAMPS.length} 스탬프</span></div>
     </div></div>
     ${pickingAv?`<div class="av-pick" role="group" aria-label="프로필 사진 고르기">${AVATARS.map(a=>`<button class="av-opt${a.id===avatarOf(S.avatar).id?" on":""}" data-av="${a.id}" aria-pressed="${a.id===avatarOf(S.avatar).id}"><span class="av-c">${avatarSvg(a.id)}</span><small>${a.name}</small></button>`).join("")}</div>`:""}`;
   if($("pf-nick"))$("pf-nick").textContent=nickName();
   try{renderAiReport()}catch(e){console.warn("약점 리포트",e)}
-  const recs=RECORDS.filter(r=>!r.mid||isMid()||isAdv()); // 한자·여행 칭호는 코스가 열렸을 때만
-  const rank=r=>{const p=recProgress(r),f=p.t?p.n/p.t:1;return f>0&&f<1?2-f:f===0?3:4};
-  const shownRecs=recAll?recs:recs.slice().sort((a,b)=>rank(a)-rank(b)).slice(0,REC_SHOW);
-  $("records").innerHTML=`<h3 class="rk-h">분야별 칭호 <small>${recAll?"분야 기록 초기화는 가나 퀴즈·단어·문장 화면에 있어요":"지금 공부 중인 분야부터 보여요"}</small></h3>
-    <div class="rec-grid">${shownRecs.map(r=>{const p=recProgress(r);
-      return `<div class="rec${p.tier>=0?" got t"+p.tier:""}"><div class="rec-top"><span class="rec-ic">${r.icon}</span><div><b>${r.name}</b><small>${p.n} / ${p.t} 맞힘</small></div></div>
-        <div class="bar"><i style="width:${p.t?p.n/p.t*100:0}%"></i></div>
-        <div class="rec-title">${p.tier>=0?`<span class="title-chip sm">${esc(p.title)}</span>`:`<span class="title-none">칭호 없음</span>`}</div>
-        <p class="rec-next">${p.tier<2?`${p.left}개 더 맞히면 「${p.nextName}」`:"최고 칭호를 받았어요"}</p></div>`}).join("")}</div>
-    ${recs.length>REC_SHOW?`<button class="ghost rec-more" id="rec-more" aria-expanded="${recAll}">${recAll?"접기":`모두 보기 (${recs.length-REC_SHOW}개 더)`}</button>`:""}`;
-  if($("rec-more"))$("rec-more").onclick=()=>{recAll=!recAll;renderRank();if(!recAll)$("records").scrollIntoView({block:"start"})};
+  renderStamps();
   renderSettings();
-  $("badges").innerHTML=`<h3 class="rk-h">배지</h3><div class="badge-grid">${BADGES.map(([id,name,desc,icon])=>{const on=!!S.badges[id];
-    return `<div class="bdg${on?" on":""}" title="${esc(desc)}"><span class="bi">${on?icon:"?"}</span><b>${name}</b><small>${on?desc:"아직 못 받았어요 · "+desc}</small></div>`}).join("")}</div>`;
   renderFriends();
   renderGrass();
   if($("nick-edit"))$("nick-edit").onclick=()=>{editingNick=true;renderRank();$("nick-in").focus()};
@@ -4678,7 +4736,6 @@ function renderRank(){
     $("nick-save").onclick=done;$("nick-cancel").onclick=close;
     $("nick-in").onkeydown=e=>{if(e.key==="Enter")done();if(e.key==="Escape")close()};
   }
-  if($("title-pick"))$("title-pick").onchange=e=>{S.title=e.target.value;save();rk.last="";syncScore();renderRank()};
   $("av-edit").onclick=()=>{pickingAv=!pickingAv;renderRank()};
   document.querySelectorAll("[data-av]").forEach(b=>b.onclick=()=>{S.avatar=b.dataset.av;pickingAv=false;save();rk.last="";syncScore();renderRank()});
 }
@@ -5946,6 +6003,7 @@ function renderPhrase(){
   $("phrase-sub").innerHTML=`<span class="hgx">${esc(hg)}</span> <span>·</span> ${esc(ko)}${tip?`<small class="phrase-tip">${esc(tip)}</small>`:""}`;
 }
 renderPhrase();
+try{checkStamps()}catch(e){} // 스탬프북: 처음 열면 지금까지 한 공부만큼 조용히 찍어 둔다
 $("phrase-listen").onclick=()=>{if(!('speechSynthesis' in window)){notifyText('이 브라우저에서는 음성 재생을 지원하지 않아요.');return}speak(todayPhrase()[5])};
 const hideHg=()=>{try{return localStorage.getItem("harukana-hidehg")==="1"}catch(e){return false}};
 function setHideHg(on){try{localStorage.setItem("harukana-hidehg",on?"1":"0")}catch(e){}document.body.classList.toggle("hide-hg",on)}
