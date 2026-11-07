@@ -212,6 +212,7 @@ body.ph-drop #v6{outline:3px dashed var(--accent);outline-offset:6px;border-radi
 .bk-tool b{display:block;font-size:14px}.bk-tool small{display:block;font-size:12px;color:var(--sub);line-height:1.35}
 .ph-img{display:block;max-width:100%;max-height:200px;margin:4px auto 10px;border-radius:12px;border:1px solid var(--line);object-fit:contain}
 .ph-sum{font-size:14px;line-height:1.6;margin-bottom:8px}
+#ph-out>.ai-bot{padding:10px 13px;border-radius:12px;font-size:15px;line-height:1.7;max-width:100%;white-space:normal;overflow-wrap:anywhere}
 .ph-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 .ph-list li{position:relative;padding:8px 44px 8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
 .ph-list b{font-size:17px}.ph-list small{color:var(--sub)}.ph-ko{font-size:14px;margin-top:2px}
@@ -3504,20 +3505,24 @@ async function readPhoto(sample,file){
   photoCtl=new AbortController();$("ph-stop").onclick=()=>photoCtl&&photoCtl.abort();
   const out=$("ph-out");
   try{
-    const r=await sample.json(`사진 속 일본어를 한국어로 해석해 줘. 보는 사람은 일본어 초보 한국인이야.
+    const live=document.createElement("p");live.className="ai-bot";
+    const {text}=await sample(`사진 속 일본어를 한국어로 해석해 줘. 보는 사람은 일본어 초보 한국인이야.
 규칙:
 - 사진에 실제로 쓰여 있는 일본어만 읽어. 사진에 없는 글자를 추측해서 채우지 마. 흐려서 못 읽는 글자는 빼.
-- 사진에 일본어가 없으면 hasJapanese를 false로 하고 lines를 비워 둬.
-- lines: 사진 속 일본어를 위에서 아래, 왼쪽에서 오른쪽 순서로 한 줄(한 덩어리)씩, 최대 15개. ja는 사진 속 글자 그대로, yomi는 히라가나 읽기, ko는 자연스러운 한국어 뜻.
-- meaning: 사진 속 일본어 전체가 무슨 뜻인지 한국어 한두 문장.
-JSON 하나로만 답해: {"hasJapanese":true,"meaning":"전체 뜻","lines":[{"ja":"","yomi":"","ko":""}]}`,{images:[file],signal:photoCtl.signal,cache:false});
-    const s=(x,n)=>String(x||"").slice(0,n);
-    const lines=(Array.isArray(r&&(r.lines||r.items))?(r.lines||r.items):[]).slice(0,15).map(i=>({ja:s(i.ja,60),yomi:s(i.yomi,80),ko:s(i.ko,100)})).filter(i=>i.ja);
-    const none=r&&r.hasJapanese===false||!lines.length;
+- 아래 형식 그대로, 다른 말 없이 답해.
+첫 줄: 전체 뜻: (사진 속 일본어 전체가 무슨 뜻인지 한국어 한두 문장)
+그 다음 줄부터 사진 속 일본어를 위에서 아래 순서로 한 덩어리씩, 최대 15줄:
+일본어 원문 | 히라가나 읽기 | 한국어 뜻
+사진에 일본어가 없으면 "일본어 없음" 한 줄만 써.`,{images:[file],signal:photoCtl.signal,cache:false,onText:({text})=>{if(!live.isConnected){out.innerHTML="";out.appendChild(live)}live.textContent=text}});
+    const raw=String(text||"").trim(),rows=raw.split(/\r?\n/).map(l=>l.replace(/^[\s\-*·•\d.)]+/,"").trim()).filter(Boolean);
+    const meaningLine=rows.find(l=>/^전체\s*뜻\s*[:：]/.test(l));
+    const lines=rows.filter(l=>l.includes("|")).map(l=>l.split("|").map(x=>x.trim())).filter(p=>p.length>=3&&p[0]&&!/^일본어|원문$/.test(p[0])).slice(0,15).map(p=>({ja:p[0].slice(0,60),yomi:p[1].slice(0,80),ko:p.slice(2).join(" ").slice(0,100)}));
+    const none=/^일본어\s*없음/.test(raw);
     out.innerHTML=none?`<p class="rk-note">이 사진에서는 읽을 수 있는 일본어를 찾지 못했어요. 일본어 글자가 크게 나오게 다시 찍거나 잘라서 올려 주세요.</p>`
-      :`${r.meaning?`<p class="ph-sum"><b>전체 뜻</b> ${esc(s(r.meaning,250))}</p>`:""}
+      :lines.length?`${meaningLine?`<p class="ph-sum"><b>전체 뜻</b> ${esc(meaningLine.replace(/^전체\s*뜻\s*[:：]\s*/,"").slice(0,250))}</p>`:""}
       <ul class="ph-list">${lines.map(i=>`<li><div><b lang="ja" class="ja-font">${esc(i.ja)}</b> <small class="hgx">${esc(i.yomi)}</small></div><div class="ph-ko">${esc(i.ko)}</div><button type="button" class="ph-say" data-say="${esc(i.yomi||i.ja)}" aria-label="소리 듣기">🔊</button></li>`).join("")}</ul>
-      <p class="ai-note">AI가 해석한 내용이라 틀릴 수 있어요. 사진은 저장하지 않아요.</p>`;
+      <p class="ai-note">AI가 해석한 내용이라 틀릴 수 있어요. 사진은 저장하지 않아요.</p>`
+      :`<p class="ai-bot ph-raw">${esc(raw).replace(/\n/g,"<br>")}</p><p class="ai-note">AI가 해석한 내용이라 틀릴 수 있어요. 사진은 저장하지 않아요.</p>`;
     out.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak(b.dataset.say));
   }catch(e){out.innerHTML=`<p class="ai-err">${esc(aiFail(e))}${e&&e.code&&e.code!=="cancelled"?` <small>(${esc(e.code)})</small>`:""}</p>`}
   finally{photoCtl=null;const st=$("ph-stop");if(st)st.parentElement.innerHTML=`<button type="button" class="ghost" id="ph-again">다른 사진</button><button type="button" class="next" id="ph-close">닫기</button>`;
