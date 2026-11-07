@@ -199,7 +199,8 @@
 .stamp-pop.show .stamp-svg.big{animation:stampHit .45s cubic-bezier(.2,1.4,.4,1) both}
 @keyframes stampHit{0%{transform:scale(2.2);opacity:0}60%{transform:scale(.92);opacity:1}100%{transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){.stamp-pop.show .stamp-svg.big{animation:none}}
-.bk-tools-h{margin:4px 0 6px;font-size:14px}.bk-tools-h small{color:var(--sub);font-size:13px}
+.bk-tools-h{margin:4px 0 6px;font-size:14px}@media(hover:none){.pc-only{display:none}}
+body.ph-drop #v6{outline:3px dashed var(--accent);outline-offset:6px;border-radius:18px}.bk-tools-h small{color:var(--sub);font-size:13px}
 .bk-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px}
 .bk-tool{display:flex;align-items:center;gap:10px;min-height:56px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:14px;background:var(--accent-soft);color:var(--ink);text-align:left;cursor:pointer}
 .bk-tool:hover{border-color:var(--accent)}.bk-tool:active{transform:scale(.98)}
@@ -3465,16 +3466,28 @@ const aiFail=e=>{const c=e&&e.code;
   if(c==="cancelled")return "멈췄어요.";
   return "결과를 받지 못했어요. 다시 해 주세요."};
 let photoCtl=null;
-let photoReady=null;
-function preparePhoto(){if(!IN_CLAUDE||photoReady)return;aiGet().then(s=>s&&s.limits().then(c=>{if(c&&c.images)photoReady={sample:s,types:c.images.mediaTypes}})).catch(()=>{})}
+function preparePhoto(){if(IN_CLAUDE)aiGet()} // 표현집을 열 때 미리 연결해 둔다 (허락을 묻지 않음)
+const PHOTO_NOTE="일본 메뉴판·표지판·안내문 사진을 찍거나 갤러리에서 고르면 AI가 읽는 법과 뜻, 이럴 때 할 말을 알려 줘요.";
 function openPhotoReader(src){
-  if(!IN_CLAUDE)return aiOnlyNotice("사진으로 읽기","일본 메뉴판·표지판·안내문 사진을 찍거나 갤러리에서 고르면 AI가 읽는 법과 뜻, 이럴 때 할 말을 알려 줘요.");
-  if(!photoReady){preparePhoto();notifyText("사진 기능을 준비하고 있어요. 잠시 뒤 다시 눌러 주세요. 계속 안 되면 claude.ai 웹에서 열어 주세요.");return}
-  const inp=document.createElement("input");inp.type="file";inp.accept=(photoReady.types||["image/jpeg","image/png","image/webp"]).join(",");
+  if(!IN_CLAUDE)return aiOnlyNotice("사진으로 읽기",PHOTO_NOTE);
+  const inp=document.createElement("input");inp.type="file";inp.accept="image/jpeg,image/png,image/webp,image/gif";
   if(src==="camera")inp.setAttribute("capture","environment"); // 휴대폰에서 바로 카메라가 열린다 (PC에서는 파일 고르기)
-  inp.onchange=()=>{const f=inp.files&&inp.files[0];if(f)readPhoto(photoReady.sample,f)};
+  inp.style.cssText="position:fixed;left:-9999px;opacity:0";document.body.appendChild(inp); // 문서 안에 있어야 여는 브라우저가 있다
+  inp.onchange=()=>{const f=inp.files&&inp.files[0];inp.remove();if(f)photoFile(f)};
   inp.click();
 }
+async function photoFile(f){
+  if(!IN_CLAUDE)return aiOnlyNotice("사진으로 읽기",PHOTO_NOTE);
+  if(!f||!/^image\//.test(f.type)){notifyText("사진 파일(JPG·PNG)만 읽을 수 있어요.");return}
+  const sample=await aiGet();
+  if(!sample){notifyText("지금은 AI를 쓸 수 없어요. claude.ai에 로그인한 상태로 열었는지 확인해 주세요.");return}
+  readPhoto(sample,f);
+}
+const bookOpen=()=>tab===6&&jv&&jv.mode==="book"&&!document.querySelector("dialog[open]");
+document.addEventListener("paste",e=>{if(!bookOpen())return;const it=[...((e.clipboardData&&e.clipboardData.items)||[])].find(x=>x.kind==="file"&&/^image\//.test(x.type));if(!it)return;e.preventDefault();photoFile(it.getAsFile())});
+document.addEventListener("dragover",e=>{if(!bookOpen())return;if([...(e.dataTransfer&&e.dataTransfer.types||[])].includes("Files")){e.preventDefault();document.body.classList.add("ph-drop")}});
+document.addEventListener("dragleave",e=>{if(!e.relatedTarget)document.body.classList.remove("ph-drop")});
+document.addEventListener("drop",e=>{document.body.classList.remove("ph-drop");if(!bookOpen())return;const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(!f)return;e.preventDefault();photoFile(f)});
 async function readPhoto(sample,file){
   let d=$("ai-dlg");if(!d){d=document.createElement("dialog");d.id="ai-dlg";d.className="set-dlg ai-dlg";document.body.appendChild(d)}
   const url=URL.createObjectURL(file);
@@ -3504,7 +3517,7 @@ JSON 하나로만 답해: {"kind":"메뉴판|표지판|안내문|기타","summar
       <p class="ai-note">AI가 읽은 내용이라 틀릴 수 있어요. 사진은 저장하지 않아요.</p>`;
     out.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak(b.dataset.say));
     out.querySelectorAll("[data-show]").forEach(b=>b.onclick=()=>{d.close();openShow(b.dataset.show)});
-  }catch(e){out.innerHTML=`<p class="ai-err">${esc(aiFail(e))}</p>`}
+  }catch(e){out.innerHTML=`<p class="ai-err">${esc(aiFail(e))}${e&&e.code&&e.code!=="cancelled"?` <small>(${esc(e.code)})</small>`:""}</p>`}
   finally{photoCtl=null;const st=$("ph-stop");if(st)st.parentElement.innerHTML=`<button type="button" class="ghost" id="ph-again">다른 사진</button><button type="button" class="next" id="ph-close">닫기</button>`;
     if($("ph-again"))$("ph-again").onclick=()=>{d.close();openPhotoReader("gallery")};if($("ph-close"))$("ph-close").onclick=()=>d.close()}
 }
@@ -3523,7 +3536,7 @@ function drawBook(){
 function renderBook(el,seg,bindMode){
   const f=jv.f||"all",cats=TRAVEL_CATS.filter(c=>c.mode==="talk"),nFav=BOOK_ALL().filter(t=>favOn(t.id)).length;
   el.innerHTML=seg+`<p class="intro">여행 중에 바로 꺼내 쓰는 표현집이에요. 찾아서 누르면 일본어가 크게 떠서 점원에게 화면을 보여 줄 수 있고, 소리도 들려줘요. 한 번 열어 둔 휴대폰에서는 인터넷이 없어도 열려요. 브라우저 메뉴의 '홈 화면에 추가'를 누르면 앱처럼 쓸 수 있어요.</p>
-    <div class="bk-tools-h"><b>사진으로 읽기</b> <small>메뉴판·표지판 사진 속 일본어를 AI가 읽어 줘요</small></div>
+    <div class="bk-tools-h"><b>사진으로 읽기</b> <small>메뉴판·표지판 사진 속 일본어를 AI가 읽어 줘요<span class="pc-only"> · 컴퓨터에서는 캡처를 Ctrl+V로 붙여 넣거나 사진을 끌어다 놓아도 돼요</span></small></div>
     <div class="bk-tools"><button type="button" class="bk-tool" id="bk-cam"><span class="bt-ic" aria-hidden="true">📷</span><span><b>사진 찍기</b><small>지금 바로 찍어서 읽기</small></span></button><button type="button" class="bk-tool" id="bk-gal"><span class="bt-ic" aria-hidden="true">🖼</span><span><b>갤러리에서 고르기</b><small>찍어 둔 사진으로 읽기</small></span></button></div>
     <input type="search" class="bk-q" id="bk-q" placeholder="뜻·일본어·발음으로 찾기 (예: 화장실, トイレ, 토이레)" value="${esc(jv.q||"")}" aria-label="표현 찾기">
     <div class="bk-chips" role="group" aria-label="상황">${[["fav",`★ 즐겨찾기 ${nFav}`],["all","전체"],...cats.map(c=>[c.id,c.name])].map(([k,t])=>`<button type="button" data-bf="${k}" class="${k===f?"on":""}" aria-pressed="${k===f}">${t}</button>`).join("")}</div>
