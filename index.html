@@ -199,6 +199,27 @@
 .stamp-pop.show .stamp-svg.big{animation:stampHit .45s cubic-bezier(.2,1.4,.4,1) both}
 @keyframes stampHit{0%{transform:scale(2.2);opacity:0}60%{transform:scale(.92);opacity:1}100%{transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){.stamp-pop.show .stamp-svg.big{animation:none}}
+.bk-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 10px}
+.bk-tool{display:flex;align-items:center;gap:10px;min-height:56px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:14px;background:var(--accent-soft);color:var(--ink);text-align:left;cursor:pointer}
+.bk-tool:hover{border-color:var(--accent)}.bk-tool:active{transform:scale(.98)}
+.bk-tool .bt-ic{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--accent);color:var(--onaccent);font-size:16px}
+.bk-tool b{display:block;font-size:14px}.bk-tool small{display:block;font-size:12px;color:var(--sub);line-height:1.35}
+.bk-chips button.trip{border-style:dashed}.bk-chips button.trip.on{border-style:solid}
+.trip-head,.bk-gh{grid-column:1/-1}
+.trip-head{margin:4px 0 10px;padding:12px 14px;border-radius:14px;background:var(--accent-soft)}
+.trip-head b{font-size:15px}.trip-head p{margin-top:4px;font-size:13px;color:var(--sub)}.trip-head ul{margin:6px 0 0;padding-left:18px;font-size:13px}
+.trip-head .link{margin:4px 0 0;padding:0;font-size:13px}
+.bk-gh{font-size:14px;margin:14px 0 6px;color:var(--accent-dark)}
+.trip-in{width:100%;min-height:76px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;font-size:16px;resize:vertical}
+.trip-in:focus{outline:2px solid var(--accent);outline-offset:1px}
+.ph-img{display:block;max-width:100%;max-height:200px;margin:4px auto 10px;border-radius:12px;border:1px solid var(--line);object-fit:contain}
+.ph-sum{font-size:14px;line-height:1.6;margin-bottom:8px}
+.ph-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.ph-list li{position:relative;padding:8px 44px 8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.ph-list b{font-size:17px}.ph-list small{color:var(--sub)}.ph-ko{font-size:14px;margin-top:2px}
+.ph-list .ar-go{margin-top:6px}
+.ph-say{position:absolute;right:6px;top:6px;width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer}
+@media(max-width:520px){.bk-tools{grid-template-columns:1fr}}
 .ai-home{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:18px;background:var(--accent-soft);color:var(--ink);text-align:left;cursor:pointer;box-shadow:0 2px 0 var(--panel-shadow)}
 .ai-home:hover{border-color:var(--accent)}.ai-home:active{transform:scale(.98)}
 .ai-home-ic{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--accent);color:var(--onaccent);font-size:20px}
@@ -3437,24 +3458,130 @@ function openShow(id){
   draw();if(!d.open)d.showModal();speak(t.rd||t.ja);
 }
 const bkNorm=s=>[...String(s)].map(ch=>{const c=ch.charCodeAt(0);return c>=0x30A1&&c<=0x30F6?String.fromCharCode(c-0x60):ch}).join("").replace(/[\s、。，．,.？?！!・ー\-~·…「」()（）]/g,"").toLowerCase();
+const tripIds=()=>((S.trip&&S.trip.groups)||[]).flatMap(g=>g.ids);
+function aiOnlyNotice(title,what){
+  let d=$("ai-dlg");if(!d){d=document.createElement("dialog");d.id="ai-dlg";d.className="set-dlg ai-dlg";document.body.appendChild(d)}
+  d.innerHTML=`<div class="set-top"><h3><span class="ai-mark" aria-hidden="true">✦</span> ${esc(title)}</h3><button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
+    <p class="guide-p">${esc(what)} 이 기능은 <b>claude.ai에서 여는 하루카나</b>에서만 쓸 수 있어요. 보는 사람의 Claude 계정으로 동작해서 하루카나는 따로 돈이 들지 않고, 내용도 저장하지 않아요.</p>
+    <div class="navrow"><button type="button" class="ghost" id="ai-no">닫기</button><a class="next" href="${ARTIFACT_URL}" target="_blank" rel="noopener">claude.ai 버전 열기</a></div>`;
+  $("ai-x").onclick=$("ai-no").onclick=()=>d.close();if(!d.open)d.showModal();
+}
+const aiFail=e=>{const c=e&&e.code;
+  if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(c)){aiOff=true;return "AI 사용을 허락하지 않았거나 이 계정에서는 쓸 수 없어요."}
+  if(c==="images_unavailable")return "이 화면에서는 사진을 보낼 수 없어요. claude.ai 웹에서 열어 주세요.";
+  if(c==="image_rejected")return "사진을 읽지 못했어요. JPG·PNG 사진으로 다시 골라 주세요.";
+  if(c==="rate_limited")return "AI 사용량이 많아요. 조금 쉬었다가 다시 해 주세요.";
+  if(c==="cancelled")return "멈췄어요.";
+  return "결과를 받지 못했어요. 다시 해 주세요."};
+function openTripMaker(){
+  if(!IN_CLAUDE)return aiOnlyNotice("내 여행 맞춤 표현집","여행 계획을 적으면 AI가 표현집에서 내 여행에 필요한 표현만 골라 줘요.");
+  let d=$("ai-dlg");if(!d){d=document.createElement("dialog");d.id="ai-dlg";d.className="set-dlg ai-dlg";document.body.appendChild(d)}
+  const ex=["오사카 3박, 라멘·타코야키 먹고 쇼핑","도쿄 2박, 지하철로 관광하고 편의점 자주 가요","교토 2박, 절 구경하고 료칸에서 자요"];
+  d.innerHTML=`<div class="set-top"><h3><span class="ai-mark" aria-hidden="true">✦</span> 내 여행 맞춤 표현집</h3><button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
+    <p class="ai-about">어디로, 며칠, 무엇을 할지 적어 주세요. AI가 표현집의 표현 ${BOOK_ALL().length}개 중에서 내 여행에 필요한 것만 골라 묶어 줘요.</p>
+    <textarea id="trip-in" class="trip-in" maxlength="300" rows="3" placeholder="예: ${esc(ex[0])}">${esc((S.trip&&S.trip.plan)||"")}</textarea>
+    <div class="ai-chips">${ex.map(t=>`<button type="button" class="ghost" data-tex="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+    <div class="navrow"><button type="button" class="next" id="trip-go">표현 골라 주기</button></div>
+    <p class="ai-note" id="trip-msg" aria-live="polite">AI는 표현집에 있는 표현만 골라요. 처음엔 AI 사용 허락을 한 번 물어봐요.</p>`;
+  $("ai-x").onclick=()=>d.close();
+  d.querySelectorAll("[data-tex]").forEach(b=>b.onclick=()=>{$("trip-in").value=b.dataset.tex});
+  $("trip-go").onclick=async()=>{
+    const plan=$("trip-in").value.trim().slice(0,300);if(!plan){$("trip-msg").textContent="여행 계획을 한 줄이라도 적어 주세요.";return}
+    const sample=await aiGet();if(!sample){$("trip-msg").textContent="지금은 AI를 쓸 수 없어요.";return}
+    const book=BOOK_ALL(),cats=Object.fromEntries(TRAVEL_CATS.map(c=>[c.id,c.name]));
+    $("trip-go").disabled=true;$("trip-msg").textContent="하루가 표현을 고르고 있어요…";
+    try{
+      const r=await sample.json(`너는 일본어 학습 앱 '하루카나'의 여행 도우미야. 한국인 초보 여행자의 여행 계획에 맞춰, 아래 표현 목록에서만 필요한 표현을 골라 줘.
+규칙:
+- 목록에 있는 id만 써. 표현을 새로 만들지 마.
+- 15~25개를 골라서 여행 순서(도착·이동 → 숙소 → 먹기 → 쇼핑·관광 → 곤란할 때)대로 3~6개 묶음으로 나눠.
+- 묶음 이름은 한국어로 짧게. tips는 이 여행에 맞는 짧은 조언 0~3개(한국어).
+JSON 하나로만 답해: {"title":"여행 제목(한국어, 20자 이내)","groups":[{"name":"묶음 이름","ids":["vt1","vt5"]}],"tips":["..."]}
+
+여행 계획: ${plan}
+
+표현 목록 (id | 상황 | 뜻 | 일본어):
+${book.map(t=>`${t.id} | ${cats[t.cat]||""} | ${t.ko} | ${t.ja}`).join("\n")}`,{cache:false});
+      const ok=new Set(book.map(t=>t.id)),seen=new Set();
+      const groups=(Array.isArray(r&&r.groups)?r.groups:[]).slice(0,6).map(g=>({name:String(g.name||"").slice(0,20),ids:(Array.isArray(g.ids)?g.ids:[]).map(String).filter(id=>ok.has(id)&&!seen.has(id)&&seen.add(id)).slice(0,10)})).filter(g=>g.name&&g.ids.length);
+      if(!groups.length)throw{code:"invalid_json"};
+      S.trip={plan,title:String(r.title||"내 여행").slice(0,20),groups,tips:(Array.isArray(r.tips)?r.tips:[]).slice(0,3).map(x=>String(x).slice(0,120)),at:Date.now()};save();
+      d.close();jv.f="trip";jv.q="";renderKanjiTab();notifyText(`「${S.trip.title}」 표현 ${tripIds().length}개를 골랐어요!`);
+    }catch(e){$("trip-msg").textContent=aiFail(e)}finally{if($("trip-go"))$("trip-go").disabled=false}
+  };
+  if(!d.open)d.showModal();
+}
+let photoCtl=null;
+async function openPhotoReader(){
+  if(!IN_CLAUDE)return aiOnlyNotice("사진으로 읽기","일본 메뉴판·표지판·안내문 사진을 올리면 AI가 읽는 법과 뜻, 이럴 때 할 말을 알려 줘요.");
+  const sample=await aiGet();
+  let caps=null;try{caps=sample?await sample.limits():null}catch(e){}
+  if(!sample||!(caps&&caps.images)){notifyText("이 화면에서는 사진을 보낼 수 없어요. claude.ai 웹에서 열어 주세요.");return}
+  const inp=document.createElement("input");inp.type="file";inp.accept=(caps.images.mediaTypes||["image/jpeg","image/png","image/webp"]).join(",");
+  inp.onchange=()=>{const f=inp.files&&inp.files[0];if(f)readPhoto(sample,f)};
+  inp.click();
+}
+async function readPhoto(sample,file){
+  let d=$("ai-dlg");if(!d){d=document.createElement("dialog");d.id="ai-dlg";d.className="set-dlg ai-dlg";document.body.appendChild(d)}
+  const url=URL.createObjectURL(file);
+  d.innerHTML=`<div class="set-top"><h3><span class="ai-mark" aria-hidden="true">📷</span> 사진으로 읽기</h3><button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
+    <img class="ph-img" src="${url}" alt="고른 사진">
+    <div id="ph-out" aria-live="polite"><p class="ai-bot thinking">하루가 사진 속 일본어를 읽고 있어요… <small>(처음이면 사진을 보내도 되는지 한 번 물어봐요)</small></p></div>
+    <div class="navrow"><button type="button" class="ghost" id="ph-stop">멈추기</button></div>`;
+  d.addEventListener("close",()=>{if(photoCtl)photoCtl.abort();URL.revokeObjectURL(url)},{once:true});
+  $("ai-x").onclick=()=>d.close();if(!d.open)d.showModal();
+  photoCtl=new AbortController();$("ph-stop").onclick=()=>photoCtl&&photoCtl.abort();
+  const out=$("ph-out");
+  try{
+    const r=await sample.json(`이 사진은 한국인 초보 여행자가 일본에서 찍은 사진이야(메뉴판, 표지판, 안내문 등). 사진 속 일본어를 읽고 도와줘.
+규칙:
+- 사진에 실제로 보이는 글자만 읽어. 안 보이거나 흐리면 그렇다고 말하고 지어내지 마.
+- 중요한 것부터 최대 10개. 일본어는 사진 속 그대로, yomi는 히라가나, ko는 한국어 뜻, note는 짧은 설명(가격·주의할 점 등, 없으면 "").
+- say는 이 상황에서 여행자가 쓸 만한 짧은 일본어 문장 0~3개(쉬운 말, ます형).
+JSON 하나로만 답해: {"kind":"메뉴판|표지판|안내문|기타","summary":"한국어 한두 문장 요약","items":[{"ja":"","yomi":"","ko":"","note":""}],"say":[{"ja":"","yomi":"","ko":"","when":"언제 쓰는지"}]}`,{images:[file],signal:photoCtl.signal,cache:false});
+    const s=(x,n)=>String(x||"").slice(0,n);
+    const items=(Array.isArray(r&&r.items)?r.items:[]).slice(0,10).map(i=>({ja:s(i.ja,40),yomi:s(i.yomi,60),ko:s(i.ko,60),note:s(i.note,100)})).filter(i=>i.ja||i.ko);
+    const say=(Array.isArray(r&&r.say)?r.say:[]).slice(0,3).map(i=>({ja:s(i.ja,60),yomi:s(i.yomi,80),ko:s(i.ko,60),when:s(i.when,60)})).filter(i=>i.ja);
+    const match=ja=>{const n=bkNorm(ja);return BOOK_ALL().find(t=>{const m=bkNorm(t.ja);return m===n||(n.length>=4&&(m.includes(n)||n.includes(m)))})};
+    const sayBtn=(ja,yomi)=>`<button type="button" class="ph-say" data-say="${esc(yomi||ja)}" aria-label="소리 듣기">🔊</button>`;
+    out.innerHTML=`<p class="ph-sum"><span class="pill">${esc(s(r&&r.kind,10)||"사진")}</span> ${esc(s(r&&r.summary,200))}</p>
+      ${items.length?`<ul class="ph-list">${items.map(i=>`<li><div><b lang="ja" class="ja-font">${esc(i.ja)}</b> <small class="hgx">${esc(i.yomi)}</small></div><div class="ph-ko">${esc(i.ko)}${i.note?` <small>· ${esc(i.note)}</small>`:""}</div>${sayBtn(i.ja,i.yomi)}</li>`).join("")}</ul>`:`<p class="rk-note">읽을 수 있는 일본어를 찾지 못했어요. 글자가 크게 나오게 다시 찍어 보세요.</p>`}
+      ${say.length?`<h4 class="ar-h">이럴 때 이렇게 말해요</h4><ul class="ph-list say">${say.map(i=>{const m=match(i.ja);return `<li><div><b lang="ja" class="ja-font">${esc(i.ja)}</b> <small class="hgx">${esc(i.yomi)}</small></div><div class="ph-ko">${esc(i.ko)}${i.when?` <small>· ${esc(i.when)}</small>`:""}</div>${sayBtn(i.ja,i.yomi)}${m?`<button type="button" class="ar-go" data-show="${m.id}">표현집에서 크게 보기 ›</button>`:""}</li>`}).join("")}</ul>`:""}
+      <p class="ai-note">AI가 읽은 내용이라 틀릴 수 있어요. 사진은 저장하지 않아요.</p>`;
+    out.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak(b.dataset.say));
+    out.querySelectorAll("[data-show]").forEach(b=>b.onclick=()=>{d.close();openShow(b.dataset.show)});
+  }catch(e){out.innerHTML=`<p class="ai-err">${esc(aiFail(e))}</p>`}
+  finally{photoCtl=null;const st=$("ph-stop");if(st)st.parentElement.innerHTML=`<button type="button" class="ghost" id="ph-again">다른 사진</button><button type="button" class="next" id="ph-close">닫기</button>`;
+    if($("ph-again"))$("ph-again").onclick=()=>{d.close();openPhotoReader()};if($("ph-close"))$("ph-close").onclick=()=>d.close()}
+}
+const bkRow=t=>`<div class="bk-row"><button type="button" class="bk-main" data-bk="${t.id}"><b>${esc(t.ko)}</b><span class="ja-font" lang="ja">${esc(t.ja)}</span><small class="hgx">${esc(t.hg||"")}</small></button><button type="button" class="bk-star${favOn(t.id)?" on":""}" data-fav="${t.id}" aria-label="${favOn(t.id)?"즐겨찾기에서 빼기":"즐겨찾기에 넣기"}" aria-pressed="${favOn(t.id)}">${favOn(t.id)?"★":"☆"}</button></div>`;
+function bindBkRows(box){box.querySelectorAll("[data-bk]").forEach(b=>b.onclick=()=>openShow(b.dataset.bk));box.querySelectorAll("[data-fav]").forEach(b=>b.onclick=()=>{toggleFav(b.dataset.fav);drawBook()})}
+function drawTrip(box){
+  const T=S.trip;
+  box.innerHTML=`<div class="trip-head"><b>✦ ${esc(T.title)}</b><p>${esc(T.plan)}</p>${T.tips&&T.tips.length?`<ul>${T.tips.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}<button type="button" class="link" id="trip-redo">다시 만들기</button></div>`
+    +T.groups.map(g=>`<h4 class="bk-gh">${esc(g.name)}</h4>`+g.ids.map(id=>TRAVEL_BY[id]).filter(Boolean).map(bkRow).join("")).join("");
+  bindBkRows(box);$("trip-redo").onclick=openTripMaker;
+}
 function drawBook(){
   const box=$("bk-list");if(!box)return;
   const q=(jv.q||"").trim(),f=jv.f||"all";
   let list=BOOK_ALL();
-  if(f==="fav")list=list.filter(t=>favOn(t.id));else if(f!=="all")list=list.filter(t=>t.cat===f);
+  if(f==="trip"&&!q&&S.trip){drawTrip(box);return}
+  if(f==="fav")list=list.filter(t=>favOn(t.id));else if(f==="trip"){const ids=new Set(tripIds());list=list.filter(t=>ids.has(t.id))}else if(f!=="all")list=list.filter(t=>t.cat===f);
   if(q){const nq=bkNorm(q);list=list.filter(t=>[t.ja,t.rd||"",t.ko,t.hg||"",t.tip||""].some(s=>bkNorm(s).includes(nq)))}
-  box.innerHTML=list.length?list.map(t=>`<div class="bk-row"><button type="button" class="bk-main" data-bk="${t.id}"><b>${esc(t.ko)}</b><span class="ja-font" lang="ja">${esc(t.ja)}</span><small class="hgx">${esc(t.hg||"")}</small></button><button type="button" class="bk-star${favOn(t.id)?" on":""}" data-fav="${t.id}" aria-label="${favOn(t.id)?"즐겨찾기에서 빼기":"즐겨찾기에 넣기"}" aria-pressed="${favOn(t.id)}">${favOn(t.id)?"★":"☆"}</button></div>`).join("")
-    :`<p class="intro">${f==="fav"?"아직 즐겨찾기한 표현이 없어요. 자주 쓸 표현의 ☆를 눌러 모아 두세요.":"찾는 표현이 없어요. 다른 말로 찾아보세요."}</p>`;
-  box.querySelectorAll("[data-bk]").forEach(b=>b.onclick=()=>openShow(b.dataset.bk));
-  box.querySelectorAll("[data-fav]").forEach(b=>b.onclick=()=>{toggleFav(b.dataset.fav);drawBook()});
+  box.innerHTML=list.length?list.map(bkRow).join("")
+    :`<p class="intro">${f==="trip"?"내 여행 표현에서 찾는 말이 없어요.":f==="fav"?"아직 즐겨찾기한 표현이 없어요. 자주 쓸 표현의 ☆를 눌러 모아 두세요.":"찾는 표현이 없어요. 다른 말로 찾아보세요."}</p>`;
+  bindBkRows(box);
 }
 function renderBook(el,seg,bindMode){
   const f=jv.f||"all",cats=TRAVEL_CATS.filter(c=>c.mode==="talk"),nFav=BOOK_ALL().filter(t=>favOn(t.id)).length;
   el.innerHTML=seg+`<p class="intro">여행 중에 바로 꺼내 쓰는 표현집이에요. 찾아서 누르면 일본어가 크게 떠서 점원에게 화면을 보여 줄 수 있고, 소리도 들려줘요. 한 번 열어 둔 휴대폰에서는 인터넷이 없어도 열려요. 브라우저 메뉴의 '홈 화면에 추가'를 누르면 앱처럼 쓸 수 있어요.</p>
+    <div class="bk-tools"><button type="button" class="bk-tool" id="bk-trip"><span class="bt-ic" aria-hidden="true">✦</span><span><b>내 여행 맞춤 표현집</b><small>여행 계획을 적으면 AI가 골라 줘요</small></span></button><button type="button" class="bk-tool" id="bk-photo"><span class="bt-ic" aria-hidden="true">📷</span><span><b>사진으로 읽기</b><small>메뉴판·표지판을 찍으면 읽어 줘요</small></span></button></div>
     <input type="search" class="bk-q" id="bk-q" placeholder="뜻·일본어·발음으로 찾기 (예: 화장실, トイレ, 토이레)" value="${esc(jv.q||"")}" aria-label="표현 찾기">
-    <div class="bk-chips" role="group" aria-label="상황">${[["fav",`★ 즐겨찾기 ${nFav}`],["all","전체"],...cats.map(c=>[c.id,c.name])].map(([k,t])=>`<button type="button" data-bf="${k}" class="${k===f?"on":""}" aria-pressed="${k===f}">${t}</button>`).join("")}</div>
+    <div class="bk-chips" role="group" aria-label="상황">${[["fav",`★ 즐겨찾기 ${nFav}`],...(S.trip?[["trip",`✦ ${S.trip.title}`]]:[]),["all","전체"],...cats.map(c=>[c.id,c.name])].map(([k,t])=>`<button type="button" data-bf="${k}" class="${k===f?"on":""}${k==="trip"?" trip":""}" aria-pressed="${k===f}">${t}</button>`).join("")}</div>
     <div class="bk-list" id="bk-list"></div>`;
   bindMode();
+  $("bk-trip").onclick=openTripMaker;$("bk-photo").onclick=openPhotoReader;
   $("bk-q").oninput=e=>{jv.q=e.target.value;drawBook()};
   el.querySelectorAll("[data-bf]").forEach(b=>b.onclick=()=>{jv.f=b.dataset.bf;renderBook(el,seg,bindMode)});
   drawBook();
@@ -3902,6 +4029,7 @@ function mergeState(L,C){
   R.xp=max(R.xp,C.xp);
   R.badges={...(C.badges||{}),...(R.badges||{})};R.flags={...(C.flags||{}),...(R.flags||{})};
   R.claimed={...(C.claimed||{}),...(R.claimed||{})};
+  if(C.trip&&(!R.trip||(C.trip.at||0)>(R.trip.at||0)))R.trip=C.trip; // 내 여행 표현집: 나중에 만든 것
   if(C.stamps||R.stamps)R.stamps={...(C.stamps||{}),...(R.stamps||{})}; // 스탬프는 합친다
   R.fr=R.fr||{};for(const k in C.fr||{})if(Math.abs(C.fr[k])>Math.abs(R.fr[k]||0))R.fr[k]=C.fr[k]; // 친구: 나중에 추가·뺀 쪽
   R.titles=R.titles||{};for(const k in C.titles||{})R.titles[k]=Math.max(R.titles[k]??-1,C.titles[k]??-1);
