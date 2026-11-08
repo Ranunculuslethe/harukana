@@ -256,6 +256,8 @@ body.ph-drop #v6{outline:3px dashed var(--accent);outline-offset:6px;border-radi
 html:root[data-season=summer]{--bl1:#B8D3AE;--bl2:#8FB986;--bl3:#DCEBD5;--bl4:#76A26C;--petal:#BFD9B6}
 html:root[data-season=autumn]{--bl1:#EDB58C;--bl2:#DA8A5C;--bl3:#F6DCC6;--bl4:#C06E48;--petal:#E2A47A}
 html:root[data-season=winter]{--bl1:#E6EDF2;--bl2:#C7D4DD;--bl3:#F7FAFC;--bl4:#AEBFCB;--petal:#FFFFFF}
+.peek-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;grid-column:1/-1;margin:0 0 14px;padding:10px 14px;border:1px solid color-mix(in srgb,var(--mid) 45%,var(--line));border-radius:14px;background:var(--midbg);font-size:14px}
+.peek-bar>span:nth-child(2){flex:1 1 220px}.peek-bar .ghost{margin:0;min-height:38px;padding:6px 12px}.peek-ic{font-size:18px}
 .doors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
 .door{display:flex;align-items:center;gap:10px;min-height:88px;padding:12px 10px 12px 12px;border:1px solid var(--line);border-radius:18px;background:var(--card);text-align:left;color:var(--ink);box-shadow:0 2px 0 var(--panel-shadow);cursor:pointer;transition:border-color .15s,transform .1s}
 .door:hover{border-color:var(--accent)}.door:active{transform:scale(.97)}
@@ -6087,18 +6089,26 @@ const ROAD=[
 ];
 const roadDone=()=>ROAD_STEPS.every(st=>stepProg(st).f>=1);
 function basicDone(){if((S.flags&&S.flags.grad)||/mid|adv/.test(S.level||""))return true;try{return roadDone()}catch(e){return false}}
-function isMid(){return basicDone()} // 여행 코스(회화 칸)가 열렸나
-function isAdv(){return basicDone()} // N5 코스(시험 칸)가 열렸나
+const peekOn=()=>{try{return sessionStorage.getItem("harukana-peek")==="1"&&!basicDone()}catch(e){return false}};
+function setPeek(on){try{on?sessionStorage.setItem("harukana-peek","1"):sessionStorage.removeItem("harukana-peek")}catch(e){}applyLevel();renderPeekBar();refreshSummary();if(!on&&(tab===6||tab===8))show(0)}
+function renderPeekBar(){
+  let b=$("peek-bar");if(!b){b=document.createElement("div");b.id="peek-bar";b.className="peek-bar";b.setAttribute("role","status");const m=$("content");m.parentNode.insertBefore(b,m.parentNode.firstChild)}
+  b.hidden=!peekOn();if(b.hidden)return;
+  b.innerHTML=`<span class="peek-ic" aria-hidden="true">👀</span><span><b>미리 보기 중</b> · 여행·N5 코스를 둘러보고 있어요. 기초를 마치면 정식으로 열려요.</span><button type="button" class="ghost" id="peek-end">미리 보기 끝내기</button>`;
+  $("peek-end").onclick=()=>setPeek(false);
+}
+function isMid(){return basicDone()||peekOn()} // 여행 코스(회화 칸)가 열렸나 (미리 보기 포함)
+function isAdv(){return basicDone()||peekOn()} // N5 코스(시험 칸)가 열렸나 (미리 보기 포함)
 function openCourses(){
   const d=dayState();
   if(!d.m.some(id=>["kanji","kanjiNew","travel"].includes(id))){const i=d.m.map((id,k)=>k).reverse().find(k=>!d.got[d.m[k]]&&!["solve","review"].includes(d.m[k]));if(i!==undefined)d.m[i]="travel";else d.m.push("travel")}
   save();applyLevel();refreshSummary();renderRoad();renderSettings();
 }
 function applyLevel(){
-  const open=basicDone();
-  $("level-label").textContent=open?"여행·N5":"기초";
+  const open=basicDone(),peek=peekOn();
+  $("level-label").textContent=open?"여행·N5":peek?"미리 보기":"기초";
   $("level-label").title=open?"여행 코스와 N5 코스가 열려 있어요":`기초 · 학습 길 ${ROAD_STEPS.length}단계를 마치면 여행 코스와 N5 코스가 열려요`;
-  $("t6").hidden=!open;$("t8").hidden=!open;
+  $("t6").hidden=!(open||peek);$("t8").hidden=!(open||peek);
 }
 const ROAD_STEPS=ROAD.flatMap(sec=>sec.steps);
 const stepProg=st=>{const it=st.items(),n=it.filter(st.done).length;return{n,t:it.length,f:it.length?n/it.length:1}};
@@ -6130,15 +6140,15 @@ function renderDoors(){
   const open=basicDone(),left=ROAD_STEPS.filter(st=>stepProg(st).f<1).length;
   const info=steps=>{const ps=steps.map(stepProg),next=steps.find(st=>!st.soon&&stepProg(st).f<1);return{pct:Math.floor(ps.reduce((a,p)=>a+p.f,0)/ps.length*100),done:ps.filter(p=>p.f>=1).length,n:ps.length,next}};
   const B=info(ROAD_STEPS),T=info(ROAD_MID.steps),N=info(ROAD_ADV.steps);
-  const note=(x,on)=>!on?`기초 ${left}단계 남음`:x.next?`다음: ${x.next.name}`:"✿ 모두 마쳤어요";
+  const note=(x,on)=>!on?`기초 ${left}단계 남음 · 눌러서 미리 보기`:x.next?`다음: ${x.next.name}`:"✿ 모두 마쳤어요";
   const doors=[
     {k:"b",ic:"初",t:"기초",s:"가나 · 단어 · 문장",x:B,on:true,tab:1},
     {k:"t",ic:"旅",t:"여행 코스",s:"회화 · 듣기 · 표지판",x:T,on:open,tab:6},
     {k:"n",ic:"試",t:"N5 코스",s:"문자 · 문법 · 독해 · 청해",x:N,on:open,tab:8}];
-  el.innerHTML=doors.map(d=>`<button type="button" class="door door-${d.k}${d.on?"":" locked"}" data-door="${d.k}" aria-label="${d.t}${d.on?(d.x.next?`, 다음 단계 ${d.x.next.name}`:""):" (잠김, 기초를 마치면 열려요)"}"><span class="door-ic" aria-hidden="true">${d.ic}</span><span class="door-txt"><b>${d.t}${d.on?"":' <em class="door-lock">잠김</em>'}</b><small>${d.s}</small><span class="bar"><i style="width:${d.on?d.x.pct:0}%"></i></span><span class="door-note">${d.on?`${d.x.done}/${d.x.n}단계 · `:""}${note(d.x,d.on)}</span></span><span class="door-go" aria-hidden="true">${d.on?"›":"🔒"}</span></button>`).join("");
+  el.innerHTML=doors.map(d=>`<button type="button" class="door door-${d.k}${d.on?"":" locked"}" data-door="${d.k}" aria-label="${d.t}${d.on?(d.x.next?`, 다음 단계 ${d.x.next.name}`:""):" (잠김, 눌러서 미리 보기)"}"><span class="door-ic" aria-hidden="true">${d.ic}</span><span class="door-txt"><b>${d.t}${d.on?"":' <em class="door-lock">잠김</em>'}</b><small>${d.s}</small><span class="bar"><i style="width:${d.on?d.x.pct:0}%"></i></span><span class="door-note">${d.on?`${d.x.done}/${d.x.n}단계 · `:""}${note(d.x,d.on)}</span></span><span class="door-go" aria-hidden="true">${d.on?"›":"🔒"}</span></button>`).join("");
   el.querySelectorAll("[data-door]").forEach(b=>b.onclick=()=>{const d=doors.find(x=>x.k===b.dataset.door);
-    if(!d.on)return notifyText(`여행 코스와 N5 코스는 기초를 마치면 함께 열려요. ${left}단계 남았어요!`);
-    if(d.x.next)d.x.next.go();else show(d.tab)});
+    if(!d.on){setPeek(true);notifyText(`미리 보기예요. 기초 ${left}단계를 마치면 정식으로 열려요!`);return show(d.tab)}
+    if(d.x.next&&!peekOn())d.x.next.go();else show(d.tab)});
 }
 function setLast(o){if(JSON.stringify(S.last)!==JSON.stringify(o)){S.last=o;save()}}
 function lastPlace(){const L=S.last;if(!L)return"";
@@ -6230,6 +6240,7 @@ function renderPhrase(){
 }
 renderPhrase();
 try{checkStamps()}catch(e){} // 스탬프북: 처음 열면 지금까지 한 공부만큼 조용히 찍어 둔다
+try{renderPeekBar()}catch(e){}
 if(IN_CLAUDE&&!S.xp)setTimeout(()=>{try{if(!localStorage.getItem("harukana-move-hint")){localStorage.setItem("harukana-move-hint","1");notifyText("사이트에서 공부한 기록이 있다면 설정 → '기록 옮기기'로 가져올 수 있어요.")}}catch(e){}},2500);
 $("phrase-listen").onclick=()=>{if(!('speechSynthesis' in window)){notifyText('이 브라우저에서는 음성 재생을 지원하지 않아요.');return}speak(todayPhrase()[5])};
 const hideHg=()=>{try{return localStorage.getItem("harukana-hidehg")==="1"}catch(e){return false}};
