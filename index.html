@@ -259,6 +259,8 @@ html:root[data-season=autumn]{--bl1:#EDB58C;--bl2:#DA8A5C;--bl3:#F6DCC6;--bl4:#C
 html:root[data-season=winter]{--bl1:#E6EDF2;--bl2:#C7D4DD;--bl3:#F7FAFC;--bl4:#AEBFCB;--petal:#FFFFFF}
 .peek-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;grid-column:1/-1;margin:0 0 14px;padding:10px 14px;border:1px solid color-mix(in srgb,var(--mid) 45%,var(--line));border-radius:14px;background:var(--midbg);font-size:14px}
 .peek-bar>span:nth-child(2){flex:1 1 220px}.peek-bar .ghost{margin:0;min-height:38px;padding:6px 12px}.peek-ic{font-size:18px}
+.fz-note{margin:10px 0 0;padding:8px 10px;border-radius:10px;background:var(--accent-soft);font-size:13px;line-height:1.6}
+.cal-day.frozen{background:color-mix(in srgb,#7FB3D5 22%,var(--card));border-color:color-mix(in srgb,#7FB3D5 55%,var(--line))}
 .doors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
 .door{display:flex;align-items:center;gap:10px;min-height:88px;padding:12px 10px 12px 12px;border:1px solid var(--line);border-radius:18px;background:var(--card);text-align:left;color:var(--ink);box-shadow:0 2px 0 var(--panel-shadow);cursor:pointer;transition:border-color .15s,transform .1s}
 .door:hover{border-color:var(--accent)}.door:active{transform:scale(.97)}
@@ -2636,13 +2638,15 @@ function trackAnswer(ok,o){
 function checkMissions(){
   const d=dayState(),got=[];
   d.m.forEach(id=>{const M=MISSIONS[id];if(!d.got[id]&&M.v(d)>=M.need){d.got[id]=1;addXp(M.xp);got.push(`${M.t} +${M.xp} XP`)}});
+  if(got.length&&d.m.every(id=>d.got[id])&&S.freezeDay!==d.id){S.freezeDay=d.id;if((S.freeze||0)<FREEZE_MAX){S.freeze=(S.freeze||0)+1;got.push(`🛡 연속 기록 보호권 +1 (${S.freeze}개)`)}}
   if(got.length)notifyText("오늘의 목표 달성! "+got.join(", "));
 }
 function renderMissions(){
   const d=dayState(),done=d.m.filter(id=>d.got[id]).length;
   const wasOpen=!!document.querySelector(".goal-fold[open]");
   $("goal-card").innerHTML=`<details class="goal-fold"${wasOpen?" open":""}><summary><div class="goal-ring" style="--progress:${done/d.m.length*100}%"><span>${done}/${d.m.length}</span></div>
-      <span class="gf-t"><b>${done===d.m.length?"오늘 목표 모두 달성!":"오늘의 작은 목표"}</b><small>${done===d.m.length?"내일 새 목표가 나와요":`${d.m.length}개 중 ${done}개 · 달성하면 XP`}</small></span></summary>
+      <span class="gf-t"><b>${done===d.m.length?"오늘 목표 모두 달성!":"오늘의 작은 목표"}</b><small>${done===d.m.length?"내일 새 목표가 나와요":`${d.m.length}개 중 ${done}개 · 다 하면 🛡 보호권`} · 🛡 ${S.freeze||0}/${FREEZE_MAX}</small></span></summary>
+    <p class="fz-note">🛡 <b>연속 기록 보호권</b> ${S.freeze||0}개 · 오늘 목표를 모두 하면 1개 받아요(최대 ${FREEZE_MAX}개). 하루를 쉬어도 자동으로 연속 기록을 지켜 줘요.</p>
     <ul class="missions">${d.m.map(id=>{const M=MISSIONS[id],v=Math.min(M.v(d),M.need),ok=!!d.got[id];
       return `<li class="${ok?"done":""}"><div class="ms-top"><span>${ok?"✓ ":""}${M.t}</span><em>+${M.xp} XP</em></div><div class="bar"><i style="width:${v/M.need*100}%"></i></div><small>${v} / ${M.need}</small></li>`}).join("")}</ul></details>`;
   if($("home-goal"))$("home-goal").innerHTML=$("goal-card").innerHTML;
@@ -3796,7 +3800,16 @@ function renderNoteQuiz(){
 const XP_RIGHT=10,XP_BADGE=30,XP_PER_LEVEL=100;
 const lvOf=xp=>Math.floor(xp/XP_PER_LEVEL)+1;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function streak(){let n=0;const d=new Date();if(!S.daily[keyOf(d)])d.setDate(d.getDate()-1);while(S.daily[keyOf(d)]){n++;d.setDate(d.getDate()-1)}return n}
+function streak(){let n=0;const d=new Date(),fz=S.frozen||{};if(!S.daily[keyOf(d)])d.setDate(d.getDate()-1);while(S.daily[keyOf(d)]||fz[keyOf(d)]){if(S.daily[keyOf(d)])n++;d.setDate(d.getDate()-1)}return n}
+const FREEZE_MAX=2;
+function useFreeze(){
+  S.freeze=S.freeze||0;S.frozen=S.frozen||{};if(!S.freeze)return;
+  const d=new Date();d.setDate(d.getDate()-1);const gap=[];
+  for(let i=0;i<10;i++){const k=keyOf(d);if(S.daily[k]||S.frozen[k])break;gap.push(k);d.setDate(d.getDate()-1)}
+  const k=keyOf(d);if(!gap.length||gap.length>S.freeze||!(S.daily[k]||S.frozen[k]))return; // 쉰 날이 없거나, 너무 많거나, 그 전에 공부한 날이 없으면 그대로
+  gap.forEach(g=>S.frozen[g]=1);S.freeze-=gap.length;save();
+  setTimeout(()=>notifyText(`🛡 ${gap.length===1?"어제":gap.length+"일"} 쉬었지만 보호권으로 ${streak()}일 연속을 지켰어요! (남은 보호권 ${S.freeze}개)`),1500);
+}
 const allCd=list=>list.every(c=>cd(c.k));
 const BADGES=[
   ["first","첫 정답","문제를 처음 맞혔어요","✿",()=>S.xp>0],
@@ -4032,6 +4045,7 @@ function mergeState(L,C){
   R.xp=max(R.xp,C.xp);
   R.badges={...(C.badges||{}),...(R.badges||{})};R.flags={...(C.flags||{}),...(R.flags||{})};
   R.claimed={...(C.claimed||{}),...(R.claimed||{})};
+  R.frozen={...(C.frozen||{}),...(R.frozen||{})};R.freeze=Math.min(FREEZE_MAX,Math.max(R.freeze||0,C.freeze||0)); // 연속 기록 보호권
   if(C.stamps||R.stamps)R.stamps={...(C.stamps||{}),...(R.stamps||{})}; // 스탬프는 합친다
   R.fr=R.fr||{};for(const k in C.fr||{})if(Math.abs(C.fr[k])>Math.abs(R.fr[k]||0))R.fr[k]=C.fr[k]; // 친구: 나중에 추가·뺀 쪽
   R.titles=R.titles||{};for(const k in C.titles||{})R.titles[k]=Math.max(R.titles[k]??-1,C.titles[k]??-1);
@@ -4943,7 +4957,7 @@ function renderRank(){
           :nickLeft()?`<button class="link" id="nick-edit">${nickLeft()===2?"이름 정하기":"이름 바꾸기 (1번 남음)"}</button>`
           :`<small class="nick-help">이름은 더 바꿀 수 없어요</small>`}</div>`}
       <div class="me-line"><b>${xp} XP</b><span>다음 레벨까지 ${XP_PER_LEVEL-inLv} XP</span></div><div class="bar"><i style="width:${inLv}%"></i></div>
-      <div class="me-stats"><span><b>${st}</b>일 연속</span><span class="stamp-chip"><b>${nb}</b> / ${STAMPS.length} 스탬프</span></div>
+      <div class="me-stats"><span><b>${st}</b>일 연속</span><span title="오늘 목표를 모두 하면 1개, 하루를 쉬면 자동으로 연속 기록을 지켜 줘요">🛡 보호권 <b>${S.freeze||0}</b></span><span class="stamp-chip"><b>${nb}</b> / ${STAMPS.length} 스탬프</span></div>
     </div></div>
     ${pickingAv?`<div class="av-pick" role="group" aria-label="프로필 사진 고르기">${AVATARS.map(a=>`<button class="av-opt${a.id===avatarOf(S.avatar).id?" on":""}" data-av="${a.id}" aria-pressed="${a.id===avatarOf(S.avatar).id}"><span class="av-c">${avatarSvg(a.id)}</span><small>${a.name}</small></button>`).join("")}</div>`:""}`;
   if($("pf-nick"))$("pf-nick").textContent=nickName();
@@ -5026,10 +5040,10 @@ function renderGrass(){
   let cells="",days=0,total=0;
   for(let i=0;i<lead;i++)cells+=`<div class="cal-day blank" aria-hidden="true"></div>`;
   for(let d=1;d<=dim;d++){
-    const day=new Date(y,m,d),n=S.daily[keyOf(day)]||0,future=day>now,isToday=+day===+now,wd=(lead+d-1)%7;
+    const day=new Date(y,m,d),n=S.daily[keyOf(day)]||0,fz=!n&&(S.frozen||{})[keyOf(day)],future=day>now,isToday=+day===+now,wd=(lead+d-1)%7;
     if(n){days++;total+=n}
-    cells+=`<div class="cal-day l${future?0:lvl(n)}${future?" future":""}${isToday?" today":""}${wd===5?" sat":wd===6?" sun":""}" title="${m+1}월 ${d}일 (${"월화수목금토일"[wd]}) · ${n}문제">
-      <span class="cd">${d}</span>${n?`<b>${n}</b>`:""}</div>`;
+    cells+=`<div class="cal-day l${future?0:lvl(n)}${future?" future":""}${isToday?" today":""}${wd===5?" sat":wd===6?" sun":""}${fz?" frozen":""}" title="${m+1}월 ${d}일 (${"월화수목금토일"[wd]}) · ${fz?"보호권으로 지킨 날":n+"문제"}">
+      <span class="cd">${d}</span>${n?`<b>${n}</b>`:fz?`<b aria-hidden="true">🛡</b>`:""}</div>`;
   }
   el.innerHTML=`<h3 class="rk-h">학습 잔디 <small>${streak()}일 연속 공부 중</small></h3>
     <div class="cal">
@@ -6243,6 +6257,7 @@ function renderPhrase(){
 }
 renderPhrase();
 try{checkStamps()}catch(e){} // 스탬프북: 처음 열면 지금까지 한 공부만큼 조용히 찍어 둔다
+try{useFreeze()}catch(e){}
 try{renderPeekBar()}catch(e){}
 if(IN_CLAUDE&&!S.xp)setTimeout(()=>{try{if(!localStorage.getItem("harukana-move-hint")){localStorage.setItem("harukana-move-hint","1");notifyText("사이트에서 공부한 기록이 있다면 설정 → '기록 옮기기'로 가져올 수 있어요.")}}catch(e){}},2500);
 $("phrase-listen").onclick=()=>{if(!('speechSynthesis' in window)){notifyText('이 브라우저에서는 음성 재생을 지원하지 않아요.');return}speak(todayPhrase()[5])};
