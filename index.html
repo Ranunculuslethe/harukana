@@ -196,6 +196,7 @@
 .stamp-pop-in{display:flex;flex-direction:column;align-items:center;gap:4px;padding:22px 28px;border-radius:22px;background:var(--card);border:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.18)}
 .stamp-pop-in b{font-size:18px}.stamp-pop-in small{font-size:13px;color:var(--sub)}
 .stamp-svg.big{width:150px;height:150px}
+.stamp-pop-row{display:flex;gap:6px}.stamp-pop-row .stamp-svg{width:96px;height:96px}
 .stamp-pop.show .stamp-svg.big{animation:stampHit .45s cubic-bezier(.2,1.4,.4,1) both}
 @keyframes stampHit{0%{transform:scale(2.2);opacity:0}60%{transform:scale(.92);opacity:1}100%{transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){.stamp-pop.show .stamp-svg.big{animation:none}}
@@ -3883,10 +3884,12 @@ function checkBadges(){checkStamps()}
 function playStamp(){
   const s=stampQueue[0];if(!s)return;
   let el=$("stamp-pop");if(!el){el=document.createElement("div");el.id="stamp-pop";el.className="stamp-pop";el.setAttribute("role","status");document.body.appendChild(el)}
-  el.innerHTML=`<div class="stamp-pop-in">${stampSvg(s,true,true)}<b>${esc(s.ko)} 스탬프!</b><small>${esc(s.hint)} · +${STAMP_XP} XP</small></div>`;
+  const many=stampQueue.length>=3,n=many?stampQueue.length:1;
+  el.innerHTML=many?`<div class="stamp-pop-in"><div class="stamp-pop-row">${stampQueue.slice(0,3).map(x=>stampSvg(x,true)).join("")}</div><b>스탬프 ${n}개를 받았어요!</b><small>${esc(stampQueue.slice(0,3).map(x=>x.ko).join(" · "))}${n>3?` 외 ${n-3}곳`:""} · 프로필의 스탬프북에서 볼 수 있어요</small></div>`
+    :`<div class="stamp-pop-in">${stampSvg(s,true,true)}<b>${esc(s.ko)} 스탬프!</b><small>${esc(s.hint)} · +${STAMP_XP} XP</small></div>`;
   el.classList.remove("show");void el.offsetWidth;el.classList.add("show");
   el.onclick=()=>{el.classList.remove("show")};
-  setTimeout(()=>{el.classList.remove("show");stampQueue.shift();if(stampQueue.length)setTimeout(playStamp,250)},1900);
+  setTimeout(()=>{el.classList.remove("show");stampQueue.splice(0,n);if(stampQueue.length)setTimeout(playStamp,250)},many?2600:1900);
 }
 function renderStamps(){
   const el=$("records");if(!el)return;
