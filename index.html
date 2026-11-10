@@ -821,7 +821,8 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
     {"id": "a_life", "script": "a", "name": "일 · 공부 · 생활", "desc": "청소, 빨래, 일, 연습"},
     {"id": "a_adv2", "script": "a", "name": "부사 · 이어 주는 말 2", "desc": "가장, 함께, 처음으로, 그리고"},
     {"id": "a_demo", "script": "a", "name": "こ · そ · あ · ど", "desc": "이것, 여기, 이 ~, 이런"},
-    {"id": "a_count2", "script": "a", "name": "세는 말 · 인사 2", "desc": "여섯, 열, 만, 감사합니다"}
+    {"id": "a_count2", "script": "a", "name": "세는 말 · 인사 2", "desc": "여섯, 열, 만, 감사합니다"},
+    {"id": "mix_life", "script": "x", "name": "가게·음식·생활", "desc": "케이크 가게, 버스 정류장, 사과 주스"}
   ],
   "words": [
     {"id": "w001", "kana": "がくせい", "hangul": "가쿠세이", "meaning": "학생", "category": "school_people", "koreanSimilar": true},
@@ -1593,7 +1594,21 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
     {"id": "w948", "kana": "まん", "hangul": "", "meaning": "만 (10000)", "category": "a_count2", "koreanSimilar": false},
     {"id": "w949", "kana": "ありがとうございます", "hangul": "", "meaning": "감사합니다", "category": "a_count2", "koreanSimilar": false},
     {"id": "w950", "kana": "おやすみなさい", "hangul": "", "meaning": "안녕히 주무세요", "category": "a_count2", "koreanSimilar": false},
-    {"id": "w951", "kana": "おかえりなさい", "hangul": "", "meaning": "어서 와요", "category": "a_count2", "koreanSimilar": false}
+    {"id": "w951", "kana": "おかえりなさい", "hangul": "", "meaning": "어서 와요", "category": "a_count2", "koreanSimilar": false},
+    {"id": "w952", "kana": "ケーキや", "hangul": "", "meaning": "케이크 가게", "category": "mix_life", "koreanSimilar": false},
+    {"id": "w953", "kana": "ラーメンや", "hangul": "", "meaning": "라멘집", "category": "mix_life", "koreanSimilar": false},
+    {"id": "w954", "kana": "バスてい", "hangul": "", "meaning": "버스 정류장", "category": "mix_life", "koreanSimilar": false},
+    {"id": "w955", "kana": "バスのりば", "hangul": "", "meaning": "버스 타는 곳", "category": "mix_life", "koreanSimilar": false},
+    {"id": "w956", "kana": "タクシーのりば", "hangul": "", "meaning": "택시 타는 곳", "category": "mix_life", "koreanSimilar": false},
+    {"id": "w957", "kana": "ゴミばこ", "hangul": "", "meaning": "쓰레기통", "category": "mix_life", "koreanSimilar": false},
+    {"id": "w958", "kana": "カップめん", "hangul": "", "meaning": "컵라면", "category": "mix_life", "koreanSimilar": false},
+    {"id": "w959", "kana": "りんごジュース", "hangul": "", "meaning": "사과 주스", "category": "mix_life", "koreanSimilar": false},
+    {"id": "w960", "kana": "いちごミルク", "hangul": "", "meaning": "딸기 우유", "category": "mix_life", "koreanSimilar": false},
+    {"id": "w961", "kana": "カレーあじ", "hangul": "", "meaning": "카레 맛", "category": "mix_life", "koreanSimilar": false},
+    {"id": "w962", "kana": "チョコあじ", "hangul": "", "meaning": "초코 맛", "category": "mix_life", "koreanSimilar": false},
+    {"id": "w963", "kana": "えきビル", "hangul": "", "meaning": "역 빌딩", "category": "mix_life", "koreanSimilar": false},
+    {"id": "w964", "kana": "テレビばんぐみ", "hangul": "", "meaning": "TV 프로그램", "category": "mix_life", "koreanSimilar": false},
+    {"id": "w965", "kana": "ガラスまど", "hangul": "", "meaning": "유리창", "category": "mix_life", "koreanSimilar": false}
   ]
 }
 </script>
@@ -3050,10 +3065,25 @@ try{const v=JSON.parse(localStorage.getItem("harukana-wsess"));
   if(v&&(v.view==="scard"||v.view==="squiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)&&SENT_UNITS.some(u=>u.id===v.unit)){delete v.t;v.batch=v.batch.filter(id=>SENT_BY_ID[id]);if(v.queue)v.queue=v.queue.filter(id=>SENT_BY_ID[id]);v.wrong=(v.wrong||[]).filter(id=>SENT_BY_ID[id]);if(v.batch.length)wv=v}
   else if(v&&(v.view==="card"||v.view==="quiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)){delete v.t;const byId=x=>WORDS.find(w=>w.id===(x&&x.id));v.batch=v.batch.map(byId).filter(Boolean);if(v.queue)v.queue=v.queue.map(byId).filter(Boolean);if(v.batch.length)wv={...v,wrong:new Set(v.wrong||[])}}}catch(e){}
 function saveWSess(){try{if(["card","quiz","scard","squiz"].includes(wv.view))localStorage.setItem("harukana-wsess",JSON.stringify({...wv,wrong:[...(wv.wrong||[])],t:Date.now()}));else localStorage.removeItem("harukana-wsess")}catch(e){}}
-const catWords=id=>WORDS.filter(w=>w.category===id);
+const catWords=id=>VC[id]?VC[id].ids.map(i=>WORDS.find(w=>w.id===i)).filter(Boolean):WORDS.filter(w=>w.category===id);
 const scriptCats=s=>CATS.filter(c=>c.script===s);
 const catDone=id=>catWords(id).every(w=>wd(w.id));
 const catOpen=()=>true;
+const wsc=w=>{const h=/[ぁ-ゖ]/.test(w.kana),k=/[ァ-ヺ]/.test(w.kana);return h&&k?"x":k?"k":"h"};
+WSCRIPTS.x="섞인 말";
+const VC={},VCATS=[];
+(()=>{
+  const by=s=>CATS.filter(c=>c.script===s&&!c.extra);
+  const order=[...by("h"),...by("m"),...by("a"),...by("k"),...by("x"),...CATS.filter(c=>c.extra)];
+  const add=(id,base,s,ids,name,desc)=>{const v={id,base:base&&base.id,name:name||base.name,desc:desc||(base?base.desc:""),script:s,extra:!!(base&&base.extra),recommended:base&&base.recommended,ids};VC[id]=v;VCATS.push(v)};
+  const stray={k:[],x:[]};
+  order.forEach(c=>{const g={h:[],k:[],x:[]};WORDS.forEach(w=>{if(w.category===c.id)g[wsc(w)].push(w.id)});
+    ["h","k","x"].forEach(s=>{if(!g[s].length)return;
+      if(s!=="h"&&c.script!==s){stray[s].push(...g[s]);return} // 다른 카테고리에 몇 개씩 끼어 있던 가타카나·섞인 말은 따로 모은다
+      add(c.id+"~"+s,c,s,g[s])})});
+  for(let i=0;i<stray.k.length;i+=12)add(`kmore${i/12+1}~k`,null,"k",stray.k.slice(i,i+12),`생활 가타카나 ${i/12+1}`,"생활·N5 단어 중 가타카나로 쓰는 말");
+  if(stray.x.length){const v=VCATS.find(c=>c.script==="x");if(v)v.ids.push(...stray.x);else add("xmore~x",null,"x",stray.x,"섞인 말","히라가나와 가타카나가 섞인 말")}
+})();
 const josa=(s,a,b)=>{const c=s.charCodeAt(s.length-1)-0xAC00;return s+(c>=0&&c<11172&&c%28?a:b)};
 let wMode="fwd";try{if(localStorage.getItem("harukana-wmode")==="rev")wMode="rev"}catch(e){} // 고른 방향은 이 기기에 기억
 const WMODE_NAMES={fwd:"일본어 → 뜻",rev:"뜻 → 일본어"};
@@ -3095,7 +3125,7 @@ function wordQ(w,mode,build){
 const startCards=cat=>{const batch=batchCands(cat);wv={view:"card",cat,batch,i:0}};
 const exitBtn=`<div style="text-align:left"><button class="back" id="wexit">← 그만하고 나가기</button></div>`;
 const startQuiz=(cat,list,batch)=>{wv={view:"quiz",cat,batch:batch||[],queue:shuffle(list),total:list.length,wrong:new Set(),opened:[]}};
-const catOf=id=>CATS.find(c=>c.id===id);
+const catOf=id=>CATS.find(c=>c.id===id)||VC[id];
 const toList=cat=>{wv={view:"list",script:cat?cat.script:"h"};wordsHist();renderWords()};
 
 const WBY={};WORDS.forEach(w=>WBY[w.id]=w);
@@ -3104,7 +3134,7 @@ const RD_KEEP=7; // 오늘 회독에 함께 넣는 지난 날 수 (오늘 포함
 const rdHide=()=>{try{return localStorage.getItem("harukana-rdhide")==="1"}catch(e){return false}};
 function rdNewIds(n){
   const used=new Set(rdS().days.flatMap(d=>d.ids)),out=[];
-  const order=[...scriptCats("h"),...scriptCats("k"),...(lvOpen("mid")?scriptCats("m"):[]),...(lvOpen("adv")?scriptCats("a"):[])].filter(c=>!c.extra);
+  const order=["h","k","x"].flatMap(s=>VCATS.filter(c=>c.script===s&&!c.extra));
   for(const c of order){for(const w of catWords(c.id)){if(!used.has(w.id)){out.push(w.id);if(out.length>=n)return out}}}
   return out;
 }
@@ -3176,33 +3206,31 @@ function renderWords(){
   if(wv.view==="readdone")return renderReadDone(el);
   if(wv.view&&wv.view[0]==="s")return renderSent(el); // 문장 연습 화면들
   if(wv.view==="list"){
-    const s=WSCRIPTS[wv.script]?wv.script:"h",cats=scriptCats(s),lv=WLEVEL[s]; // 예전에 저장된 섞어 쓰기(m)는 히라가나로
+    const s=["h","k","x"].includes(wv.script)?wv.script:"h",cats=VCATS.filter(c=>c.script===s); // 예전에 저장된 생활(m)·N5(a)는 히라가나로
     setLast({t:"wordlist",s,m:wMode});
-    const lvTabs=`<div class="seg top-tabs" role="group" aria-label="단어 난이도">${[["beg","h"],["mid","m"],["adv","a"]].map(([l,sc])=>`<button data-wl="${sc}" class="${l===lv?"on":""}" aria-pressed="${l===lv}">${LV_NAMES[l]}${lvOpen(l)?"":' <small class="tab-lock">잠김</small>'}</button>`).join("")}</div>`;
-    const seg=lv==="beg"?`<div class="seg" role="group" aria-label="단어 글자 종류">${["h","k"].map(k=>`<button data-s="${k}" class="${k===s?"on":""}" aria-pressed="${k===s}">${WSCRIPTS[k]}</button>`).join("")}</div>`:"";
+    const cnt=t=>VCATS.filter(c=>c.script===t).reduce((a,c)=>a+c.ids.length,0);
+    const seg=`<div class="seg top-tabs" role="group" aria-label="단어 글자 종류">${[["h","히라가나"],["k","가타카나"],["x","섞인 말"]].map(([k,t])=>`<button data-s="${k}" class="${k===s?"on":""}" aria-pressed="${k===s}">${t} <small>${cnt(k)}</small></button>`).join("")}</div>`;
     const card=c=>{
-        const ws=catWords(c.id),mf=ws.filter(w=>wdm(w.id,"fwd")).length,mr=ws.filter(w=>wdm(w.id,"rev")).length,mw=mf,all=mf===ws.length&&mr===ws.length; // 두 방향 진도를 같이 보여 준다
-        return `<button class="catcard${mf>0&&mf<ws.length?" doing":""}" data-id="${c.id}"><div class="cat-top"><b>${c.name}</b>${mf>0&&mf<ws.length?doingPill:""}${c.recommended&&mw<ws.length?'<span class="pill">처음 추천</span>':""}${mf===ws.length?`<span class="pill ok">${all?"양방향 완료":"완료"}</span>`:""}</div>
+        const ws=catWords(c.id),mf=ws.filter(w=>wdm(w.id,"fwd")).length,mr=ws.filter(w=>wdm(w.id,"rev")).length,all=mf===ws.length&&mr===ws.length;
+        return `<button class="catcard${mf>0&&mf<ws.length?" doing":""}" data-id="${c.id}"><div class="cat-top"><b>${c.name}</b>${mf>0&&mf<ws.length?doingPill:""}${c.recommended&&mf<ws.length?'<span class="pill">처음 추천</span>':""}${mf===ws.length?`<span class="pill ok">${all?"양방향 완료":"완료"}</span>`:""}</div>
           <div class="desc">${c.desc}</div><div class="bar"><i style="width:${ws.length?mf/ws.length*100:0}%"></i></div>
           <div class="meta">${mf}/${ws.length}${rdS().cat[c.id]?` · 📖 ${rdS().cat[c.id]}회독`:""}</div></button>`};
     const catDoneW=c=>{const ws=catWords(c.id);return ws.length>0&&ws.every(w=>wdm(w.id,"fwd"))};
     const must=cats.filter(c=>!c.extra),extra=cats.filter(c=>c.extra);
-    const intro={beg:"N5 수준 기초 단어예요. 카테고리에 들어가서 '일본어 → 뜻'이나 '뜻 → 일본어'를 골라 풀어요. 발음의 \"-\"는 앞 소리를 길게 읽으라는 뜻이에요 (토-쿄- = 도쿄).",
-      mid:"역·가게·식당·병원처럼 일본에서 생활할 때 만나는 단어예요. 회화 칸의 표현과 함께 익히면 좋아요.",
-      adv:"JLPT N5 시험에 나오는, 조금 더 어려운 동사·형용사·부사와 때를 나타내는 말이에요. 시험 칸의 문제와 함께 익혀요."}[lv];
-    let body;
-    if(!lvOpen(lv))body=`<div class="lock-card"><b>${lv==="mid"?"기초를 마치면 열려요":"기초를 마치면 열려요"}</b><small>${lv==="mid"?"기초를 마치면 생활 단어 "+WORDS.filter(w=>w.category.startsWith("m_")).length+"개를 배울 수 있어요.":"기초를 마치면 N5 단어 "+WORDS.filter(w=>w.category.startsWith("a_")).length+"개를 배울 수 있어요."}</small><div class="kj-peek ja-font" lang="ja">${cats.map(c=>c.name).join(" · ")}</div></div>`;
-    else{
-      const started=c=>catWords(c.id).some(w=>wdm(w.id,"fwd")),todo=must.filter(c=>!catDoneW(c)),done=must.filter(catDoneW);
-      todo.sort((a,b)=>started(b)-started(a)); // 하는 중인 카테고리를 맨 앞으로
-      body=`<p class="intro">${intro}</p>${catSum(done.length,must.length,"카테고리")}<div class="cats compact">${todo.map(card).join("")}</div>${doneFold(done,c=>c.name,card)}${extra.length?`<h3 class="jl-h">더 모으기 <small class="h-note">하고 싶을 때만 · 학습 길에는 들어가지 않아요</small></h3><div class="cats compact">${extra.map(card).join("")}</div>`:""}`}
+    const intro={h:"히라가나로만 쓰는 단어예요. 기초부터 생활·N5 단어까지 한곳에 모았어요. 발음의 \"-\"는 앞 소리를 길게 읽으라는 뜻이에요 (토-쿄- = 도쿄).",
+      k:"가타카나로 쓰는 단어예요. 대부분 외래어라 한국어와 소리가 비슷한 말이 많아요 (コーヒー = 커피).",
+      x:"히라가나와 가타카나가 한 단어에 섞인 말이에요 (パンや = 빵집). 두 글자를 다 읽을 수 있어야 해요."}[s];
+    const started=c=>catWords(c.id).some(w=>wdm(w.id,"fwd")),todo=must.filter(c=>!catDoneW(c)),done=must.filter(catDoneW);
+    todo.sort((a,b)=>started(b)-started(a)); // 하는 중인 카테고리를 맨 앞으로
+    const body=`<p class="intro">${intro}</p>${catSum(done.length,must.length,"카테고리")}<div class="cats compact">${todo.map(card).join("")}</div>${doneFold(done,c=>c.name,card)}${extra.length?`<h3 class="jl-h">더 모으기 <small class="h-note">하고 싶을 때만 · 학습 길에는 들어가지 않아요</small></h3><div class="cats compact">${extra.map(card).join("")}</div>`:""}`;
     const kindSeg=kindTabs("w");
-    el.innerHTML=kindSeg+rdCard()+lvTabs+seg+body;
+    el.innerHTML=kindSeg+rdCard()+seg+body;
     bindKindTabs(el);bindRdCard(el);
-    el.querySelectorAll("[data-s],[data-wl]").forEach(b=>b.onclick=()=>{wv={view:"list",script:b.dataset.s||b.dataset.wl};wordsHist();renderWords()});
+    el.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{wv={view:"list",script:b.dataset.s};wordsHist();renderWords()});
     el.querySelectorAll(".catcard").forEach(b=>b.onclick=()=>{wv={view:"cat",cat:b.dataset.id};wordsHist();renderWords()});
     return;
   }
+  if(wv.cat&&!VC[wv.cat]){const v=VCATS.find(c=>c.base===wv.cat);if(v)wv.cat=v.id} // 예전 카테고리 이름으로 저장된 위치는 새 묶음으로
   const cat=catOf(wv.cat);
   setLast({t:"word",cat:cat.id,m:wMode});
   if(wv.view==="cat"){
@@ -3270,7 +3298,7 @@ function renderWords(){
   }
   if(wv.view==="done"){
     const wrong=WORDS.filter(w=>wv.wrong.has(w.id)),more=batchCands(cat.id).length;
-    const list=scriptCats(cat.script),li=list.indexOf(cat),next=catDone(cat.id)&&li+1<list.length&&catOpen(list[li+1])?list[li+1]:null;
+    const list=VCATS.filter(c=>c.script===cat.script&&!c.extra),li=list.indexOf(cat),next=catDone(cat.id)&&li+1<list.length&&catOpen(list[li+1])?list[li+1]:null;
     const msgs=wv.opened.map(n=>`${josa(n,"이","가")} 열렸어요.`);
     if(catWords(cat.id).every(w=>wdm(w.id)))msgs.unshift(`${cat.name}${modeTag()} 완료!`);
     el.innerHTML=`<div class="panel"><div class="status">${WSCRIPTS[cat.script]} · ${cat.name}</div><h2>${wv.total}개 단어를 모두 맞혔어요</h2>
