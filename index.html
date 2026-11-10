@@ -585,6 +585,7 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .cats.compact .cat-top b{font-size:15px}
 .cats.compact .desc{font-size:13px;color:var(--sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cats.compact .bar{margin-top:8px}.cats.compact .meta{font-size:13px}
+.wpager{display:flex;align-items:center;justify-content:center;gap:12px;margin:14px 0 6px}.wpager .btn[disabled]{opacity:.4;pointer-events:none}.wpg-n{font-size:14px;color:var(--sub)}.wpg-n b{color:inherit;font-size:16px}
 .cats-sum{display:flex;align-items:center;gap:14px;margin:0 0 12px;padding:10px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card)}.cats-sum>b{font-size:24px;line-height:1;white-space:nowrap}.cats-sum>b small{font-size:15px;color:var(--sub);font-weight:400}.cats-sum>div{flex:1;min-width:0;font-size:14px}.cats-sum .bar{margin-top:6px}
 .cats.compact .catcard.doing{border-color:var(--accent);background:color-mix(in srgb,var(--accent-soft) 45%,var(--card))}.doing-p{background:var(--accent-soft);color:var(--accent-dark)}
 .cats-done{margin-top:12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
@@ -3963,7 +3964,7 @@ const doingPill='<span class="pill doing-p">하는 중</span>';
 const doneFold=(list,nameOf,cardOf)=>list.length?`<details class="cats-done"><summary><span class="cd-n">✓ 완료 ${list.length}개</span><small>${list.map(nameOf).join(" · ")}</small></summary><div class="cats compact">${list.map(cardOf).join("")}</div></details>`:"";
 const WLEVEL={h:"beg",k:"beg",m:"mid",a:"adv"},LV_NAMES={beg:"기초",mid:"생활",adv:"N5"};
 const lvOpen=l=>l==="beg"||(l==="mid"&&(isMid()||isAdv()))||(l==="adv"&&isAdv());
-let wv={view:"list",script:"h"};
+let wv={view:"list",script:"h"};let wPage=0; // 단어 목록에서 보고 있는 쪽 (카테고리에 들어갔다 나와도 그 쪽으로 돌아온다)
 try{const v=JSON.parse(localStorage.getItem("harukana-wsess"));
   if(v&&(v.view==="scard"||v.view==="squiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)&&SENT_UNITS.some(u=>u.id===v.unit)){delete v.t;v.batch=v.batch.filter(id=>SENT_BY_ID[id]);if(v.queue)v.queue=v.queue.filter(id=>SENT_BY_ID[id]);v.wrong=(v.wrong||[]).filter(id=>SENT_BY_ID[id]);if(v.batch.length)wv=v}
   else if(v&&(v.view==="card"||v.view==="quiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)){delete v.t;const byId=x=>WORDS.find(w=>w.id===(x&&x.id));v.batch=v.batch.map(byId).filter(Boolean);if(v.queue)v.queue=v.queue.map(byId).filter(Boolean);if(v.batch.length)wv={...v,wrong:new Set(v.wrong||[])}}}catch(e){}
@@ -5749,10 +5750,9 @@ function renderWords(){
   if(wv.view==="readdone")return renderReadDone(el);
   if(wv.view&&wv.view[0]==="s")return renderSent(el); // 문장 연습 화면들
   if(wv.view==="list"){
-    const s=["h","k","x"].includes(wv.script)?wv.script:"h",cats=VCATS.filter(c=>c.script===s); // 예전에 저장된 생활(m)·N5(a)는 히라가나로
+    const s="h",cats=["h","k","x"].flatMap(t=>VCATS.filter(c=>c.script===t)); // 글자 종류로 나누지 않고 히라가나 → 가타카나 → 섞인 말 순서로 쭉 이어서, 한 쪽에 12개씩 넘겨 본다
     setLast({t:"wordlist",s,m:wMode});
-    const cnt=t=>VCATS.filter(c=>c.script===t).reduce((a,c)=>a+c.ids.length,0);
-    const seg=`<div class="seg top-tabs" role="group" aria-label="단어 글자 종류">${[["h","히라가나"],["k","가타카나"],["x","섞인 말"]].map(([k,t])=>`<button data-s="${k}" class="${k===s?"on":""}" aria-pressed="${k===s}">${t} <small>${cnt(k)}</small></button>`).join("")}</div>`;
+    const seg="";
     const card=c=>{
         const ws=catWords(c.id),mf=ws.filter(w=>wdm(w.id,"fwd")).length,mr=ws.filter(w=>wdm(w.id,"rev")).length,all=mf===ws.length&&mr===ws.length;
         return `<button class="catcard${mf>0&&mf<ws.length?" doing":""}" data-id="${c.id}"><div class="cat-top"><b>${c.name}</b>${mf>0&&mf<ws.length?doingPill:""}${c.recommended&&mf<ws.length?'<span class="pill">처음 추천</span>':""}${mf===ws.length?`<span class="pill ok">${all?"양방향 완료":"완료"}</span>`:""}</div>
@@ -5760,16 +5760,16 @@ function renderWords(){
           <div class="meta">${mf}/${ws.length}${rdS().cat[c.id]?` · 📖 ${rdS().cat[c.id]}회독`:""}</div></button>`};
     const catDoneW=c=>{const ws=catWords(c.id);return ws.length>0&&ws.every(w=>wdm(w.id,"fwd"))};
     const must=cats;
-    const intro={h:"히라가나로만 쓰는 단어예요. 기초부터 생활·N5 단어까지 한곳에 모았어요. 발음의 \"-\"는 앞 소리를 길게 읽으라는 뜻이에요 (토-쿄- = 도쿄).",
-      k:"가타카나로 쓰는 단어예요. 대부분 외래어라 한국어와 소리가 비슷한 말이 많아요 (コーヒー = 커피).",
-      x:"히라가나와 가타카나가 한 단어에 섞인 말이에요 (パンや = 빵집). 두 글자를 다 읽을 수 있어야 해요."}[s];
+    const intro="쉬운 히라가나 단어부터 가타카나, 둘이 섞인 말까지 순서대로 이어져요. 발음의 \"-\"는 앞 소리를 길게 읽으라는 뜻이에요 (토-쿄- = 도쿄).";
     const started=c=>catWords(c.id).some(w=>wdm(w.id,"fwd")),todo=must.filter(c=>!catDoneW(c)),done=must.filter(catDoneW);
     todo.sort((a,b)=>started(b)-started(a)); // 하는 중인 카테고리를 맨 앞으로
-    const body=`<p class="intro">${intro}</p>${catSum(done.length,must.length,"카테고리")}<div class="cats compact">${todo.map(card).join("")}</div>${doneFold(done,c=>c.name,card)}`;
+    const PER=12,pages=Math.max(1,Math.ceil(todo.length/PER));wPage=Math.min(Math.max(0,wPage),pages-1);
+    const pager=pages>1?`<div class="wpager" role="group" aria-label="쪽 넘기기"><button class="btn ghost" data-pg="-1" ${wPage?"":"disabled"}>◀ 이전</button><span class="wpg-n"><b>${wPage+1}</b> / ${pages} 쪽</span><button class="btn ghost" data-pg="1" ${wPage<pages-1?"":"disabled"}>다음 ▶</button></div>`:"";
+    const body=`<p class="intro">${intro}</p>${catSum(done.length,must.length,"카테고리")}<div class="cats compact">${todo.slice(wPage*PER,wPage*PER+PER).map(card).join("")}</div>${pager}${doneFold(done,c=>c.name,card)}`;
     const kindSeg=kindTabs("w");
     el.innerHTML=kindSeg+rdCard()+seg+body;
     bindKindTabs(el);bindRdCard(el);
-    el.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{wv={view:"list",script:b.dataset.s};wordsHist();renderWords()});
+    el.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>{wPage+=+b.dataset.pg;renderWords();const t=el.querySelector(".cats-sum");if(t)t.scrollIntoView({block:"start",behavior:"smooth"})});
     el.querySelectorAll(".catcard").forEach(b=>b.onclick=()=>{wv={view:"cat",cat:b.dataset.id};wordsHist();renderWords()});
     return;
   }
@@ -5841,7 +5841,7 @@ function renderWords(){
   }
   if(wv.view==="done"){
     const wrong=WORDS.filter(w=>wv.wrong.has(w.id)),more=batchCands(cat.id).length;
-    const list=VCATS.filter(c=>c.script===cat.script),li=list.indexOf(cat),next=catDone(cat.id)&&li+1<list.length&&catOpen(list[li+1])?list[li+1]:null;
+    const list=["h","k","x"].flatMap(t=>VCATS.filter(c=>c.script===t)),li=list.indexOf(cat),next=catDone(cat.id)&&li+1<list.length&&catOpen(list[li+1])?list[li+1]:null;
     const msgs=wv.opened.map(n=>`${josa(n,"이","가")} 열렸어요.`);
     if(catWords(cat.id).every(w=>wdm(w.id)))msgs.unshift(`${cat.name}${modeTag()} 완료!`);
     el.innerHTML=`<div class="panel"><div class="status">${WSCRIPTS[cat.script]} · ${cat.name}</div><h2>${wv.total}개 단어를 모두 맞혔어요</h2>
