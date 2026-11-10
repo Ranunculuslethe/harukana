@@ -6012,6 +6012,7 @@ function renderSent(el){
   const exitS=`<div style="text-align:left"><button class="back" id="sexit">← 그만하고 나가기</button></div>`;
   if(wv.view==="sunit"){
     const g=sgOf(u),B=sBookUnits(g),key=sBookKey(g),p=Math.max(0,B.indexOf(u));bookSet(key,p);
+    if(g==="n"){jv={view:"jlist",mode:"num"};show(6);return} // 숫자·가격 책은 회화 화면에서 보여 준다 (학습을 마치거나 나가면 회화로 돌아간다)
     const todo=u.items.filter(s=>!sxd(s.id)),awayT=g==="n"?"회화로":g==="j"?"시험으로":"";
     const ent=s=>`<article class="bk-w${sxd(s.id)?" ok":""}"><div class="bk-ex bk-ex0"><button class="bk-say sm" data-say="${esc(sjPlain(s))}" aria-label="듣기">🔊</button><div><p class="bk-ja s-ja" lang="ja">${sjMark(s)}</p><p class="bk-exhg">${esc(s.hg)}</p><p class="bk-ko">${esc(s.ko)}</p></div>${sxd(s.id)?'<span class="pill ok">맞힘</span>':""}</div></article>`;
     el.innerHTML=seg+(awayT?`<button class="back" id="s-away">← ${awayT} 돌아가기</button>`:"")
@@ -6404,7 +6405,7 @@ function renderChat(el,seg,bindMode){
     el.innerHTML=seg+bookTop("상황 대화",`${p+1}쪽 · ${c.title}${chatDone(c.id)?" · ✓ 완료":""}`,bookToc(CHATS.map(x=>x.title),p))
       +`<p class="intro">가게에 들어가서 나올 때까지 점원과 대화를 이어 가요. 먼저 점원이 할 말을 읽어 두고, 대화에서는 하고 싶은 말에 맞는 대답을 골라요.</p>`+bookPager(p,CHATS.length)
       +`<div class="bk-unit"><h2>${c.title}</h2><p class="s-tip">${c.desc} · ${c.turns.length}번 주고받기</p></div><h3 class="jl-h">점원이 할 말</h3>
-      <div class="bk-page">${c.turns.map(tn=>`<article class="bk-w"><div class="bk-ex bk-ex0"><button class="bk-say sm" data-say="${esc(tn.s)}" aria-label="듣기">🔊</button><div><p class="bk-ja" lang="ja">${esc(tn.s)}</p><p class="bk-ko">${esc(tn.sk)}</p></div></div></article>`).join("")}</div>
+      <div class="bk-page">${c.turns.map(tn=>`<article class="bk-w"><div class="bk-head"><span class="bk-kana tv-bk" lang="ja">${esc(tn.s)}</span><button class="bk-say" data-say="${esc(tn.s)}" aria-label="듣기">🔊</button></div><p class="bk-mean">${esc(tn.sk)}</p></article>`).join("")}</div>
       <div class="wact bk-act"><button class="wact-b quiz" id="ch-go"><span class="wa-ic" aria-hidden="true">💬</span><span><b>대화 시작</b><small>점원 말을 듣고 대답 고르기</small></span></button></div>`+bookPager(p,CHATS.length);
     bindMode();
     bindBook(el,key,CHATS.length,()=>renderKanjiTab());
@@ -8661,7 +8662,18 @@ function renderRoleList(el,seg,bindMode){
   el.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>openAiTutor("role",b.dataset.role));
   el.querySelector("[data-photo]").onclick=()=>{jv={view:"jlist",mode:"book"};renderKanjiTab()};
 }
-function renderNumList(){const B=groupUnits("n"),p=bookPg("s-n",B.length);jv={view:"jlist",mode:"talk"};wv={view:"sunit",unit:B[p].id};show(3)} // 숫자·가격 책은 문장 화면을 같이 쓴다
+const numHg=s=>s.hg||String(s.ja||"").replace(/\{は\}/g,"わ").replace(/\{へ\}/g,"え").replace(/[{}]/g,"").replace(/[。、？！?!「」]/g,"").trim().split(/\s+/).map(autoHangul).join(" ");
+function renderNumList(el,seg,bindMode){
+  const B=groupUnits("n"),key="s-n",p=bookPg(key,B.length),u=B[p];bookSet(key,p);
+  const todo=u.items.filter(s=>!sxd(s.id));
+  const ent=s=>`<article class="bk-w${sxd(s.id)?" ok":""}"><div class="bk-head"><span class="bk-kana tv-bk" lang="ja">${sjMark(s)}</span><button class="bk-say" data-say="${esc(sjPlain(s))}" aria-label="듣기">🔊</button>${sxd(s.id)?'<span class="pill ok">맞힘</span>':""}</div><p class="bk-exhg">${esc(numHg(s))}</p><p class="bk-mean">${esc(s.ko)}</p></article>`;
+  el.innerHTML=seg+bookTop(MID_MODES.num,`${p+1}쪽 · ${u.title} · 맞힌 ${u.items.length-todo.length}/${u.items.length}`,bookToc(B.map(x=>x.title),p))
+    +`<p class="intro">가격·시간·개수처럼 여행에서 바로 쓰는 숫자 읽기예요. 💡 ${esc(u.tip)}</p>`+bookPager(p,B.length)
+    +`<div class="bk-page">${u.items.map(ent).join("")}</div><div class="wact bk-act"><button class="wact-b quiz" id="jgo"><span class="wa-ic" aria-hidden="true">✏️</span><span><b>이 쪽 학습</b><small>${todo.length?`카드로 보고 퀴즈 · 남은 ${todo.length}개`:"다 맞혔어요 · 다시 풀기"}</small></span></button></div><div class="bk-reset">${resetBtn(`sx-${u.id}`,"이 쪽 초기화")}</div>`+bookPager(p,B.length);
+  bindMode();
+  bindBook(el,key,B.length,()=>renderKanjiTab());
+  $("jgo").onclick=()=>{wv={view:"scard",unit:u.id,batch:(todo.length?todo:u.items).map(s=>s.id),i:0};show(3);renderWords()};
+}
 
 let aiDrillCtl=null;
 function renderAiDrill(){
