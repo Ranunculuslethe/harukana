@@ -8637,24 +8637,54 @@ function renderAiDrill(){
   if($("ad-run"))$("ad-run").onclick=runAiDrill;
   if($("ad-stop"))$("ad-stop").onclick=()=>{if(aiDrillCtl)aiDrillCtl.abort()};
 }
+function drillPool(){
+  const ids=[],add=id=>{if(id&&!ids.includes(id)&&WORDS.some(w=>w.id===id))ids.push(id)};
+  Object.keys(S.n).filter(k=>k[0]==="w"&&noteOn(k)).sort((a,b)=>S.n[b].wr-S.n[a].wr).forEach(k=>add(k.slice(2))); // 오답노트의 단어
+  Object.keys(S.w||{}).filter(id=>Number(S.w[id].w)>0).sort((a,b)=>S.w[b].w-S.w[a].w).forEach(add); // 틀린 적 있는 단어
+  WORDS.filter(w=>wd(w.id)).slice(-12).forEach(w=>add(w.id)); // 최근 익힌 단어
+  BOOK.flatMap(p=>p.ids).filter(id=>!wd(id)).slice(0,20).forEach(add); // 기록이 적으면 단어장 앞쪽에서 아직 안 익힌 단어
+  return ids.slice(0,24).map(id=>WORDS.find(w=>w.id===id));
+}
+function drillQ(w,dir,qText,ex,pool){
+  const mean=dir==="뜻",ans=mean?w.meaning:w.kana,val=x=>mean?x.meaning:x.kana;
+  const seen=new Set([w.meaning,w.kana]),opts=[];
+  for(const x of [...shuffle(pool.slice()),...shuffle(WORDS.slice()).slice(0,60)]){
+    if(opts.length===3)break;
+    if(x.id===w.id||seen.has(x.meaning)||seen.has(x.kana))continue;
+    seen.add(x.meaning);seen.add(x.kana);opts.push(val(x));
+  }
+  const firstMean=w.meaning.split(/[,/·(（]/)[0].trim();
+  const okQ=qText&&!/[A-Za-z]{3,}/.test(qText)&&(mean?qText.includes(w.kana)&&!qText.includes(firstMean):!qText.includes(w.kana)&&qText.includes(firstMean));
+  const q=okQ?qText:mean?`「${w.kana}」의 뜻은 무엇일까요?`:`'${firstMean}'을(를) 일본어로 하면?`;
+  const exOk=ex&&!/[A-Za-z]{3,}/.test(ex)?ex:"";
+  return [q,ans,...opts,exOk||`${w.kana} = ${w.meaning}`];
+}
 async function runAiDrill(){
   const sample=await aiGet();if(!sample){notifyText(AI_DOWN());return}
-  const st=studyStats(),learned=WORDS.filter(w=>wd(w.id)).slice(-20).map(w=>`${w.kana}(${w.meaning})`).join(", ");
-  const prompt=`너는 일본어 학습 앱 '하루카나'의 튜터 '하루'야. 배우는 사람(일본어를 막 시작한 한국인)의 약점으로 4지선다 문제 5개를 만들어.
-자주 틀린 것: ${st.notes.slice(0,15).map(st.noteTxt).join(" / ")||"없음"}
-최근 익힌 단어: ${learned||"없음"}
-${st.jw.length?`N5에서 틀린 문제: ${st.jw.slice(0,5).join(" / ")}`:""}
-규칙:
-- 틀린 것과 같은 말을 그대로 묻지 말고, 그 말을 다른 문장·다른 방향으로 다시 확인하는 문제로 만들어.
-- 일본어는 반드시 히라가나·가타카나로 써. 한자도, 로마자(영어 알파벳 ohayou, konnichiwa 같은 것)도 절대 쓰지 마. 문제·보기·해설 모두. N5 수준.
-- 보기는 일본어(가나)이거나 한국어 뜻이어야 해.
-- 한 줄에 한 문제, 이 형식만 써: 문제(한국어 지시 + 일본어)|정답|오답1|오답2|오답3|한 줄 해설(한국어)
-- 예: 아침에 만났을 때 하는 인사는?|おはよう|こんばんは|おやすみ|こんにちは|おはよう는 아침 인사예요.
-- 보기끼리 겹치지 않게. 다른 말은 쓰지 마.`;
+  const pool=drillPool();if(pool.length<4){notifyText("단어를 조금 더 공부하면 문제를 만들 수 있어요.");return}
+  const list=pool.map(w=>`${w.id} | ${w.kana} | ${w.meaning}`).join("\n");
+  const prompt=`너는 일본어 학습 앱 '하루카나'의 튜터 '하루'야. 배우는 사람(일본어를 막 시작한 한국인)이 다시 확인할 단어로 문제 5개를 만들어.
+아래 단어 목록에서만 골라. 목록 위쪽일수록 자주 틀렸거나 지금 공부할 단어야. 목록에 없는 단어는 절대 쓰지 마.
+단어 목록 (ID | 가나 | 뜻):
+${list}
+한 줄에 한 문제, 이 형식만 써: 단어ID|방향|문제|해설
+- 방향은 "뜻" 또는 "가나" 둘 중 하나.
+  - 뜻: 문제에 그 단어의 가나를 그대로 넣고 한국어 뜻을 묻는다. 예: w010|뜻|식당에서 「みず」를 달라고 했어요. 무엇을 달라고 한 걸까요?|みず는 '물'이에요.
+  - 가나: 문제에 한국어 뜻을 넣고 일본어(가나)를 묻는다. 문제에 그 단어의 가나는 쓰지 마. 예: w010|가나|'물'을 달라고 할 때 쓰는 말은?|물은 みず예요.
+- 문제는 짧고 쉬운 한국어로, 상황을 살짝 넣어도 돼. 보기는 쓰지 마 (앱이 만든다).
+- 해설은 한 줄 한국어. 그 단어의 가나와 뜻만 말하고, 목록에 없는 사실은 지어내지 마.
+- 로마자(영어 알파벳)와 한자는 쓰지 마. 다른 말은 쓰지 마.`;
   aiDrillCtl=new AbortController();renderAiDrill();
   try{
     const r=await sample([{role:"user",content:prompt}],{cache:false,modelTier:"quick",signal:aiDrillCtl.signal});
-    const qs=String(r.text||"").split("\n").map(l=>l.replace(/^[\s\-*]*(\d+[.)]\s*)?/,"").split("|").map(x=>x.trim())).filter(p=>p.length>=5&&p.slice(1,5).every(Boolean)&&new Set(p.slice(1,5)).size===4&&!/[A-Za-z]{3,}/.test(p.slice(0,5).join(" "))).slice(0,5); // 로마자로 쓴 문제는 뺀다 (가나를 배우는 앱이라)
+    const used=new Set(),qs=[];
+    for(const l of String(r.text||"").split("\n")){
+      const p=l.replace(/^[\s\-*]*(\d+[.)]\s*)?/,"").split("|").map(x=>x.trim());if(p.length<3)continue;
+      const w=pool.find(x=>x.id===p[0]);if(!w||used.has(w.id))continue;
+      const dir=p[1]==="가나"?"가나":"뜻",q=drillQ(w,dir,p[2],p[3]||"",pool);if(q.length<6)continue;
+      used.add(w.id);qs.push(q);if(qs.length===5)break;
+    }
+    for(const w of pool){if(qs.length>=5)break;if(used.has(w.id))continue;const q=drillQ(w,qs.length%2?"가나":"뜻","","",pool);if(q.length===6){used.add(w.id);qs.push(q)}}
     if(qs.length)openDrill(qs);else notifyText("AI 답을 읽지 못했어요. 한 번 더 눌러 주세요.");
   }catch(e){const c=e&&e.code;if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(c))aiOff=true;
     if(c!=="cancelled")notifyText(c==="rate_limited"?"질문이 너무 많아요. 조금 뒤에 다시 해 주세요.":"AI 연결이 끊겼어요. 다시 눌러 주세요.")}
