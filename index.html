@@ -7386,7 +7386,7 @@ const IN_CLAUDE=!!(window.claude&&typeof claude.use==="function");
 const GEMINI_URL="";
 const AI_URL=IN_CLAUDE?"":(()=>{try{return localStorage.getItem("harukana-ai-endpoint")||GEMINI_URL}catch(e){return GEMINI_URL}})();
 const AI_ON=IN_CLAUDE||!!AI_URL;
-const AI_DOWN=()=>IN_CLAUDE?AI_DOWN():"지금은 AI 서버에 연결할 수 없어요. 잠시 뒤 다시 해 주세요.";
+const AI_DOWN=()=>IN_CLAUDE?"지금은 AI를 쓸 수 없어요. claude.ai에 로그인한 상태로 열었는지 확인해 주세요.":"지금은 AI 서버에 연결할 수 없어요. 잠시 뒤 다시 해 주세요.";
 function geminiSample(){
   const f=async(prompt,o={},asJson)=>{
     const messages=Array.isArray(prompt)?prompt.map(m=>({role:m.role==="assistant"?"assistant":"user",content:String(m.content||"")})):[{role:"user",content:String(prompt||"")}];
