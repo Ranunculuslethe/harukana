@@ -261,6 +261,19 @@ html:root[data-season=winter]{--bl1:#E6EDF2;--bl2:#C7D4DD;--bl3:#F7FAFC;--bl4:#A
 .peek-bar>span:nth-child(2){flex:1 1 220px}.peek-bar .ghost{margin:0;min-height:38px;padding:6px 12px}.peek-ic{font-size:18px}
 .fz-note{margin:10px 0 0;padding:8px 10px;border-radius:10px;background:var(--accent-soft);font-size:13px;line-height:1.6}
 .cal-day.frozen{background:color-mix(in srgb,#7FB3D5 22%,var(--card));border-color:color-mix(in srgb,#7FB3D5 55%,var(--line))}
+.rd-card{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px;padding:14px 16px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-bottom-width:4px;border-radius:18px;background:var(--accent-soft)}
+.rd-card.done{background:var(--card)}.rd-ic{flex:none;font-size:26px}.rd-main{flex:1 1 220px;display:flex;flex-direction:column}.rd-main b{font-size:16px}.rd-main small{font-size:13px;color:var(--sub);line-height:1.5}
+.rd-act{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.rd-act .next{margin:0}.rd-per{font-size:13px;color:var(--sub)}.rd-per select{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.wact{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 6px}
+.wact-b{display:flex;align-items:center;gap:10px;min-height:64px;padding:12px 14px;border:1px solid var(--line);border-bottom-width:4px;border-radius:16px;background:var(--card);color:var(--ink);text-align:left;cursor:pointer}
+.wact-b:hover{border-color:var(--accent)}.wact-b:active{transform:scale(.98)}.wact-b.read{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.wact-b b{display:block;font-size:16px}.wact-b small{display:block;font-size:13px;color:var(--sub)}.wa-ic{flex:none;font-size:24px}
+.rd-panel .rd-bar{margin:-8px 0 14px;height:5px}.rd-new{color:var(--accent-dark)}
+.rd-ex{margin:14px auto 4px;max-width:460px;padding:12px 14px;border-radius:14px;background:var(--bg);border:1px solid var(--line)}
+.rd-ex p{margin:0;font-size:16px;line-height:1.6}.rd-ex p+small+p,.rd-ex p:last-of-type{font-size:14px;color:var(--sub)}.rd-ex .ghost{margin-top:8px;min-height:36px;padding:5px 12px}
+.rd-tools{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:12px}.rd-tools .ghost{margin:0}
+.rd-done-ic{font-size:44px;margin-bottom:4px}
+@media(max-width:520px){.wact{grid-template-columns:1fr}}
 .doors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
 .door{display:flex;align-items:center;gap:10px;min-height:88px;padding:12px 10px 12px 12px;border:1px solid var(--line);border-radius:18px;background:var(--card);text-align:left;color:var(--ink);box-shadow:0 2px 0 var(--panel-shadow);cursor:pointer;transition:border-color .15s,transform .1s}
 .door:hover{border-color:var(--accent)}.door:active{transform:scale(.97)}
@@ -3085,10 +3098,82 @@ const startQuiz=(cat,list,batch)=>{wv={view:"quiz",cat,batch:batch||[],queue:shu
 const catOf=id=>CATS.find(c=>c.id===id);
 const toList=cat=>{wv={view:"list",script:cat?cat.script:"h"};wordsHist();renderWords()};
 
+const WBY={};WORDS.forEach(w=>WBY[w.id]=w);
+const rdS=()=>{S.rd=S.rd||{};S.rd.days=S.rd.days||[];S.rd.done=S.rd.done||{};S.rd.cat=S.rd.cat||{};S.rd.per=S.rd.per||20;return S.rd};
+const RD_KEEP=7; // 오늘 회독에 함께 넣는 지난 날 수 (오늘 포함)
+const rdHide=()=>{try{return localStorage.getItem("harukana-rdhide")==="1"}catch(e){return false}};
+function rdNewIds(n){
+  const used=new Set(rdS().days.flatMap(d=>d.ids)),out=[];
+  const order=[...scriptCats("h"),...scriptCats("k"),...(lvOpen("mid")?scriptCats("m"):[]),...(lvOpen("adv")?scriptCats("a"):[])].filter(c=>!c.extra);
+  for(const c of order){for(const w of catWords(c.id)){if(!used.has(w.id)){out.push(w.id);if(out.length>=n)return out}}}
+  return out;
+}
+function rdToday(create){
+  const R=rdS(),k=dayKey();let today=R.days.find(d=>d.k===k);
+  if(!today&&create){const ids=rdNewIds(R.per);if(!ids.length)return null;today={k,ids};R.days.push(today);save()}
+  const past=R.days.filter(d=>d.k!==k).slice(-(RD_KEEP-1)).reverse();
+  return {day:R.days.indexOf(today)>=0?R.days.indexOf(today)+1:R.days.length+1,today,fresh:today?today.ids:[],old:past.flatMap(d=>d.ids)};
+}
+function rdCard(){
+  const R=rdS(),k=dayKey(),t=rdToday(false),done=!!R.done[k],n=R.days.length;
+  const left=rdNewIds(1).length;
+  if(!left&&!t.today)return `<div class="rd-card"><span class="rd-ic" aria-hidden="true">📖</span><div><b>오늘의 회독</b><small>열린 단어를 모두 회독에 넣었어요. 카테고리에서 다시 회독할 수 있어요.</small></div></div>`;
+  const dayNo=t.today?t.day:n+1,oldN=t.old.length,newN=t.today?t.fresh.length:rdNewIds(R.per).length;
+  return `<div class="rd-card${done?" done":""}"><span class="rd-ic" aria-hidden="true">📖</span><div class="rd-main"><b>오늘의 회독 · ${dayNo}일차${done?" ✓":""}</b>
+    <small>${done?`오늘 회독을 마쳤어요. 내일은 ${dayNo+1}일차예요. 한 번 더 봐도 좋아요.`:`새 단어 ${newN}개${oldN?` + 지난 ${Math.min(n,RD_KEEP-1)}일 단어 ${oldN}개`:""}를 넘기며 봐요. 외우려 하지 말고 그냥 보고 지나가요.`}</small></div>
+    <div class="rd-act"><button class="next" id="rd-go">${done?"한 번 더":"회독 시작"}</button>${t.today?"":`<label class="rd-per">하루 새 단어 <select id="rd-per">${[10,20,30].map(x=>`<option${x===R.per?" selected":""}>${x}</option>`).join("")}</select></label>`}</div></div>`;
+}
+function bindRdCard(el){
+  if($("rd-per"))$("rd-per").onchange=e=>{rdS().per=+e.target.value;save()};
+  if($("rd-go"))$("rd-go").onclick=()=>{const t=rdToday(true);if(!t||!t.today)return;wv={view:"read",ids:[...t.fresh,...t.old],i:0,from:"day",label:`오늘의 회독 · ${t.day}일차`,newN:t.fresh.length};wordsHist();renderWords()};
+}
+function renderRead(el){
+  const ids=wv.ids.filter(id=>WBY[id]),n=ids.length;if(!n){wv={view:"list",script:"h"};return renderWords()}
+  wv.i=Math.min(wv.i||0,n-1);const w=WBY[ids[wv.i]],last=wv.i===n-1,hide=rdHide()&&!wv.show;
+  gw(w.id).v=1;
+  const isNew=wv.from==="day"&&wv.i<(wv.newN||0);
+  const ex=w.ex;
+  el.innerHTML=`<div class="panel rd-panel"><div style="text-align:left"><button class="back" id="rd-exit">← 그만하고 나가기</button></div>
+    <div class="status">📖 ${esc(wv.label)} · ${wv.i+1} / ${n}${isNew?' · <b class="rd-new">새 단어</b>':wv.from==="day"?" · 지난 단어":""}</div>
+    <div class="bar rd-bar"><i style="width:${(wv.i+1)/n*100}%"></i></div>
+    <div class="big word" lang="ja">${esc(w.kana)}</div><div class="hg">${esc(w.hangul)}</div>
+    ${hide?`<button class="ghost reveal-btn" id="rd-show">눌러서 뜻 보기</button>`:`<div class="mean">${esc(w.meaning)}</div>`}
+    ${ex&&!hide?`<div class="rd-ex"><p class="ja-font" lang="ja">${esc(ex.ja)}</p><small class="hgx">${esc(ex.hg||"")}</small><p>${esc(ex.ko)}</p><button type="button" class="ghost rd-exsay" id="rd-exsay">🔊 예문 듣기</button></div>`:""}
+    <div class="rd-tools"><button class="ghost" id="rd-say">🔊 단어 듣기</button><label class="slow-tg"><input type="checkbox" id="rd-hide"${rdHide()?" checked":""}> 뜻 가리고 보기</label></div>
+    <div class="navrow"><button class="ghost" id="rd-prev"${wv.i?"":" disabled"}>이전</button><button class="next" id="rd-next">${last?"회독 끝내기":"다음 ›"}</button></div></div>`;
+  $("rd-exit").onclick=()=>{wv=wv.from==="cat"?{view:"cat",cat:wv.cat}:{view:"list",script:wv.script||"h"};renderWords()};
+  $("rd-say").onclick=()=>speak(w.kana);
+  if($("rd-exsay"))$("rd-exsay").onclick=()=>speak(ex.rd||ex.ja);
+  if($("rd-show"))$("rd-show").onclick=()=>{wv.show=1;renderWords()};
+  $("rd-hide").onchange=e=>{try{localStorage.setItem("harukana-rdhide",e.target.checked?"1":"0")}catch(x){}wv.show=0;renderWords()};
+  $("rd-prev").onclick=()=>{wv.i--;wv.show=0;renderWords()};
+  $("rd-next").onclick=()=>{if(!last){wv.i++;wv.show=0;return renderWords()}rdFinish()};
+}
+document.addEventListener("keydown",e=>{if(typeof wv==="undefined"||wv.view!=="read"||tab!==3||document.querySelector("dialog[open]")||/INPUT|SELECT|TEXTAREA/.test((e.target||{}).tagName||""))return;
+  if(e.key==="ArrowRight"&&$("rd-next"))$("rd-next").click();if(e.key==="ArrowLeft"&&$("rd-prev")&&!$("rd-prev").disabled)$("rd-prev").click();if(e.key===" "&&$("rd-show")){e.preventDefault();$("rd-show").click()}});
+function rdFinish(){
+  const R=rdS(),n=wv.ids.length;let msg="";
+  if(wv.from==="cat"){R.cat[wv.cat]=(R.cat[wv.cat]||0)+1;msg=`${catOf(wv.cat).name} ${R.cat[wv.cat]}회독!`}
+  else{const k=dayKey(),first=!R.done[k];R.done[k]=1;msg=`오늘의 회독 끝!`;if(first){addXp(20);msg+=" +20 XP";recordPractice()}}
+  save();refreshSummary();
+  const back=wv.from==="cat"?{view:"cat",cat:wv.cat}:{view:"list",script:"h"};
+  wv={view:"readdone",n,msg,back,quiz:wv.from==="cat"?wv.cat:null,ids:wv.ids};renderWords();
+}
+function renderReadDone(el){
+  el.innerHTML=`<div class="panel"><div class="rd-done-ic" aria-hidden="true">📖</div><h2>${esc(wv.msg)}</h2><p class="intro">단어 ${wv.n}개를 한 번 훑어봤어요. 다 기억나지 않아도 괜찮아요. 내일 또 보면 돼요.</p>
+    <div class="navrow"><button class="ghost" id="rd-back">목록으로</button><button class="ghost" id="rd-again">한 번 더 회독</button>${wv.quiz?`<button class="next" id="rd-quiz">✏️ 퀴즈로 확인</button>`:""}</div></div>`;
+  const b=wv.back,ids=wv.ids,q=wv.quiz;
+  $("rd-back").onclick=()=>{wv=b;renderWords()};
+  $("rd-again").onclick=()=>{wv=q?{view:"read",ids,i:0,from:"cat",cat:q,label:catOf(q).name}:{view:"read",ids,i:0,from:"day",label:"오늘의 회독"};renderWords()};
+  if($("rd-quiz"))$("rd-quiz").onclick=()=>{const ws=catWords(q),c=batchCands(q);startQuiz(q,c.length?c:ws,c);renderWords()};
+}
+
 function renderWords(){
   const el=$("words");
   if(tab===3)navMark(); // 단어·문장 메뉴 표시를 지금 화면에 맞춘다
   saveWSess(); // 카드·퀴즈 중이면 위치 저장, 목록으로 나왔으면 지움
+  if(wv.view==="read")return renderRead(el); // 📖 회독
+  if(wv.view==="readdone")return renderReadDone(el);
   if(wv.view&&wv.view[0]==="s")return renderSent(el); // 문장 연습 화면들
   if(wv.view==="list"){
     const s=WSCRIPTS[wv.script]?wv.script:"h",cats=scriptCats(s),lv=WLEVEL[s]; // 예전에 저장된 섞어 쓰기(m)는 히라가나로
@@ -3099,7 +3184,7 @@ function renderWords(){
         const ws=catWords(c.id),mf=ws.filter(w=>wdm(w.id,"fwd")).length,mr=ws.filter(w=>wdm(w.id,"rev")).length,mw=mf,all=mf===ws.length&&mr===ws.length; // 두 방향 진도를 같이 보여 준다
         return `<button class="catcard${mf>0&&mf<ws.length?" doing":""}" data-id="${c.id}"><div class="cat-top"><b>${c.name}</b>${mf>0&&mf<ws.length?doingPill:""}${c.recommended&&mw<ws.length?'<span class="pill">처음 추천</span>':""}${mf===ws.length?`<span class="pill ok">${all?"양방향 완료":"완료"}</span>`:""}</div>
           <div class="desc">${c.desc}</div><div class="bar"><i style="width:${ws.length?mf/ws.length*100:0}%"></i></div>
-          <div class="meta">${mf}/${ws.length}</div></button>`};
+          <div class="meta">${mf}/${ws.length}${rdS().cat[c.id]?` · 📖 ${rdS().cat[c.id]}회독`:""}</div></button>`};
     const catDoneW=c=>{const ws=catWords(c.id);return ws.length>0&&ws.every(w=>wdm(w.id,"fwd"))};
     const must=cats.filter(c=>!c.extra),extra=cats.filter(c=>c.extra);
     const intro={beg:"N5 수준 기초 단어예요. 카테고리에 들어가서 '일본어 → 뜻'이나 '뜻 → 일본어'를 골라 풀어요. 발음의 \"-\"는 앞 소리를 길게 읽으라는 뜻이에요 (토-쿄- = 도쿄).",
@@ -3112,8 +3197,8 @@ function renderWords(){
       todo.sort((a,b)=>started(b)-started(a)); // 하는 중인 카테고리를 맨 앞으로
       body=`<p class="intro">${intro}</p>${catSum(done.length,must.length,"카테고리")}<div class="cats compact">${todo.map(card).join("")}</div>${doneFold(done,c=>c.name,card)}${extra.length?`<h3 class="jl-h">더 모으기 <small class="h-note">하고 싶을 때만 · 학습 길에는 들어가지 않아요</small></h3><div class="cats compact">${extra.map(card).join("")}</div>`:""}`}
     const kindSeg=kindTabs("w");
-    el.innerHTML=kindSeg+lvTabs+seg+body;
-    bindKindTabs(el);
+    el.innerHTML=kindSeg+rdCard()+lvTabs+seg+body;
+    bindKindTabs(el);bindRdCard(el);
     el.querySelectorAll("[data-s],[data-wl]").forEach(b=>b.onclick=()=>{wv={view:"list",script:b.dataset.s||b.dataset.wl};wordsHist();renderWords()});
     el.querySelectorAll(".catcard").forEach(b=>b.onclick=()=>{wv={view:"cat",cat:b.dataset.id};wordsHist();renderWords()});
     return;
@@ -3122,10 +3207,11 @@ function renderWords(){
   setLast({t:"word",cat:cat.id,m:wMode});
   if(wv.view==="cat"){
     const ws=catWords(cat.id),cands=batchCands(cat.id);
-    const action=cands.length?`<button class="next" id="go">학습 시작 (${cands.length}개)</button>`:`<button class="next" id="go">다시 풀기</button>`;
+    const rc=rdS().cat[cat.id]||0;
+    const action=`<div class="wact"><button class="wact-b read" id="rd-cat"><span class="wa-ic" aria-hidden="true">📖</span><span><b>회독하기</b><small>카드를 넘기며 그냥 보기 · 맞히기 없음${rc?` · ${rc}회독 함`:""}</small></span></button><button class="wact-b quiz" id="go"><span class="wa-ic" aria-hidden="true">✏️</span><span><b>퀴즈</b><small>${cands.length?`아직 못 맞힌 ${cands.length}개 풀기`:"다 맞혔어요 · 다시 풀기"}</small></span></button></div>`;
     el.innerHTML=`<button class="back" id="bk">← ${WSCRIPTS[cat.script]} 카테고리</button><div class="status qstat"><span>${WSCRIPTS[cat.script]} · ${cat.name}${modeTag()} · 맞힌 단어 ${ws.filter(w=>wdm(w.id)).length}/${ws.length} · 남은 문제 ${cands.length}</span>${resetBtn(`wc-${cat.id}-${wMode}`,"초기화")}</div><h2>${cat.name}</h2>
       <div class="seg mode-seg" role="group" aria-label="문제 방향">${Object.keys(WMODE_NAMES).map(m=>`<button data-wm="${m}" class="${m===wMode?"on":""}" aria-pressed="${m===wMode}">${WMODE_NAMES[m]}</button>`).join("")}</div>
-      <p class="intro">${wMode==="rev"?"한국어 뜻을 보고 일본어 단어를 골라요. 하고 싶은 말을 일본어로 떠올리는 연습이에요.":"일본어 단어를 보고 뜻을 골라요. 일본에서 글을 보고 알아듣는 연습이에요."}</p><div style="text-align:center">${action}</div><p class="intro wpick-hint">단어를 누르면 그 단어부터 볼 수 있어요.</p>
+      ${action}<p class="intro">📖 회독은 외우려 하지 말고 여러 번 훑어보는 곳, ✏️ 퀴즈는 기억났는지 확인하는 곳이에요. 퀴즈 방향: ${wMode==="rev"?"한국어 뜻을 보고 일본어 고르기":"일본어를 보고 뜻 고르기"}.</p><p class="intro wpick-hint">단어를 누르면 그 단어부터 회독해요.</p>
       <div class="wlist">${ws.map(w=>{
         const x=S.w[w.id],seen=x&&(x.v||x.r||x.w);
         const st=wdm(w.id)?'<span class="st pill ok">맞힘</span>':seen?'<span class="st pill">학습 중</span>':'<span class="st pill lockp">새 단어</span>';
@@ -3133,8 +3219,9 @@ function renderWords(){
         return `<button class="wrow wpick" data-w="${w.id}" aria-label="${w.kana} 카드 보기">${wMode==="rev"?`<span class="wk wk-ko">${w.meaning}</span><span class="wm">${seen?`${w.kana} · <span class="hgx">${w.hangul}</span>`:"아직 안 본 단어"}`:`<span class="wk">${w.kana}</span><span class="wm">${seen?`<span class="hgx">${w.hangul}</span> · ${w.meaning}`:"아직 안 본 단어"}`}${u.length?`<small class="wnew">처음 보는 글자 ${u.map(k=>CH[k].disp||k).join(" ")}</small>`:""}</span>${st}</button>`}).join("")}</div>`;
     $("bk").onclick=()=>toList(cat);
     el.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{wMode=b.dataset.wm;try{localStorage.setItem("harukana-wmode",wMode)}catch(e){}renderWords()});
-    $("go").onclick=()=>{if(cands.length)startCards(cat.id);else startQuiz(cat.id,ws);renderWords()};
-    el.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{const w=WORDS.find(x=>x.id===b.dataset.w);if(!w)return;wv={view:"card",cat:cat.id,batch:[w,...cands.filter(x=>x.id!==w.id)],i:0};renderWords()});
+    $("go").onclick=()=>{startQuiz(cat.id,cands.length?cands:ws,cands);renderWords()};
+    $("rd-cat").onclick=()=>{wv={view:"read",ids:ws.map(w=>w.id),i:0,from:"cat",cat:cat.id,label:cat.name};renderWords()};
+    el.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{const i=ws.findIndex(x=>x.id===b.dataset.w);if(i<0)return;wv={view:"read",ids:ws.map(w=>w.id),i,from:"cat",cat:cat.id,label:cat.name};renderWords()});
     return;
   }
   if(wv.view==="card"){
@@ -4045,6 +4132,7 @@ function mergeState(L,C){
   R.xp=max(R.xp,C.xp);
   R.badges={...(C.badges||{}),...(R.badges||{})};R.flags={...(C.flags||{}),...(R.flags||{})};
   R.claimed={...(C.claimed||{}),...(R.claimed||{})};
+  if(C.rd){const a=R.rd||{},b=C.rd;R.rd={per:a.per||b.per,days:(a.days||[]).length>=(b.days||[]).length?a.days||[]:b.days,done:{...(b.done||{}),...(a.done||{})},cat:(()=>{const o={...(b.cat||{})};for(const k in a.cat||{})o[k]=Math.max(o[k]||0,a.cat[k]);return o})()}} // 회독
   R.frozen={...(C.frozen||{}),...(R.frozen||{})};R.freeze=Math.min(FREEZE_MAX,Math.max(R.freeze||0,C.freeze||0)); // 연속 기록 보호권
   if(C.stamps||R.stamps)R.stamps={...(C.stamps||{}),...(R.stamps||{})}; // 스탬프는 합친다
   R.fr=R.fr||{};for(const k in C.fr||{})if(Math.abs(C.fr[k])>Math.abs(R.fr[k]||0))R.fr[k]=C.fr[k]; // 친구: 나중에 추가·뺀 쪽
