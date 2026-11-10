@@ -679,6 +679,19 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .hub-feature{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:24px 26px;margin:8px 0 22px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(120deg,var(--accent-soft),var(--card) 85%)}
 .hub-feature-mark{display:grid;place-items:center;flex:0 0 56px;height:56px;border-radius:18px;background:var(--card);color:var(--accent-dark);font-size:27px}
 .hub-feature>div:not(.hub-feature-mark){flex:1}
+.path{list-style:none;margin:8px 0 22px;padding:0;display:grid;gap:10px;position:relative}
+.path:before{content:"";position:absolute;left:19px;top:24px;bottom:24px;width:2px;background:var(--line)}
+.path-step{position:relative}
+.path-card{position:relative;display:flex;align-items:center;gap:14px;width:100%;padding:16px 18px 16px 52px;border:1px solid var(--line);border-radius:17px;background:var(--card);color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:border-color .18s,box-shadow .18s}
+.path-card:hover{border-color:var(--accent);box-shadow:0 8px 20px rgba(55,75,61,.07)}.path-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.path-no{position:absolute;left:7px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--card);border:2px solid var(--line);color:var(--sub);font-size:13px;font-weight:800}
+.path-step.done .path-no{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-dark)}
+.path-step.here .path-no{background:var(--accent);border-color:var(--accent);color:var(--onaccent)}
+.path-step.here .path-card{border-color:var(--accent);background:linear-gradient(120deg,var(--accent-soft),var(--card) 80%)}
+.path-t{flex:1;min-width:0;display:grid;gap:3px}.path-t b{font-size:16px}.path-t small{color:var(--sub);line-height:1.5}.path-t .bar{max-width:260px;margin-top:5px}.path-meta{font-size:12px}
+.path-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.path-side .hub-card{min-height:0}
+.ai-roles{margin-top:22px;scroll-margin-top:20px}
+@media(max-width:430px){.path-side{grid-template-columns:1fr}.path-card{padding-right:12px;gap:10px}.path-card .hub-mark{display:none}}
 .hub-kicker{font-size:10px;letter-spacing:.16em;font-weight:800;color:var(--accent-dark)}
 .hub-feature h3{margin:7px 0 5px;font-size:20px}.hub-feature p{margin:0;color:var(--sub);font-size:13px;line-height:1.65}
 .hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
@@ -792,16 +805,9 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 
 
 <section id="v10" class="hub-view" hidden>
- <div class="section-intro"><div><p class="section-kicker">LEARNING / JLPT N5</p><h2>무엇부터 공부할까요?</h2><p class="section-copy">기초부터 N5까지 필요한 과목을 한곳에 모았어요. 원하는 학습을 골라 이어 가세요.</p></div><div class="section-mark" aria-hidden="true">学</div></div>
- <div class="hub-feature"><div><span class="hub-kicker">TODAY'S ROUTE</span><h3>오늘의 학습을 이어 가요</h3><p>가나 → 단어 → 문법 → N5 문제 순서로 차근차근.</p></div><button class="next" type="button" data-hub-go="home">오늘의 학습 보기</button></div>
- <div class="hub-grid">
-  <button type="button" class="hub-card" data-hub-go="kana"><span class="hub-mark" aria-hidden="true">あ</span><b>가나</b><small>히라가나 · 가타카나 · 글자 퀴즈</small><i>도감과 퀴즈 열기 →</i></button>
-  <button type="button" class="hub-card" data-hub-go="words"><span class="hub-mark" aria-hidden="true">語</span><b>단어</b><small>단어장 책으로 1,600여 단어와 예문 익히기</small><i>단어장 열기 →</i></button>
-  <button type="button" class="hub-card" data-hub-go="grammar"><span class="hub-mark" aria-hidden="true">文</span><b>문법</b><small>조사와 문장 구조를 예문으로 익히기</small><i>문법 공부하기 →</i></button>
-  <button type="button" class="hub-card" data-hub-go="conversation"><span class="hub-mark" aria-hidden="true">旅</span><b>회화</b><small>AI 대화 · 여행 회화 · 알아듣기 · 표지판 · 숫자</small><i>회화 연습하기 →</i></button>
-  <button type="button" class="hub-card" data-hub-go="jlpt"><span class="hub-mark" aria-hidden="true">N5</span><b>JLPT N5</b><small>연습 · 모의시험 · N5 한자 · 단어장 · 문법</small><i>시험 준비하기 →</i></button>
-  <button type="button" class="hub-card" data-hub-go="review"><span class="hub-mark" aria-hidden="true">復</span><b>복습 · 오답</b><small>오늘의 복습과 틀린 문제를 모아 보기</small><i>복습 시작하기 →</i></button>
- </div>
+ <div class="section-intro"><div><p class="section-kicker">LEARNING PATH</p><h2>차근차근, 한 단계씩</h2><p class="section-copy">위에서부터 순서대로 올라가요. 모든 단계는 열려 있어서 원하는 곳부터 해도 돼요.</p></div><div class="section-mark" aria-hidden="true">学</div></div>
+ <ol class="path" id="hub-path" aria-label="학습 단계"></ol>
+ <div class="path-side" id="hub-side"></div>
 </section>
 <section id="v9" class="ai-home-view" hidden>
  <div class="section-intro"><div><p class="section-kicker">AI TUTOR / HARU</p><h2>AI 선생님 하루</h2><p class="section-copy">모르는 문법부터 틀린 문제까지, 내 학습 기록에 맞춰 한국어로 쉽게 설명해 줘요.</p></div><div class="section-mark" aria-hidden="true">✦</div></div>
@@ -809,10 +815,11 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
  <div class="hub-grid">
   <button type="button" class="hub-card" data-ai-go="quiz"><span class="hub-mark" aria-hidden="true">✎</span><b>맞춤 문제</b><small>내 오답과 학습 기록으로 새 문제 5개 만들기</small><i>문제 만들기 →</i></button>
   <button type="button" class="hub-card" data-ai-go="report"><span class="hub-mark" aria-hidden="true">◫</span><b>약점 분석</b><small>정답률과 오답을 바탕으로 공부 계획 세우기</small><i>분석 받기 →</i></button>
-  <button type="button" class="hub-card" data-ai-go="role"><span class="hub-mark" aria-hidden="true">会</span><b>AI 대화</b><small>카페 · 식당 · 편의점에서 일본어로 말해 보기</small><i>상황 고르기 →</i></button>
+  <button type="button" class="hub-card" data-ai-go="role"><span class="hub-mark" aria-hidden="true">会</span><b>AI 대화</b><small>카페 · 식당 · 편의점에서 일본어로 말해 보기</small><i>아래에서 상황 고르기 ↓</i></button>
   <button type="button" class="hub-card" data-ai-go="photo"><span class="hub-mark" aria-hidden="true">▧</span><b>사진 읽기</b><small>메뉴와 간판 속 일본어의 읽는 법과 뜻 확인</small><i>사진 고르기 →</i></button>
  </div>
- <div class="ai-setup"><div><b>AI 연결 상태</b><small id="ai-where"></small></div><span class="ai-status" id="ai-status">확인 중</span></div>
+  <div id="ai-roles" class="ai-roles" aria-label="AI 대화 상황"></div>
+<div class="ai-setup"><div><b>AI 연결 상태</b><small id="ai-where"></small></div><span class="ai-status" id="ai-status">확인 중</span></div>
  <p class="ai-disclaimer" id="ai-disclaimer">AI 답변은 틀릴 수 있어요. 중요한 시험 정보는 교재나 공식 안내와 함께 확인해 주세요.</p>
 </section>
 </main><aside class="rightbar" aria-label="나의 학습 현황"><div class="goal-card" id="goal-card"></div>
@@ -5987,7 +5994,7 @@ function renderSent(el){
     if(SGROUPS[wv.sg])sentGroup=wv.sg;if(sentGroup==="k")sentGroup="p"; // 가타카나 말 문장은 단어장 예문과 겹쳐서 뺐다
     const g=sentGroup,units=groupUnits(g),nx=units.findIndex(u=>!unitDone(u));
     const gseg=`<div class="seg top-tabs" role="group" aria-label="문장 종류">${["p","v"].map(k=>`<button data-sg="${k}" class="${k===g?"on":""}" aria-pressed="${k===g}"><span class="tab-lg">${SGROUPS[k]}</span><span class="tab-sm">${SGROUP_SHORT[k]}</span>${k==="j"&&!lvOpen("adv")?' <small class="tab-lock">잠김</small>':""}</button>`).join("")}</div>`;
-    const awayT=g==="n"?"회화":g==="j"?"시험":"",gsegA=awayT?`<button class="back" id="s-away">← ${awayT==="회화"?"회화로":"시험으로"} 돌아가기</button><h3 class="jl-h">${SGROUPS[g]}</h3>`:gseg;
+    const awayT=g==="n"?"회화":"",gsegA=awayT?`<button class="back" id="s-away">← ${awayT==="회화"?"회화로":"시험으로"} 돌아가기</button><h3 class="jl-h">${SGROUPS[g]}</h3>`:gseg;
     const uCard=u=>{const i=units.indexOf(u),n=u.items.filter(s=>sxd(s.id)).length;
       const doing=n>0&&n<u.items.length;
       return `<button class="catcard${doing?" doing":""}" data-u="${u.id}"><div class="cat-top"><b>${i+1}. ${esc(u.title)}</b>${doing?doingPill:""}${n===u.items.length?'<span class="pill ok">완료</span>':""}</div>
@@ -5995,6 +6002,7 @@ function renderSent(el){
     const intro=g==="j"?"N5 시험에 나오는 문법이에요. 동사·형용사의 끝을 바꾸는 법(했어요·아니에요·て형·ない형)과 〜ましょう, まえに·あとで, より·ほうが 같은 이어 주는 말을 배워요. 빈칸에는 말끝을 골라 넣어요.":g==="v"?"\"~ 주세요\", \"어디예요?\"처럼 바로 쓰는 표현과, 문장 끝(ます)을 바꿔 \"안 해요·했어요·있어요·하고 싶어요\"를 말해요. 조사 단원 다음에 하면 좋아요.":g==="n"?"가격과 시간을 읽고 들어요. 일본에서 계산할 때, 시간을 확인할 때 바로 써요. 소리만 듣고 고르는 문제도 나와요.":g==="k"?"コーヒー·テレビ처럼 가타카나로 쓰는 말을 히라가나 문장에 넣어 읽어요. 조사 단원을 먼저 하면 더 쉬워요."
       :"단어를 이어 짧은 문장을 만들어요. 조사(は·を·に…)를 하나씩, 위에서부터 차례로 익히면 좋아요.";
     if(g==="j"&&!lvOpen("adv")){el.innerHTML=seg+gsegA+`<div class="lock-card"><b>N5 코스에서 열려요</b><small>기초를 마치고 목표로 N5(또는 둘 다)를 고르면 N5 문법 ${units.length}단원(${units.reduce((a,u)=>a+u.items.length,0)}문장)을 배울 수 있어요.</small><div class="kj-peek">${units.map(u=>esc(u.title)).join(" · ")}</div></div>`;toWords();el.querySelectorAll("[data-sg]").forEach(b=>b.onclick=()=>{wv={view:"slist",sg:b.dataset.sg};wordsHist();renderWords()});return}
+    if(wv.sg==="j"){const J=groupUnits("j"),f=J.find(x=>!unitDone(x))||J[0];if(f){wv={view:"sunit",unit:f.id};return renderSent(el)}} // "N5 문법"으로 들어오면 문법 책의 N5 부분(아직 안 끝낸 첫 단원)을 펼친다
     {const B=sBookUnits(g),p=bookPg(sBookKey(g),B.length);if(B.length){wv={view:"sunit",unit:B[p].id};return renderSent(el)}} // 목록 대신 책: 기억해 둔 쪽(단원)을 펼친다
     el.innerHTML=seg+gsegA+`<p class="intro">${intro}</p>
       ${catSum(units.filter(unitDone).length,units.length,"단원")}
@@ -6013,10 +6021,10 @@ function renderSent(el){
   if(wv.view==="sunit"){
     const g=sgOf(u),B=sBookUnits(g),key=sBookKey(g),p=Math.max(0,B.indexOf(u));bookSet(key,p);
     if(g==="n"){jv={view:"jlist",mode:"num"};show(6);return} // 숫자·가격 책은 회화 화면에서 보여 준다 (학습을 마치거나 나가면 회화로 돌아간다)
-    const todo=u.items.filter(s=>!sxd(s.id)),awayT=g==="n"?"회화로":g==="j"?"시험으로":"";
+    const todo=u.items.filter(s=>!sxd(s.id)),awayT=g==="n"?"회화로":"";
     const ent=s=>`<article class="bk-w${sxd(s.id)?" ok":""}"><div class="bk-ex bk-ex0"><button class="bk-say sm" data-say="${esc(sjPlain(s))}" aria-label="듣기">🔊</button><div><p class="bk-ja s-ja" lang="ja">${sjMark(s)}</p><p class="bk-exhg">${esc(s.hg)}</p><p class="bk-ko">${esc(s.ko)}</p></div>${sxd(s.id)?'<span class="pill ok">맞힘</span>':""}</div></article>`;
     el.innerHTML=seg+(awayT?`<button class="back" id="s-away">← ${awayT} 돌아가기</button>`:"")
-      +bookTop(g==="n"?"숫자·가격":g==="j"?"N5 문법":"문법",`${p+1}쪽 · ${SGROUPS[g]} · 맞힌 문장 ${u.items.length-todo.length}/${u.items.length}`,bookToc(B.map(x=>x.title),p))
+      +bookTop(g==="n"?"숫자·가격":"문법",`${p+1}쪽 · ${SGROUPS[g]} · 맞힌 문장 ${u.items.length-todo.length}/${u.items.length}`,bookToc(B.map(x=>x.title),p))
       +bookPager(p,B.length)+`<div class="bk-unit"><h2>${esc(u.title)} <small class="s-sub">${esc(u.ko)}</small></h2><p class="s-tip"><b>문법 포인트</b> ${esc(u.tip)}</p></div>
       <div class="bk-page">${u.items.map(ent).join("")}</div>
       <div class="wact bk-act"><button class="wact-b quiz" id="sgo"><span class="wa-ic" aria-hidden="true">✏️</span><span><b>이 쪽 학습</b><small>${todo.length?`카드로 보고 퀴즈 · 남은 문장 ${todo.length}개`:"다 맞혔어요 · 다시 풀기"}</small></span></button></div>
@@ -6106,16 +6114,17 @@ function bindBook(el,key,n,go){
   el.querySelectorAll("[data-btoc]").forEach(s=>s.onchange=()=>to(+s.value));
   el.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak(b.dataset.say));
 }
-const sBookUnits=g=>g==="n"||g==="j"?groupUnits(g):[...groupUnits("p"),...groupUnits("v")];
-const sBookKey=g=>"s-"+(g==="n"||g==="j"?g:"pv");
+const sBookUnits=g=>g==="n"?groupUnits(g):[...groupUnits("p"),...groupUnits("v"),...groupUnits("j")]; // 문법 책 한 권: 조사 → 표현 → N5 문법 순서로 이어진다
+const sBookKey=g=>"s-"+(g==="n"?g:"pv");
 function renderKanjiTab(){saveJSess();if(jv.view!=="jlist"||!jv.lv)jv.lv=jv.lv||"N5";
   if(jv.mode==="kanji"){jx={view:"kanji"};return tab===8?renderJlptTab():show(8)}
   setLast({t:"kanji"});renderKanji($("kanji"))}
 function renderKanji(el){
   const lvOfCat=id=>(KANJI_CATS.find(x=>x.id===id)||{}).lv||"N5",lv=jv.view==="jlist"?(jv.lv||"N5"):lvOfCat(jv.cat),lvKanji=KANJI.filter(j=>j.lv===lv);
   if(jv.cat&&KANJI_CATS.some(c=>c.id===jv.cat))jv.mode="kanji"; // 예전에 저장된 한자 화면은 mode가 없을 수 있다
+  if(jv.mode==="ai")jv={view:"jlist",mode:"talk"}; // AI 대화 탭은 AI 선생님 화면으로 옮겼다
   const mode=jv.mode||"talk";
-  const seg=mode==="kanji"?jlTabs("kanji"):`<div class="seg jlpt-seg top-tabs" role="group" aria-label="회화 공부 종류">${Object.keys(MID_MODES).map(m=>`<button data-mode="${m}" class="${m===mode?"on":""}" aria-pressed="${m===mode}"><span class="tab-lg">${MID_MODES[m]}</span><span class="tab-sm">${MID_SHORT[m]}</span></button>`).join("")}</div>`;
+  const seg=mode==="kanji"?jlTabs("kanji"):`<div class="seg jlpt-seg top-tabs" role="group" aria-label="회화 공부 종류">${Object.keys(MID_MODES).filter(m=>m!=="ai").map(m=>`<button data-mode="${m}" class="${m===mode?"on":""}" aria-pressed="${m===mode}"><span class="tab-lg">${MID_MODES[m]}</span><span class="tab-sm">${MID_SHORT[m]}</span></button>`).join("")}</div>`;
   const bindLv=()=>el.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{jv={view:"jlist",mode:b.dataset.mode,lv:"N5"};kanjiHist();renderKanjiTab()});
   if(mode!=="kanji"){renderTravel(el,seg,bindLv);
     const tabs=el.querySelector(".top-tabs");
@@ -6443,7 +6452,7 @@ function renderChat(el,seg,bindMode){
   });
 }
 function renderTravel(el,seg,bindMode){
-  if(jv.mode==="ai")return renderRoleList(el,seg,bindMode);
+  if(jv.mode==="ai")jv={view:"jlist",mode:"talk"}; // AI 대화는 AI 선생님 화면으로 옮겼다 (예전에 저장된 상태가 남아 있으면 여행 회화로)
   if(jv.mode==="num")return renderNumList(el,seg,bindMode);
   if(jv.mode==="book")return renderBook(el,seg,bindMode);
   if(jv.mode==="chat")return renderChat(el,seg,bindMode);
@@ -9058,7 +9067,7 @@ function show(n){
   if(n===4&&!nq)renderNote();
   if(n===5){renderRank();loadFriends()}
   if(n===6){if(jv.mode==="kanji")jv={view:"jlist",mode:"talk"};renderKanjiTab()}
-  if(n===8)renderJlptTab();if(n===9)renderAiHome();
+  if(n===8)renderJlptTab();if(n===9)renderAiHome();if(n===10)renderHub();
   window.scrollTo({top:0,behavior:'instant'});
 }
 const NAV=[0,1,3,7,6,8,4,5];
@@ -9069,7 +9078,7 @@ function navGo(i){
   if(i===1)return show(kanaSub);
   if(i===3||i===7){
     const sent=i===7;
-    if(sent!==isSentView())wv=sent?{view:"slist"}:{view:"list",script:"h"};if(sent&&["n","j"].includes(wv.unit?sgOf(SENT_UNITS.find(u=>u.id===wv.unit)||{}):(wv.sg||sentGroup))){wv={view:"slist",sg:"p"};sentGroup="p"}if(!sent&&wv.n5)wv={view:"list"};
+    if(sent!==isSentView())wv=sent?{view:"slist"}:{view:"list",script:"h"};if(sent&&["n"].includes(wv.unit?sgOf(SENT_UNITS.find(u=>u.id===wv.unit)||{}):(wv.sg||sentGroup))){wv={view:"slist",sg:"p"};sentGroup="p"}if(!sent&&wv.n5)wv={view:"list"};
     if(tab===3){wordsHist();renderWords()}else show(3);
     return;
   }
@@ -9079,9 +9088,31 @@ function markPrimary(){
   const k=tab===0?"home":tab===9?"ai":tab===5?"me":"learn";
   document.querySelectorAll("[data-primary]").forEach(b=>{const v=b.dataset.primary===k;b.classList.toggle("active",v);if(v)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
 }
-const HUB_GO={home:()=>show(0),kana:()=>navGo(1),words:()=>navGo(3),grammar:()=>navGo(7),conversation:()=>navGo(6),jlpt:()=>navGo(8),review:()=>navGo(4)};
+function hubSteps(){
+  const kana=[...ALL,...ALL_K],kj=KANJI.filter(j=>j.lv==="N5"),gram=[...groupUnits("p"),...groupUnits("v"),...groupUnits("j")].flatMap(u=>u.items),num=groupUnits("n").flatMap(u=>u.items);
+  return [
+    {k:"kana",mark:"あ",t:"가나",d:"히라가나·가타카나 글자와 소리",n:kana.filter(c=>cd(c.k)).length,all:kana.length,unit:"자",need:.9},
+    {k:"words",mark:"語",t:"단어",d:"단어장 책으로 예문과 함께",n:WORDS.filter(w=>wd(w.id)).length,all:WORDS.length,unit:"개",need:.1},
+    {k:"grammar",mark:"文",t:"문법",d:"조사 → 표현 → N5 문법",n:gram.filter(s=>sxd(s.id)).length,all:gram.length,unit:"문장",need:.5},
+    {k:"kanji",mark:"漢",t:"한자",d:"N5 한자 읽기와 뜻",n:kj.filter(j=>kjd(j.k)).length,all:kj.length,unit:"자",need:.5},
+    {k:"conversation",mark:"旅",t:"실전",d:"여행 회화 · 상황 대화 · 알아듣기 · 표지판 · 숫자",n:TRAVEL.filter(t=>tvd(t.id)).length+CHATS.filter(c=>chatDone(c.id)).length+num.filter(s=>sxd(s.id)).length,all:TRAVEL.length+CHATS.length+num.length,unit:"개",need:.5},
+  ];
+}
+function renderHub(){
+  const el=$("hub-path");if(!el)return;
+  const st=hubSteps(),cur=st.findIndex(s=>s.n/s.all<s.need),here=cur<0?st.length-1:cur,nn=dueKeys().length;
+  el.innerHTML=st.map((s,i)=>{const pct=Math.round(s.n/s.all*100),done=s.n/s.all>=s.need&&i!==here;
+    return `<li class="path-step${i===here?" here":""}${done?" done":""}"><button type="button" class="path-card" data-hub-go="${s.k}"><span class="path-no" aria-hidden="true">${done?"✓":i+1}</span><span class="hub-mark" aria-hidden="true">${s.mark}</span><span class="path-t"><b>${i+1}단계 · ${s.t}${i===here?' <span class="pill">지금 여기</span>':""}</b><small>${s.d}</small><span class="bar"><i style="width:${pct}%"></i></span><small class="path-meta">${s.n.toLocaleString()} / ${s.all.toLocaleString()}${s.unit}</small></span><span class="door-go" aria-hidden="true">›</span></button></li>`}).join("");
+  $("hub-side").innerHTML=`<button type="button" class="hub-card" data-hub-go="review"><span class="hub-mark" aria-hidden="true">復</span><b>복습 · 오답</b><small>${nn?`오늘 복습할 것 ${nn}개`:"틀린 문제와 다시 볼 내용"}</small><i>복습하기 →</i></button>
+    <button type="button" class="hub-card" data-hub-go="jlpt"><span class="hub-mark" aria-hidden="true">試</span><b>실력 확인</b><small>N5 연습 문제 · 모의시험</small><i>문제 풀기 →</i></button>`;
+}
+const HUB_GO={kanji:()=>{jlStop();jv={view:"jlist",mode:"kanji",lv:"N5"};jx={view:"kanji"};if(tab===8)renderJlptTab();else show(8)},home:()=>show(0),kana:()=>navGo(1),words:()=>navGo(3),grammar:()=>navGo(7),conversation:()=>navGo(6),jlpt:()=>{if(jx&&jx.view==="kanji")jx={view:"home"};navGo(8)},review:()=>navGo(4)};
 function renderAiHome(){
   const st=$("ai-status"),wh=$("ai-where"),dc=$("ai-disclaimer");if(!st)return;
+  const rl=$("ai-roles"),g=goalOf(),sits=ROLE_SITS.slice().sort((a,b)=>(b.goal.includes(g)?1:0)-(a.goal.includes(g)?1:0));
+  rl.innerHTML=`<h3 class="jl-h">AI 대화 · 상황 고르기</h3><p class="intro">상황을 고르면 하루(AI)가 점원이나 친구가 되어 일본어로 말을 걸어요. 일본어로 답해 보고, 모르면 한국어로 써도 돼요.</p>
+    <div class="cats compact">${sits.map(r=>`<button class="catcard role-card" data-role="${r.id}"><div class="cat-top"><b>${r.ic} ${r.t}</b>${g&&r.goal.includes(g)?'<span class="pill">목표 추천</span>':""}</div><div class="desc">${r.d}</div></button>`).join("")}</div>`;
+  rl.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>openAiTutor("role",b.dataset.role));
   st.classList.toggle("ok",AI_ON);
   st.textContent=IN_CLAUDE?"Claude 연결":AI_URL?"Gemini 연결":"이 사이트에서는 꺼짐";
   wh.textContent=IN_CLAUDE?"claude.ai 버전: 보는 사람의 Claude 계정으로 답해요":AI_URL?"하루카나 AI 서버(Google Gemini)로 답해요 · API 키는 서버에만 있어요":"claude.ai 버전에서 AI를 쓸 수 있어요";
@@ -9092,7 +9123,7 @@ const AI_GO={
   chat:()=>openAiTutor("free",""),
   quiz:()=>{if(!AI_ON)return aiOnlyNotice("AI 맞춤 문제","내가 틀린 것으로 AI가 새 문제를 만들어요.");show(4);aiGoTo("ai-drill",()=>{if(!aiDrillCtl)runAiDrill()})},
   report:()=>{if(!AI_ON)return aiOnlyNotice("AI 약점 분석","AI가 내 기록을 읽고 약점과 공부 계획을 만들어 줘요.");show(5);aiGoTo("ai-report",()=>{if(!aiRepCtl)runAiReport()})},
-  role:()=>{jv={view:"jlist",mode:"ai",lv:"N5"};if(tab===6){kanjiHist();renderKanjiTab()}else show(6)},
+  role:()=>{const el=$("ai-roles");if(el)el.scrollIntoView({block:"start",behavior:"smooth"})},
   photo:()=>openPhotoReader("gallery"),
 };
 document.addEventListener("click",e=>{
@@ -9107,13 +9138,13 @@ document.addEventListener("click",e=>{
   const f=AI_GO[t.dataset.aiGo];if(f)f();
 });
 function navMark(){
-  const sg0=tab===3&&isSentView()?(wv.unit?sgOf(SENT_UNITS.find(u=>u.id===wv.unit)||{}):(wv.sg||sentGroup)):null,away=tab!==3?0:wv.n5?8:sg0==="n"?6:sg0==="j"?8:0;
+  const sg0=tab===3&&isSentView()?(wv.unit?sgOf(SENT_UNITS.find(u=>u.id===wv.unit)||{}):(wv.sg||sentGroup)):null,away=tab!==3?0:wv.n5?8:sg0==="n"?6:0;
   const on={0:tab===0,1:tab===1||tab===2,3:tab===3&&!isSentView()&&!away,7:tab===3&&isSentView()&&!away,6:tab===6||away===6,8:tab===8||away===8,4:tab===4,5:tab===5};
   NAV.forEach(i=>{const b=$("t"+i),v=!!on[i];b.classList.toggle("on",v);b.setAttribute("aria-selected",String(v));b.tabIndex=v?0:-1});
   markPrimary();
   document.querySelectorAll("[data-kv]").forEach(b=>{const v=+b.dataset.kv===tab;b.classList.toggle("on",v);b.setAttribute("aria-pressed",String(v))});
   const s=tab===3&&isSentView();
-  $("page-label").textContent=tab===3?(away===6?"회화":away===8?"시험":s?"문법":"단어"):tabNames[tab];
+  $("page-label").textContent=tab===3?(away===6?"회화":away===8?"시험":s?"문법":"단어"):tab===8&&jx&&jx.view==="kanji"?"한자":tabNames[tab];
   const h=$("v3").querySelector(".section-intro");
   h.querySelector(".section-kicker").textContent=away===6?"CONVERSATION":away===8?"JLPT N5":s?"GRAMMAR":"VOCABULARY";
   h.querySelector("h2").textContent=away===6?"숫자·가격":away===8?(wv.n5?"N5 단어장":"N5 문법"):s?"문법":"단어";
