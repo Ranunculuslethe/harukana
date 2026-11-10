@@ -8496,7 +8496,7 @@ function todayLocal(){
   if(!basicDone()){const st=ROAD_STEPS.find(x=>stepProg(x).f<1);if(st)add("road",`기초 · ${st.name}`,"기초를 이어서 해요")}
   try{const st=studyStats(),w=st.areas.filter(([,a])=>a.n>=5&&a.p<85).sort((a,b)=>a[1].p-b[1].p)[0];
     if(w){const m={"글자(가나)":"kana","단어":"words","문장·문법":"grammar","여행 표현":"travel:talk","N5 한자":"kanji"},k=m[w[0]]||(w[0].startsWith("N5 ")?"jl:x":null);if(k)add(k,`${w[0]} 다시 연습`,`정답률 ${w[1].p}%로 가장 약해요`)}}catch(e){}
-  const g=goalOf(),open=basicDone();
+  const g=goalOf(),open=true;
   if(g==="exam")add(open?"jl:home":"book",open?"N5 모의시험·연습":"단어장 이어 보기",open?"시험 형식에 익숙해져요":"시험의 바탕은 단어예요");
   if(g==="travel")add(open?"role:food":"book",open?"AI 대화 · 식당":"단어장 이어 보기",open?"여행에서 바로 쓰는 말을 직접 주고받아요":"여행 단어부터 모아요");
   if(g==="anime")add("role:anime","AI 대화 · 애니·드라마 수다","좋아하는 작품 이야기로 말해 봐요");
@@ -8522,7 +8522,7 @@ function renderAiToday(){
 async function runAiToday(){
   const sample=await aiGet();if(!sample){notifyText("지금은 AI를 쓸 수 없어요. claude.ai에 로그인했는지 확인해 주세요.");return}
   const st=studyStats(),keys={...aiGoList(),book:"단어장(예문과 함께 한 쪽씩 읽기)",grammar:"문법(조사·표현)"};
-  ROLE_SITS.forEach(r=>{if(basicDone()||["anime","friend"].includes(r.id))keys["role:"+r.id]=`AI 대화 · ${r.t}`});
+  ROLE_SITS.forEach(r=>{keys["role:"+r.id]=`AI 대화 · ${r.t}`});
   if(!basicDone()){const s=ROAD_STEPS.find(x=>stepProg(x).f<1);if(s)keys.road=`기초 다음 단계: ${s.name}`}
   const g=goalOf();
   const prompt=`너는 일본어 학습 앱 '하루카나'의 튜터 '하루'야. 배우는 사람의 기록을 보고 오늘 할 공부 3개를 골라.
@@ -8972,17 +8972,17 @@ function renderPeekBar(){
   b.innerHTML=`<span class="peek-ic" aria-hidden="true">👀</span><span><b>미리 보기 중</b> · 여행·N5 코스를 둘러보고 있어요. 기초를 마치면 정식으로 열려요.</span><button type="button" class="ghost" id="peek-end">미리 보기 끝내기</button>`;
   $("peek-end").onclick=()=>setPeek(false);
 }
-function isMid(){return basicDone()||peekOn()} // 여행 코스(회화 칸)가 열렸나 (미리 보기 포함)
-function isAdv(){return basicDone()||peekOn()} // N5 코스(시험 칸)가 열렸나 (미리 보기 포함)
+function isMid(){return true} // 회화 칸: 처음부터 모두 열려 있다 (기초를 마치지 않아도)
+function isAdv(){return true} // 시험 칸: 처음부터 모두 열려 있다
 function openCourses(){
   const d=dayState();
   if(!d.m.some(id=>["kanji","kanjiNew","travel"].includes(id))){const i=d.m.map((id,k)=>k).reverse().find(k=>!d.got[d.m[k]]&&!["solve","review"].includes(d.m[k]));if(i!==undefined)d.m[i]="travel";else d.m.push("travel")}
   save();applyLevel();refreshSummary();renderRoad();renderSettings();
 }
 function applyLevel(){
-  const open=basicDone(),peek=peekOn();
-  $("level-label").textContent=open?"여행·N5":peek?"미리 보기":"기초";
-  $("level-label").title=open?"여행 코스와 N5 코스가 열려 있어요":`기초 · 학습 길 ${ROAD_STEPS.length}단계를 마치면 여행 코스와 N5 코스가 열려요`;
+  const open=true,peek=peekOn();
+  $("level-label").textContent=open?"모두 열림":peek?"미리 보기":"기초";
+  $("level-label").title=open?"기초·회화·시험이 모두 열려 있어요":`기초 · 학습 길 ${ROAD_STEPS.length}단계를 마치면 여행 코스와 N5 코스가 열려요`;
   $("t6").hidden=!(open||peek);$("t8").hidden=!(open||peek);
 }
 const ROAD_STEPS=ROAD.flatMap(sec=>sec.steps);
@@ -9006,13 +9006,13 @@ const ROAD_ADV={title:"N5 코스",icon:"試",adv:true,steps:[
   {id:"nL",mark:"聞",name:"청해",desc:"짧은 대화를 듣고 답하기, 상황에 맞는 말 고르기",items:()=>jlIds("l"),done:jld,go:jlGo("l")},
   {id:"nX",mark:"合",name:"모의시험 합격선 넘기",desc:"30문제·35분 모의시험에서 합격선(80점) 넘기",items:()=>["x"],done:()=>!!(S.jx&&S.jx.pass),go:jlGo(null)}]};
 const roadCourses=()=>[ROAD_MID,ROAD_ADV];
-const roadSecs=()=>basicDone()?[...ROAD,...roadCourses()]:ROAD;
+const roadSecs=()=>[...ROAD,...roadCourses()];
 const roadSteps=()=>roadSecs().flatMap(sec=>sec.steps);
 const roadCurrent=()=>roadSteps().find(st=>!st.soon&&stepProg(st).f<1)||null;
 function renderRoad(){renderDoors()}
 function renderDoors(){
   const el=$("home-doors");if(!el)return;
-  const open=basicDone(),left=ROAD_STEPS.filter(st=>stepProg(st).f<1).length;
+  const open=true,left=ROAD_STEPS.filter(st=>stepProg(st).f<1).length;
   const info=steps=>{const ps=steps.map(stepProg),next=steps.find(st=>!st.soon&&stepProg(st).f<1);return{pct:Math.floor(ps.reduce((a,p)=>a+p.f,0)/ps.length*100),done:ps.filter(p=>p.f>=1).length,n:ps.length,next}};
   const B=info(ROAD_STEPS),T=info(ROAD_MID.steps),N=info(ROAD_ADV.steps);
   const note=(x,on)=>!on?`기초 ${left}단계 남음 · 눌러서 미리 보기`:x.next?`다음: ${x.next.name}`:"✿ 모두 마쳤어요";
