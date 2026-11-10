@@ -587,6 +587,7 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .cats.compact .bar{margin-top:8px}.cats.compact .meta{font-size:13px}
 .bk-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 2px}.bk-top b{font-size:18px}.bk-top small{color:var(--sub);margin-left:6px}.bk-jump{width:56px;padding:4px 6px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit;text-align:center}.bk-page{display:grid;gap:10px;margin:8px 0 14px}.bk-w{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}.bk-w.ok{opacity:.85}.bk-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.bk-kana{font-size:22px;font-weight:700}.bk-hg{color:var(--sub);font-size:13px}.bk-mean{font-weight:600}.bk-head .pill{margin-left:auto}.bk-say{border:0;background:none;cursor:pointer;font-size:15px;padding:2px 4px;border-radius:6px}.bk-say:hover{background:var(--line)}.bk-ex{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}.bk-ex p{margin:0}.bk-ja{font-size:15px}.bk-exhg{font-size:12px;color:var(--sub)}.bk-ko{font-size:13px}.bk-act{margin:4px 0 6px}
 .ai-today{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin:18px 0 4px}.at-head{display:flex;align-items:center;gap:10px}.at-head>div{flex:1;min-width:0;display:flex;flex-direction:column}.at-head b{font-size:16px}.at-head small{color:var(--sub);font-size:13px}.at-q{margin:12px 0 6px;font-weight:600}.at-goals{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}.at-goals button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 12px;font:inherit;cursor:pointer}.at-goals button.on{border-color:var(--accent);color:var(--accent);font-weight:700}.at-list{list-style:none;margin:12px 0 8px;padding:0;display:grid;gap:8px}.at-item{width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:10px 12px;font:inherit;cursor:pointer}.at-item:hover{border-color:var(--accent)}.at-n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:700}.at-t{flex:1;min-width:0;display:flex;flex-direction:column}.at-t small{color:var(--sub);font-size:12px}.at-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.at-note,.at-busy{color:var(--sub);font-size:12px}.ai-ja{display:inline-block;font-size:16px;margin-top:4px}.ai-jhg{display:block;font-size:12px;color:var(--sub)}.ai-say{border:0;background:none;cursor:pointer;font-size:13px;padding:0 2px}.tv-book-row{margin:10px 0}.tv-book-row small{color:var(--sub);margin-left:4px}.dr-q{font-size:16px;font-weight:600;margin:14px 0}.dr-ch{display:grid;gap:8px}.dr-ch button.right{border-color:#4caf7a;color:#2e8b57;font-weight:700}.dr-ch button.wrong{border-color:#d9534f;color:#c0392b}.dr-fb{min-height:1.5em;margin-top:10px}#ai-drill{margin-bottom:14px}
+.bk-toc{max-width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit;font-size:13px}.bk-ex0{border:0!important;margin:0!important;padding:0!important}.bk-unit h2{margin:6px 0 4px}.bk-reset{text-align:right;margin:4px 0}.tv-bk{font-size:19px}.bk-tip{margin-top:4px;color:var(--sub)}.kj-big{font-size:32px;line-height:1.1}.kj-exs{flex-direction:column;gap:2px}.kj-ex{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}.kj-ex small{color:var(--sub)}.kj-page{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}.s-ja .pt{color:var(--accent);font-style:normal;font-weight:700}
 .wpager{display:flex;align-items:center;justify-content:center;gap:12px;margin:14px 0 6px}.wpager .btn[disabled]{opacity:.4;pointer-events:none}.wpg-n{font-size:14px;color:var(--sub)}.wpg-n b{color:inherit;font-size:16px}
 .cats-sum{display:flex;align-items:center;gap:14px;margin:0 0 12px;padding:10px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card)}.cats-sum>b{font-size:24px;line-height:1;white-space:nowrap}.cats-sum>b small{font-size:15px;color:var(--sub);font-weight:400}.cats-sum>div{flex:1;min-width:0;font-size:14px}.cats-sum .bar{margin-top:6px}
 .cats.compact .catcard.doing{border-color:var(--accent);background:color-mix(in srgb,var(--accent-soft) 45%,var(--card))}.doing-p{background:var(--accent-soft);color:var(--accent-dark)}
@@ -5916,6 +5917,7 @@ function renderSent(el){
     const intro=g==="j"?"N5 시험에 나오는 문법이에요. 동사·형용사의 끝을 바꾸는 법(했어요·아니에요·て형·ない형)과 〜ましょう, まえに·あとで, より·ほうが 같은 이어 주는 말을 배워요. 빈칸에는 말끝을 골라 넣어요.":g==="v"?"\"~ 주세요\", \"어디예요?\"처럼 바로 쓰는 표현과, 문장 끝(ます)을 바꿔 \"안 해요·했어요·있어요·하고 싶어요\"를 말해요. 조사 단원 다음에 하면 좋아요.":g==="n"?"가격과 시간을 읽고 들어요. 일본에서 계산할 때, 시간을 확인할 때 바로 써요. 소리만 듣고 고르는 문제도 나와요.":g==="k"?"コーヒー·テレビ처럼 가타카나로 쓰는 말을 히라가나 문장에 넣어 읽어요. 조사 단원을 먼저 하면 더 쉬워요."
       :"단어를 이어 짧은 문장을 만들어요. 조사(は·を·に…)를 하나씩, 위에서부터 차례로 익히면 좋아요.";
     if(g==="j"&&!lvOpen("adv")){el.innerHTML=seg+gsegA+`<div class="lock-card"><b>N5 코스에서 열려요</b><small>기초를 마치고 목표로 N5(또는 둘 다)를 고르면 N5 문법 ${units.length}단원(${units.reduce((a,u)=>a+u.items.length,0)}문장)을 배울 수 있어요.</small><div class="kj-peek">${units.map(u=>esc(u.title)).join(" · ")}</div></div>`;toWords();el.querySelectorAll("[data-sg]").forEach(b=>b.onclick=()=>{wv={view:"slist",sg:b.dataset.sg};wordsHist();renderWords()});return}
+    {const B=sBookUnits(g),p=bookPg(sBookKey(g),B.length);if(B.length){wv={view:"sunit",unit:B[p].id};return renderSent(el)}} // 목록 대신 책: 기억해 둔 쪽(단원)을 펼친다
     el.innerHTML=seg+gsegA+`<p class="intro">${intro}</p>
       ${catSum(units.filter(unitDone).length,units.length,"단원")}
       <div class="cats compact">${units.filter(u=>!unitDone(u)).sort((a,b)=>(b.items.some(s=>sxd(s.id))?1:0)-(a.items.some(s=>sxd(s.id))?1:0)).map(uCard).join("")}</div>${doneFold(units.filter(unitDone),u=>esc(u.title),uCard)}`;
@@ -5931,17 +5933,19 @@ function renderSent(el){
   const toUnit=()=>{wv={view:"sunit",unit:u.id};renderWords()};
   const exitS=`<div style="text-align:left"><button class="back" id="sexit">← 그만하고 나가기</button></div>`;
   if(wv.view==="sunit"){
-    const todo=u.items.filter(s=>!sxd(s.id));
-    el.innerHTML=seg+`<button class="back" id="sbk">← ${SGROUPS[sgOf(u)]} 단원 목록</button>
-      <div class="status qstat"><span>${esc(sLabel(u))} · 맞힌 문장 ${u.items.length-todo.length}/${u.items.length}</span>${resetBtn(`sx-${u.id}`,"초기화")}</div>
-      <h2>${esc(u.title)} <small class="s-sub">${esc(u.ko)}</small></h2><p class="s-tip"><b>문법 포인트</b> ${esc(u.tip)}</p>
-      <div style="text-align:center"><button class="next" id="sgo">${todo.length?`학습 시작 (${todo.length}개)`:"다시 풀기"}</button></div>
-      <p class="intro wpick-hint">문장을 누르면 그 문장부터 볼 수 있어요.</p>
-      <div class="wlist">${u.items.map(s=>`<button class="wrow srow wpick" data-sid="${s.id}"><span class="wk">${sjMark(s)}</span><span class="wm">${esc(s.ko)}</span>${sxd(s.id)?'<span class="st pill ok">맞힘</span>':""}</button>`).join("")}</div>`;
+    const g=sgOf(u),B=sBookUnits(g),key=sBookKey(g),p=Math.max(0,B.indexOf(u));bookSet(key,p);
+    const todo=u.items.filter(s=>!sxd(s.id)),awayT=g==="n"?"회화로":g==="j"?"시험으로":"";
+    const ent=s=>`<article class="bk-w${sxd(s.id)?" ok":""}"><div class="bk-ex bk-ex0"><button class="bk-say sm" data-say="${esc(sjPlain(s))}" aria-label="듣기">🔊</button><div><p class="bk-ja s-ja" lang="ja">${sjMark(s)}</p><p class="bk-exhg">${esc(s.hg)}</p><p class="bk-ko">${esc(s.ko)}</p></div>${sxd(s.id)?'<span class="pill ok">맞힘</span>':""}</div></article>`;
+    el.innerHTML=seg+(awayT?`<button class="back" id="s-away">← ${awayT} 돌아가기</button>`:"")
+      +bookTop(g==="n"?"숫자·가격":g==="j"?"N5 문법":"문법",`${p+1}쪽 · ${SGROUPS[g]} · 맞힌 문장 ${u.items.length-todo.length}/${u.items.length}`,bookToc(B.map(x=>x.title),p))
+      +bookPager(p,B.length)+`<div class="bk-unit"><h2>${esc(u.title)} <small class="s-sub">${esc(u.ko)}</small></h2><p class="s-tip"><b>문법 포인트</b> ${esc(u.tip)}</p></div>
+      <div class="bk-page">${u.items.map(ent).join("")}</div>
+      <div class="wact bk-act"><button class="wact-b quiz" id="sgo"><span class="wa-ic" aria-hidden="true">✏️</span><span><b>이 쪽 학습</b><small>${todo.length?`카드로 보고 퀴즈 · 남은 문장 ${todo.length}개`:"다 맞혔어요 · 다시 풀기"}</small></span></button></div>
+      <div class="bk-reset">${resetBtn(`sx-${u.id}`,"이 쪽 초기화")}</div>`+bookPager(p,B.length);
     toWords();
-    $("sbk").onclick=()=>{const g=sgOf(u);if(g==="n"){jv={view:"jlist",mode:"num"};return show(6)}if(g==="j")return show(8);wv={view:"slist"};wordsHist();renderWords()};
+    bindBook(el,key,B.length,i=>{wv={view:"sunit",unit:B[i].id};renderWords()});
+    if($("s-away"))$("s-away").onclick=()=>{if(g==="n"){jv={view:"jlist",mode:"talk"};show(6)}else show(8)};
     $("sgo").onclick=()=>{wv={view:"scard",unit:u.id,batch:(todo.length?todo:u.items).map(s=>s.id),i:0};renderWords()};
-    el.querySelectorAll("[data-sid]").forEach(b=>b.onclick=()=>{const id=b.dataset.sid;wv={view:"scard",unit:u.id,batch:[id,...todo.map(s=>s.id).filter(x=>x!==id)],i:0};renderWords()});
     return;
   }
   if(wv.view==="scard"){
@@ -6011,6 +6015,20 @@ try{const v=JSON.parse(localStorage.getItem(JSESS)); // 풀던 한자 카드·�
 function saveJSess(){try{if(["jcard","jquiz"].includes(jv.view))localStorage.setItem(JSESS,JSON.stringify({...jv,t:Date.now()}));else localStorage.removeItem(JSESS)}catch(e){}}
 const kanjiState=()=>({tab:6,cat:jv.view==="jlist"?null:jv.cat,lv:jv.lv||"N5",mode:jv.mode||"talk"});
 function kanjiHist(){if(navPop||tab!==6)return;histPush(kanjiState())}
+const bookPg=(key,n)=>{let p=0;try{p=parseInt(localStorage.getItem("harukana-pg-"+key),10)||0}catch(e){}return Math.min(Math.max(0,p),Math.max(0,n-1))};
+const bookSet=(key,p)=>{try{localStorage.setItem("harukana-pg-"+key,p)}catch(e){}};
+const bookPager=(p,n)=>n>1?`<div class="wpager bk-pager"><button class="btn ghost" data-bpg="${p-1}" ${p?"":"disabled"} aria-label="이전 쪽">◀ 이전</button><label class="wpg-n"><input type="number" class="bk-jump" data-bjump min="1" max="${n}" value="${p+1}" aria-label="쪽 번호"> / ${n} 쪽</label><button class="btn ghost" data-bpg="${p+1}" ${p<n-1?"":"disabled"} aria-label="다음 쪽">다음 ▶</button></div>`:"";
+const bookToc=(names,p)=>names.length>1?`<select class="bk-toc" data-btoc aria-label="목차로 가기">${names.map((t,i)=>`<option value="${i}"${i===p?" selected":""}>${i+1}. ${esc(t)}</option>`).join("")}</select>`:"";
+const bookTop=(title,sub,toc)=>`<div class="bk-top"><div><b>${title}</b> <small>${sub}</small></div>${toc||""}</div>`;
+function bindBook(el,key,n,go){
+  const to=p=>{if(p<0||p>=n)return;bookSet(key,p);go(p);const t=document.querySelector(".bk-top");if(t)t.scrollIntoView({block:"start",behavior:"smooth"})};
+  el.querySelectorAll("[data-bpg]").forEach(b=>b.onclick=()=>to(+b.dataset.bpg));
+  el.querySelectorAll("[data-bjump]").forEach(i=>i.onchange=()=>{const v=parseInt(i.value,10);if(v>=1&&v<=n)to(v-1)});
+  el.querySelectorAll("[data-btoc]").forEach(s=>s.onchange=()=>to(+s.value));
+  el.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak(b.dataset.say));
+}
+const sBookUnits=g=>g==="n"||g==="j"?groupUnits(g):[...groupUnits("p"),...groupUnits("v")];
+const sBookKey=g=>"s-"+(g==="n"||g==="j"?g:"pv");
 function renderKanjiTab(){saveJSess();if(jv.view!=="jlist"||!jv.lv)jv.lv=jv.lv||"N5";
   if(jv.mode==="kanji"){jx={view:"kanji"};return tab===8?renderJlptTab():show(8)}
   setLast({t:"kanji"});renderKanji($("kanji"))}
@@ -6022,10 +6040,11 @@ function renderKanji(el){
   const bindLv=()=>el.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{jv={view:"jlist",mode:b.dataset.mode,lv:"N5"};kanjiHist();renderKanjiTab()});
   if(mode!=="kanji"){renderTravel(el,seg,bindLv);
     const tabs=el.querySelector(".top-tabs");
-    if(tabs&&mode==="talk"&&jv.view==="jlist"){tabs.insertAdjacentHTML("afterend",'<div class="tv-book-row"><button type="button" class="ghost" id="to-book">★ 모아 보기 · 표현집 <small>찾기 · 즐겨찾기 · 사진 읽기</small></button></div>');$("to-book").onclick=()=>{jv={view:"jlist",mode:"book"};kanjiHist();renderKanjiTab()}}
+    if(tabs&&mode==="talk"&&jv.view==="jcat"){tabs.insertAdjacentHTML("afterend",'<div class="tv-book-row"><button type="button" class="ghost" id="to-book">★ 모아 보기 · 표현집 <small>찾기 · 즐겨찾기 · 사진 읽기</small></button></div>');$("to-book").onclick=()=>{jv={view:"jlist",mode:"book"};kanjiHist();renderKanjiTab()}}
     if(tabs&&mode==="book"){tabs.insertAdjacentHTML("afterend",'<button type="button" class="back" id="bk-talk">← 여행 회화</button>');$("bk-talk").onclick=()=>{jv={view:"jlist",mode:"talk"};kanjiHist();renderKanjiTab()}}
     return}
-  if(jv.view==="jlist"){
+  if(jv.view==="jlist"){const cs=KANJI_CATS.filter(c=>(c.lv||"N5")===lv),p=bookPg("kj-"+lv,cs.length);jv={mode:"kanji",view:"jcat",cat:cs[p].id,lv};return renderKanjiTab()} // 목록 대신 책
+  if(false){
     el.innerHTML=seg+`<p class="intro">일본어를 처음 배울 때 가장 먼저 만나는 기초 한자(N5) ${lvKanji.length}자예요. 숫자·요일·사람처럼 여행에서도 자주 보여요. 카테고리를 골라 카드로 익히고 퀴즈로 확인해요.</p>
       ${(()=>{const cs=KANJI_CATS.filter(c=>(c.lv||"N5")===lv),prog=c=>{const ks=kanjiOf(c.id);return [ks.filter(j=>kjd(j.k)).length,ks.length,ks]};
         const kc=c=>{const [n,t,ks]=prog(c),doing=n>0&&n<t;return `<button class="catcard${doing?" doing":""}" data-jc="${c.id}"><div class="cat-top"><b>${c.name}</b>${doing?doingPill:""}${n===t?'<span class="pill ok">완료</span>':""}</div><div class="desc"><span class="ja-font" lang="ja">${ks.slice(0,6).map(j=>j.k).join(" ")}</span> · ${c.desc}</div><div class="bar"><i style="width:${n/t*100}%"></i></div><div class="meta">${n}/${t}</div></button>`};
@@ -6041,19 +6060,13 @@ function renderKanji(el){
   const ks=kanjiOf(c.id),toCat=()=>{jv={mode:"kanji",view:"jcat",cat:c.id};renderKanjiTab()};
   const exitJ=`<div style="text-align:left"><button class="back" id="jexit">← 그만하고 나가기</button></div>`;
   if(jv.view==="jcat"){
-    const todo=ks.filter(j=>!kjd(j.k));
-    el.innerHTML=seg+`<button class="back" id="jbk">← ${lv} 한자 카테고리</button>
-      <div class="status qstat"><span>한자 ${lv} · ${c.name} · 맞힌 한자 ${ks.length-todo.length}/${ks.length}</span>${resetBtn(`kj-${c.id}`,"초기화")}</div>
-      <div style="text-align:center"><button class="next" id="jgo">${todo.length?`학습 시작 (${todo.length}자)`:"다시 풀기"}</button></div>
-      <p class="intro wpick-hint">한자를 누르면 그 한자부터 볼 수 있어요.</p>
-      <div class="kj-grid">${ks.map(j=>`<button class="kj-tile${kjd(j.k)?" ok":""}" data-k="${j.k}"><b class="ja-font" lang="ja">${j.k}</b><small>${esc(j.hun)}</small></button>`).join("")}</div>`;
-    
+    const todo=ks.filter(j=>!kjd(j.k)),cs=KANJI_CATS.filter(x=>(x.lv||"N5")===lv),key="kj-"+lv,p=Math.max(0,cs.indexOf(c));bookSet(key,p);
+    const ent=j=>`<article class="bk-w kj-bk${kjd(j.k)?" ok":""}"><div class="bk-head"><span class="kj-big ja-font" lang="ja">${j.k}</span><span class="bk-mean">${esc(j.hun)}</span>${kjd(j.k)?'<span class="pill ok">맞힘</span>':""}</div><p class="bk-exhg">음 <span lang="ja">${esc(j.on||"-")}</span> · 훈 <span lang="ja">${esc(j.kun||"-")}</span></p>${(j.ex||[]).length?`<div class="bk-ex kj-exs">${j.ex.map(([w,r,m])=>`<p class="kj-ex"><button class="bk-say sm" data-say="${esc(r)}" aria-label="듣기">🔊</button><span class="ja-font" lang="ja">${esc(w)}</span> <small lang="ja">${esc(r)}</small> ${esc(m)}</p>`).join("")}</div>`:""}</article>`;
+    el.innerHTML=seg+bookTop(`${lv} 한자`,`${p+1}쪽 · ${c.name} · 맞힌 한자 ${ks.length-todo.length}/${ks.length}`,bookToc(cs.map(x=>x.name),p))+bookPager(p,cs.length)
+      +`<div class="bk-page kj-page">${ks.map(ent).join("")}</div><div class="wact bk-act"><button class="wact-b quiz" id="jgo"><span class="wa-ic" aria-hidden="true">✏️</span><span><b>이 쪽 학습</b><small>${todo.length?`카드로 보고 퀴즈 · 남은 ${todo.length}자`:"다 맞혔어요 · 다시 풀기"}</small></span></button></div><div class="bk-reset">${resetBtn(`kj-${c.id}`,"이 쪽 초기화")}</div>`+bookPager(p,cs.length);
     bindLv();
-    $("jbk").onclick=()=>{jv={mode:"kanji",view:"jlist",lv};kanjiHist();renderKanjiTab()};
-
-    const start=first=>{const rest=(todo.length?todo:ks).map(j=>j.k).filter(k=>k!==first);jv={mode:"kanji",view:"jcard",cat:c.id,batch:first?[first,...rest]:rest,i:0};renderKanjiTab()};
-    $("jgo").onclick=()=>start(null);
-    el.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>start(b.dataset.k));
+    bindBook(el,key,cs.length,i=>{jv={mode:"kanji",view:"jcat",cat:cs[i].id,lv};renderKanjiTab()});
+    $("jgo").onclick=()=>{jv={mode:"kanji",view:"jcard",cat:c.id,batch:(todo.length?todo:ks).map(j=>j.k),i:0};renderKanjiTab()};
     return;
   }
   if(jv.view==="jcard"){
@@ -6306,11 +6319,15 @@ function renderChat(el,seg,bindMode){
   const exitJ=`<div style="text-align:left"><button class="back" id="jexit">← 그만하고 나가기</button></div>`;
   const chCard=c=>`<button class="catcard" data-chat="${c.id}"><div class="cat-top"><b>${c.title}</b>${chatDone(c.id)?'<span class="pill ok">완료</span>':""}</div><div class="desc">${c.desc}</div><div class="meta">${c.turns.length}번 주고받기</div></button>`;
   if(jv.view!=="chat"){
-    el.innerHTML=seg+`<p class="intro">가게에 들어가서 나올 때까지 점원과 대화를 이어 가요. 점원 말을 듣고, 괄호 안의 하고 싶은 말에 맞는 대답을 골라요.</p>
-      ${catSum(CHATS.filter(c=>chatDone(c.id)).length,CHATS.length,"대화")}
-      <div class="cats compact">${CHATS.filter(c=>!chatDone(c.id)).map(chCard).join("")}</div>${doneFold(CHATS.filter(c=>chatDone(c.id)),c=>c.title,chCard)}`;
+    const key="chat",p=bookPg(key,CHATS.length),c=CHATS[p];
+    el.innerHTML=seg+bookTop("상황 대화",`${p+1}쪽 · ${c.title}${chatDone(c.id)?" · ✓ 완료":""}`,bookToc(CHATS.map(x=>x.title),p))
+      +`<p class="intro">가게에 들어가서 나올 때까지 점원과 대화를 이어 가요. 먼저 점원이 할 말을 읽어 두고, 대화에서는 하고 싶은 말에 맞는 대답을 골라요.</p>`+bookPager(p,CHATS.length)
+      +`<div class="bk-unit"><h2>${c.title}</h2><p class="s-tip">${c.desc} · ${c.turns.length}번 주고받기</p></div><h3 class="jl-h">점원이 할 말</h3>
+      <div class="bk-page">${c.turns.map(tn=>`<article class="bk-w"><div class="bk-ex bk-ex0"><button class="bk-say sm" data-say="${esc(tn.s)}" aria-label="듣기">🔊</button><div><p class="bk-ja" lang="ja">${esc(tn.s)}</p><p class="bk-ko">${esc(tn.sk)}</p></div></div></article>`).join("")}</div>
+      <div class="wact bk-act"><button class="wact-b quiz" id="ch-go"><span class="wa-ic" aria-hidden="true">💬</span><span><b>대화 시작</b><small>점원 말을 듣고 대답 고르기</small></span></button></div>`+bookPager(p,CHATS.length);
     bindMode();
-    el.querySelectorAll("[data-chat]").forEach(b=>b.onclick=()=>{jv={view:"chat",mode:"chat",chat:b.dataset.chat,t:0,miss:0};renderKanjiTab();window.scrollTo({top:0,behavior:"instant"})});
+    bindBook(el,key,CHATS.length,()=>renderKanjiTab());
+    $("ch-go").onclick=()=>{jv={view:"chat",mode:"chat",chat:c.id,t:0,miss:0};renderKanjiTab();window.scrollTo({top:0,behavior:"instant"})};
     return;
   }
   const c=CHATS.find(x=>x.id===jv.chat);if(!c){jv={view:"jlist",mode:"chat"};return renderChat(el,seg,bindMode)}
@@ -6352,7 +6369,8 @@ function renderTravel(el,seg,bindMode){
   const tcard=c=>{const ts=travelOf(c.id),n=ts.filter(t=>tvd(t.id)).length,doing=n>0&&n<ts.length;
     return `<button class="catcard${doing?" doing":""}" data-tc="${c.id}"><div class="cat-top"><b>${c.name}</b>${doing?doingPill:""}${n===ts.length?'<span class="pill ok">완료</span>':""}</div><div class="desc">${c.desc}</div><div class="bar"><i style="width:${n/ts.length*100}%"></i></div><div class="meta">${n}/${ts.length}</div></button>`};
   const tdone=c=>travelOf(c.id).every(t=>tvd(t.id)),done=cats.filter(tdone),todo=cats.filter(c=>!tdone(c)).sort((a,b)=>(travelOf(b.id).some(t=>tvd(t.id))?1:0)-(travelOf(a.id).some(t=>tvd(t.id))?1:0));
-  if(jv.view==="jlist"){
+  if(jv.view==="jlist"){const p=bookPg("tv-"+mode,cats.length);jv={view:"jcat",mode,cat:cats[p].id};return renderTravel(el,seg,bindMode)} // 목록 대신 책
+  if(false){
     el.innerHTML=seg+`<p class="intro">${sign?"일본 역·가게·화장실에서 실제로 보는 표지판이에요. 읽는 법을 몰라도 뜻만 알면 길을 덜 헤매요.":mode==="ear"?"가게·역·호텔에서 점원과 안내 방송이 하는 말이에요. 소리만 듣고 알아듣는 연습을 하고, 뭐라고 대답하면 되는지도 같이 봐요.":"일본 여행에서 바로 쓰는 짧은 말이에요. 소리를 들으며 따라 해 보세요."}</p>
       ${catSum(done.length,cats.length,"상황")}<div class="cats compact">${todo.map(tcard).join("")}</div>${doneFold(done,c=>c.name,tcard)}`;
     bindMode();
@@ -6364,17 +6382,14 @@ function renderTravel(el,seg,bindMode){
   const ts=travelOf(c.id),toCat=()=>{jv={view:"jcat",mode,cat:c.id};renderKanjiTab()};
   const exitJ=`<div style="text-align:left"><button class="back" id="jexit">← 그만하고 나가기</button></div>`;
   if(jv.view==="jcat"){
-    const todo=ts.filter(t=>!tvd(t.id));
-    el.innerHTML=seg+`<button class="back" id="jbk">← ${MID_MODES[mode]} 목록</button>
-      <div class="status qstat"><span>${MID_MODES[mode]} · ${c.name} · 맞힌 ${ts.length-todo.length}/${ts.length}</span>${resetBtn(`tv-${c.id}`,"초기화")}</div>
-      <div style="text-align:center"><button class="next" id="jgo">${todo.length?`학습 시작 (${todo.length}개)`:"다시 풀기"}</button></div>
-      <p class="intro wpick-hint">누르면 그것부터 볼 수 있어요.</p>
-      <div class="wlist">${ts.map(t=>`<button class="wrow srow wpick" data-tid="${t.id}"><span class="wk ja-font" lang="ja">${esc(t.ja)}</span><span class="wm">${esc(t.ko)}</span>${tvd(t.id)?'<span class="st pill ok">맞힘</span>':""}</button>`).join("")}</div>`;
+    const todo=ts.filter(t=>!tvd(t.id)),key="tv-"+mode,p=Math.max(0,cats.indexOf(c));bookSet(key,p);
+    const intro=sign?"일본 역·가게·화장실에서 실제로 보는 표지판이에요. 읽는 법을 몰라도 뜻만 알면 길을 덜 헤매요.":mode==="ear"?"가게·역·호텔에서 점원과 안내 방송이 하는 말이에요. 뜻을 익히고, 뭐라고 대답하면 되는지도 같이 봐요.":"일본 여행에서 바로 쓰는 짧은 말이에요. 소리를 들으며 따라 해 보세요.";
+    const ent=t=>`<article class="bk-w${tvd(t.id)?" ok":""}"><div class="bk-head"><span class="bk-kana tv-bk" lang="ja">${esc(t.ja)}</span><button class="bk-say" data-say="${esc(sign&&t.rd?t.rd:t.ja)}" aria-label="듣기">🔊</button>${tvd(t.id)?'<span class="pill ok">맞힘</span>':""}</div><p class="bk-exhg">${sign&&t.rd?`<span lang="ja">${esc(t.rd)}</span> · `:""}${esc(tvHg(t))}</p><p class="bk-mean">${esc(t.ko)}</p>${t.tip?`<p class="bk-ko bk-tip">${mode==="ear"?"<b>이렇게 대답해요</b> ":"💡 "}${esc(t.tip)}</p>`:""}</article>`;
+    el.innerHTML=seg+bookTop(MID_MODES[mode],`${p+1}쪽 · ${c.name} · 맞힌 ${ts.length-todo.length}/${ts.length}`,bookToc(cats.map(x=>x.name),p))+`<p class="intro">${intro}</p>`+bookPager(p,cats.length)
+      +`<div class="bk-page">${ts.map(ent).join("")}</div><div class="wact bk-act"><button class="wact-b quiz" id="jgo"><span class="wa-ic" aria-hidden="true">✏️</span><span><b>이 쪽 학습</b><small>${todo.length?`카드로 보고 퀴즈 · 남은 ${todo.length}개`:"다 맞혔어요 · 다시 풀기"}</small></span></button></div><div class="bk-reset">${resetBtn(`tv-${c.id}`,"이 쪽 초기화")}</div>`+bookPager(p,cats.length);
     bindMode();
-    $("jbk").onclick=()=>{jv={view:"jlist",mode};kanjiHist();renderKanjiTab()};
-    const start=first=>{const rest=(todo.length?todo:ts).map(t=>t.id).filter(id=>id!==first);jv={view:"jcard",mode,cat:c.id,batch:first?[first,...rest]:rest,i:0};renderKanjiTab()};
-    $("jgo").onclick=()=>start(null);
-    el.querySelectorAll("[data-tid]").forEach(b=>b.onclick=()=>start(b.dataset.tid));
+    bindBook(el,key,cats.length,i=>{jv={view:"jcat",mode,cat:cats[i].id};renderKanjiTab()});
+    $("jgo").onclick=()=>{jv={view:"jcard",mode,cat:c.id,batch:(todo.length?todo:ts).map(t=>t.id),i:0};renderKanjiTab()};
     return;
   }
   if(jv.view==="jcard"){
@@ -8538,13 +8553,7 @@ function renderRoleList(el,seg,bindMode){
   el.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>openAiTutor("role",b.dataset.role));
   el.querySelector("[data-photo]").onclick=()=>{jv={view:"jlist",mode:"book"};renderKanjiTab()};
 }
-function renderNumList(el,seg,bindMode){
-  const units=groupUnits("n");
-  const uc=u=>{const n=u.items.filter(s=>sxd(s.id)).length;return `<button class="catcard" data-nu="${u.id}"><div class="cat-top"><b>${esc(u.title)}</b>${n===u.items.length?'<span class="pill ok">완료</span>':""}</div><div class="desc">${esc(u.ko)}</div><div class="bar"><i style="width:${n/u.items.length*100}%"></i></div><div class="meta">${n}/${u.items.length}</div></button>`};
-  el.innerHTML=seg+`<p class="intro">가격·시간·날짜처럼 여행에서 바로 듣고 말하는 숫자예요. 소리만 듣고 고르는 문제도 나와요.</p><div class="cats compact">${units.map(uc).join("")}</div>`;
-  bindMode();
-  el.querySelectorAll("[data-nu]").forEach(b=>b.onclick=()=>{wv={view:"sunit",unit:b.dataset.nu};show(3)});
-}
+function renderNumList(){const B=groupUnits("n"),p=bookPg("s-n",B.length);jv={view:"jlist",mode:"talk"};wv={view:"sunit",unit:B[p].id};show(3)} // 숫자·가격 책은 문장 화면을 같이 쓴다
 
 let aiDrillCtl=null;
 function renderAiDrill(){
