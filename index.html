@@ -585,6 +585,7 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .cats.compact .cat-top b{font-size:15px}
 .cats.compact .desc{font-size:13px;color:var(--sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cats.compact .bar{margin-top:8px}.cats.compact .meta{font-size:13px}
+.bk-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 2px}.bk-top b{font-size:18px}.bk-top small{color:var(--sub);margin-left:6px}.bk-jump{width:56px;padding:4px 6px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit;text-align:center}.bk-page{display:grid;gap:10px;margin:8px 0 14px}.bk-w{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}.bk-w.ok{opacity:.85}.bk-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.bk-kana{font-size:22px;font-weight:700}.bk-hg{color:var(--sub);font-size:13px}.bk-mean{font-weight:600}.bk-head .pill{margin-left:auto}.bk-say{border:0;background:none;cursor:pointer;font-size:15px;padding:2px 4px;border-radius:6px}.bk-say:hover{background:var(--line)}.bk-ex{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}.bk-ex p{margin:0}.bk-ja{font-size:15px}.bk-exhg{font-size:12px;color:var(--sub)}.bk-ko{font-size:13px}.bk-act{margin:4px 0 6px}
 .wpager{display:flex;align-items:center;justify-content:center;gap:12px;margin:14px 0 6px}.wpager .btn[disabled]{opacity:.4;pointer-events:none}.wpg-n{font-size:14px;color:var(--sub)}.wpg-n b{color:inherit;font-size:16px}
 .cats-sum{display:flex;align-items:center;gap:14px;margin:0 0 12px;padding:10px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card)}.cats-sum>b{font-size:24px;line-height:1;white-space:nowrap}.cats-sum>b small{font-size:15px;color:var(--sub);font-weight:400}.cats-sum>div{flex:1;min-width:0;font-size:14px}.cats-sum .bar{margin-top:6px}
 .cats.compact .catcard.doing{border-color:var(--accent);background:color-mix(in srgb,var(--accent-soft) 45%,var(--card))}.doing-p{background:var(--accent-soft);color:var(--accent-dark)}
@@ -3964,7 +3965,7 @@ const doingPill='<span class="pill doing-p">하는 중</span>';
 const doneFold=(list,nameOf,cardOf)=>list.length?`<details class="cats-done"><summary><span class="cd-n">✓ 완료 ${list.length}개</span><small>${list.map(nameOf).join(" · ")}</small></summary><div class="cats compact">${list.map(cardOf).join("")}</div></details>`:"";
 const WLEVEL={h:"beg",k:"beg",m:"mid",a:"adv"},LV_NAMES={beg:"기초",mid:"생활",adv:"N5"};
 const lvOpen=l=>l==="beg"||(l==="mid"&&(isMid()||isAdv()))||(l==="adv"&&isAdv());
-let wv={view:"list",script:"h"};let wPage=0; // 단어 목록에서 보고 있는 쪽 (카테고리에 들어갔다 나와도 그 쪽으로 돌아온다)
+let wv={view:"list",script:"h"};let wPage=0;try{wPage=parseInt(localStorage.getItem("harukana-wpage"),10)||0}catch(e){} // 단어 목록에서 보고 있는 쪽 (카테고리에 들어갔다 나와도 그 쪽으로 돌아온다)
 try{const v=JSON.parse(localStorage.getItem("harukana-wsess"));
   if(v&&(v.view==="scard"||v.view==="squiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)&&SENT_UNITS.some(u=>u.id===v.unit)){delete v.t;v.batch=v.batch.filter(id=>SENT_BY_ID[id]);if(v.queue)v.queue=v.queue.filter(id=>SENT_BY_ID[id]);v.wrong=(v.wrong||[]).filter(id=>SENT_BY_ID[id]);if(v.batch.length)wv=v}
   else if(v&&(v.view==="card"||v.view==="quiz")&&Date.now()-v.t<7*864e5&&Array.isArray(v.batch)){delete v.t;const byId=x=>WORDS.find(w=>w.id===(x&&x.id));v.batch=v.batch.map(byId).filter(Boolean);if(v.queue)v.queue=v.queue.map(byId).filter(Boolean);if(v.batch.length)wv={...v,wrong:new Set(v.wrong||[])}}}catch(e){}
@@ -3988,6 +3989,9 @@ const VC={},VCATS=[];
   for(let i=0;i<stray.k.length;i+=12)add(`kmore${i/12+1}~k`,null,"k",stray.k.slice(i,i+12),`생활 가타카나 ${i/12+1}`,"생활·N5 단어 중 가타카나로 쓰는 말");
   if(stray.x.length){const v=VCATS.find(c=>c.script==="x");if(v)v.ids.push(...stray.x);else add("xmore~x",null,"x",stray.x,"섞인 말","히라가나와 가타카나가 섞인 말")}
 })();
+const BOOK=[];WSCRIPTS.b="단어장";
+(()=>{const ids=["h","k","x"].flatMap(s=>VCATS.filter(c=>c.script===s)).flatMap(c=>c.ids);
+  for(let i=0;i<ids.length;i+=10){const p=i/10+1,v={id:"pg"+p,name:p+"쪽",desc:"",script:"b",ids:ids.slice(i,i+10)};VC[v.id]=v;BOOK.push(v)}})();
 const josa=(s,a,b)=>{const c=s.charCodeAt(s.length-1)-0xAC00;return s+(c>=0&&c<11172&&c%28?a:b)};
 let wMode="fwd";try{if(localStorage.getItem("harukana-wmode")==="rev")wMode="rev"}catch(e){} // 고른 방향은 이 기기에 기억
 const WMODE_NAMES={fwd:"일본어 → 뜻",rev:"뜻 → 일본어"};
@@ -5750,29 +5754,30 @@ function renderWords(){
   if(wv.view==="readdone")return renderReadDone(el);
   if(wv.view&&wv.view[0]==="s")return renderSent(el); // 문장 연습 화면들
   if(wv.view==="list"){
-    const s="h",cats=["h","k","x"].flatMap(t=>VCATS.filter(c=>c.script===t)); // 글자 종류로 나누지 않고 히라가나 → 가타카나 → 섞인 말 순서로 쭉 이어서, 한 쪽에 12개씩 넘겨 본다
-    setLast({t:"wordlist",s,m:wMode});
-    const seg="";
-    const card=c=>{
-        const ws=catWords(c.id),mf=ws.filter(w=>wdm(w.id,"fwd")).length,mr=ws.filter(w=>wdm(w.id,"rev")).length,all=mf===ws.length&&mr===ws.length;
-        return `<button class="catcard${mf>0&&mf<ws.length?" doing":""}" data-id="${c.id}"><div class="cat-top"><b>${c.name}</b>${mf>0&&mf<ws.length?doingPill:""}${c.recommended&&mf<ws.length?'<span class="pill">처음 추천</span>':""}${mf===ws.length?`<span class="pill ok">${all?"양방향 완료":"완료"}</span>`:""}</div>
-          <div class="desc">${c.desc}</div><div class="bar"><i style="width:${ws.length?mf/ws.length*100:0}%"></i></div>
-          <div class="meta">${mf}/${ws.length}${rdS().cat[c.id]?` · 📖 ${rdS().cat[c.id]}회독`:""}</div></button>`};
-    const catDoneW=c=>{const ws=catWords(c.id);return ws.length>0&&ws.every(w=>wdm(w.id,"fwd"))};
-    const must=cats;
-    const intro="쉬운 히라가나 단어부터 가타카나, 둘이 섞인 말까지 순서대로 이어져요. 발음의 \"-\"는 앞 소리를 길게 읽으라는 뜻이에요 (토-쿄- = 도쿄).";
-    const started=c=>catWords(c.id).some(w=>wdm(w.id,"fwd")),todo=must.filter(c=>!catDoneW(c)),done=must.filter(catDoneW);
-    todo.sort((a,b)=>started(b)-started(a)); // 하는 중인 카테고리를 맨 앞으로
-    const PER=12,pages=Math.max(1,Math.ceil(todo.length/PER));wPage=Math.min(Math.max(0,wPage),pages-1);
-    const pager=pages>1?`<div class="wpager" role="group" aria-label="쪽 넘기기"><button class="btn ghost" data-pg="-1" ${wPage?"":"disabled"}>◀ 이전</button><span class="wpg-n"><b>${wPage+1}</b> / ${pages} 쪽</span><button class="btn ghost" data-pg="1" ${wPage<pages-1?"":"disabled"}>다음 ▶</button></div>`:"";
-    const body=`<p class="intro">${intro}</p>${catSum(done.length,must.length,"카테고리")}<div class="cats compact">${todo.slice(wPage*PER,wPage*PER+PER).map(card).join("")}</div>${pager}${doneFold(done,c=>c.name,card)}`;
-    const kindSeg=kindTabs("w");
-    el.innerHTML=kindSeg+rdCard()+seg+body;
+    const n=BOOK.length;wPage=Math.min(Math.max(0,wPage),n-1);try{localStorage.setItem("harukana-wpage",wPage)}catch(e){}
+    setLast({t:"wordlist",s:"h",m:wMode});
+    const pg=BOOK[wPage],ws=catWords(pg.id),got=ws.filter(w=>wdm(w.id)).length,rc=rdS().cat[pg.id]||0;
+    const firstNew=BOOK.findIndex(p=>catWords(p.id).some(w=>!wdm(w.id)));
+    const pager=pos=>`<div class="wpager bk-pager"><button class="btn ghost" data-pg="-1" ${wPage?"":"disabled"} aria-label="이전 쪽">◀ 이전</button><label class="wpg-n"><input type="number" class="bk-jump" min="1" max="${n}" value="${wPage+1}" aria-label="쪽 번호"> / ${n} 쪽</label><button class="btn ghost" data-pg="1" ${wPage<n-1?"":"disabled"} aria-label="다음 쪽">다음 ▶</button></div>`;
+    const entry=w=>{const ok=wdm(w.id),e=w.ex;
+      return `<article class="bk-w${ok?" ok":""}"><div class="bk-head"><span class="bk-kana" lang="ja">${w.kana}</span><button class="bk-say" data-say="${esc(w.kana)}" aria-label="${esc(w.kana)} 발음 듣기">🔊</button><span class="bk-hg">${w.hangul}</span><span class="bk-mean">${w.meaning}</span>${ok?'<span class="pill ok">맞힘</span>':""}</div>
+        ${e?`<div class="bk-ex"><button class="bk-say sm" data-say="${esc(e.ja)}" aria-label="예문 듣기">🔊</button><div><p class="bk-ja" lang="ja">${esc(e.ja)}</p><p class="bk-exhg">${esc(e.hg)}</p><p class="bk-ko">${esc(e.ko)}</p></div></div>`:""}</article>`};
+    const body=`<div class="bk-top"><div><b>단어장</b> <small>${wPage+1}쪽 · 이 쪽 맞힌 단어 ${got}/${ws.length}${rc?` · 📖 ${rc}회독`:""}</small></div>${firstNew>=0&&firstNew!==wPage?`<button class="link" id="bk-new">안 본 쪽(${firstNew+1}쪽)으로</button>`:""}</div>
+      ${pager()}<div class="bk-page">${ws.map(entry).join("")}</div>
+      <div class="wact bk-act"><button class="wact-b read" id="rd-cat"><span class="wa-ic" aria-hidden="true">📖</span><span><b>이 쪽 회독</b><small>카드로 넘기며 다시 보기</small></span></button><button class="wact-b quiz" id="go"><span class="wa-ic" aria-hidden="true">✏️</span><span><b>이 쪽 퀴즈</b><small>${got<ws.length?`아직 못 맞힌 단어 ${ws.length-got}개`:"다 맞혔어요 · 한 번 더"}</small></span></button></div>
+      ${pager()}`;
+    el.innerHTML=kindTabs("w")+body+rdCard();
     bindKindTabs(el);bindRdCard(el);
-    el.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>{wPage+=+b.dataset.pg;renderWords();const t=el.querySelector(".cats-sum");if(t)t.scrollIntoView({block:"start",behavior:"smooth"})});
-    el.querySelectorAll(".catcard").forEach(b=>b.onclick=()=>{wv={view:"cat",cat:b.dataset.id};wordsHist();renderWords()});
+    const go=p=>{wPage=p;renderWords();const t=el.querySelector(".bk-top");if(t)t.scrollIntoView({block:"start",behavior:"smooth"})};
+    el.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>go(wPage+ +b.dataset.pg));
+    el.querySelectorAll(".bk-jump").forEach(i=>i.onchange=()=>{const v=parseInt(i.value,10);if(v>=1&&v<=n)go(v-1);else i.value=wPage+1});
+    if($("bk-new"))$("bk-new").onclick=()=>go(firstNew);
+    el.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak(b.dataset.say));
+    $("rd-cat").onclick=()=>{wv={view:"read",ids:ws.map(w=>w.id),i:0,from:"cat",cat:pg.id,label:pg.name};renderWords()};
+    $("go").onclick=()=>{const c=batchCands(pg.id);startQuiz(pg.id,c.length?c:ws,c);renderWords()};
     return;
   }
+  if(wv.cat&&BOOK.includes(VC[wv.cat])&&wv.view==="cat"){wPage=BOOK.indexOf(VC[wv.cat]);wv={view:"list"};return renderWords()} // 단어장 쪽에서 들어간 퀴즈·회독을 나오면 그 쪽으로
   if(wv.cat&&!VC[wv.cat]){const v=VCATS.find(c=>c.base===wv.cat);if(v)wv.cat=v.id} // 예전 카테고리 이름으로 저장된 위치는 새 묶음으로
   const cat=catOf(wv.cat);
   setLast({t:"word",cat:cat.id,m:wMode});
@@ -5841,13 +5846,13 @@ function renderWords(){
   }
   if(wv.view==="done"){
     const wrong=WORDS.filter(w=>wv.wrong.has(w.id)),more=batchCands(cat.id).length;
-    const list=["h","k","x"].flatMap(t=>VCATS.filter(c=>c.script===t)),li=list.indexOf(cat),next=catDone(cat.id)&&li+1<list.length&&catOpen(list[li+1])?list[li+1]:null;
+    const list=cat.script==="b"?BOOK:["h","k","x"].flatMap(t=>VCATS.filter(c=>c.script===t)),li=list.indexOf(cat),next=catDone(cat.id)&&li+1<list.length&&catOpen(list[li+1])?list[li+1]:null;
     const msgs=wv.opened.map(n=>`${josa(n,"이","가")} 열렸어요.`);
     if(catWords(cat.id).every(w=>wdm(w.id)))msgs.unshift(`${cat.name}${modeTag()} 완료!`);
     el.innerHTML=`<div class="panel"><div class="status">${WSCRIPTS[cat.script]} · ${cat.name}</div><h2>${wv.total}개 단어를 모두 맞혔어요</h2>
       ${wrong.length?`<p class="intro">처음에 틀린 단어 ${wrong.length}개는 오답노트에 있어요.</p><div class="wlist" style="text-align:left">${wrong.map(w=>`<div class="wrow"><span class="wk">${w.kana}</span><span class="wm"><span class="hgx">${w.hangul}</span> · ${w.meaning}</span></div>`).join("")}</div>`:'<p class="intro">한 번에 다 맞혔어요.</p>'}
       ${msgs.length?`<div class="msg" style="margin-top:12px">${msgs.join(" ")}</div>`:""}
-      <div class="navrow"><button class="ghost" id="bk">단어 목록</button>${more?'<button class="next" id="go">다음 묶음</button>':next?'<button class="next" id="go">다음 카테고리로</button>':""}</div></div>`;
+      <div class="navrow"><button class="ghost" id="bk">단어 목록</button>${more?'<button class="next" id="go">다음 묶음</button>':next?`<button class="next" id="go">${cat.script==="b"?"다음 쪽으로":"다음 카테고리로"}</button>`:""}</div></div>`;
     $("bk").onclick=()=>{wv={view:"cat",cat:cat.id};renderWords()};
     if($("go"))$("go").onclick=()=>{if(more)startCards(cat.id);else wv={view:"cat",cat:next.id};renderWords()};
   }
