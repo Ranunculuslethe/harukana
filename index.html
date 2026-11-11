@@ -3559,14 +3559,14 @@ function autoHangul(kana,verb){
   return s;
 }
 function jaHangul(text){
-  return text.replace(/[。？！]/g,"").split(/(\s+|、)/).map(p=>{
-    if(!p||/^\s+$/.test(p))return p&&" ";if(p==="、")return ", ";
+  return text.replace(/[。？！]/g,"").split(/(\s+|、|…)/).map(p=>{
+    if(!p||/^\s+$/.test(p))return p&&" ";if(p==="、")return ", ";if(p==="…")return "…";
     const m=p.length>1&&p.match(/^(.*)([はをへ])$/);
     return m?autoHangul(m[1])+{"は":"와","を":"오","へ":"에"}[m[2]]:autoHangul(p);
   }).join("").replace(/\s+/g," ").replace(/ ,/g,",").trim();
 }
 WORDS.forEach(w=>{w.hangul=autoHangul(w.kana,/다$/.test(w.meaning))});
-SENTS.forEach(s=>{s.hg=s.ja.replace(/、/g,"、 ").split(/(\[[^\]]+\]|\{[^}]+\}|\s+)/).map(part=>{if(!part)return"";if(/^\s+$/.test(part))return" ";const pt=part.match(/^[\[{](.+)[\]}]$/),kana=pt?pt[1]:part.replace(/[、。？]/g,"");return pt&&{"は":"와","へ":"에","を":"오"}[kana]?{"は":"와","へ":"에","を":"오"}[kana]:autoHangul(kana)+(part.includes("、")?",":"")}).join("").replace(/\s+/g," ").trim()});
+SENTS.forEach(s=>{s.hg=s.ja.replace(/、/g,"、 ").split(/(\[[^\]]+\]|\{[^}]+\}|\s+)/).map(part=>{if(!part)return"";if(/^\s+$/.test(part))return" ";const pt=part.match(/^[\[{](.+)[\]}]$/),kana=pt?pt[1]:part.replace(/[、。？！「」]/g,"");return pt&&{"は":"와","へ":"에","を":"오"}[kana]?{"は":"와","へ":"에","を":"오"}[kana]:autoHangul(kana)+(part.includes("、")?",":"")}).join("").replace(/([\uAC00-\uD7A3])(응|ㅅ)/g,(m,a,b)=>{const c=a.charCodeAt(0);return (c-0xAC00)%28?m:String.fromCharCode(c+(b==="ㅅ"?19:4))}).replace(/\s+/g," ").trim()}); // [..] 칸이 ん·っ로 시작하면 앞 글자 받침으로 붙인다
 TRAVEL.forEach(t=>{if(t.mode!=="sign"&&!/チェ/.test(t.ja))t.hg=jaHangul(t.ja)}); // チェ는 글자표에 없는 소리라 손으로 적은 발음 그대로
 if(/^(localhost|127\.0\.0\.1|)$/.test(location.hostname))(function validate(){
   const p=[],ids=new Set(),catMap={};CATS.forEach(c=>catMap[c.id]=c);
