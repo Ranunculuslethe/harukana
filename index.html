@@ -756,6 +756,7 @@ p,small,li,.tip,.s-tip,.s-note,.desc,.intro{word-break:keep-all;overflow-wrap:br
 .ht-go{min-width:180px;width:auto}
 .me-rec{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 4px}.me-rec div{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}.me-rec b{display:block;font-size:var(--fs-lg)}.me-rec small{font-size:var(--fs-xs);color:var(--sub)}
 @media(max-width:520px){.ht-go{width:100%}.ht-stats{min-width:0}}
+.path:before{display:none}.path-no{display:none}.path-card{padding:16px 20px;gap:16px}.path-card .hub-mark{width:auto;height:auto;background:none;color:var(--accent);font-size:28px;font-weight:700;min-width:34px}.path-t b{font-size:var(--fs-lg);font-weight:700}.path-step.done .path-card .hub-mark{color:var(--accent-dark)}
 .primary-link>span.nav-ic{display:grid;place-items:center;flex:0 0 26px;width:26px;height:26px;background:none!important;color:var(--sub)}.primary-link>span.nav-ic svg{width:22px;height:22px}
 .primary-link.active{color:var(--accent-dark)}.primary-link.active>span.nav-ic{color:var(--accent);background:none}
 @media(max-width:760px){.primary-link>span.nav-ic{flex:0 0 24px;width:24px;height:24px}.primary-link{font-size:12px}.primary-link.active{background:none}}
@@ -9282,18 +9283,18 @@ function markPrimary(){
 function hubSteps(){
   const kana=[...ALL,...ALL_K],kj=KANJI.filter(j=>j.lv==="N5"),gram=[...groupUnits("p"),...groupUnits("v"),...groupUnits("j")].flatMap(u=>u.items),num=groupUnits("n").flatMap(u=>u.items);
   return [
-    {k:"kana",mark:"あ",t:"가나",d:"히라가나·가타카나 글자와 소리",n:kana.filter(c=>cd(c.k)).length,all:kana.length,unit:"자",need:.9},
-    {k:"words",mark:"語",t:"단어",d:"단어장 책으로 예문과 함께",n:WORDS.filter(w=>wd(w.id)).length,all:WORDS.length,unit:"개",need:.1},
-    {k:"grammar",mark:"文",t:"문법",d:"조사 → 표현 → N5 문법",n:gram.filter(s=>sxd(s.id)).length,all:gram.length,unit:"문장",need:.5},
-    {k:"kanji",mark:"漢",t:"한자",d:"N5 한자 읽기와 뜻",n:kj.filter(j=>kjd(j.k)).length,all:kj.length,unit:"자",need:.5},
-    {k:"conversation",mark:"話",t:"실전",d:"회화 · 듣기 · 읽기(표지판·숫자)",n:TRAVEL.filter(t=>tvd(t.id)).length+CHATS.filter(c=>chatDone(c.id)).length+num.filter(s=>sxd(s.id)).length,all:TRAVEL.length+CHATS.length+num.length,unit:"개",need:.5},
+    {k:"kana",mark:"あ",t:"가나",L:"문자 학습",d:"히라가나 · 가타카나 · 글자와 발음",n:kana.filter(c=>cd(c.k)).length,all:kana.length,unit:"자",need:.9},
+    {k:"words",mark:"語",t:"단어",L:"단어 학습",d:"기초 단어 · 일상 단어 · 어휘력",n:WORDS.filter(w=>wd(w.id)).length,all:WORDS.length,unit:"개",need:.1},
+    {k:"grammar",mark:"文",t:"문법",L:"문법 학습",d:"조사 · 문장 표현 · 문법 규칙",n:gram.filter(s=>sxd(s.id)).length,all:gram.length,unit:"문장",need:.5},
+    {k:"kanji",mark:"漢",t:"한자",L:"한자 학습",d:"N5 한자 · 읽기 · 뜻",n:kj.filter(j=>kjd(j.k)).length,all:kj.length,unit:"자",need:.5},
+    {k:"conversation",mark:"話",t:"실전",L:"실전 일본어",d:"여행 회화 · 듣기 · 읽기 · 실생활 표현",n:TRAVEL.filter(t=>tvd(t.id)).length+CHATS.filter(c=>chatDone(c.id)).length+num.filter(s=>sxd(s.id)).length,all:TRAVEL.length+CHATS.length+num.length,unit:"개",need:.5},
   ];
 }
 function renderHub(){
   const el=$("hub-path");if(!el)return;
   const st=hubSteps(),cur=st.findIndex(s=>s.n/s.all<s.need),here=cur<0?st.length-1:cur,nn=dueKeys().length;
   el.innerHTML=st.map((s,i)=>{const pct=Math.round(s.n/s.all*100),done=s.n/s.all>=s.need&&i!==here;
-    return `<li class="path-step${i===here?" here":""}${done?" done":""}"><button type="button" class="path-card" data-hub-go="${s.k}"><span class="path-no" aria-hidden="true">${done?"✓":i+1}</span><span class="hub-mark" aria-hidden="true">${s.mark}</span><span class="path-t"><b>${i+1}단계 · ${s.t}${i===here?' <span class="pill">지금 여기</span>':""}</b><small>${s.d}</small><span class="bar"><i style="width:${pct}%"></i></span><small class="path-meta">${s.n.toLocaleString()} / ${s.all.toLocaleString()}${s.unit}</small></span><span class="door-go" aria-hidden="true">›</span></button></li>`}).join("");
+    return `<li class="path-step${i===here?" here":""}${done?" done":""}"><button type="button" class="path-card" data-hub-go="${s.k}"><span class="path-no" aria-hidden="true">${done?"✓":i+1}</span><span class="hub-mark" aria-hidden="true">${s.mark}</span><span class="path-t"><b>${String(i+1).padStart(2,"0")}. ${s.L}${i===here?' <span class="pill">지금 여기</span>':""}</b><small>${s.d}</small><span class="bar"><i style="width:${pct}%"></i></span><small class="path-meta">${s.n.toLocaleString()} / ${s.all.toLocaleString()}${s.unit}</small></span><span class="door-go" aria-hidden="true">›</span></button></li>`}).join("");
   $("hub-side").innerHTML=`<button type="button" class="hub-card" data-hub-go="review"><span class="hub-mark" aria-hidden="true">復</span><b>복습 · 오답</b><small>${nn?`오늘 복습할 것 ${nn}개`:"틀린 문제와 다시 볼 내용"}</small><i>복습하기 →</i></button>
     <button type="button" class="hub-card" data-hub-go="jlpt"><span class="hub-mark" aria-hidden="true">試</span><b>실력 확인</b><small>N5 연습 문제 · 모의시험</small><i>문제 풀기 →</i></button>`;
 }
