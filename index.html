@@ -150,6 +150,7 @@
 .fr-add input:focus{outline:2px solid var(--accent);outline-offset:1px}.fr-add .ghost{min-height:44px}
 @media(max-width:520px){.fr-stats{align-items:flex-start;text-align:left;flex-basis:100%;padding-left:42px}}
 .ar{margin-top:18px;border:1px solid var(--line);border-bottom:4px solid var(--panel-shadow);border-radius:18px;background:var(--card);padding:0 18px}
+.rep-dlg{width:min(640px,calc(100vw - 32px))}.rep-dlg .ar>summary{display:none}.ar-entry{display:flex;align-items:center;gap:12px;width:100%;margin:14px 0;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:inherit;text-align:left;cursor:pointer}.ar-entry:hover{border-color:var(--accent)}.ar-entry>span:nth-child(2){flex:1;display:grid;gap:2px}.ar-entry small{color:var(--sub)}
 .ar>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:16px 0}
 .ar>summary::-webkit-details-marker{display:none}
 .ar>summary::before{content:"析";flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:var(--accent-soft);color:var(--accent-dark);font-size:22px;font-weight:800}
@@ -811,7 +812,7 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 <section id="v3" role="tabpanel" aria-labelledby="t3" hidden><div class="section-intro"><div><p class="section-kicker">VOCABULARY / 03</p><h2>단어 모으기</h2><p class="section-copy">기초 단어를 익히고, 확인 퀴즈로 내 것으로 만들어 보세요.</p></div><div class="section-mark" aria-hidden="true">語</div></div><div id="words"></div></section><section id="v6" role="tabpanel" aria-labelledby="t6" hidden><div class="section-intro"><div><p class="section-kicker">CONVERSATION / 여행 코스</p><h2>회화</h2><p class="section-copy">일본에서 바로 쓰는 말, 상황 대화, 점원 말 알아듣기, 표지판을 익히고, 여행 중에는 표현집을 꺼내 써요.</p></div><div class="section-mark" aria-hidden="true">旅</div></div><div id="kanji"></div></section><section id="v8" role="tabpanel" aria-labelledby="t8" hidden><div class="section-intro"><div><p class="section-kicker">JLPT N5 / N5 코스</p><h2>시험</h2><p class="section-copy">일본어능력시험 N5와 같은 형식으로 문자·어휘, 문법, 독해, 청해를 연습하고 모의시험을 봐요.</p></div><div class="section-mark" aria-hidden="true">試</div></div><div id="jlpt"></div></section>
 
 <section id="v4" role="tabpanel" aria-labelledby="t4" hidden><div class="section-intro"><div><p class="section-kicker">REVIEW</p><h2>복습</h2><p class="section-copy">오늘의 복습과 오답노트로 잊기 전에 다시 풀어 빈틈을 채워요.</p></div><div class="section-mark" aria-hidden="true">復</div></div><div id="ai-drill"></div><div id="review"></div><div id="note"></div></section>
-<section id="v5" role="tabpanel" aria-labelledby="t5" hidden><div class="section-intro"><div><p class="section-kicker">MY PAGE</p><h2>마이페이지</h2><p class="section-copy">공부하면 일본 곳곳의 여행 스탬프가 찍혀요. 친구와 서로 공부하는 모습도 볼 수 있어요.</p></div><div class="section-mark" aria-hidden="true">賞</div></div><div id="me-card"></div><div id="ai-report"></div><div id="board"></div><div id="grass"></div><div id="records"></div><div id="badges"></div></section>
+<section id="v5" role="tabpanel" aria-labelledby="t5" hidden><div class="section-intro"><div><p class="section-kicker">MY PAGE</p><h2>마이페이지</h2><p class="section-copy">공부하면 일본 곳곳의 여행 스탬프가 찍혀요. 친구와 서로 공부하는 모습도 볼 수 있어요.</p></div><div class="section-mark" aria-hidden="true">賞</div></div><div id="me-card"></div><div id="ai-report-entry"></div><div id="board"></div><div id="grass"></div><div id="records"></div><div id="badges"></div></section>
 
 
 <section id="v10" class="hub-view" hidden>
@@ -7785,7 +7786,7 @@ function renderRank(){
     </div></div>
     ${pickingAv?`<div class="av-pick" role="group" aria-label="프로필 사진 고르기">${AVATARS.map(a=>`<button class="av-opt${a.id===avatarOf(S.avatar).id?" on":""}" data-av="${a.id}" aria-pressed="${a.id===avatarOf(S.avatar).id}"><span class="av-c">${avatarSvg(a.id)}</span><small>${a.name}</small></button>`).join("")}</div>`:""}`;
   if($("pf-nick"))$("pf-nick").textContent=nickName();
-  try{renderAiReport()}catch(e){console.warn("약점 리포트",e)}
+  try{renderRepEntry()}catch(e){console.warn("약점 리포트",e)}
   renderStamps();
   renderSettings();
   renderFriends();
@@ -8807,8 +8808,22 @@ function aiGo(k){
   show(0);
 }
 let aiRepBusy=null;
+function openReport(run){
+  let d=$("rep-dlg");
+  if(!d){d=document.createElement("dialog");d.id="rep-dlg";d.className="set-dlg ai-dlg rep-dlg";d.setAttribute("aria-labelledby","rep-title");
+    d.innerHTML=`<div class="set-top"><h3 id="rep-title"><span class="ai-mark" aria-hidden="true">◫</span> 약점 분석</h3><button class="set-x" id="rep-x" aria-label="닫기">×</button></div><div id="ai-report"></div>`;
+    document.body.appendChild(d);$("rep-x").onclick=()=>d.close()}
+  renderAiReport();if(!d.open)d.showModal();
+  if(run&&AI_ON&&!aiRepCtl&&!(S.aiRep&&S.aiRep.r))runAiReport(); // 처음이면 바로 분석을 시작한다
+}
+function renderRepEntry(){
+  const el=$("ai-report-entry");if(!el)return;
+  const st=studyStats(),rows=st.areas.filter(([,a])=>a.n>=5),worst=rows.slice().sort((a,b)=>a[1].p-b[1].p)[0],R=S.aiRep&&S.aiRep.r;
+  el.innerHTML=`<button type="button" class="ar-entry" id="ar-open"><span class="ar-ai-ic" aria-hidden="true">◫</span><span><b>약점 분석</b><small>${aiRepBusy?"하루가 기록을 읽고 있어요…":worst&&worst[1].p<85?`가장 약한 곳: ${worst[0]} ${worst[1].p}%`:R?`마지막 분석: ${agoText(S.aiRep.at)}`:"내 약점 찾기 · 공부 계획 · 약점 문제 풀기"}</small></span><span class="door-go" aria-hidden="true">›</span></button>`;
+  $("ar-open").onclick=()=>openReport(false);
+}
 function renderAiReport(){
-  const el=$("ai-report");if(!el)return;
+  renderRepEntry();const el=$("ai-report");if(!el)return;
   const st=studyStats(),rows=st.areas.filter(([,a])=>a.n>=5);
   const worst=rows.slice().sort((a,b)=>a[1].p-b[1].p)[0];
   const bar=p=>`<span class="bar"><i style="width:${p}%"></i></span>`;
@@ -8828,12 +8843,12 @@ function renderAiReport(){
       ${R.plan.length?`<h4 class="ar-h">공부 계획</h4><ol class="ar-plan">${R.plan.map(p=>`<li><span class="ar-day">${esc(p.day)}</span><span class="ar-task">${esc(p.task)}</span>${go(p.go)}</li>`).join("")}</ol>`:""}
       ${R.cheer?`<p class="ar-cheer">🦊 ${esc(R.cheer)}</p>`:""}
       <p class="ai-note">AI가 만든 분석이라 틀릴 수 있어요.</p></div>`:"";
-  const wasOpen=!!el.querySelector("details.ar[open]");
-  el.innerHTML=`<details class="ar"${wasOpen||aiRepBusy?" open":""}><summary><span class="ar-title"><b>약점 리포트</b><small>${worst&&worst[1].p<85?`가장 약한 곳: ${worst[0]} ${worst[1].p}%`:"영역별 정답률과 자주 틀린 것"}</small></span></summary>
+
+  el.innerHTML=`<details class="ar" open><summary><span class="ar-title"><b>약점 리포트</b><small>${worst&&worst[1].p<85?`가장 약한 곳: ${worst[0]} ${worst[1].p}%`:"영역별 정답률과 자주 틀린 것"}</small></span></summary>
     <h4 class="ar-h">내 기록 한눈에</h4>${mine}
     ${top.length?`<h4 class="ar-h">자주 틀린 것</h4><ul class="ar-top">${top.map(it=>`<li><span lang="ja">${it.jp}</span> <small>${esc(aiPlain(it.mean))} · ${S.n[it.key].wr}번</small></li>`).join("")}</ul>`:""}
     ${aiPart}${rep}<div class="ar-drill"><button type="button" class="next" id="ar-drill">✎ 약점 문제 5개 풀기</button><small>틀린 단어 위주로 바로 만들어요 · 몇 번이든 풀 수 있어요</small></div></details>`;
-  el.querySelectorAll("[data-argo]").forEach(b=>b.onclick=()=>aiGo(b.dataset.argo));
+  el.querySelectorAll("[data-argo]").forEach(b=>b.onclick=()=>{const d=$("rep-dlg");if(d&&d.open)d.close();aiGo(b.dataset.argo)}); // 바로 가기를 누르면 창을 닫고 그 화면으로
   if($("ar-run"))$("ar-run").onclick=runAiReport;
   if($("ar-drill"))$("ar-drill").onclick=weakDrill;
   if($("ar-stop"))$("ar-stop").onclick=()=>{if(aiRepCtl)aiRepCtl.abort()};
@@ -9139,7 +9154,7 @@ function aiGoTo(id,run){const go=()=>{const el=$(id);if(el)el.scrollIntoView({bl
 const AI_GO={
   chat:()=>openAiTutor("free",""),
   quiz:()=>{if(!AI_ON)return aiOnlyNotice("AI 맞춤 문제","내가 틀린 것으로 AI가 새 문제를 만들어요.");show(4);aiGoTo("ai-drill",()=>{if(!aiDrillCtl)runAiDrill()})},
-  report:()=>{if(!AI_ON)return aiOnlyNotice("AI 약점 분석","AI가 내 기록을 읽고 약점과 공부 계획을 만들어 줘요.");show(5);aiGoTo("ai-report",()=>{if(!aiRepCtl)runAiReport()})},
+  report:()=>openReport(true),
   role:()=>{const el=$("ai-roles");if(el)el.scrollIntoView({block:"start",behavior:"smooth"})},
   photo:()=>openPhotoReader("gallery"),
 };
