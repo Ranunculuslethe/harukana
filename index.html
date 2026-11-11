@@ -721,6 +721,23 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .ai-disclaimer{font-size:12px;line-height:1.6;color:var(--sub)}
 @media(max-width:760px){.primary-nav{grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;margin:0}.primary-link{flex-direction:column;justify-content:center;gap:4px;min-height:59px;padding:5px 2px;font-size:13px;text-align:center}.primary-link>span:not(.badge){flex:0 0 26px;width:26px;height:26px;font-size:15px}.hub-feature{flex-wrap:wrap;padding:19px}.hub-feature-mark{display:none}.hub-feature .next{width:100%}.ai-setup{flex-wrap:wrap}}
 @media(max-width:430px){.hub-grid{grid-template-columns:1fr}.hub-card{min-height:0}}
+:root{--ko-font:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;--fs-xs:12px;--fs-sm:14px;--fs-md:15px;--fs-lg:17px;--fs-xl:20px;--fs-2xl:26px}
+body{font-family:var(--ko-font);font-size:var(--fs-md);letter-spacing:-.01em}
+button,input,select,textarea{font-family:inherit}
+.section-intro h2{font-size:var(--fs-2xl);letter-spacing:-.03em}
+.section-kicker{font-size:11px;letter-spacing:.14em}
+.section-copy,.intro,.welcome p,.guide-p,.set-note{font-size:var(--fs-sm);line-height:1.75}
+.welcome h1{font-size:var(--fs-2xl);letter-spacing:-.03em}
+.jl-h,.ar-h,.set-h,.bk-unit h2,.hub-feature h3,.arb-h,#grad-title,.set-top h3{font-size:var(--fs-xl)}
+.ar-h,.set-h{font-size:var(--fs-lg)}
+.hub-card b,.path-t b,.cat-top b,.at-head b,.ar-title b,.bk-top b,.wact-b b,.me-step span:first-child,.hp-step b,.ai-setup b{font-size:var(--fs-lg)}
+.hp-step b,.me-step span:first-child,.wact-b b,.ai-setup b{font-size:var(--fs-md)}
+.hub-card small,.path-t small,.desc,.at-t small,.wact-b small,.hp-step small,.ai-setup small,.ai-disclaimer,.bk-top small,.rep-sub{font-size:var(--fs-sm)}
+.meta,.path-meta,.me-step small,.ai-note,.pill,.hub-kicker{font-size:var(--fs-xs)}
+.next,.ghost,.seg button,.link,.back,.bk-top-act,.ph-pick,.primary-link,.rec-reset{font-size:var(--fs-sm)}
+.next{font-size:var(--fs-md)}
+.hub-mark,.primary-link>span:not(.badge),.section-mark{font-family:var(--ja-font)}
+@media(max-width:520px){:root{--fs-2xl:23px;--fs-xl:18px;--fs-lg:16px}.primary-link{font-size:12px}}
 </style><a class="skip-link" href="#content">학습 내용으로 이동</a><div class="sakura-deco" aria-hidden="true"><svg class="deco-branch tr" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><path d="M230 46q-20 40-60 62M120 96q-10 30-40 46" stroke="var(--trunk)" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="150" y="30" width="100" height="64"/><use href="#hs-bloom" x="60" y="80" width="95" height="61"/><use href="#hs-bloom" x="140" y="96" width="70" height="45"/><use href="#hs-bloom" x="0" y="128" width="70" height="45"/></svg><svg class="deco-branch bl" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="130" y="40" width="100" height="64"/><use href="#hs-bloom" x="30" y="100" width="90" height="58"/></svg><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><svg xmlns="http://www.w3.org/2000/svg" class="svg-library" aria-hidden="true"><defs>
 <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></symbol>
 <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5C9 3 5 3 3 4v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1v15"/></symbol>
@@ -813,7 +830,7 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
   <div id="quiz-tools"></div>
 </section>
 
-<section id="v3" role="tabpanel" aria-labelledby="t3" hidden><div class="section-intro"><div><p class="section-kicker">VOCABULARY / 03</p><h2>단어 모으기</h2><p class="section-copy">기초 단어를 익히고, 확인 퀴즈로 내 것으로 만들어 보세요.</p></div><div class="section-mark" aria-hidden="true">語</div></div><div id="words"></div></section><section id="v6" role="tabpanel" aria-labelledby="t6" hidden><div class="section-intro"><div><p class="section-kicker">STEP 5 · CONVERSATION</p><h2>실전</h2><p class="section-copy">배운 가나·단어·문법을 실제 상황에 써 봐요. 회화(대화 연습 포함), 듣기, 읽기(표지판·숫자·가격)로 익혀요.</p></div><div class="section-mark" aria-hidden="true">話</div></div><div id="kanji"></div></section><section id="v8" role="tabpanel" aria-labelledby="t8" hidden><div class="section-intro"><div><p class="section-kicker">JLPT N5 / N5 코스</p><h2>시험</h2><p class="section-copy">일본어능력시험 N5와 같은 형식으로 문자·어휘, 문법, 독해, 청해를 연습하고 모의시험을 봐요.</p></div><div class="section-mark" aria-hidden="true">試</div></div><div id="jlpt"></div></section>
+<section id="v3" role="tabpanel" aria-labelledby="t3" hidden><div class="section-intro"><div><p class="section-kicker">VOCABULARY / 03</p><h2>단어 모으기</h2><p class="section-copy">기초 단어를 익히고, 확인 퀴즈로 내 것으로 만들어 보세요.</p></div><div class="section-mark" aria-hidden="true">語</div></div><div id="words"></div></section><section id="v6" role="tabpanel" aria-labelledby="t6" hidden><div class="section-intro"><div><p class="section-kicker">STEP 5 · CONVERSATION</p><h2>실전</h2><p class="section-copy">배운 가나·단어·문법을 실제 상황에 써 봐요. 회화(대화 연습 포함), 듣기, 읽기(표지판·숫자·가격)로 익혀요.</p></div><div class="section-mark" aria-hidden="true">話</div></div><div id="kanji"></div></section><section id="v8" role="tabpanel" aria-labelledby="t8" hidden><div class="section-intro"><div><p class="section-kicker">JLPT N5</p><h2>실력 확인</h2><p class="section-copy">배운 것을 JLPT N5와 같은 형식의 문제로 확인해요. 문자·어휘, 문법, 독해, 청해 연습과 모의시험이 있어요.</p></div><div class="section-mark" aria-hidden="true">試</div></div><div id="jlpt"></div></section>
 
 <section id="v4" role="tabpanel" aria-labelledby="t4" hidden><div class="section-intro"><div><p class="section-kicker">REVIEW</p><h2>복습</h2><p class="section-copy">오늘의 복습과 오답노트로 잊기 전에 다시 풀어 빈틈을 채워요.</p></div><div class="section-mark" aria-hidden="true">復</div></div><div id="ai-drill"></div><div id="review"></div><div id="note"></div></section>
 <section id="v5" role="tabpanel" aria-labelledby="t5" hidden><div class="section-intro"><div><p class="section-kicker">MY PAGE</p><h2>마이페이지</h2><p class="section-copy">내 프로필과 단계별 진도를 볼 수 있어요. 기록은 이 브라우저에 저장돼요.</p></div><div class="section-mark" aria-hidden="true">私</div></div><div id="me-card"></div></section>
