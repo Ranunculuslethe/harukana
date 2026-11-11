@@ -150,7 +150,7 @@
 .fr-add input:focus{outline:2px solid var(--accent);outline-offset:1px}.fr-add .ghost{min-height:44px}
 @media(max-width:520px){.fr-stats{align-items:flex-start;text-align:left;flex-basis:100%;padding-left:42px}}
 .ar{margin-top:18px;border:1px solid var(--line);border-bottom:4px solid var(--panel-shadow);border-radius:18px;background:var(--card);padding:0 18px}
-.set-dlg.rep-dlg{width:100vw;height:100dvh;max-width:none;max-height:100dvh;margin:0;border:0;border-radius:0;padding:24px max(28px,calc((100vw - 960px)/2))}.set-dlg.rep-dlg .set-top{position:sticky;top:-24px;z-index:2;background:var(--card);padding:8px 0}.rep-dlg .ar>summary{display:none}.rep-dlg .set-top h3{font-size:22px}.rep-sub{display:block;margin-top:4px;font-size:13px;font-weight:400;color:var(--sub)}.rep-dlg .ar-sum{font-size:17px}.rep-dlg .ar-weak b{font-size:16px}.ai-rep-card{border-color:var(--accent);background:linear-gradient(120deg,var(--accent-soft),var(--card) 85%)}@media(max-width:600px){.set-dlg.rep-dlg{width:100vw;height:100dvh;max-height:100dvh;margin:0;border-radius:0;padding:18px 16px}}.ar-entry{display:flex;align-items:center;gap:12px;width:100%;margin:14px 0;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:inherit;text-align:left;cursor:pointer}.ar-entry:hover{border-color:var(--accent)}.ar-entry>span:nth-child(2){flex:1;display:grid;gap:2px}.ar-entry small{color:var(--sub)}
+.set-dlg.rep-dlg{width:100vw;height:100dvh;max-width:none;max-height:100dvh;margin:0;border:0;border-radius:0;padding:24px max(28px,calc((100vw - 960px)/2))}.set-dlg.ai-dlg.ai-full{width:100vw;height:100dvh;max-width:none;max-height:100dvh;margin:0;border:0;border-radius:0;padding:24px max(28px,calc((100vw - 960px)/2))}.ai-full .set-top{position:sticky;top:-24px;z-index:2;background:var(--card);padding:8px 0}.ai-full .set-top .link{margin-left:auto;margin-right:8px}.ai-full .ai-log{max-height:none;min-height:45vh}.ai-full .ph-img{max-height:45vh}.ai-full .ai-form{position:sticky;bottom:-24px;background:var(--card);padding:10px 0}.ph-start{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.ph-start button{min-height:52px;padding:0 22px;font-size:16px}.set-dlg.rep-dlg .set-top{position:sticky;top:-24px;z-index:2;background:var(--card);padding:8px 0}.rep-dlg .ar>summary{display:none}.rep-dlg .set-top h3{font-size:22px}.rep-sub{display:block;margin-top:4px;font-size:13px;font-weight:400;color:var(--sub)}.rep-dlg .ar-sum{font-size:17px}.rep-dlg .ar-weak b{font-size:16px}.ai-rep-card{border-color:var(--accent);background:linear-gradient(120deg,var(--accent-soft),var(--card) 85%)}@media(max-width:600px){.set-dlg.rep-dlg,.set-dlg.ai-dlg.ai-full{width:100vw;height:100dvh;max-height:100dvh;margin:0;border-radius:0;padding:18px 16px}.ai-full .set-top,.rep-dlg .set-top{top:-18px}.ai-full .ai-form{bottom:-18px}}.ar-entry{display:flex;align-items:center;gap:12px;width:100%;margin:14px 0;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:inherit;text-align:left;cursor:pointer}.ar-entry:hover{border-color:var(--accent)}.ar-entry>span:nth-child(2){flex:1;display:grid;gap:2px}.ar-entry small{color:var(--sub)}
 .ar>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:16px 0}
 .ar>summary::-webkit-details-marker{display:none}
 .ar>summary::before{content:"析";flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:var(--accent-soft);color:var(--accent-dark);font-size:22px;font-weight:800}
@@ -827,10 +827,10 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
   <button type="button" class="hub-card ai-rep-card" data-ai-go="report"><span class="hub-mark" aria-hidden="true">◫</span><b>약점 분석</b><small>내 약점 찾기 · 공부 계획 · 약점 문제 풀기</small><i>크게 열어 보기 →</i></button>
   
 
-  <button type="button" class="hub-card" data-ai-go="role"><span class="hub-mark" aria-hidden="true">会</span><b>AI 대화</b><small>카페 · 식당 · 편의점에서 일본어로 말해 보기</small><i>아래에서 상황 고르기 ↓</i></button>
-  <button type="button" class="hub-card" data-ai-go="photo"><span class="hub-mark" aria-hidden="true">▧</span><b>사진 읽기</b><small>메뉴와 간판 속 일본어의 읽는 법과 뜻 확인</small><i>사진 고르기 →</i></button>
+  <button type="button" class="hub-card" data-ai-go="role"><span class="hub-mark" aria-hidden="true">会</span><b>AI 대화</b><small>카페 · 식당 · 편의점에서 일본어로 말해 보기</small><i>크게 열어 보기 →</i></button>
+  <button type="button" class="hub-card" data-ai-go="photo"><span class="hub-mark" aria-hidden="true">▧</span><b>사진 읽기</b><small>메뉴와 간판 속 일본어의 읽는 법과 뜻 확인</small><i>크게 열어 보기 →</i></button>
  </div>
-  <div id="ai-roles" class="ai-roles" aria-label="AI 대화 상황"></div>
+  
 <div class="ai-setup"><div><b>AI 연결 상태</b><small id="ai-where"></small></div><span class="ai-status" id="ai-status">확인 중</span></div>
  <p class="ai-disclaimer" id="ai-disclaimer">AI 답변은 틀릴 수 있어요. 중요한 시험 정보는 교재나 공식 안내와 함께 확인해 주세요.</p>
 </section>
@@ -6260,6 +6260,7 @@ function openShow(id){
 const bkNorm=s=>[...String(s)].map(ch=>{const c=ch.charCodeAt(0);return c>=0x30A1&&c<=0x30F6?String.fromCharCode(c-0x60):ch}).join("").replace(/[\s、。，．,.？?！!・ー\-~·…「」()（）]/g,"").toLowerCase();
 function aiOnlyNotice(title,what){
   let d=$("ai-dlg");if(!d){d=document.createElement("dialog");d.id="ai-dlg";d.className="set-dlg ai-dlg";document.body.appendChild(d)}
+  d.classList.remove("ai-full");
   d.innerHTML=`<div class="set-top"><h3><span class="ai-mark" aria-hidden="true">✦</span> ${esc(title)}</h3><button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
     <p class="guide-p">${esc(what)} 이 기능은 <b>claude.ai에서 여는 하루카나</b>에서만 쓸 수 있어요. 보는 사람의 Claude 계정으로 동작해서 하루카나는 따로 돈이 들지 않고, 내용도 저장하지 않아요.</p>
     <div class="navrow"><button type="button" class="ghost" id="ai-no">닫기</button><button type="button" class="next" data-goclaude>claude.ai 버전 열기</button></div>`;
@@ -6309,6 +6310,7 @@ document.addEventListener("dragleave",e=>{if(!e.relatedTarget)document.body.clas
 document.addEventListener("drop",e=>{document.body.classList.remove("ph-drop");if(!bookOpen())return;const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(!f)return;e.preventDefault();photoFile(f)});
 async function readPhoto(sample,file){
   let d=$("ai-dlg");if(!d){d=document.createElement("dialog");d.id="ai-dlg";d.className="set-dlg ai-dlg";document.body.appendChild(d)}
+  d.classList.add("ai-full"); // 사진 읽기 결과는 화면 가득
   const url=URL.createObjectURL(file);
   d.innerHTML=`<div class="set-top"><h3><span class="ai-mark" aria-hidden="true">📷</span> 사진으로 읽기</h3><button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
     <img class="ph-img" src="${url}" alt="고른 사진">
@@ -8525,7 +8527,8 @@ function openAiTutor(kind,id){
   let d=$("ai-dlg");
   if(!d){d=document.createElement("dialog");d.id="ai-dlg";d.className="set-dlg ai-dlg";d.setAttribute("aria-labelledby","ai-title");document.body.appendChild(d);
     d.addEventListener("close",()=>{if(aiCtl)aiCtl.abort()})}
-  const top=`<div class="set-top"><h3 id="ai-title"><span class="ai-mark" aria-hidden="true">✦</span> AI 튜터 하루</h3><button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
+  d.classList.toggle("ai-full",kind==="role"); // AI 대화는 화면 가득, 오답 설명 같은 질문은 작은 창
+  const top=`<div class="set-top"><h3 id="ai-title"><span class="ai-mark" aria-hidden="true">✦</span> ${kind==="role"?"AI 대화":"AI 튜터 하루"}</h3>${kind==="role"?`<button type="button" class="link" id="ai-back">← 상황 고르기</button>`:""}<button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
     <p class="ai-about"><span class="pill">${esc(c.title)}</span> <span lang="ja">${esc(c.show)}</span></p>`;
   if(!AI_ON){
     d.innerHTML=top+`<p class="guide-p">AI 튜터는 <b>claude.ai에서 여는 하루카나</b>에서만 쓸 수 있어요. 질문은 보는 사람의 Claude 계정으로 보내져서, 하루카나는 따로 돈이 들지 않고 대화 내용도 저장하지 않아요.</p>
@@ -8565,7 +8568,7 @@ function openAiTutor(kind,id){
       else{out.className="ai-err";out.innerHTML=(e&&e.text?fmt(e.text)+"<br>":"")+"연결이 끊겼어요. 다시 물어봐 주세요."}
     }finally{aiCtl=null;busy(false);inp.focus()}
   }
-  $("ai-x").onclick=()=>d.close();
+  $("ai-x").onclick=()=>d.close();if($("ai-back"))$("ai-back").onclick=openRoleWin;
   d.querySelectorAll("#ai-chips button").forEach(b=>b.onclick=()=>ask(b.textContent));
   $("ai-form").onsubmit=e=>{e.preventDefault();if(send.dataset.busy){if(aiCtl)aiCtl.abort();return}const v=inp.value;inp.value="";ask(v)};
   if(!d.open)d.showModal();
@@ -9117,6 +9120,32 @@ function navGo(i){
   }
   show(i);
 }
+function aiFullDlg(){
+  let d=$("ai-dlg");
+  if(!d){d=document.createElement("dialog");d.id="ai-dlg";d.className="set-dlg ai-dlg";d.setAttribute("aria-labelledby","ai-title");document.body.appendChild(d);
+    d.addEventListener("close",()=>{if(aiCtl)aiCtl.abort()})}
+  d.classList.add("ai-full");return d;
+}
+function openRoleWin(){
+  if(!AI_ON)return aiOnlyNotice("AI 대화","하루(AI)가 점원이나 친구가 되어 일본어로 말을 걸어요.");
+  const d=aiFullDlg(),g=goalOf(),sits=ROLE_SITS.slice().sort((a,b)=>(b.goal.includes(g)?1:0)-(a.goal.includes(g)?1:0));
+  d.innerHTML=`<div class="set-top"><h3 id="ai-title"><span class="ai-mark" aria-hidden="true">会</span> AI 대화 <small class="rep-sub">상황을 고르면 하루가 점원이나 친구가 되어 일본어로 말을 걸어요. 모르면 한국어로 써도 돼요.</small></h3><button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
+    <div class="cats compact">${sits.map(r=>`<button class="catcard role-card" data-role="${r.id}"><div class="cat-top"><b>${r.ic} ${r.t}</b>${g&&r.goal.includes(g)?'<span class="pill">목표 추천</span>':""}</div><div class="desc">${r.d}</div></button>`).join("")}</div>`;
+  $("ai-x").onclick=()=>d.close();
+  d.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>openAiTutor("role",b.dataset.role));
+  if(!d.open)d.showModal();d.scrollTop=0;
+}
+function openPhotoWin(){
+  if(!AI_ON)return aiOnlyNotice("사진으로 읽기",PHOTO_NOTE);
+  const d=aiFullDlg();
+  d.innerHTML=`<div class="set-top"><h3 id="ai-title"><span class="ai-mark" aria-hidden="true">📷</span> 사진 읽기 <small class="rep-sub">메뉴·간판·안내문 사진 속 일본어의 읽는 법과 뜻을 알려 줘요. 손글씨나 흐린 글자는 추측해서 (?) 표시를 붙여요.</small></h3><button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
+    <div class="ph-start"><button type="button" class="next" id="phw-gal">🖼️ 사진 고르기</button><button type="button" class="ghost" id="phw-cam">📷 카메라로 찍기</button></div>
+    <p class="guide-p s-note">컴퓨터에서는 캡처한 사진을 이 창에서 Ctrl+V로 붙여 넣어도 돼요. 사진은 저장하지 않아요.</p>`;
+  $("ai-x").onclick=()=>d.close();
+  $("phw-gal").onclick=()=>openPhotoReader("gallery");$("phw-cam").onclick=()=>openPhotoReader("camera");
+  d.onpaste=e=>{const it=[...(e.clipboardData&&e.clipboardData.items||[])].find(x=>/^image\//.test(x.type));if(it){e.preventDefault();photoFile(it.getAsFile())}};
+  if(!d.open)d.showModal();
+}
 function markPrimary(){
   const k=tab===0?"home":tab===9?"ai":tab===5?"me":"learn";
   document.querySelectorAll("[data-primary]").forEach(b=>{const v=b.dataset.primary===k;b.classList.toggle("active",v);if(v)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
@@ -9142,10 +9171,10 @@ function renderHub(){
 const HUB_GO={kanji:()=>{jlStop();jv={view:"jlist",mode:"kanji",lv:"N5"};jx={view:"kanji"};if(tab===8)renderJlptTab();else show(8)},home:()=>show(0),kana:()=>navGo(1),words:()=>navGo(3),grammar:()=>navGo(7),conversation:()=>navGo(6),jlpt:()=>{if(jx&&jx.view==="kanji")jx={view:"home"};navGo(8)},review:()=>navGo(4)};
 function renderAiHome(){
   const st=$("ai-status"),wh=$("ai-where"),dc=$("ai-disclaimer");if(!st)return;
-  const rl=$("ai-roles"),g=goalOf(),sits=ROLE_SITS.slice().sort((a,b)=>(b.goal.includes(g)?1:0)-(a.goal.includes(g)?1:0));
+  const rl=$("ai-roles");if(rl){const g=goalOf(),sits=ROLE_SITS.slice().sort((a,b)=>(b.goal.includes(g)?1:0)-(a.goal.includes(g)?1:0));
   rl.innerHTML=`<h3 class="jl-h">AI 대화 · 상황 고르기</h3><p class="intro">상황을 고르면 하루(AI)가 점원이나 친구가 되어 일본어로 말을 걸어요. 일본어로 답해 보고, 모르면 한국어로 써도 돼요.</p>
     <div class="cats compact">${sits.map(r=>`<button class="catcard role-card" data-role="${r.id}"><div class="cat-top"><b>${r.ic} ${r.t}</b>${g&&r.goal.includes(g)?'<span class="pill">목표 추천</span>':""}</div><div class="desc">${r.d}</div></button>`).join("")}</div>`;
-  rl.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>openAiTutor("role",b.dataset.role));
+  rl.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>openAiTutor("role",b.dataset.role))}
   st.classList.toggle("ok",AI_ON);
   st.textContent=AI_ON?"AI 연결됨":"AI 꺼짐";
   wh.textContent=IN_CLAUDE?"claude.ai에서 열어서 내 Claude 계정이 답해요 (사이트에서는 Gemini)":AI_URL?"Google Gemini가 답해요 · API 키는 서버에만 있어요":"claude.ai 버전에서 AI를 쓸 수 있어요";
@@ -9156,8 +9185,8 @@ const AI_GO={
   chat:()=>openAiTutor("free",""),
   quiz:()=>{if(!AI_ON)return aiOnlyNotice("AI 맞춤 문제","내가 틀린 것으로 AI가 새 문제를 만들어요.");show(4);aiGoTo("ai-drill",()=>{if(!aiDrillCtl)runAiDrill()})},
   report:()=>openReport(true),
-  role:()=>{const el=$("ai-roles");if(el)el.scrollIntoView({block:"start",behavior:"smooth"})},
-  photo:()=>openPhotoReader("gallery"),
+  role:()=>openRoleWin(),
+  photo:()=>openPhotoWin(),
 };
 document.addEventListener("click",e=>{
   const b=e.target.closest&&e.target.closest("[data-askq]");if(!b)return;
