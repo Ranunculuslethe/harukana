@@ -8527,8 +8527,8 @@ function openAiTutor(kind,id){
   let d=$("ai-dlg");
   if(!d){d=document.createElement("dialog");d.id="ai-dlg";d.className="set-dlg ai-dlg";d.setAttribute("aria-labelledby","ai-title");document.body.appendChild(d);
     d.addEventListener("close",()=>{if(aiCtl)aiCtl.abort()})}
-  d.classList.toggle("ai-full",kind==="role"); // AI 대화는 화면 가득, 오답 설명 같은 질문은 작은 창
-  const top=`<div class="set-top"><h3 id="ai-title"><span class="ai-mark" aria-hidden="true">✦</span> ${kind==="role"?"AI 대화":"AI 튜터 하루"}</h3>${kind==="role"?`<button type="button" class="link" id="ai-back">← 상황 고르기</button>`:""}<button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
+  d.classList.toggle("ai-full",kind==="role"||kind==="free"); // AI 대화·하루에게 질문하기는 화면 가득, 오답 설명 같은 짧은 질문은 작은 창
+  const top=`<div class="set-top"><h3 id="ai-title"><span class="ai-mark" aria-hidden="true">✦</span> ${kind==="role"?"AI 대화":kind==="free"?"하루에게 질문하기":"AI 튜터 하루"}</h3>${kind==="role"?`<button type="button" class="link" id="ai-back">← 상황 고르기</button>`:""}<button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
     <p class="ai-about"><span class="pill">${esc(c.title)}</span> <span lang="ja">${esc(c.show)}</span></p>`;
   if(!AI_ON){
     d.innerHTML=top+`<p class="guide-p">AI 튜터는 <b>claude.ai에서 여는 하루카나</b>에서만 쓸 수 있어요. 질문은 보는 사람의 Claude 계정으로 보내져서, 하루카나는 따로 돈이 들지 않고 대화 내용도 저장하지 않아요.</p>
