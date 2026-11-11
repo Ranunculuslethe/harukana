@@ -6189,7 +6189,7 @@ const bookSet=(key,p)=>{try{localStorage.setItem("harukana-pg-"+key,p)}catch(e){
 const bookPager=(p,n)=>n>1?`<div class="wpager bk-pager"><button class="btn ghost" data-bpg="${p-1}" ${p?"":"disabled"} aria-label="이전 쪽">◀ 이전</button><label class="wpg-n"><input type="number" class="bk-jump" data-bjump min="1" max="${n}" value="${p+1}" aria-label="쪽 번호"> / ${n} 쪽</label><button class="btn ghost" data-bpg="${p+1}" ${p<n-1?"":"disabled"} aria-label="다음 쪽">다음 ▶</button></div>`:"";
 const bookToc=(names,p)=>names.length>1?`<select class="bk-toc" data-btoc aria-label="목차로 가기">${names.map((t,i)=>`<option value="${i}"${i===p?" selected":""}>${i+1}. ${esc(t)}</option>`).join("")}</select>`:"";
 const bookTop=(title,sub,toc)=>`<div class="bk-top"><div><b>${title}</b> <small>${sub}</small></div>${toc||""}</div>`;
-function topActs(el){
+function topActs(el){return; // 2026-11-11 사용자 요청으로 쪽 위의 학습 버튼을 모두 뺐다 (쪽 맨 아래 버튼만)
   const act=el.querySelector(".wact.bk-act");if(!act||el.querySelector(".bk-top-acts"))return;
   const btns=[...act.querySelectorAll("button")];if(!btns.length)return;
   const anchor=el.querySelector(".wpager")||el.querySelector(".bk-top");if(!anchor)return;
