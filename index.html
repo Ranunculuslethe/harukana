@@ -9123,8 +9123,8 @@ function renderAiHome(){
     <div class="cats compact">${sits.map(r=>`<button class="catcard role-card" data-role="${r.id}"><div class="cat-top"><b>${r.ic} ${r.t}</b>${g&&r.goal.includes(g)?'<span class="pill">목표 추천</span>':""}</div><div class="desc">${r.d}</div></button>`).join("")}</div>`;
   rl.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>openAiTutor("role",b.dataset.role));
   st.classList.toggle("ok",AI_ON);
-  st.textContent=IN_CLAUDE?"Claude 연결":AI_URL?"Gemini 연결":"이 사이트에서는 꺼짐";
-  wh.textContent=IN_CLAUDE?"claude.ai 버전: 보는 사람의 Claude 계정으로 답해요":AI_URL?"하루카나 AI 서버(Google Gemini)로 답해요 · API 키는 서버에만 있어요":"claude.ai 버전에서 AI를 쓸 수 있어요";
+  st.textContent=AI_ON?"AI 연결됨":"AI 꺼짐";
+  wh.textContent=IN_CLAUDE?"claude.ai에서 열어서 내 Claude 계정이 답해요 (사이트에서는 Gemini)":AI_URL?"Google Gemini가 답해요 · API 키는 서버에만 있어요":"claude.ai 버전에서 AI를 쓸 수 있어요";
   dc.textContent="AI 답변은 틀릴 수 있어요. 중요한 시험 정보는 교재나 공식 안내와 함께 확인해 주세요. "+(IN_CLAUDE?"":AI_URL?"질문은 답을 만들려고 Google Gemini로 보내지고, 하루카나는 대화 내용을 저장하지 않아요.":"");
 }
 function aiGoTo(id,run){const go=()=>{const el=$(id);if(el)el.scrollIntoView({block:"start",behavior:"smooth"});run()};setTimeout(go,60)}
