@@ -5937,16 +5937,16 @@ function renderWords(){
       ${pager()}<div class="bk-page">${ws.map(entry).join("")}</div>
       <div class="wact bk-act"><button class="wact-b read" id="rd-cat"><span class="wa-ic" aria-hidden="true">📖</span><span><b>이 쪽 회독</b><small>카드로 넘기며 다시 보기</small></span></button><button class="wact-b quiz" id="go"><span class="wa-ic" aria-hidden="true">✏️</span><span><b>이 쪽 퀴즈</b><small>${got<ws.length?`아직 못 맞힌 단어 ${ws.length-got}개`:"다 맞혔어요 · 한 번 더"}</small></span></button></div>
       ${pager()}`;
-    el.innerHTML=kindTabs("w")+body+(n5?"":rdCard());
+    el.innerHTML=kindTabs("w")+(n5?"":rdCard())+body; // 오늘의 회독을 맨 위에 (2026-11-11)
     bindKindTabs(el);if(!n5)bindRdCard(el);
-    const go=x=>{if(n5)wPageN5=x;else wPage=x;renderWords();const t=el.querySelector(".bk-top");if(t)t.scrollIntoView({block:"start",behavior:"smooth"})};
-    el.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>go(p+ +b.dataset.pg));
+    const go=(x,low)=>{const y=scrollY;if(n5)wPageN5=x;else wPage=x;renderWords();const t=el.querySelector(".wpager");if(low&&t)t.scrollIntoView({block:"start"});else window.scrollTo(0,y)};
+    el.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>go(p+ +b.dataset.pg,b.closest(".wpager")===[...el.querySelectorAll(".wpager")].pop()));
     el.querySelectorAll(".bk-jump").forEach(i=>i.onchange=()=>{const v=parseInt(i.value,10);if(v>=1&&v<=n)go(v-1);else i.value=p+1});
     if($("bk-new"))$("bk-new").onclick=()=>go(firstNew);
     if($("bk-exam"))$("bk-exam").onclick=()=>show(8);
     el.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak(b.dataset.say));
     $("rd-cat").onclick=()=>{wv={view:"read",ids:ws.map(w=>w.id),i:0,from:"cat",cat:pg.id,label:pg.name};renderWords()};
-    $("go").onclick=()=>{const c=batchCands(pg.id);startQuiz(pg.id,c.length?c:ws,c);renderWords()};topActs(el);
+    $("go").onclick=()=>{const c=batchCands(pg.id);startQuiz(pg.id,c.length?c:ws,c);renderWords()};
     return;
   }
   if(wv.cat&&wv.view==="cat"&&VC[wv.cat]&&VC[wv.cat].script==="b"){const v=VC[wv.cat];if(BOOK_N5.includes(v)){wPageN5=BOOK_N5.indexOf(v);wv={view:"list",n5:1}}else{wPage=BOOK.indexOf(v);wv={view:"list"}}return renderWords()} // 단어장 쪽에서 들어간 퀴즈·회독을 나오면 그 쪽으로
@@ -6198,8 +6198,8 @@ function topActs(el){
   anchor.insertAdjacentElement("afterend",row);
 }
 function bindBook(el,key,n,go){
-  const to=p=>{if(p<0||p>=n)return;bookSet(key,p);go(p);const t=document.querySelector(".bk-top");if(t)t.scrollIntoView({block:"start",behavior:"smooth"})};
-  el.querySelectorAll("[data-bpg]").forEach(b=>b.onclick=()=>to(+b.dataset.bpg));
+  const to=(p,low)=>{if(p<0||p>=n)return;const y=scrollY;bookSet(key,p);go(p);const t=el.querySelector(".wpager");if(low&&t)t.scrollIntoView({block:"start"});else window.scrollTo(0,y)}; // 위쪽 버튼이면 화면을 그대로, 맨 아래 버튼이면 위쪽 쪽 넘기기로
+  el.querySelectorAll("[data-bpg]").forEach(b=>b.onclick=()=>to(+b.dataset.bpg,b.closest(".wpager")===[...el.querySelectorAll(".wpager")].pop()));
   el.querySelectorAll("[data-bjump]").forEach(i=>i.onchange=()=>{const v=parseInt(i.value,10);if(v>=1&&v<=n)to(v-1)});
   el.querySelectorAll("[data-btoc]").forEach(s=>s.onchange=()=>to(+s.value));
   el.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak(b.dataset.say));
