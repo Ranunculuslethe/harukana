@@ -9245,9 +9245,7 @@ function renderAiPane(){
     p.querySelectorAll("[data-aitab]").forEach(b=>b.onclick=()=>{aiTab=b.dataset.aitab;renderAiPane();window.scrollTo({top:0,behavior:"instant"})});
     return;
   }
-  seg.hidden=false;
-  seg.innerHTML=AI_TABS.map(([k,t])=>`<button type="button" data-aitab="${k}" class="${k===aiTab?"on":""}" aria-pressed="${k===aiTab}">${t}</button>`).join("");
-  seg.querySelectorAll("[data-aitab]").forEach(b=>b.onclick=()=>{if(aiCtl)aiCtl.abort();if(photoCtl)photoCtl.abort();aiTab=b.dataset.aitab;renderAiPane()});
+  seg.hidden=true;seg.innerHTML="";
   const c=AI_CARDS[aiTab];kk.textContent="AI TUTOR / "+c[1];h2.textContent=c[1];cp.textContent=c[3];
   if(aiTab==="ask")openAiTutor("free","");else if(aiTab==="report")openReport(false);else if(aiTab==="role")openRoleWin();else openPhotoWin();
   p.insertAdjacentHTML("afterbegin",`<button type="button" class="back ai-home-back" id="ai-home-back">← AI 선생님</button>`);
