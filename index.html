@@ -32,16 +32,11 @@
 .lv{flex:0 0 72px;height:72px;border-radius:50%;display:grid;place-content:center;text-align:center;background:var(--accent);color:var(--onaccent);box-shadow:0 4px 0 var(--accent-dark)}
 .lv small{font-size:13px;opacity:.85}.lv b{font-size:28px;line-height:1}
 
-
 .rk-h{font-size:16px;margin:26px 0 12px}.rk-h small{font-size:13px;color:var(--sub);font-weight:400;margin-left:6px}
-
 
 .bi{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--line);color:var(--sub);font-size:16px;font-weight:800;margin-bottom:8px}
 
 .rk-note{font-size:13px;color:var(--sub);padding:16px;border:1px dashed var(--line);border-radius:14px;background:var(--card);line-height:1.7}
-
-
-
 
 
 
@@ -55,9 +50,7 @@
 .pf-edit{display:flex;gap:8px;align-items:center}.pf-edit input{flex:1;min-width:0;font:inherit;font-size:15px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}.pf-edit .next{margin:0;min-height:40px}
 
 
-
 .rec{display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--line);border-bottom-width:3px;border-radius:16px;background:var(--card)}
-
 
 .rec .bar i{background:var(--accent)}
 
@@ -107,8 +100,6 @@
 
 
 
-
-
 .missions{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:10px}
 .missions li{font-size:13px}.ms-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px}.ms-top span{min-width:0}.ms-top em{font-style:normal;color:var(--accent);font-weight:700;white-space:nowrap}
 .missions .bar{height:5px}.missions .bar i{background:var(--accent)}.missions small{display:block;font-size:13px;color:var(--sub);margin-top:2px;text-align:right}
@@ -116,10 +107,6 @@
 .goal-ring>span{font-size:13px;font-weight:800;color:var(--accent)}
 .big.sound{font-size:64px}
 .big.ear{font-size:16px;padding:18px 0}
-
-
-
-
 
 
 
@@ -164,7 +151,6 @@
 .stamp-svg.on{filter:saturate(.95)}
 [data-theme=dark] .stamp-svg.on{filter:brightness(1.7) saturate(.85)} /* 어두운 바탕에서도 잉크가 보이게 */
 
-
 .stamp-pop{position:fixed;inset:0;z-index:60;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .2s}
 .stamp-pop.show{opacity:1;pointer-events:auto}
 .stamp-pop-in{display:flex;flex-direction:column;align-items:center;gap:4px;padding:22px 28px;border-radius:22px;background:var(--card);border:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.18)}
@@ -176,9 +162,7 @@
 @media(prefers-reduced-motion:reduce){.stamp-pop.show .stamp-svg.big{animation:none}}
 
 
-
 body.ph-drop #v6{outline:3px dashed var(--accent);outline-offset:6px;border-radius:18px}
-
 
 
 .ph-img{display:block;max-width:100%;max-height:200px;margin:4px auto 10px;border-radius:12px;border:1px solid var(--line);object-fit:contain}
@@ -193,8 +177,7 @@ body.ph-drop #v6{outline:3px dashed var(--accent);outline-offset:6px;border-radi
 .go-flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:12px 0 4px}.go-flow .next,.go-flow .ghost{margin:0;text-decoration:none;min-height:46px;display:inline-flex;align-items:center}
 .go-arrow{color:var(--sub);font-weight:700}.go-next.ready{animation:goPulse 1.4s ease-in-out 3}@keyframes goPulse{50%{transform:scale(1.05)}}
 .go-msg{text-align:center;margin:6px 0 0}@media(max-width:520px){.go-arrow{display:none}.go-flow>*{flex:1 1 100%;justify-content:center}}
-.move-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.move-row .next{margin:0}.move-row small{flex:1 1 200px;font-size:13px;color:var(--sub)}
-.move-res{font-weight:700}.move-res.ok{color:var(--ok)}.move-res.bad{color:var(--bad)}
+
 .move-ta{width:100%;margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:12px/1.4 ui-monospace,Consolas,monospace;resize:vertical;word-break:break-all}
 
 .ai-home-ic{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--accent);color:var(--onaccent);font-size:20px}
@@ -252,7 +235,6 @@ html:root[data-season=winter]{--bl1:#E6EDF2;--bl2:#C7D4DD;--bl3:#F7FAFC;--bl4:#A
 .hp-step.done .hp-no{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-dark)}
 .hp-step.here{border-color:var(--accent);background:var(--accent-soft)}.hp-step.here .hp-no{background:var(--accent);border-color:var(--accent);color:var(--onaccent)}.hp-step.here small{color:var(--accent-dark);font-weight:700}
 @media(max-width:520px){.hp{grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}.hp-step{padding:8px 4px;justify-items:center;text-align:center}.hp-step b{font-size:12px}.hp-step small{font-size:11px}}
-
 
 
 .door-go{flex:none;font-size:22px;color:var(--accent);font-weight:700}
@@ -323,27 +305,16 @@ button.wpick:hover,button.wpick:focus-visible{background:var(--accent-soft)}
 
 
 
-
-
-
-
-
 .g{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#fff;border:1px solid #dadce0;color:#4285F4;font:800 13px/1 Arial,sans-serif;flex:0 0 auto}
 
 .nick-help{font-size:13px;color:var(--sub);margin:6px 0 0;line-height:1.5}.nick-help.bad{color:var(--bad)}.pf-name .nick-help{margin:0}
 .pf-edit .link{margin:0 0 0 4px;font-size:13px}
 
-.id-dlg{border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);padding:22px;width:min(380px,calc(100vw - 32px));box-shadow:0 12px 40px rgba(0,0,0,.18)}
-.id-dlg::backdrop{background:rgba(20,25,30,.45)}
-.id-dlg h3{margin:0 0 12px;font-size:18px}.id-dlg label{display:block;font-size:13px;color:var(--sub);margin-top:12px}
-.id-dlg input{display:block;width:100%;margin-top:5px;padding:10px 12px;font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px}
-.id-dlg input:focus{outline:2px solid var(--accent);outline-offset:1px}
-.id-seg{margin-bottom:4px}.id-note,.id-warn{font-size:13px;line-height:1.6;margin:12px 0 0}.id-warn{padding:10px 12px;border-radius:10px;background:var(--midbg);color:var(--ink)}
-.id-err{min-height:18px;font-size:13px;color:var(--bad);margin:10px 0 0}.id-err.good{color:var(--ok)}
-.id-note .link{margin:0;font-size:13px}
-.id-recap{font-size:13px;color:var(--sub);margin:12px 0 0;line-height:1.5}.id-recap a{color:inherit}
-.grecaptcha-badge{visibility:hidden}
-.id-btns{display:flex;justify-content:flex-end;align-items:center;gap:14px;margin-top:10px}.id-btns .link{margin:0}.id-btns .next{margin:0}
+
+
+
+
+
 
 #words .seg{width:100%}#words .seg button{flex:1;padding:8px 6px;white-space:nowrap}
 :root{--bg-top:#F6E2E1;--sky1:#B9CBD0;--sky2:#F1F1EC;--sun:#FBF3E6;--fuji:#8E9FA8;--snow:#F8F8F4;--hill2:#CFD9D3;--town:#BCC7C2;--pagoda:#BF7E72;--roof:#5A605C;--water1:#C9D8D6;--water2:#EBDCD6;--ripple:#FCFAF6;--bank:#A7B0AA;--bl1:#EDCFCA;--bl2:#D9A5A0;--bl3:#F7EAE6;--bl4:#C48C86;--trunk:#6E5A55;--petal:#DDB2AC;--glow:#F1CF9C;--lamp:#F8E7C8;--post:#6B5F59;--hero-fade:rgba(247,244,238,.94)}
@@ -390,11 +361,6 @@ body{background:linear-gradient(180deg,var(--bg-top) 0,var(--bg) 560px) no-repea
 
 
 
-
-
-
-
-
 .ja-font{font-family:var(--ja-font)}
 .kj-peek{font-size:16px;letter-spacing:.18em;color:var(--ink);margin:6px 0 2px;opacity:.8}
 .kj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px;margin-top:10px}
@@ -423,16 +389,9 @@ body{background:linear-gradient(180deg,var(--bg-top) 0,var(--bg) 560px) no-repea
 .lvl-btn{font-size:13px;background:var(--line);padding:2px 7px;border-radius:5px;font-weight:600;margin-left:1px;border:0;color:var(--ink)}
 .lvl-btn:hover{background:var(--accent-soft);color:var(--accent)}
 
-
 .tab-glyph{display:grid;place-items:center;font-size:18px;font-weight:700;stroke:none;font-family:var(--ja-font)}
 .jlpt-seg{margin-bottom:22px;display:flex;width:100%}.jlpt-seg button{min-width:0;flex:1 1 0;padding-left:4px;padding-right:4px}.jlpt-seg small{display:block;font-size:13px;font-weight:400;opacity:.7;white-space:nowrap}.jlpt-seg button.soon{opacity:.6}
 @media(max-width:760px){.jlpt-seg small{display:none}}
-
-
-
-
-
-
 
 
 
@@ -463,7 +422,6 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 @media(max-width:760px){button{min-height:44px}button.link{display:inline-flex;align-items:center;justify-content:center}.seg button{min-height:44px}}
 
 .pill{color:#6E5326}
-
 
 [data-theme=dark] .pill{color:var(--mid)}
 
@@ -543,8 +501,6 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 @media(max-width:640px){.cats.compact{grid-template-columns:1fr;gap:6px}.cats.compact .catcard{display:grid;grid-template-columns:minmax(0,1fr) 72px auto;align-items:center;gap:10px;padding:10px 12px;min-height:48px}.cats.compact .desc{display:none}.cats.compact .bar{margin:0}.cats.compact .cat-top{flex-wrap:nowrap;min-width:0}.cats.compact .cat-top b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cats.compact .cat-top .pill{display:none}}
 
 
-
-
 .grad-ok{display:block;width:100%;max-width:340px;margin:10px auto 0;min-height:44px}
 
 .tab-lock{font-size:13px;font-weight:400;color:var(--sub)}
@@ -615,7 +571,6 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .sidebar .tabs{display:none!important}
 .hub-view,.ai-home-view{animation:hk-in .22s ease both}@keyframes hk-in{from{opacity:.4;transform:translateY(5px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.hub-view,.ai-home-view{animation:none}}
-
 
 .path{list-style:none;margin:8px 0 22px;padding:0;display:grid;gap:10px;position:relative}
 .path:before{content:"";position:absolute;left:19px;top:24px;bottom:24px;width:2px;background:var(--line)}
@@ -6458,7 +6413,7 @@ function renderChat(el,seg,bindMode){
   const c=CHATS.find(x=>x.id===jv.chat);if(!c){jv={view:"jlist",mode:"chat"};return renderChat(el,seg,bindMode)}
   const past=c.turns.slice(0,jv.t).map(tn=>`<div class="ch-b st"><span lang="ja">${esc(tn.s)}</span><small>${esc(tn.sk)}</small></div><div class="ch-b me"><span lang="ja">${esc(tn.ch[0][0])}</span><small>${esc(tn.ch[0][1])}</small></div>`).join("");
   if(jv.t>=c.turns.length){
-    if(!chatDone(c.id)){S.chat=S.chat||{};S.chat[c.id]=1;addXp(20);recordPractice();save();refreshSummary();syncScore()}
+    if(!chatDone(c.id)){S.chat=S.chat||{};S.chat[c.id]=1;addXp(20);recordPractice();save();refreshSummary()}
     const nx=CHATS[CHATS.indexOf(c)+1];
     el.innerHTML=`<div class="panel">${exitJ}<h2>${c.title} · 대화 완료</h2><div class="ch-log">${past}</div>
       <p class="intro">${jv.miss?`중간에 ${jv.miss}번 다시 골랐어요. 한 번 더 하면 더 자연스러워져요.`:"한 번도 틀리지 않고 대화를 마쳤어요!"}</p>
@@ -6655,7 +6610,6 @@ const STAMPS=[
 const STAMP_ORDER=["narita","hakone","tokyo","shinjuku","asakusa","nara","shibuya","kamakura","yokohama","nikko","fuji","dotonbori","kobe","inari","nagoya","sapporo","miyajima","okinawa","kinkaku"];
 STAMPS.sort((a,b)=>STAMP_ORDER.indexOf(a.id)-STAMP_ORDER.indexOf(b.id));
 const stampN=()=>STAMPS.filter(s=>(S.stamps||{})[s.id]).length;
-const stampTitle=()=>{const n=stampN();return n?`스탬프 ${n}개`:""};
 const T='fill="currentColor" fill-opacity=".18"',D='fill="currentColor" fill-opacity=".5"',W='fill="#fff"',N='fill="none"';
 const wave=(y,x0=22,n=6)=>`<path d="M${x0} ${y} ${Array(n).fill("q6 -5 12 0").join(" ")}" ${N}/>`;
 const STAMP_ART={
@@ -6711,7 +6665,6 @@ function playStamp(){
 const KST=9*3600e3,DAYMS=864e5;
 const weekNum=(ms=Date.now())=>Math.floor(((ms+KST)/DAYMS+3)/7);
 function weekId(){return String(weekNum())}
-const weekXp=()=>S.wk.id===weekId()?S.wk.xp:0;
 const XP_DAY_MAX=3000;
 function addXp(n){return 0; // XP·레벨은 뺐다
   n=Math.round(+n);if(!Number.isFinite(n)||n<=0||n>300)return 0; // 한 번에 가장 큰 보상: 모의시험 30문제×5 + 첫 합격 100 = 250
@@ -6719,215 +6672,11 @@ function addXp(n){return 0; // XP·레벨은 뺐다
   const room=XP_DAY_MAX-S.dx.xp;if(room<=0){if(!S.dx.full){S.dx.full=1;notifyText(`오늘 받을 수 있는 XP(${XP_DAY_MAX})를 모두 받았어요. 공부 기록은 그대로 쌓이고, XP는 내일 다시 받아요.`)}return 0}
   n=Math.min(n,room);S.dx.xp+=n;
   S.xp+=n;const w=weekId();if(S.wk.id!==w)S.wk={id:w,xp:0};S.wk.xp+=n;return n}
-function afterAnswer(ok,o){if(ok)addXp(XP_RIGHT);checkGrad();trackAnswer(ok,o||{});updateTitles();checkBadges();save();refreshSummary();syncScore();if(tab===5)renderRank()}
+function afterAnswer(ok,o){if(ok)addXp(XP_RIGHT);checkGrad();trackAnswer(ok,o||{});updateTitles();checkBadges();save();refreshSummary();if(tab===5)renderRank()}
 
-const TOP_N=50;
-const rk={db:null,fb:null,user:null,me:null,canWrite:null,blocked:false,state:"loading",rows:null,weekRows:null,lastRows:null,myLast:null,myRank:{all:null,week:null,last:null},names:{},timer:0,last:"",busy:false,count:{week:null,last:null},banned:null,nickN:0,nickKey:null};
-const FB_CONFIG={apiKey:"AIzaSyDxJXq2AXCmTzJ-czbHEO5fKhrvn9NjKmg",authDomain:"harukana-74b43.firebaseapp.com",projectId:"harukana-74b43",storageBucket:"harukana-74b43.firebasestorage.app",messagingSenderId:"235663999566",appId:"1:235663999566:web:18e65cb4ee65b2c37c391f"};
-const REST_BASE=`https://firestore.googleapis.com/v1/projects/${FB_CONFIG.projectId}/databases/(default)/documents`;
-const restVal=v=>v.stringValue??(v.integerValue!=null?Number(v.integerValue):v.timestampValue!=null?Date.parse(v.timestampValue):v.doubleValue??v.booleanValue??null);
-const toFields=o=>{const f={};for(const k in o){const v=o[k];f[k]=typeof v==="number"?{integerValue:String(Math.round(v))}:{stringValue:String(v)}}return{fields:f}};
-const docOf=d=>{const o={id:d.name.split("/").pop()};for(const k in d.fields||{})o[k]=restVal(d.fields[k]);return o};
-async function restTop(parent,collectionId,field){
-  const r=await fetch(`${REST_BASE}${parent}:runQuery?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{...await authHeader(),"Content-Type":"application/json"},
-    body:JSON.stringify({structuredQuery:{from:[{collectionId}],orderBy:[{field:{fieldPath:field},direction:"DESCENDING"}],limit:TOP_N}})});
-  if(!r.ok)throw new Error("REST "+r.status);
-  return (await r.json()).filter(x=>x.document).map(x=>docOf(x.document));
-}
-async function restGet(path){
-  const r=await fetch(`${REST_BASE}/${path}?key=${FB_CONFIG.apiKey}`,{headers:await authHeader()});
-  if(r.status===404)return null;if(!r.ok)throw new Error("REST "+r.status);
-  return docOf(await r.json());
-}
-
-const AUTH_KEY="harukana-auth";
-function sdkStoredUser(){
-  return new Promise(res=>{
-    try{
-      const req=indexedDB.open("firebaseLocalStorageDb");
-      req.onerror=()=>res(null);
-      req.onupgradeneeded=()=>{req.transaction.abort();res(null)};
-      req.onsuccess=()=>{
-        try{const db=req.result,g=db.transaction("firebaseLocalStorage","readonly").objectStore("firebaseLocalStorage").get(`firebase:authUser:${FB_CONFIG.apiKey}:[DEFAULT]`);
-          g.onsuccess=()=>{const v=g.result&&g.result.value;res(v&&v.stsTokenManager?{uid:v.uid,refreshToken:v.stsTokenManager.refreshToken}:null)};
-          g.onerror=()=>res(null);
-        }catch(e){res(null)}
-      };
-    }catch(e){res(null)}
-  });
-}
-async function restAuth(){
-  let a=null;try{a=JSON.parse(localStorage.getItem(AUTH_KEY))}catch(e){}
-  if(!a)a=await sdkStoredUser();
-  const keep=x=>{try{localStorage.setItem(AUTH_KEY,JSON.stringify({uid:x.uid,refreshToken:x.refreshToken}))}catch(e){}return x};
-  if(a&&a.refreshToken){
-    const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(a.refreshToken)});
-    if(r.ok){const j=await r.json();return keep({uid:j.user_id,refreshToken:j.refresh_token,idToken:j.id_token,exp:Date.now()+(Number(j.expires_in)-120)*1000})}
-    if(S.account){if(r.status>=400&&r.status<500)sessionLost();throw new Error("로그인 갱신 실패 "+r.status)}
-  }
-  if(S.account){sessionLost();throw new Error("로그인 정보가 없어요")}
-  const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({returnSecureToken:true})});
-  if(!r.ok)throw new Error("익명 로그인 실패 "+r.status);
-  const j=await r.json();return keep({uid:j.localId,refreshToken:j.refreshToken,idToken:j.idToken,exp:Date.now()+(Number(j.expiresIn)-120)*1000});
-}
-function sessionLost(){
-  if(!S.account)return;
-  S.account=null;save();
-  try{localStorage.removeItem(AUTH_KEY);localStorage.removeItem(RANK_CACHE)}catch(e){}
-  clearTimeout(rk.timer);rk.auth=null;rk.me=null;rk.pulled=false;rk.progSig=null;rk.srv=undefined;
-  rk.state="guest";rk.rows=rk.weekRows=rk.lastRows=null;rk.myLast=null;rk.myRank={all:null,week:null,last:null};
-  notifyText("Google 로그인이 풀렸어요. 기록은 이 기기에 남아 있으니 다시 로그인해 주세요.");
-  rerenderAll();
-}
-async function authHeader(){
-  if(!rk.auth||Date.now()>rk.auth.exp){rk.auth=await restAuth();rk.me=rk.auth.uid}
-  return{"Authorization":"Bearer "+rk.auth.idToken,...await appCheckHeader()};
-}
-async function restWrite(method,path,body,keepalive){
-  for(let i=0;i<2;i++){
-    const r=await fetch(`${REST_BASE}/${path}`,{method,keepalive:!!keepalive,headers:{...await authHeader(),"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
-    if(r.status===401&&i===0){rk.auth=null;continue}
-    if(!r.ok){const e=new Error("REST "+r.status);e.status=r.status;throw e}
-    return r;
-  }
-}
-
-const RANK_CACHE="harukana-rank-cache"; // 예전 랭킹 캐시 이름 (로그아웃할 때 지운다)
-let rankFrame=0;
-function scheduleRank(){if(tab!==5||rankFrame)return;rankFrame=requestAnimationFrame(()=>{rankFrame=0;renderRank()})}
-function dropGuestDocs(prev){
-  if(!prev||!prev.idToken)return;const h={Authorization:"Bearer "+prev.idToken};
-  for(const p of [`scores/${prev.uid}`,`weeks/${weekId()}/players/${prev.uid}`])fetch(`${REST_BASE}/${p}`,{method:"DELETE",headers:h}).catch(()=>{});
-}
-async function memberInit(){
-  const wn=rk.wn;
-  try{const b=await cachedGet(`bans/${rk.me}`);rk.banned=b?{reason:b.reason||""}:null;if(b)rk.blocked=true}catch(e){}
-  if(S.account)await ensureNick(); // 이름 등록은 로그인한 사람만. 임시 번호는 자동 이름(학습자1234)으로 올린다
-  syncScore();
-  addPendingFriend();
-  if(tab===5)loadFriends(true);
-  cleanupOldWeeks();
-  scheduleRank();
-}
-async function cleanupOldWeeks(){
-  try{const k="harukana-cleanup",d=String(Math.floor(Date.now()/DAYMS));if(localStorage.getItem(k)===d)return;localStorage.setItem(k,d)}catch(e){return}
-  for(let w=rk.wn-2;w>=rk.wn-3;w--){
-    try{const rows=await restTop(`/weeks/${w}`,"players","weekXp");
-      for(const d of rows){try{await restWrite("DELETE",`weeks/${w}/players/${d.id}`)}catch(e){}}}catch(e){}
-  }
-}
-const AUTH_SDK="https://www.gstatic.com/firebasejs/10.12.2/";
-const IN_APP_BROWSER=/KAKAOTALK|NAVER\(|Instagram|FBAN|FBAV|Line\/|DaumApps/i.test(navigator.userAgent);
-function mergeState(L,C){
-  const R=JSON.parse(JSON.stringify(L||{}));C=C||{};
-  const max=(a,b)=>Math.max(Number(a)||0,Number(b)||0);
-  for(const k of ["c","w","cr","wr","ca","sx","kj","tv"]){R[k]=R[k]||{};
-    for(const id in C[k]||{}){const a=R[k][id],b=C[k][id];
-      R[k][id]=!a?b:{...a,...b,r:max(a.r,b.r),w:max(a.w,b.w),d:(a.d||b.d)?1:0,v:(a.v||b.v)?1:0}}}
-  R.n={...(C.n||{}),...(R.n||{})};
-  R.sr=R.sr||{};for(const k in C.sr||{}){const a=R.sr[k],b=C.sr[k];if(!a||(b.lv||0)>(a.lv||0))R.sr[k]=b}
-  R.daily=R.daily||{};for(const d in C.daily||{})R.daily[d]=max(R.daily[d],C.daily[d]);
-  R.xp=max(R.xp,C.xp);
-  R.badges={...(C.badges||{}),...(R.badges||{})};R.flags={...(C.flags||{}),...(R.flags||{})};
-  R.claimed={...(C.claimed||{}),...(R.claimed||{})};
-  if(C.rd){const a=R.rd||{},b=C.rd;R.rd={per:a.per||b.per,days:(a.days||[]).length>=(b.days||[]).length?a.days||[]:b.days,done:{...(b.done||{}),...(a.done||{})},cat:(()=>{const o={...(b.cat||{})};for(const k in a.cat||{})o[k]=Math.max(o[k]||0,a.cat[k]);return o})()}} // 회독
-  R.frozen={...(C.frozen||{}),...(R.frozen||{})};R.freeze=Math.min(FREEZE_MAX,Math.max(R.freeze||0,C.freeze||0)); // 연속 기록 보호권
-  if(C.stamps||R.stamps)R.stamps={...(C.stamps||{}),...(R.stamps||{})}; // 스탬프는 합친다
-  R.fr=R.fr||{};for(const k in C.fr||{})if(Math.abs(C.fr[k])>Math.abs(R.fr[k]||0))R.fr[k]=C.fr[k]; // 친구: 나중에 추가·뺀 쪽
-  R.titles=R.titles||{};for(const k in C.titles||{})R.titles[k]=Math.max(R.titles[k]??-1,C.titles[k]??-1);
-  R.co=R.co||{};for(const k in C.co||{})R.co[k]=max(R.co[k],C.co[k]);
-  R.cf=R.cf||{};for(const k in C.cf||{})R.cf[k]=max(R.cf[k],C.cf[k]);
-  R.seen={...(C.seen||{}),...(R.seen||{})};
-  R.mix=(R.mix||C.mix)?1:0;
-  const LV={beg:0,mid:1,adv:2};if((LV[C.level]||0)>(LV[R.level]||0))R.level=C.level; // 예전 난이도 기록 (목표로 옮겨 읽는다)
-  if(!R.goal&&C.goal)R.goal=C.goal; // 목표는 이 기기 것이 먼저, 없으면 다른 기기 것
-  R.fav={...(C.fav||{}),...(R.fav||{})};R.jstar={...(C.jstar||{}),...(R.jstar||{})};R.chat={...(C.chat||{}),...(R.chat||{})}; // 즐겨찾기·끝낸 상황 대화는 합친다
-  R.jl=R.jl||{};for(const id in C.jl||{}){const a=R.jl[id]||{},b=C.jl[id];R.jl[id]={r:max(a.r,b.r),w:max(a.w,b.w),...((a.l??b.l)!==undefined?{l:a.l??b.l}:{})}}
-  if(C.jx){const a=R.jx||{};R.jx={n:max(a.n,C.jx.n),best:max(a.best,C.jx.best),pass:(a.pass||C.jx.pass)?1:0,last:a.last??C.jx.last,sets:(()=>{const s={...(C.jx.sets||{})};for(const k in a.sets||{})s[k]=max(s[k],a.sets[k]);return s})()}}
-  const wk=x=>Number((x||{}).id)||0;
-  if(C.wk){if(wk(C.wk)>wk(R.wk))R.wk=C.wk;else if(wk(C.wk)===wk(R.wk))R.wk={id:R.wk.id,xp:max(R.wk.xp,C.wk.xp)}}
-  if(C.day&&(!R.day||C.day.id>R.day.id||(C.day.id===R.day.id&&(C.day.solved||0)>(R.day.solved||0))))R.day=C.day;
-  if(C.nick&&(!R.nick||/^학습자\d{4}$/.test(R.nick)))R.nick=C.nick;
-  if(!R.avatar&&C.avatar)R.avatar=C.avatar;if(!R.title&&C.title)R.title=C.title;
-  return R;
-}
-const SYNC_KEY="harukana-sync";
-const SYNC_MAPS=new Set(["c","w","cr","wr","ca","cf","seen","sx","kj","tv","n","sr","daily","badges","flags","claimed","titles","co"]);
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
-const isObj=x=>x&&typeof x==="object"&&!Array.isArray(x);
-function pick3(path,b,l,c){
-  if(same(l,b))return c;if(same(c,b))return l;if(same(l,c))return l;
-  if(l===undefined)return c;if(c===undefined)return l;
-  if(typeof l==="number"&&typeof c==="number")
-    return path==="xp"||path.startsWith("daily.")?l+c-(Number(b)||0):Math.max(l,c); // XP·하루 푼 수는 늘어난 만큼 더한다
-  if(path==="wk"&&isObj(l)&&isObj(c))
-    return l.id===c.id?{id:l.id,xp:(l.xp||0)+(c.xp||0)-(isObj(b)&&b.id===l.id?b.xp||0:0)}:(Number(c.id)>Number(l.id)?c:l);
-  if(path==="day"&&isObj(l)&&isObj(c))return c.id>l.id||(c.id===l.id&&(c.solved||0)>(l.solved||0))?c:l;
-  if(SYNC_MAPS.has(path)&&isObj(l)&&isObj(c)){
-    const o={},bb=isObj(b)?b:{};
-    for(const k of new Set([...Object.keys(bb),...Object.keys(l),...Object.keys(c)])){const v=pick3(path+"."+k,bb[k],l[k],c[k]);if(v!==undefined)o[k]=v}
-    return o;
-  }
-  if(/^(c|w|cr|wr|ca|sx|kj|tv)\./.test(path)&&isObj(l)&&isObj(c))return{...c,...l,r:Math.max(l.r||0,c.r||0),w:Math.max(l.w||0,c.w||0)};
-  return l; // 닉네임 같은 나머지는 이 기기 쪽
-}
-function merge3(B,L,C){
-  const R={};
-  for(const k of new Set([...Object.keys(B),...Object.keys(L),...Object.keys(C)])){const v=pick3(k,B[k],L[k],C[k]);if(v!==undefined)R[k]=v}
-  return R;
-}
-const cloudCopy=()=>{const {account,...rest}=S;return rest}; // 이름·이메일(S.account)은 이 기기에만 둔다
-function getSync(){try{const m=JSON.parse(localStorage.getItem(SYNC_KEY));return m&&m.uid===rk.me?m:null}catch(e){return null}}
-function setSync(ut,base){try{localStorage.setItem(SYNC_KEY,JSON.stringify({uid:rk.me,ut,base}))}catch(e){}}
-async function pullProgress(){
-  if(!S.account||!rk.me)return false;
-  try{
-    const r=await fetch(`${REST_BASE}/users/${rk.me}`,{headers:await authHeader()});
-    if(r.status===404){setSync(null,null);rk.pulled=true;rk.progSig=null;return false} // 계정에 아직 기록이 없다
-    if(!r.ok)return false;
-    const d=await r.json(),cloudStr=d.fields?.s?.stringValue||"null",cloud=JSON.parse(cloudStr),m=getSync();
-    let changed=false;
-    if(cloud&&!(m&&m.ut===d.updateTime)){
-      const acct=S.account,before=JSON.stringify(S);
-      S=m&&m.base?merge3(JSON.parse(m.base),cloudCopy(),cloud):mergeState(cloudCopy(),cloud); // 이 기기에서 처음 로그인하면 둘 다 살린다
-      S.account=acct;changed=JSON.stringify(S)!==before;save();
-    }
-    setSync(d.updateTime,cloudStr);rk.pulled=true;rk.progSig=cloudStr;
-    return changed;
-  }catch(e){console.warn("진도 불러오기 실패",e)}
-  return false;
-}
-async function pushProgress(leaving,retried){
-  if(!S.account||!rk.me)return;
-  if(!rk.pulled){if(leaving)return;await pullProgress();if(!rk.pulled)return}
-  const s=JSON.stringify(cloudCopy());if(s===rk.progSig)return;
-  const m=getSync()||{},body=toFields({s,t:Date.now()});
-  const pre=m.ut?"currentDocument.updateTime="+encodeURIComponent(m.ut):"currentDocument.exists=false";
-  try{
-    const r=await restWrite("PATCH",`users/${rk.me}?${pre}`,body,leaving&&JSON.stringify(body).length<60000);
-    rk.progSig=s;
-    try{setSync((await r.json()).updateTime,s)}catch(e){}
-  }catch(e){
-    if((e.status===400||e.status===409)&&!leaving&&!retried){ // 다른 기기가 먼저 올렸다
-      rk.pulled=false;
-      if(await pullProgress())rerenderAll();
-      return pushProgress(false,true);
-    }
-    console.warn("진도 저장 실패",e);
-  }
-}
-setInterval(async()=>{
-  if(document.hidden||!S.account)return;
-  if(rk.auth&&Date.now()>rk.auth.exp-5*60e3){try{rk.auth=await restAuth();rk.me=rk.auth.uid}catch(e){}}
-  pushProgress(false);
-},60000);
-document.addEventListener("visibilitychange",()=>{
-  if(document.hidden){pushProgress(true);return}
-  if(S.account&&rk.auth&&Date.now()>rk.auth.exp-5*60e3)restAuth().then(a=>{rk.auth=a;rk.me=a.uid}).catch(()=>{});
-});
 const MOVE_TAG="HARUKANA1:";
 const b64=u=>{let s="";for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s)};
-const unb64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
 async function zipText(txt,dir){
   if(typeof CompressionStream==="undefined")return null;
   const st=new Blob([txt]).stream().pipeThrough(dir==="in"?new DecompressionStream("gzip"):new CompressionStream("gzip"));
@@ -6937,39 +6686,6 @@ async function makeMoveCode(){
   const {account,fr,...rest}=S,json=JSON.stringify(rest);
   const z=await zipText(json);
   return MOVE_TAG+(z?"z":"j")+b64(z||new TextEncoder().encode(json));
-}
-async function readMoveCode(code){
-  code=String(code||"").replace(/\s+/g,"");
-  const i=code.indexOf(MOVE_TAG);if(i<0)throw new Error("tag");
-  const body=code.slice(i+MOVE_TAG.length),kind=body[0],bytes=unb64(body.slice(1));
-  const txt=kind==="z"?new TextDecoder().decode(await zipText(bytes,"in")):new TextDecoder().decode(bytes);
-  const o=JSON.parse(txt);if(!o||typeof o!=="object"||!o.c||!o.w)throw new Error("shape");
-  return o;
-}
-function openMoveDlg(){
-  let d=$("move-dlg");if(!d){d=document.createElement("dialog");d.id="move-dlg";d.className="set-dlg";d.setAttribute("aria-labelledby","move-title");document.body.appendChild(d)}
-  const other=IN_CLAUDE?"하루카나 사이트":"claude.ai 버전";
-  d.innerHTML=`<div class="set-top"><h3 id="move-title">기록 옮기기</h3><button class="set-x" id="move-x" aria-label="닫기">×</button></div>
-    <p class="guide-p" style="text-align:left;max-width:none">하루카나 사이트와 claude.ai 버전은 기록이 따로 저장돼요. 한쪽에서 <b>기록 코드를 복사</b>해서 다른 쪽에 <b>붙여 넣으면</b> 두 기록이 합쳐져요. 맞힌 문제·XP·스탬프는 더 많이 한 쪽 기록으로 남아요.</p>
-    <h4 class="set-h">1. 이 기록 보내기 <small>복사한 뒤 ${other}의 '기록 옮기기'에 붙여 넣어요</small></h4>
-    ${goSteps("move",IN_CLAUDE?SITE_URL:ARTIFACT_URL,IN_CLAUDE?"하루카나 사이트 열기":"claude.ai로 가서 로그인하기")}
-    <h4 class="set-h">2. 다른 쪽 기록 받기</h4>
-    <textarea id="move-in" class="move-ta" rows="3" placeholder="${other}에서 복사한 기록 코드를 여기에 붙여 넣어요 (Ctrl+V 또는 길게 눌러 붙여넣기)" aria-label="받을 기록 코드"></textarea>
-    <div class="move-row"><button type="button" class="next" id="move-merge">기록 합치기</button><small id="move-res" class="move-res" aria-live="polite"></small></div>`;
-  $("move-x").onclick=()=>d.close();
-  bindGoSteps("move");
-  $("move-merge").onclick=async()=>{
-    const msg=$("move-res");msg.className="move-res";
-    try{
-      const o=await readMoveCode($("move-in").value),acct=S.account,fr=S.fr,before={xp:S.xp,stamps:stampN()};
-      S=mergeState(S,o);S.account=acct;if(fr)S.fr=fr;
-      try{checkStamps()}catch(e){}
-      save();rerenderAll();syncScore();
-      msg.classList.add("ok");msg.textContent=`✓ 합쳤어요! XP ${before.xp} → ${S.xp}, 스탬프 ${before.stamps} → ${stampN()}개`;$("move-in").value="";
-      notifyText("기록을 합쳤어요.");
-    }catch(e){msg.classList.add("bad");msg.textContent=$("move-in").value.trim()?"코드를 읽지 못했어요. 처음부터 끝까지 빠짐없이 복사했는지 확인해 주세요.":"먼저 위 칸에 기록 코드를 붙여 넣어 주세요."}
-  };
-  if(!d.open)d.showModal();
 }
 let goCode=null;
 function openClaudeGo(){
@@ -6999,274 +6715,6 @@ function bindGoSteps(p,ready){
   };
 }
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-goclaude]");if(!b)return;e.preventDefault();openClaudeGo()});
-function rerenderAll(){refreshSummary();show(tab)}
-let authLib=null,authLibP=null;
-function preloadAuth(){
-  if(IN_CLAUDE||authLibP)return authLibP;
-  authLibP=Promise.all([import(AUTH_SDK+"firebase-app.js"),import(AUTH_SDK+"firebase-auth.js")]).then(([appMod,au])=>{
-    const app=appMod.getApps().length?appMod.getApps()[0]:appMod.initializeApp(FB_CONFIG);
-    authLib={au,auth:au.getAuth(app)};return authLib;
-  }).catch(e=>{authLibP=null;throw e});
-  return authLibP;
-}
-const authSeen=("IntersectionObserver" in window)?new IntersectionObserver(es=>{
-  if(es.some(e=>e.isIntersecting)){authSeen.disconnect();preloadAuth()?.catch(()=>{})}
-}):null;
-function armLoginBtn(btn,fn){
-  if(!btn)return;
-  if(!authLib&&!IN_APP_BROWSER){if(authSeen)authSeen.observe(btn);else preloadAuth()?.catch(()=>{})}
-  btn.addEventListener("pointerdown",()=>preloadAuth()?.catch(()=>{}),{once:true});
-  btn.onclick=fn;
-}
-function openGooglePopup(){
-  if(authLib){
-    const p=new authLib.au.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
-    return authLib.au.signInWithPopup(authLib.auth,p).then(r=>({...authLib,user:r.user}));
-  }
-  const e=new Error("not-ready");e.code="harukana/not-ready";
-  return preloadAuth().then(()=>{throw e});
-}
-const loginErrText=(c,e,what)=>c==="harukana/not-ready"?"Google 확인 준비가 끝났어요. 버튼을 한 번 더 눌러 주세요."
-  :c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request"||c==="auth/user-cancelled"?(what==="삭제"?"삭제를":"로그인을")+" 취소했어요."
-  :c==="auth/popup-blocked"?"팝업이 막혔어요. 버튼을 한 번 더 누르거나, 브라우저에서 이 사이트의 팝업을 허용해 주세요."
-  :c==="auth/network-request-failed"?"인터넷 연결이 불안정해요. 잠시 뒤 다시 눌러 주세요."
-  :c==="auth/operation-not-supported-in-this-environment"||c==="auth/web-storage-unsupported"?"이 브라우저에서는 Google 로그인을 쓸 수 없어요. Chrome이나 Safari로 열어 주세요."
-  :what+"하지 못했어요 ("+(c||e.message)+")";
-async function finishLogin(a,account){
-  const prev=!S.account&&rk.auth&&rk.auth.uid!==a.uid?rk.auth:null;
-  rk.auth={uid:a.uid,refreshToken:a.refreshToken,idToken:a.idToken,exp:Date.now()+50*60e3};
-  try{localStorage.setItem(AUTH_KEY,JSON.stringify({uid:a.uid,refreshToken:a.refreshToken}))}catch(e){}
-  rk.me=a.uid;S.account=account;rk.pulled=false;rk.progSig=null;rk.srv=undefined;rk.retried=false;
-  const merged=await pullProgress();
-  dropGuestDocs(prev);
-  S.rankOff=S.rankOff||0;save();rk.last="";rk.blocked=false;rk.syncErr=null;rk.myRank={all:null,week:null,last:null};
-  await pushProgress(false);
-  if(rk.state==="guest")rk.state="loading";
-  memberInit();if(tab===5)loadFriends(true);
-  notifyText(merged?"로그인했어요. 계정에 있던 기록과 이 기기 기록을 합쳤어요.":"로그인했어요. 이제 기록이 계정에 저장돼요.");
-  rerenderAll();
-}
-async function googleLogin(){
-  if(IN_CLAUDE)return;
-  if(IN_APP_BROWSER){notifyText("이 앱 안 브라우저에서는 Google 로그인이 막혀 있어요. '이메일로 로그인'을 쓰거나, 메뉴에서 'Chrome으로 열기' 후 로그인해 주세요.");return}
-  const popup=openGooglePopup(); // 반드시 await 없이 가장 먼저
-  try{
-    const {au,auth,user:u}=await popup;
-    const a={uid:u.uid,refreshToken:u.refreshToken,idToken:await u.getIdToken()};
-    au.signOut(auth).catch(()=>{}); // 이후는 REST로 이어 간다(라이브러리 세션은 필요 없음)
-    await finishLogin(a,{name:u.displayName||"",email:u.email||""});
-  }catch(e){
-    console.warn("Google 로그인 실패",e);
-    notifyText(loginErrText(e&&e.code||"",e,"로그인"));
-  }
-}
-
-const RECAPTCHA_SITE_KEY="6LfM3vktAAAAAHbuTo9VgMEDZnV-9uG0xrBgT5-i";
-let appCheckP=null;
-function appCheckInit(){
-  if(!RECAPTCHA_SITE_KEY||IN_CLAUDE)return null;
-  if(!appCheckP)appCheckP=Promise.all([import(AUTH_SDK+"firebase-app.js"),import(AUTH_SDK+"firebase-app-check.js")]).then(([appMod,ac])=>{
-    const app=appMod.getApps().length?appMod.getApps()[0]:appMod.initializeApp(FB_CONFIG);
-    return{ac,check:ac.initializeAppCheck(app,{provider:new ac.ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY),isTokenAutoRefreshEnabled:true})};
-  }).catch(e=>{appCheckP=null;throw e});
-  return appCheckP;
-}
-async function appCheckHeader(){
-  if(!RECAPTCHA_SITE_KEY||IN_CLAUDE)return{};
-  try{const {ac,check}=await appCheckInit();const t=await ac.getToken(check,false);return{"X-Firebase-AppCheck":t.token}}
-  catch(e){console.warn("App Check 토큰을 받지 못했어요",e);return{}}
-}
-
-const ID_DOMAIN="id.harukana.invalid";
-const EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const isLegacy=e=>String(e||"").endsWith("@"+ID_DOMAIN);
-const loginEmail=s=>{s=String(s||"").trim().toLowerCase();return s.includes("@")?s:s+"@"+ID_DOMAIN};
-async function idt(method,body){ // Firebase 로그인 REST (App Check 토큰을 붙인다)
-  const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:${method}?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json",...await appCheckHeader()},body:JSON.stringify(body)});
-  const j=await r.json().catch(()=>({}));
-  if(!r.ok){const e=new Error(j.error&&j.error.message||"HTTP "+r.status);e.code=e.message;throw e}
-  return j;
-}
-async function idAuth(mode,login,pw){ // mode: signUp(가입) | signInWithPassword(로그인)
-  const j=await idt(mode,{email:loginEmail(login),password:pw,returnSecureToken:true});
-  return{uid:j.localId,refreshToken:j.refreshToken,idToken:j.idToken,email:j.email};
-}
-async function refreshTok(a){
-  const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(a.refreshToken)});
-  const j=await r.json();if(!r.ok)throw Object.assign(new Error("TOKEN"),{code:(j.error&&j.error.message)||"TOKEN"});
-  return{...a,idToken:j.id_token,refreshToken:j.refresh_token};
-}
-async function isVerified(a){const j=await idt("lookup",{idToken:a.idToken});return !!(j.users&&j.users[0]&&j.users[0].emailVerified)}
-const idErrText=c=>/EMAIL_EXISTS/.test(c)?"이미 가입된 이메일이에요. '로그인'에서 들어와 주세요."
-  :/INVALID_LOGIN_CREDENTIALS|EMAIL_NOT_FOUND|INVALID_PASSWORD/.test(c)?"이메일(아이디)이나 비밀번호가 맞지 않아요."
-  :/INVALID_EMAIL|MISSING_EMAIL/.test(c)?"이메일 주소를 다시 확인해 주세요."
-  :/TOO_MANY_ATTEMPTS|QUOTA_EXCEEDED/.test(c)?"너무 여러 번 시도했어요. 잠시 뒤 다시 해 주세요."
-  :/WEAK_PASSWORD/.test(c)?"비밀번호는 6자 이상이어야 해요."
-  :/OPERATION_NOT_ALLOWED|PASSWORD_LOGIN_DISABLED/.test(c)?"이메일 로그인이 아직 준비되지 않았어요. 잠시 뒤 다시 해 주세요."
-  :/USER_DISABLED/.test(c)?"사용이 멈춘 계정이에요."
-  :/APP_CHECK|app-check|appCheck/i.test(c)?"보안 확인(reCAPTCHA)을 통과하지 못했어요. 광고 차단을 끄고 다시 해 주세요."
-  :/Failed to fetch|NetworkError/i.test(c)?"인터넷 연결을 확인해 주세요."
-  :"하지 못했어요 ("+c+")";
-const acctLogin=a=>a&&(a.email||a.id&&a.id+"@"+ID_DOMAIN)||"";
-function openIdDialog(mode,arg){
-  let d=$("id-dlg");if(!d){d=document.createElement("dialog");d.id="id-dlg";d.className="id-dlg";document.body.appendChild(d)}
-  appCheckInit()?.catch(()=>{}); // reCAPTCHA를 미리 준비
-  const tabs=mode==="login"||mode==="signup";
-  const title={login:"이메일로 로그인",signup:"이메일로 가입",reset:"비밀번호 재설정",verify:"이메일 인증",link:"이메일 연결",delete:"비밀번호 확인"}[mode];
-  const pw=(id,ac,ph)=>`<label>${ph||"비밀번호"}<input id="${id}" type="password" autocomplete="${ac}" placeholder="6자 이상"></label>`;
-  const body={
-    login:`<label>이메일<input id="id-name" type="email" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="name@example.com"></label>${pw("id-pw","current-password")}
-      <p class="id-note"><button type="button" class="link" id="id-forgot">비밀번호를 잊었어요</button> · 예전 아이디 계정은 이메일 칸에 아이디를 넣으세요.</p>`,
-    signup:`<label>이메일<input id="id-name" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="name@example.com"></label>${pw("id-pw","new-password")}${pw("id-pw2","new-password","비밀번호 한 번 더")}
-      <p class="id-note">가입하면 이 주소로 인증 메일이 가요. 메일의 링크를 눌러야 기록 저장과 친구 기능을 쓸 수 있어요. 이메일은 로그인·인증·비밀번호 재설정에만 써요.</p>`,
-    reset:`<label>가입한 이메일<input id="id-name" type="email" autocomplete="email" autocapitalize="none" spellcheck="false"></label><p class="id-note">비밀번호를 새로 정하는 링크를 메일로 보내 드려요.</p>`,
-    verify:`<p class="id-note"><b>${esc(arg&&arg.email||"")}</b>로 인증 메일을 보냈어요. 메일의 링크를 누른 뒤 아래 <b>인증했어요</b>를 눌러 주세요.<br>메일이 안 보이면 스팸함도 확인해 주세요.</p>
-      <p class="id-note"><button type="button" class="link" id="id-resend">인증 메일 다시 보내기</button></p>`,
-    link:`<p class="id-note">이제 계정마다 이메일 인증이 필요해요. 쓸 이메일을 넣으면 인증 메일을 보내요. 메일의 링크를 누르면 연결되고, 그 뒤로는 <b>이 이메일과 지금 비밀번호</b>로 로그인해요. 기록은 그대로 이어져요.</p>
-      <label>이메일<input id="id-name" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="name@example.com"></label>`,
-    delete:`<p class="id-note">계정과 모든 학습 기록을 지우려면 비밀번호를 한 번 더 넣어 주세요. 지우면 되돌릴 수 없어요.</p>${pw("id-pw","current-password")}`
-  }[mode];
-  const ok={login:"로그인",signup:"가입하고 인증 메일 받기",reset:"재설정 메일 보내기",verify:"인증했어요",link:"인증 메일 보내기",delete:"삭제하기"}[mode];
-  d.innerHTML=`<form method="dialog" id="id-form" novalidate><h3>${title}</h3>
-    ${tabs?`<div class="seg id-seg"><button type="button" data-idm="login" class="${mode==="login"?"on":""}">로그인</button><button type="button" data-idm="signup" class="${mode==="signup"?"on":""}">가입</button></div>`:""}
-    ${body}<p class="id-err" id="id-err" role="alert"></p>
-    <div class="id-btns"><button type="button" class="link" id="id-cancel">닫기</button><button class="next" id="id-ok">${ok}</button></div>
-    ${RECAPTCHA_SITE_KEY?`<p class="id-recap">이 사이트는 reCAPTCHA로 보호되며 Google <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">개인정보처리방침</a>과 <a href="https://policies.google.com/terms" target="_blank" rel="noopener">서비스 약관</a>이 적용돼요.</p>`:""}
-  </form>`;
-  d.querySelectorAll("[data-idm]").forEach(b=>b.onclick=()=>openIdDialog(b.dataset.idm));
-  $("id-cancel").onclick=()=>d.close();
-  if($("id-forgot"))$("id-forgot").onclick=()=>openIdDialog("reset");
-  const err=(t,good)=>{$("id-err").textContent=t;$("id-err").classList.toggle("good",!!good)};
-  const busy=v=>{$("id-ok").disabled=v};
-  if($("id-resend"))$("id-resend").onclick=async()=>{try{Object.assign(arg,await refreshTok(arg)); // 창을 오래 열어 둬도(토큰 1시간) 다시 보낼 수 있게
-    await idt("sendOobCode",{requestType:"VERIFY_EMAIL",idToken:arg.idToken});err("인증 메일을 다시 보냈어요.",true)}catch(e){err(/TOO_MANY/.test(e.code)?"방금 보낸 메일이 있어요. 1분쯤 뒤에 다시 보낼 수 있어요.":idErrText(e.code||e.message))}};
-  const afterAuth=async a=>{
-    if(isLegacy(a.email))return openIdDialog("link",a);
-    if(!(await isVerified(a)))return openIdDialog("verify",a);
-    d.close();await finishLogin(a,{name:a.email,email:a.email,kind:"email"});
-  };
-  $("id-form").onsubmit=async ev=>{
-    ev.preventDefault();err("");
-    const v=id=>($(id)&&$(id).value||"");
-    try{
-      if(mode==="login"){
-        if(!v("id-name").trim())return err("이메일(또는 예전 아이디)을 넣어 주세요.");
-        if(v("id-pw").length<6)return err("비밀번호는 6자 이상이에요.");
-        busy(true);await afterAuth(await idAuth("signInWithPassword",v("id-name"),v("id-pw")));
-      }else if(mode==="signup"){
-        const em=v("id-name").trim().toLowerCase();
-        if(!EMAIL_RE.test(em))return err("이메일 주소를 다시 확인해 주세요.");
-        if(v("id-pw").length<6)return err("비밀번호는 6자 이상이어야 해요.");
-        if(v("id-pw")!==v("id-pw2"))return err("두 비밀번호가 서로 달라요.");
-        busy(true);const a=await idAuth("signUp",em,v("id-pw"));
-        await idt("sendOobCode",{requestType:"VERIFY_EMAIL",idToken:a.idToken});
-        openIdDialog("verify",a);
-      }else if(mode==="reset"){
-        const em=v("id-name").trim().toLowerCase();
-        if(!EMAIL_RE.test(em))return err("이메일 주소를 다시 확인해 주세요.");
-        busy(true);try{await idt("sendOobCode",{requestType:"PASSWORD_RESET",email:em})}catch(e){if(!/EMAIL_NOT_FOUND/.test(e.code))throw e}
-        err("가입된 이메일이면 재설정 메일을 보냈어요. 메일의 링크에서 새 비밀번호를 정한 뒤 로그인해 주세요.",true);busy(false);
-      }else if(mode==="verify"){
-        busy(true);const a=await refreshTok(arg);
-        if(!(await isVerified(a))){busy(false);return err("아직 인증이 확인되지 않았어요. 메일의 링크를 누른 뒤 다시 눌러 주세요.")}
-        d.close();await finishLogin(a,{name:a.email,email:a.email,kind:"email"});
-      }else if(mode==="link"){
-        const em=v("id-name").trim().toLowerCase();
-        if(!EMAIL_RE.test(em))return err("이메일 주소를 다시 확인해 주세요.");
-        busy(true);await idt("sendOobCode",{requestType:"VERIFY_AND_CHANGE_EMAIL",idToken:arg.idToken,newEmail:em});
-        err(`${em}로 인증 메일을 보냈어요. 메일의 링크를 누른 뒤, 이 이메일과 지금 비밀번호로 다시 로그인해 주세요.`,true);
-        $("id-ok").textContent="새 이메일로 로그인";$("id-ok").disabled=false;$("id-form").onsubmit=e=>{e.preventDefault();openIdDialog("login")};
-      }else if(mode==="delete"){
-        if(v("id-pw").length<6)return err("비밀번호를 넣어 주세요.");
-        busy(true);const a=await idAuth("signInWithPassword",acctLogin(S.account),v("id-pw"));d.close();arg(a);
-      }
-    }catch(e){err(idErrText(e.code||e.message));busy(false)}
-  };
-  if(!d.open)d.showModal();
-  ($("id-name")||$("id-pw")||$("id-ok")).focus();
-}
-function idLogin(){if(!IN_CLAUDE)openIdDialog("login")}
-function openPwDialog(){
-  if(!S.account||(S.account.kind!=="id"&&S.account.kind!=="email"))return;
-  let d=$("id-dlg");if(!d){d=document.createElement("dialog");d.id="id-dlg";d.className="id-dlg";document.body.appendChild(d)}
-  d.innerHTML=`<form method="dialog" id="pw-form" novalidate>
-    <h3>비밀번호 바꾸기</h3>
-    <p class="id-note"><b>${esc(acctLabel(S.account))}</b> · 바꾸면 다른 기기에서는 다시 로그인해야 해요.</p>
-    <label>지금 비밀번호<input id="pw-cur" type="password" autocomplete="current-password"></label>
-    <label>새 비밀번호<input id="pw-new" type="password" autocomplete="new-password" placeholder="6자 이상"></label>
-    <label>새 비밀번호 한 번 더<input id="pw-new2" type="password" autocomplete="new-password"></label>
-    <p class="id-warn"><b>새 비밀번호를 꼭 적어 두세요.</b> 잊으면 되찾을 수 없어요.</p>
-    <p class="id-err" id="pw-err" role="alert"></p>
-    <div class="id-btns"><button type="button" class="link" id="pw-cancel">닫기</button><button class="next" id="pw-ok">바꾸기</button></div>
-  </form>`;
-  $("pw-cancel").onclick=()=>d.close();
-  const err=t=>{$("pw-err").textContent=t};
-  $("pw-form").onsubmit=async ev=>{
-    ev.preventDefault();
-    const cur=$("pw-cur").value,nw=$("pw-new").value;
-    if(nw.length<6)return err("새 비밀번호는 6자 이상이어야 해요.");
-    if(nw!==$("pw-new2").value)return err("새 비밀번호 두 개가 서로 달라요.");
-    if(nw===cur)return err("지금 비밀번호와 같아요.");
-    $("pw-ok").disabled=true;err("");
-    try{
-      const a=await idAuth("signInWithPassword",acctLogin(S.account),cur);
-      if(a.uid!==rk.me)throw Object.assign(new Error("다른 계정"),{code:"INVALID_LOGIN_CREDENTIALS"});
-      const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({idToken:a.idToken,password:nw,returnSecureToken:true})});
-      const j=await r.json().catch(()=>({}));
-      if(!r.ok)throw Object.assign(new Error(j.error&&j.error.message||"HTTP "+r.status),{code:j.error&&j.error.message||""});
-      rk.auth={uid:a.uid,refreshToken:j.refreshToken,idToken:j.idToken,exp:Date.now()+50*60e3};
-      try{localStorage.setItem(AUTH_KEY,JSON.stringify({uid:a.uid,refreshToken:j.refreshToken}))}catch(e){}
-      d.close();notifyText("비밀번호를 바꿨어요.");
-    }catch(e){err(idErrText(e.code||e.message));$("pw-ok").disabled=false}
-  };
-  if(!d.open)d.showModal();
-  $("pw-cur").focus();
-}
-async function googleLogout(){
-  await pushProgress(false);
-  try{["kana-v1",AUTH_KEY,"harukana-rank-cache",SYNC_KEY,"harukana-qsess","harukana-wsess"].forEach(k=>localStorage.removeItem(k));clearCaches()}catch(e){}
-  location.reload();
-}
-async function wipeAccount(uid,idToken,deleteLogin){
-  const acct=S.account;
-  clearTimeout(rk.timer);rk.blocked=true;S.account=null;
-  try{
-    const h={Authorization:"Bearer "+idToken},wn=weekNum();
-    for(const p of [`users/${uid}`,`scores/${uid}`,`weeks/${wn}/players/${uid}`,`weeks/${wn-1}/players/${uid}`,`nickreg/${uid}`,...(rk.nickKey?[`nicks/${encodeURIComponent(rk.nickKey)}`]:[])]){
-      const r=await fetch(`${REST_BASE}/${p}`,{method:"DELETE",headers:h});
-      if(!r.ok)throw new Error("기록 삭제 "+r.status);
-    }
-    await deleteLogin();
-    try{["kana-v1",AUTH_KEY,"harukana-rank-cache",SYNC_KEY,"harukana-qsess","harukana-wsess"].forEach(k=>localStorage.removeItem(k));clearCaches()}catch(e){}
-    notifyText("계정과 학습 기록을 모두 지웠어요.");
-    setTimeout(()=>location.reload(),1500);
-  }catch(e){S.account=acct;rk.blocked=false;throw e}
-}
-async function deleteAccount(){
-  if(IN_CLAUDE||!S.account||!rk.me)return;
-  if(S.account.kind==="id"||S.account.kind==="email"){
-    openIdDialog("delete",async a=>{
-      if(a.uid!==rk.me)return notifyText("지금 로그인한 계정이 아니에요.");
-      try{await wipeAccount(a.uid,a.idToken,async()=>{
-        const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${FB_CONFIG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({idToken:a.idToken})});
-        if(!r.ok)throw new Error("계정 삭제 "+r.status);
-      })}catch(e){notifyText("삭제하지 못했어요 ("+e.message+")")}
-    });
-    return;
-  }
-  const popup=openGooglePopup(); // 반드시 await 없이 가장 먼저
-  try{
-    const {au,auth,user:u}=await popup;
-    if(u.uid!==rk.me){await au.signOut(auth);notifyText("지금 로그인한 계정과 다른 Google 계정이에요. 같은 계정으로 다시 확인해 주세요.");return}
-    await wipeAccount(u.uid,await u.getIdToken(),()=>au.deleteUser(u));
-  }catch(e){notifyText(loginErrText(e&&e.code||"",e,"삭제"))}
-}
-function bindLoginBtns(id){armLoginBtn($(id),googleLogin);if($("id-"+id))$("id-"+id).onclick=idLogin}
-const acctLabel=a=>a.kind==="id"?"아이디 "+a.id:a.email||a.name||"Google 계정";
-const NICK_RE=/^[가-힣a-zA-Z0-9_]{2,12}$/;
-const NICK_RESERVED=/운영자|관리자|admin|하루카나|harukana|공식|official/i;
-const NICK_SYS=/^__.*__$/; // Firebase가 예약해 둔 문서 이름 모양이라 저장할 수 없다
 const BAD_WORDS=["시발","씨발","씨빨","시빨","씨바","십새","씹","좆","존나","졸라","병신","븅신","빙신","등신","개새","새끼","쌔끼","지랄","염병","닥쳐","꺼져","미친","또라이","싸가지","창녀","걸레","보지","자지","섹스","야동","변태","느금","니애미","니엄마","애미","애비","엠창","호로","후레","썅","쌍놈","쌍년","개놈","개년","빠구리","딸딸이","자위","강간","살인","자살","일베","한남","김치녀","된장녀","틀딱","급식충","맘충","fuck","fuk","shit","bitch","sex","porn","dick","pussy","cock","nigger","nigga","fag","slut","whore","asshole","bastard","rape"];
 function maskBad(s){
   s=String(s||"");const ch=[...s],keep=[];
@@ -7275,100 +6723,11 @@ function maskBad(s){
   for(const w of BAD_WORDS){let p=flat.indexOf(w);while(p>=0){for(let j=p;j<p+w.length;j++)hit.add(keep[j][1]);p=flat.indexOf(w,p+1)}}
   return hit.size?ch.map((c,i)=>hit.has(i)?"*":c).join(""):s;
 }
-const nickKey=n=>n.toLowerCase();
-const pseudoNick=()=>"학습자"+String(Math.floor(1000+Math.random()*9000));
-const guestNick=()=>{if(!/^학습자[0-9]{4}$/.test(S.nick||"")){S.nick=pseudoNick();save()}return S.nick};
-const DOC=p=>`projects/${FB_CONFIG.projectId}/databases/(default)/documents/${p}`;
-async function restCommit(writes,keepalive){
-  const r=await fetch(`${REST_BASE}:commit`,{method:"POST",keepalive:!!keepalive,headers:{...await authHeader(),"Content-Type":"application/json"},body:JSON.stringify({writes})});
-  if(!r.ok){const e=new Error("REST "+r.status);e.status=r.status;e.text=await r.text().catch(()=>"");throw e}
-  return r.json();
-}
-async function claimNick(nick,first){
-  const key=nickKey(nick),n=first?0:(rk.nickN||0)+1;
-  const writes=[
-    {update:{name:DOC("nicks/"+key),fields:toFields({uid:rk.me}).fields},currentDocument:{exists:false}},
-    {update:{name:DOC("nickreg/"+rk.me),fields:toFields({nick,key,n}).fields},currentDocument:{exists:!first}}];
-  if(!first&&rk.nickKey&&rk.nickKey!==key)writes.push({delete:DOC("nicks/"+rk.nickKey)});
-  await restCommit(writes);
-  rk.nickN=n;rk.nickKey=key;S.nick=nick;save();rk.last="";
-  setCache(`nickreg/${rk.me}`,{id:rk.me,nick,key,n});
-}
-const CACHE_TTL=12*3600e3;
-async function cachedGet(path,force){
-  const k="harukana-c:"+path;
-  if(!force){try{const v=JSON.parse(localStorage.getItem(k));if(v&&Date.now()-v.t<CACHE_TTL)return v.d}catch(e){}}
-  const d=await restGet(path);
-  try{localStorage.setItem(k,JSON.stringify({t:Date.now(),d}))}catch(e){}
-  return d;
-}
-const setCache=(path,d)=>{try{localStorage.setItem("harukana-c:"+path,JSON.stringify({t:Date.now(),d}))}catch(e){}};
-const clearCaches=()=>{try{Object.keys(localStorage).filter(k=>k.startsWith("harukana-c:")).forEach(k=>localStorage.removeItem(k))}catch(e){}};
-async function ensureNick(force){
-  try{
-    const reg=await cachedGet(`nickreg/${rk.me}`,force);
-    if(reg){rk.nickN=Number(reg.n)||0;rk.nickKey=reg.key;if(S.nick!==reg.nick){S.nick=reg.nick;save()}return true}
-    let nick=maskBad(S.nick||"");if(!NICK_RE.test(nick.replace(/\*/g,"_"))||NICK_RESERVED.test(nick)||NICK_SYS.test(nick))nick=pseudoNick();
-    for(let i=0;i<4;i++){
-      try{await claimNick(nick,true);return true}
-      catch(e){if(e.status===400||e.status===409){nick=pseudoNick();continue}throw e}
-    }
-  }catch(e){console.warn("이름 등록 실패",e)}
-  return false;
-}
-const nickLeft=()=>Math.max(0,2-(rk.nickN||0)); // 남은 이름 정하기·바꾸기 횟수
-async function saveNick(raw){
-  raw=raw.trim();
-  if(!S.account)return "이름은 로그인한 뒤 정할 수 있어요.";
-  if(!NICK_RE.test(raw))return "이름은 한글·영어·숫자·밑줄(_)로 2~12자예요. 띄어쓰기와 ㅋㅋ 같은 낱자는 쓸 수 없어요.";
-  if(NICK_RESERVED.test(raw))return "운영자로 오해할 수 있는 이름은 쓸 수 없어요.";
-  if(NICK_SYS.test(raw))return "앞뒤를 밑줄 두 개(__)로 감싼 이름은 쓸 수 없어요.";
-  if(!nickLeft())return "이름은 더 바꿀 수 없어요.";
-  const nick=maskBad(raw);
-  if(nickKey(nick)===rk.nickKey)return "지금 이름과 같아요.";
-  try{await claimNick(nick,false)}
-  catch(e){return e.status===400||e.status===409?"이미 누가 쓰고 있는 이름이에요. 다른 이름을 골라 주세요.":e.status===403?"이름은 더 바꿀 수 없어요.":"저장하지 못했어요. 잠시 뒤 다시 해 주세요."}
-  syncScore();
-  notifyText(nick!==raw?`부적절한 말은 *로 바꿔서 「${nick}」(으)로 저장했어요.`:`이름을 「${nick}」(으)로 정했어요.`);
-  return "";
-}
 
-const FR_MAX=30,FR_KEY="harukana-pending-friend";
-const frIds=()=>Object.keys(S.fr||{}).filter(k=>S.fr[k]>0);
-rk.friends={};rk.frAt=0;
-(()=>{try{const p=new URLSearchParams(location.search),f=p.get("friend");
-  if(f&&/^[A-Za-z0-9]{20,40}$/.test(f)){localStorage.setItem(FR_KEY,f);p.delete("friend");history.replaceState(history.state,"",location.pathname+(p.toString()?"?"+p:"")+location.hash)}}catch(e){}})();
-async function addPendingFriend(){
-  let f=null;try{f=localStorage.getItem(FR_KEY)}catch(e){}
-  if(!f||!rk.me)return;
-  try{localStorage.removeItem(FR_KEY)}catch(e){}
-  if(f===rk.me)return;
-  const msg=await addFriendUid(f);notifyText(msg);
-}
-async function addFriendUid(uid){
-  S.fr=S.fr||{};
-  if(uid===rk.me)return "내 코드예요. 친구의 코드를 넣어 주세요.";
-  if(S.fr[uid]>0)return "이미 친구예요.";
-  if(frIds().length>=FR_MAX)return `친구는 ${FR_MAX}명까지 추가할 수 있어요.`;
-  let d=null;try{d=await restGet(`scores/${uid}`)}catch(e){return "연결이 끊겼어요. 잠시 뒤 다시 해 주세요."}
-  if(!d)return "아직 기록이 없는 친구예요. 친구가 하루카나에서 문제를 하나 맞히면 추가할 수 있어요.";
-  S.fr[uid]=Date.now();rk.friends[uid]=d;save();
-  if(tab===5)renderRank();
-  return `「${maskBad(String(d.nick||"학습자").slice(0,12))}」님을 친구로 추가했어요!`;
-}
-async function loadFriends(force){
-  if(IN_CLAUDE||!rk.fb||!rk.me)return;
-  if(!force&&Date.now()-rk.frAt<20000)return;
-  rk.frAt=Date.now();
-  const ids=frIds();
-  await Promise.all(ids.map(async id=>{try{rk.friends[id]=await restGet(`scores/${id}`)}catch(e){}}));
-  scheduleRank();
-}
 function agoText(ms){
   if(!ms)return "";const m=Math.floor((Date.now()-ms)/60000);
   return m<2?"방금":m<60?`${m}분 전`:m<1440?`${Math.floor(m/60)}시간 전`:m<43200?`${Math.floor(m/1440)}일 전`:"한 달 넘게 전";
 }
-const sameDayKst=ms=>ms&&new Date(ms+KST).toISOString().slice(0,10)===new Date(Date.now()+KST).toISOString().slice(0,10);
 const SITE_URL="https://ranunculuslethe.github.io/harukana/";
 const IN_CLAUDE=!!(window.claude&&typeof claude.use==="function");
 const GEMINI_URL="https://harukana-ai.dkdlsp25.workers.dev";
@@ -7397,78 +6756,6 @@ function geminiSample(){
     try{return JSON.parse(t)}catch(e){const er=new Error("bad_json");er.code="bad_json";throw er}};
   return f;
 }
-async function initRank(){
-  return; // 로그인·친구·랭킹은 2026-11-11에 뺐다 (가벼운 앱). 아래 Firebase 코드는 남아 있지만 불리지 않는다
-  rk.state="elsewhere";if(tab===5)renderRank();
-}
-const SYNC_GAP=60000;
-function scoreData(){
-  return{xp:S.xp,level:lvOf(S.xp),streak:streak(),chars:[...ALL,...ALL_K].filter(c=>cd(c.k)).length,words:WORDS.filter(w=>wd(w.id)).length,badges:Object.keys(S.badges).length,nick:S.account?(S.nick||"").slice(0,12):guestNick(),title:stampTitle(),avatar:avatarOf(S.avatar).id,week:weekId(),weekXp:weekXp()};
-}
-function syncScore(){
-  if(!rk.fb||!rk.me||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
-  if(JSON.stringify(scoreData())===rk.last)return;
-  clearTimeout(rk.timer);
-  const wait=Math.max(1200,SYNC_GAP-(Date.now()-(rk.wroteAt||0)));
-  rk.timer=setTimeout(()=>pushScore(false),wait);
-}
-const LIM={xpBurst:3500,wkBurst:500,perSec:7,createXp:20000,createWk:3000};
-async function rawFields(path){
-  const r=await fetch(`${REST_BASE}/${path}`,{headers:await authHeader()});
-  if(r.status===404)return null;if(!r.ok)throw new Error("REST "+r.status);
-  return (await r.json()).fields||{};
-}
-async function loadSrv(){
-  try{
-    const [s,p]=await Promise.all([rawFields(`scores/${rk.me}`),rawFields(`weeks/${weekId()}/players/${rk.me}`)]),at=Date.now(),num=v=>Number(v&&v.integerValue)||0;
-    rk.srv={score:s?{xp:num(s.xp),weekXp:num(s.weekXp),week:s.week&&s.week.stringValue,at,timed:!!(s.t&&s.t.timestampValue)}:null,
-      player:p?{weekXp:num(p.weekXp),week:weekId(),at,timed:!!(p.t&&p.t.timestampValue)}:null};
-  }catch(e){rk.srv=undefined}
-}
-function allowed(prev,field,burst,createCap){
-  if(!prev)return createCap;
-  return (Number(prev[field])||0)+burst-10+(prev.timed?Math.floor(Math.max(0,Date.now()-prev.at)/1000)*LIM.perSec:0);
-}
-function clampScore(d){
-  const sv=rk.srv||{},wk=weekId();
-  const xp=Math.min(d.xp,allowed(sv.score,"xp",LIM.xpBurst,LIM.createXp));
-  const wkS=sv.score&&sv.score.week!==wk?LIM.createWk:allowed(sv.score,"weekXp",LIM.wkBurst,LIM.createWk);
-  const wkP=sv.player&&sv.player.week===wk?allowed(sv.player,"weekXp",LIM.wkBurst,LIM.createWk):LIM.createWk;
-  const weekXp=Math.min(d.weekXp,wkS,wkP);
-  return{...d,xp,weekXp,level:lvOf(xp)};
-}
-async function pushScore(leaving){
-  if(!rk.fb||!rk.me||!S.rank||S.rankOff||S.xp<=0||rk.blocked)return;
-  const full=scoreData(),sig=JSON.stringify(full);
-  if(sig===rk.last)return;
-  if(rk.busy&&!leaving){rk.timer=setTimeout(()=>pushScore(false),3000);return}
-  if(rk.srv===undefined){if(leaving)return;await loadSrv();if(rk.srv===undefined)return}
-  clearTimeout(rk.timer);rk.busy=true;rk.wroteAt=Date.now();
-  const data=clampScore(full),partial=data.xp<full.xp||data.weekXp<full.weekXp;
-  try{
-    const now=[{fieldPath:"t",setToServerValue:"REQUEST_TIME"}];
-    const writes=[{update:{name:DOC(`scores/${rk.me}`),fields:toFields(data).fields},updateTransforms:now}];
-    if(data.weekXp>0)writes.push({update:{name:DOC(`weeks/${data.week}/players/${rk.me}`),fields:toFields({nick:data.nick,title:data.title,avatar:data.avatar,level:data.level,weekXp:data.weekXp}).fields},updateTransforms:now});
-    await restCommit(writes,leaving);
-    const at=Date.now();
-    rk.srv={score:{xp:data.xp,weekXp:data.weekXp,week:data.week,at,timed:true},player:data.weekXp>0?{weekXp:data.weekXp,week:data.week,at,timed:true}:(rk.srv&&rk.srv.player)||null};
-    rk.syncErr=null;rk.retried=false;
-    if(partial){rk.last=JSON.stringify(data);if(!leaving)rk.timer=setTimeout(()=>pushScore(false),SYNC_GAP)}
-    else rk.last=sig;
-  }catch(e){
-    rk.syncErr=String(e&&(e.status||e.message));
-    if(e&&e.status===403&&!rk.retried&&!leaving){
-      rk.retried=true;rk.busy=false;await ensureNick(true);await loadSrv();
-      try{const b=await cachedGet(`bans/${rk.me}`,true);rk.banned=b?{reason:b.reason||""}:null;if(b){rk.blocked=true;scheduleRank();return}}catch(e){}
-      rk.timer=setTimeout(()=>pushScore(false),5000);return;
-    }
-    if(e&&e.status===403){rk.blocked=true;scheduleRank()}
-    else if(!leaving)rk.timer=setTimeout(()=>pushScore(false),15000); // 통신 오류면 잠시 뒤 다시 시도
-  }
-  rk.busy=false;
-}
-document.addEventListener("visibilitychange",()=>{if(document.hidden)pushScore(true)});
-window.addEventListener("pagehide",()=>pushScore(true));
 const wordIdsOf=(s,set)=>WORDS.filter(w=>{const c=catOf(w.category)||{};return c.script===s&&!c.extra&&(c.set||1)===(set||1)}).map(w=>w.id);
 const RECORDS=[
   {id:"hc",name:"히라가나 글자",short:"히라가나",icon:"あ",items:()=>ALL.map(c=>c.k),done:cd,tiers:["새싹","수련생","달인"],kind:"char"},
@@ -7481,7 +6768,7 @@ const RECORDS=[
 ];
 function curTier(r){const it=r.items(),n=it.filter(r.done).length,t=it.length;return n===0?-1:n===t?2:n/t>=.5?1:0}
 function updateTitles(){RECORDS.forEach(r=>{const c=curTier(r);if(c>(S.titles[r.id]??-1))S.titles[r.id]=c})}
-const nickName=()=>S.nick||rk.myName||"학습자";
+const nickName=()=>S.nick||"학습자";
 
 const AVATARS=[
   {id:"fox",name:"여우 하루",vb:"0 0 180 190",fox:1,svg:'<use href="#fox"/>'},
@@ -7522,7 +6809,7 @@ function resetRecord(id){
   else if(id==="note"){S.n={};nq=null;label="오답노트"}
   else if(id==="reward"){S.xp=0;S.badges={};S.stamps={};S.flags={};label="XP·스탬프"}
   else if(id==="all"){const keep={xp:S.xp,badges:S.badges,stamps:S.stamps,flags:S.flags,daily:S.daily,nick:S.nick,avatar:S.avatar,rank:S.rank,titles:S.titles,title:S.title,wk:S.wk,day:S.day,claimed:S.claimed,account:S.account};S=fresh();Object.assign(S,keep);delete S.flags.grad;qScript="h";qStage=1;cq=null;wv={view:"list"};nq=null;jv={view:"jlist",lv:"N5"};try{localStorage.removeItem("harukana-jsess")}catch(e){}label="학습"}
-  save();refreshSummary();rk.last="";syncScore();
+  save();refreshSummary();
   if(tab===0)renderHome();
   if(tab===2){$("quiz").innerHTML="";startStage(qStage);renderStageBar();renderCharQuiz()}
   if(tab===3)renderWords();
@@ -7541,13 +6828,6 @@ document.addEventListener("click",e=>{
   if(b.classList.contains("armed"))resetRecord(b.dataset.reset);
   else{b.classList.add("armed");b.textContent="한 번 더 누르면 지워져요"}
 });
-function bindAcct(p){
-  bindLoginBtns(p+"login");
-  if($(p+"logout"))$(p+"logout").onclick=()=>{if(rk.logoutArmed){googleLogout()}else{rk.logoutArmed=true;notifyText("로그아웃하면 이 기기의 기록은 지워지고, 다시 로그인하면 계정에서 불러와요.");renderRank();setTimeout(()=>{rk.logoutArmed=false;scheduleRank();renderSettings()},5000)}};
-  if($(p+"pw"))$(p+"pw").onclick=openPwDialog;
-  if($(p+"link"))$(p+"link").onclick=async()=>{try{await authHeader();openIdDialog("link",{...rk.auth,email:acctLogin(S.account)})}catch(e){notifyText("다시 로그인해 주세요.")}};
-  if($(p+"delete"))$(p+"delete").onclick=()=>{if(rk.deleteArmed){rk.deleteArmed=false;deleteAccount()}else{rk.deleteArmed=true;preloadAuth()?.catch(()=>{});notifyText("계정과 이 기기의 학습 기록이 모두 지워지고 되돌릴 수 없어요.");renderRank();setTimeout(()=>{rk.deleteArmed=false;scheduleRank();renderSettings()},6000)}};
-}
 const TEST_MODE=/(^|[?&])test(=|&|$)/.test(location.search.slice(1))||/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 function runDataCheck(){
   const bad=[],dup=(name,list,key)=>{const seen={};list.forEach(x=>{const k=key(x);if(!k)bad.push(`${name}: 빈 값 (${JSON.stringify(x).slice(0,40)})`);else if(seen[k])bad.push(`${name}: 겹침 "${k}"`);seen[k]=1})};
@@ -7581,7 +6861,6 @@ function runDataCheck(){
   return {ok:!bad.length,sum,bad};
 }
 function testClear(lv){
-  if(S.account)return notifyText("로그인한 상태에서는 쓸 수 없어요.");
   const done={r:1,w:0,d:1};
   for(const st of ROAD_STEPS){const map=st.done===cd?S.c:st.done===wd?S.w:S.sx;st.items().forEach(k=>{map[k]={...done};if(map===S.c)S.seen[k]=1})}
   if(lv==="mid"){S.flags.grad=1;KANJI.forEach(j=>S.kj[j.k]={...done});TRAVEL.forEach(t=>S.tv[t.id]={...done});wordIdsOf("m").forEach(id=>S.w[id]={...done})}
@@ -7671,17 +6950,15 @@ function renderSettings(force){
     <div class="rec-etc">
       <div><b>모든 학습 기록</b><small>글자·단어·문장·한자·오답노트를 처음부터 다시 해요. 목표 코스도 다시 기초부터 열려요. 프로필(이름·사진)은 남아요.</small>${resetBtn("all","모두 초기화")}</div>
     </div>${TEST_MODE?`<h4 class="set-h">테스트 도구 <small>(테스트 주소에서만 보여요)</small></h4>
-    <div class="set-sound test-tools">${S.account?`<p class="set-note">로그인한 상태에서는 쓸 수 없어요. 계정 기록과 친구에게 보이는 기록에 섞이지 않게, 로그아웃한 뒤 써 주세요.</p>`:`<div class="test-btns"><button type="button" class="rec-reset" data-clear="beg">기초 클리어</button><button type="button" class="rec-reset" data-clear="mid">코스 열기 (여행 클리어)</button></div>
-      <p class="set-note">이 브라우저의 학습 기록만 바꿔요. 처음으로 돌리려면 위의 '모두 초기화'를 눌러요.</p>`}
+    <div class="set-sound test-tools"><div class="test-btns"><button type="button" class="rec-reset" data-clear="beg">기초 클리어</button><button type="button" class="rec-reset" data-clear="mid">코스 열기 (여행 클리어)</button></div>
+      <p class="set-note">이 브라우저의 학습 기록만 바꿔요. 처음으로 돌리려면 위의 '모두 초기화'를 눌러요.</p>
       <div class="test-btns" style="margin-top:12px"><button type="button" class="rec-reset" id="data-check">데이터 검사</button></div><div id="data-check-out" class="set-note" aria-live="polite"></div></div>`:""}`;
   if($("data-check"))$("data-check").onclick=()=>{const r=runDataCheck();$("data-check-out").innerHTML=r.ok?`✿ 문제없어요 · ${r.sum}`:`<b>${r.bad.length}개 확인 필요</b> · ${r.sum}<br>${r.bad.slice(0,30).map(esc).join("<br>")}`};
   $("set-close").onclick=()=>d.close();
-  if($("move-open"))$("move-open").onclick=openMoveDlg;
   d.querySelectorAll("[data-clear]").forEach(b=>b.onclick=()=>testClear(b.dataset.clear));
   $("guide-open").onclick=()=>{d.close();openGuide()};
   $("hide-hg").onchange=e=>setHideHg(e.target.checked);
   if($("grad-open"))$("grad-open").onclick=()=>{d.close();openGrad()};
-  try{bindAcct("s")}catch(e){}
   renderSoundSettings();
 }
 const resetBar=(id,label,note)=>`<div class="reset-bar"><span>${note}</span>${resetBtn(id,label)}</div>`;
@@ -7693,12 +6970,9 @@ function renderRank(){
     <div class="pf-side"><div class="pf-avatar">${avatarSvg(S.avatar)}</div><button class="link" id="av-edit">${pickingAv?"닫기":"사진 바꾸기"}</button></div>
     <div class="pf-main">
       ${editingNick
-        ?`<div class="pf-edit"><input id="nick-in" maxlength="12" value="${esc(S.nick||"")}" placeholder="한글·영어·숫자 2~12자" aria-label="닉네임"><button class="next" id="nick-save">${rk.nickArmed?"한 번 더 누르면 확정":"저장"}</button><button class="link" id="nick-cancel">취소</button></div>
-          <p class="nick-help" id="nick-msg">${true?"":nickLeft()===1?"<b>이번이 마지막이에요.</b> 이 이름은 다시 바꿀 수 없어요.":"이름은 다른 사람과 겹칠 수 없어요. 정한 뒤 한 번 더 바꿀 수 있어요."}</p>`
-        :`<div class="pf-name"><b id="pf-nick"></b>${true?`<button class="link" id="nick-edit">닉네임 바꾸기</button>`
-          :!S.account?`<small class="nick-help">로그인하면 이름을 정할 수 있어요</small>`
-          :nickLeft()?`<button class="link" id="nick-edit">${nickLeft()===2?"이름 정하기":"이름 바꾸기 (1번 남음)"}</button>`
-          :`<small class="nick-help">이름은 더 바꿀 수 없어요</small>`}</div>`}
+        ?`<div class="pf-edit"><input id="nick-in" maxlength="12" value="${esc(S.nick||"")}" placeholder="한글·영어·숫자 2~12자" aria-label="닉네임"><button class="next" id="nick-save">저장</button><button class="link" id="nick-cancel">취소</button></div>
+          <p class="nick-help" id="nick-msg"></p>`
+        :`<div class="pf-name"><b id="pf-nick"></b><button class="link" id="nick-edit">닉네임 바꾸기</button></div>`}
       <div class="me-rec"><div><b>${streak()}일</b><small>연속 학습</small></div><div><b>${Object.keys(S.daily||{}).length}일</b><small>공부한 날</small></div><div><b>${+(S.daily[keyOf(new Date())]||0)}</b><small>오늘 푼 문제</small></div></div>
       <div class="me-steps">${hubSteps().map((s,i)=>{const pct=Math.round(s.n/s.all*100);return `<div class="me-step"><span>${i+1}. ${s.t}</span><span class="bar"><i style="width:${pct}%"></i></span><small>${s.n.toLocaleString()} / ${s.all.toLocaleString()}${s.unit}</small></div>`}).join("")}</div>
     </div></div>
@@ -7708,21 +6982,16 @@ function renderRank(){
   renderSettings();
   if($("nick-edit"))$("nick-edit").onclick=()=>{editingNick=true;renderRank();$("nick-in").focus()};
   if($("nick-save")){
-    const close=()=>{editingNick=false;rk.nickArmed=false;renderRank()};
+    const close=()=>{editingNick=false;renderRank()};
     const done=async()=>{
       const v=$("nick-in").value.trim().slice(0,12);
-      if(true){if(v)S.nick=maskBad(v);save();close();return} // 이름은 이 브라우저에만 저장 (로그인 기능을 뺐다)
-      if(nickLeft()===1&&!rk.nickArmed&&v&&v!==S.nick){rk.nickArmed=true;$("nick-save").textContent="한 번 더 누르면 확정";return}
-      $("nick-save").disabled=true;
-      const err=await saveNick(v);
-      if(err){$("nick-msg").textContent=err;$("nick-msg").classList.add("bad");$("nick-save").disabled=false;rk.nickArmed=false;$("nick-save").textContent="저장";return}
-      close();
+      if(v)S.nick=maskBad(v);save();close(); // 이름은 이 브라우저에만 저장
     };
     $("nick-save").onclick=done;$("nick-cancel").onclick=close;
     $("nick-in").onkeydown=e=>{if(e.key==="Enter")done();if(e.key==="Escape")close()};
   }
   $("av-edit").onclick=()=>{pickingAv=!pickingAv;renderRank()};if($("me-set"))$("me-set").onclick=openSettings;
-  document.querySelectorAll("[data-av]").forEach(b=>b.onclick=()=>{S.avatar=b.dataset.av;pickingAv=false;save();rk.last="";syncScore();renderRank()});
+  document.querySelectorAll("[data-av]").forEach(b=>b.onclick=()=>{S.avatar=b.dataset.av;pickingAv=false;save();renderRank()});
 }
 
 const INTERVALS=[1,3,7,14,30],REVIEW_MAX=20;
@@ -8913,7 +8182,7 @@ function jlFinish(){
   X.n=(X.n||0)+1;X.best=Math.max(X.best||0,res.total);if(res.pass)X.pass=1;X.last=res.total;
   if(jx.set){X.sets=X.sets||{};X.sets[jx.set]=Math.max(X.sets[jx.set]||0,res.total)}
   const xp=res.right*5+(firstPass?100:0);if(xp)addXp(xp);
-  updateTitles();checkBadges();save();refreshSummary();syncScore();
+  updateTitles();checkBadges();save();refreshSummary();
   notifyText(`모의시험 채점 완료!${firstPass?" 처음으로 합격선을 넘었어요!":""}`);
   jx={view:"result",qs:jx.qs,ans:jx.ans,res,set:jx.set};
   if(tab===8){renderJlptTab();window.scrollTo({top:0,behavior:"instant"})}
@@ -9241,7 +8510,6 @@ function foxSay(){
   if(st>=2)list.push([`${st}일째 이어 가고 있어요`,studied?"오늘도 한 걸음, 멋져요!":"오늘도 하나만 하면 이어져요."]);
   if(!studied&&!st&&Object.keys(S.daily).length)list.push(["어제는 쉬었네요, 괜찮아요","오늘 한 문제만 같이 풀어요!"]);
   if(X.best)list.push([`N5 모의시험 최고 ${X.best}점`,X.pass?"합격선을 넘었어요. 실전도 할 수 있어요!":"합격선(80점)까지 조금만 더!"]);
-  if(frIds().length){const t=frIds().map(id=>rk.friends[id]).filter(x=>x&&sameDayKst(x.t)).length;if(t)list.push([`오늘 친구 ${t}명이 공부했어요`,"같이 한 걸음 해요!"])}
   if(!list.length)list.push(h<10?["좋은 아침이에요!","아침에 본 글자는 오래 남아요."]:h>=20?["오늘 하루도 수고했어요","자기 전에 한 문제, 어때요?"]:["서두르지 않아도 괜찮아.","어제보다 한 걸음이면 충분해!"]);
   return list[Math.floor((Date.now()+9*36e5)/36e5)%list.length]; // 한 시간마다 다른 말
 }
@@ -9304,7 +8572,7 @@ $("top-avatar").onclick=()=>show(5); // 내 아바타 → 프로필
 $("mobile-theme").onclick=()=>$("theme").onclick();const mobileNav=matchMedia('(max-width:760px)');
 const orientNav=()=>document.querySelector('.tabs').setAttribute('aria-orientation',mobileNav.matches?'horizontal':'vertical');
 mobileNav.addEventListener('change',orientNav);orientNav();
-dropGone();updateTitles();migrateSr();save();refreshSummary();renderHome();initRank();
+dropGone();updateTitles();migrateSr();save();refreshSummary();renderHome();
 if(!S.flags.guide&&!Object.keys(S.c||{}).length&&!S.xp)openGuide(); // 처음 온 사람만 (이미 공부한 기록이 있으면 안 띄운다)
 if(!S.flags.grad&&/mid|adv/.test(S.level||"")){S.flags.grad=1;save()} // 예전에 이미 중급·고급이던 사람에게는 수료 창을 새로 띄우지 않는다
 {histPush({tab:0},true);histTab=0} // 늘 홈에서 시작하고, 지금 칸을 이번 회차의 첫 기록으로 둔다
