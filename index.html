@@ -637,6 +637,7 @@ p,small,li,.tip,.s-tip,.s-note,.desc,.intro{word-break:keep-all;overflow-wrap:br
 .primary-link>span.nav-ic{display:grid;place-items:center;flex:0 0 26px;width:26px;height:26px;background:none!important;color:var(--sub)}.primary-link>span.nav-ic svg{width:22px;height:22px}
 .primary-link.active{color:var(--accent-dark)}.primary-link.active>span.nav-ic{color:var(--accent);background:none}
 @media(max-width:760px){.primary-link>span.nav-ic{flex:0 0 24px;width:24px;height:24px}.primary-link{font-size:12px}.primary-link.active{background:none}}
+.ai-log>div.ai-bot{margin:0;padding:10px 13px;border-radius:14px;line-height:1.65;font-size:15px;overflow-wrap:anywhere}.ai-bot .ai-ul{margin:4px 0 6px;padding-left:20px}.ai-bot .ai-ul li{margin:2px 0}.ai-bot .ai-sec{display:block;margin-top:8px}.ai-bot .ai-line{display:block}
 </style><a class="skip-link" href="#content">학습 내용으로 이동</a><div class="sakura-deco" aria-hidden="true"><svg class="deco-branch tr" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><path d="M230 46q-20 40-60 62M120 96q-10 30-40 46" stroke="var(--trunk)" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="150" y="30" width="100" height="64"/><use href="#hs-bloom" x="60" y="80" width="95" height="61"/><use href="#hs-bloom" x="140" y="96" width="70" height="45"/><use href="#hs-bloom" x="0" y="128" width="70" height="45"/></svg><svg class="deco-branch bl" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="130" y="40" width="100" height="64"/><use href="#hs-bloom" x="30" y="100" width="90" height="58"/></svg><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><svg xmlns="http://www.w3.org/2000/svg" class="svg-library" aria-hidden="true"><defs>
 <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></symbol>
 <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5C9 3 5 3 3 4v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1v15"/></symbol>
@@ -6283,45 +6284,76 @@ document.addEventListener("paste",e=>{if(!bookOpen())return;const it=[...((e.cli
 document.addEventListener("dragover",e=>{if(!bookOpen())return;if([...(e.dataTransfer&&e.dataTransfer.types||[])].includes("Files")){e.preventDefault();document.body.classList.add("ph-drop")}});
 document.addEventListener("dragleave",e=>{if(!e.relatedTarget)document.body.classList.remove("ph-drop")});
 document.addEventListener("drop",e=>{document.body.classList.remove("ph-drop");if(!bookOpen())return;const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(!f)return;e.preventDefault();photoFile(f)});
+let phLast=[];
+const phSaved=()=>Array.isArray(S.phw)?S.phw:[];
+const phHas=ja=>phSaved().some(w=>w.ja===ja);
+function phToggle(w){let L=phSaved().slice();if(phHas(w.ja))L=L.filter(x=>x.ja!==w.ja);else L.push({ja:w.ja,yomi:w.yomi||"",ko:w.ko||"",note:w.note||"",at:Date.now()});S.phw=L.slice(-200);save()}
+const phMark=s=>esc(s).replace(/\(\?\)|（\?）/g,'<small class="bad" title="확실하지 않은 글자예요">(?)</small>');
+function phQuiz(list){
+  const uniq=[];list.filter(w=>w&&w.ja&&w.ko).forEach(w=>{if(!uniq.some(u=>u.ja===w.ja))uniq.push(w)});
+  if(uniq.length<2){notifyText("낱말이 2개 이상 있어야 문제를 만들 수 있어요.");return}
+  const qs=shuffle(uniq.slice()).slice(0,5).map((w,i)=>{
+    const mean=i%2===0,ans=mean?w.ko:w.ja,opts=[];
+    for(const o of [...shuffle(uniq.filter(x=>x!==w).map(x=>mean?x.ko:x.ja)),...shuffle(WORDS.slice()).slice(0,40).map(x=>mean?x.meaning:x.kana)]){if(opts.length===3)break;if(o&&o!==ans&&!opts.includes(o))opts.push(o)}
+    return [mean?`「${w.ja}」${w.yomi&&w.yomi!==w.ja?`(${w.yomi})`:""}의 뜻은?`:`'${w.ko}'을(를) 일본어로 하면?`,ans,...opts,`${w.ja}${w.yomi&&w.yomi!==w.ja?`(${w.yomi})`:""} = ${w.ko}${w.note?" · "+w.note:""}`,"사진 속 낱말"];
+  }).filter(q=>q.length===7);
+  if(qs.length)openDrill(qs);
+}
 async function readPhoto(sample,file){
   let d=aiPaneHost()||$("ai-dlg");if(!d){d=document.createElement("dialog");d.id="ai-dlg";d.className="set-dlg ai-dlg";document.body.appendChild(d)}
   if(d.tagName==="DIALOG")d.classList.add("ai-full"); // 사진 읽기 결과는 화면 가득 (하루쌤 화면 안이면 그 칸 그대로)
   const url=URL.createObjectURL(file);
   d.innerHTML=`<div class="set-top"><h3><span class="ai-mark" aria-hidden="true">📷</span> 사진으로 읽기</h3><button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
     <img class="ph-img" src="${url}" alt="고른 사진">
-    <div id="ph-out" aria-live="polite"><p class="ai-bot thinking">하루가 사진 속 일본어를 읽고 있어요… <small>(처음이면 사진을 보내도 되는지 한 번 물어봐요)</small></p></div>
+    <div id="ph-out" aria-live="polite"><p class="ai-bot thinking">하루쌤이 사진 속 일본어를 읽고 있어요… <small>(처음이면 사진을 보내도 되는지 한 번 물어봐요)</small></p></div>
     <div class="navrow"><button type="button" class="ghost" id="ph-stop">멈추기</button></div>`;
   d.addEventListener("close",()=>{if(photoCtl)photoCtl.abort();URL.revokeObjectURL(url)},{once:true});
   $("ai-x").onclick=()=>d.close();if(!d.open)d.showModal();
   photoCtl=new AbortController();$("ph-stop").onclick=()=>photoCtl&&photoCtl.abort();
-  const out=$("ph-out");
+  const out=$("ph-out");let lines=[];
   try{
     const live=document.createElement("p");live.className="ai-bot";
     const {text}=await sample(`함께 보낸 사진(이미지) 속 글자를 읽고, 그중 일본어를 한국어로 해석해 줘. 보는 사람은 일본어 초보 한국인이야.
 규칙:
 - 사진에는 일본어와 영어·숫자·기호가 섞여 있을 수 있어. 히라가나·가타카나·한자가 한 글자라도 있으면 일본어가 있는 거야.
-- 사진에 실제로 쓰여 있는 글자만 읽어. 사진에 아예 없는 글자를 지어내지 마.
-- 손글씨·흘림체·흐린 글자처럼 알아보기 어려운 글자는 빼지 말고, 모양과 앞뒤 말(메뉴·가격·안내문 같은 맥락)로 가장 그럴듯한 글자를 추측해서 읽어. 추측한 글자 바로 뒤에는 (?)를 붙여. 예: 営業(?)時間
-- 추측이 들어간 줄은 한국어 뜻 끝에 "(추측)"을 붙여. 전체 뜻에도 추측이 섞였으면 끝에 "(일부 추측)"을 붙여.
-- 아래 형식 그대로, 다른 말 없이 답해.
+- 사진 속 일본어 문장을 빠짐없이 모두 읽어. 사진에 실제로 쓰여 있는 글자만 읽고, 없는 글자를 지어내지 마.
+- 손글씨·흘림체·흐리거나 잘린 글자는 빼지 말고, 모양과 앞뒤 말(메뉴·가격·안내문 같은 맥락)로 가장 그럴듯한 글자를 추측해서 읽어. 확실하지 않은 글자 바로 뒤에는 (?)를 붙여. 예: 営業(?)時間
+- 추측이 들어간 줄은 한국어 뜻 끝에 "(추측)"을 붙여. (?)와 (추측)은 사진 속 글자가 흐리거나 잘려서 확실하지 않을 때만 쓰고, 잘 보이는 글자에는 쓰지 마.
+- 숫자·시간·가격(10:00, 850円)은 읽기 칸에도 숫자를 그대로 써 (예: 10:00～20:00 → 10:00～20:00, 850円 → 850えん).
+- 아래 형식 그대로, 다른 말 없이 답해. 굵게(**) 같은 꾸밈은 쓰지 마.
 첫 줄: 전체 뜻: (사진 속 글 전체가 무슨 뜻인지 한국어 한두 문장)
-그 다음 줄부터 사진 속 일본어를 앞에서부터 의미 덩어리로 나눠 한 줄씩, 최대 15줄:
-일본어 원문 | 히라가나 읽기 | 한국어 뜻
+그 다음 줄부터 사진 속 일본어를 앞에서부터 문장 하나(간판·메뉴라면 항목 하나)씩 한 줄에, 최대 20줄:
+일본어 원문 | 히라가나 읽기 | 한국어 뜻 | 낱말들
+- 낱말들 칸: 그 문장의 주요 낱말(최대 6개, 조사만 있는 것은 빼)을 ; 로 나눠 적어. 낱말 하나는 '낱말=히라가나 읽기=뜻=짧은 문법 설명' 모양. 문법 설명은 활용형·조사 쓰임 같은 것을 한국어 한 줄로, 없으면 비워 둬.
+  예: 営業時間 | えいぎょうじかん | 영업시간 | 営業=えいぎょう=영업=; 時間=じかん=시간=
+  예: 写真を撮らないでください | しゃしんを とらないで ください | 사진을 찍지 마세요 | 写真=しゃしん=사진=を는 목적어 조사; 撮らないで=とらないで=찍지 말고=撮る(찍다)의 ない형 + で; ください=ください=주세요=부탁하는 말
 예외: 이미지가 아예 보이지 않으면 "사진 없음", 이미지는 보이는데 일본어 글자가 정말 하나도 없으면 "일본어 없음" 한 줄만 써.`,{images:[file],signal:photoCtl.signal,cache:false,onText:({text})=>{if(!live.isConnected){out.innerHTML="";out.appendChild(live)}live.textContent=text}});
-    const raw=String(text||"").trim(),rows=raw.split(/\r?\n/).map(l=>l.replace(/^[\s\-*·•]*(\d+[.)]\s+)?/,"").trim()).filter(Boolean); // 줄 앞의 목록 표시("- ", "1. ")만 뗀다. 숫자로 시작하는 원문(10:00, 850円)은 그대로 둔다
-    const meaningLine=rows.find(l=>/^전체\s*뜻\s*[:：]/.test(l));
-    const lines=rows.filter(l=>l.includes("|")).map(l=>l.split("|").map(x=>x.trim())).filter(p=>p.length>=3&&p[0]&&!/^일본어|원문$/.test(p[0])).slice(0,15).map(p=>({ja:p[0].slice(0,60),yomi:p[1].slice(0,80),ko:p.slice(2).join(" ").slice(0,100)}));
-    const none=/^["“]?일본어\s*없음/.test(raw),noImg=/^["“]?사진\s*없음/.test(raw);
+    const raw=String(text||"").trim(),rows=raw.split(/\r?\n/).map(l=>l.replace(/^[\s\-*·•]*(\d+[.)]\s+)?/,"").trim()).filter(Boolean); // 줄 앞의 목록 표시만 뗀다 (10:00, 850円 같은 원문은 그대로)
+    rows.forEach((l,i)=>{rows[i]=l.replace(/^\*+\s*|\*\*/g,"")});const meaningLine=rows.find(l=>/^전체\s*뜻\s*[:：]/.test(l));
+    lines=rows.filter(l=>l.includes("|")).map(l=>l.split("|").map(x=>x.trim())).filter(p=>p.length>=3&&p[0]&&!/^일본어|원문$/.test(p[0])).slice(0,20).map(p=>({ja:p[0].slice(0,80),yomi:p[1].slice(0,100),ko:p[2].slice(0,120),
+      words:String(p.slice(3).join(" ")||"").split(/[;；]/).map(x=>x.split(/[=＝]/).map(y=>y.trim())).filter(x=>x[0]&&x.length>=3).slice(0,6).map(x=>({ja:x[0].slice(0,20),yomi:(x[1]||"").slice(0,30),ko:(x[2]||"").slice(0,40),note:(x[3]||"").slice(0,80)}))}));
+    phLast=lines.flatMap(l=>l.words);
+    const none=/^["“]?일본어\s*없음/.test(raw),noImg=/^["“]?사진\s*없음/.test(raw),unsure=lines.some(l=>/\(\?\)|（\?）|추측/.test(l.ja+l.ko));
     out.innerHTML=noImg?`<p class="ai-err">사진이 AI에게 전달되지 않았어요. ${IN_CLAUDE?"claude.ai 페이지를 새로 고친 뒤 다시 해 보거나, 다른 브라우저(크롬 등)에서 열어 주세요.":"페이지를 새로 고친 뒤 다시 해 보거나, 다른 사진으로 해 주세요."}</p>`
       :none?`<p class="rk-note">이 사진에서는 읽을 수 있는 일본어를 찾지 못했어요. 일본어 글자가 크게 나오게 다시 찍거나 잘라서 올려 주세요.</p>`
       :lines.length?`${meaningLine?`<p class="ph-sum"><b>전체 뜻</b> ${esc(meaningLine.replace(/^전체\s*뜻\s*[:：]\s*/,"").slice(0,250))}</p>`:""}
-      <ul class="ph-list">${lines.map(i=>`<li><div><b lang="ja" class="ja-font">${esc(i.ja)}</b> <small class="hgx">${esc(i.yomi)}</small></div><div class="ph-ko">${esc(i.ko)}</div><button type="button" class="ph-say" data-say="${esc(i.yomi||i.ja)}" aria-label="소리 듣기">🔊</button></li>`).join("")}</ul>
+      ${unsure?`<p class="rk-note"><small class="bad">(?)</small> 표시는 사진이 흐리거나 잘려서 확실하지 않은 글자예요. 실제 글자와 다를 수 있어요.</p>`:""}
+      <p class="guide-p s-note">${phLast.length?"낱말을 누르면 뜻과 문법이 나오고, ☆로 내 단어장에 저장할 수 있어요.":""}</p>
+      <ul class="ph-list">${lines.map((i,n)=>`<li><div><b lang="ja" class="ja-font">${phMark(i.ja)}</b> <small class="hgx">${esc(i.yomi)}</small>${/\(\?\)|（\?）|추측/.test(i.ja+i.ko)?' <span class="pill">확실하지 않음</span>':""}</div><div class="ph-ko">${esc(i.ko)}</div>
+        ${i.words.length?`<div>${i.words.map((w,j)=>`<button type="button" class="ar-go" data-phw="${n}:${j}" lang="ja">${esc(w.ja)}</button>`).join(" ")}</div><div class="ph-ko" id="phd-${n}" hidden></div>`:""}
+        <button type="button" class="ph-say" data-say="${esc(i.yomi||i.ja)}" aria-label="소리 듣기">🔊</button></li>`).join("")}</ul>
+      ${phLast.length>=2?`<div class="ar-drill"><button type="button" class="next" id="ph-quiz">✎ 이 사진 낱말로 복습 문제</button><small>사진에서 찾은 낱말 ${phLast.length}개로 만들어요</small></div>`:""}
       <p class="ai-note">AI가 해석한 내용이라 틀릴 수 있어요. 사진은 저장하지 않아요.</p>`
       :`<p class="ai-bot ph-raw">${esc(raw).replace(/\n/g,"<br>")}</p><p class="ai-note">AI가 해석한 내용이라 틀릴 수 있어요. 사진은 저장하지 않아요.</p>`;
     out.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak(b.dataset.say));
+    const showW=(n,j)=>{const w=lines[n]&&lines[n].words[j],box=$("phd-"+n);if(!w||!box)return;
+      box.hidden=false;box.innerHTML=`<b lang="ja">${esc(w.ja)}</b>${w.yomi&&w.yomi!==w.ja?` <small class="hgx">${esc(w.yomi)}</small>`:""} — ${esc(w.ko)}${w.note?`<br><small>문법: ${esc(w.note)}</small>`:""}<br><button type="button" class="ar-go" id="phs-${n}">${phHas(w.ja)?"★ 단어장에 있어요 (빼기)":"☆ 단어장에 저장"}</button>`;
+      $("phs-"+n).onclick=()=>{phToggle(w);showW(n,j)}};
+    out.querySelectorAll("[data-phw]").forEach(b=>b.onclick=()=>{const [n,j]=b.dataset.phw.split(":").map(Number);showW(n,j)});
+    if($("ph-quiz"))$("ph-quiz").onclick=()=>phQuiz(phLast);
   }catch(e){out.innerHTML=`<p class="ai-err">${esc(aiFail(e))}${e&&e.code&&e.code!=="cancelled"?` <small>(${esc(e.code)})</small>`:""}</p>`}
   finally{photoCtl=null;const st=$("ph-stop");if(st)st.parentElement.innerHTML=`<button type="button" class="ghost" id="ph-again">다른 사진</button><button type="button" class="next" id="ph-close">닫기</button>`;
-    if($("ph-again"))$("ph-again").onclick=()=>{d.close();openPhotoReader("gallery")};if($("ph-close"))$("ph-close").onclick=()=>d.close()}
+    if($("ph-again"))$("ph-again").onclick=()=>{if(aiPaneHost())openPhotoReader("gallery");else{d.close();openPhotoReader("gallery")}};if($("ph-close"))$("ph-close").onclick=()=>{if(aiPaneHost())renderAiPane();else d.close()}}
 }
 const bkRow=t=>`<div class="bk-row"><button type="button" class="bk-main" data-bk="${t.id}"><b>${esc(t.ko)}</b><span class="ja-font" lang="ja">${esc(t.ja)}</span><small class="hgx">${esc(t.hg||"")}</small></button><button type="button" class="bk-star${favOn(t.id)?" on":""}" data-fav="${t.id}" aria-label="${favOn(t.id)?"즐겨찾기에서 빼기":"즐겨찾기에 넣기"}" aria-pressed="${favOn(t.id)}">${favOn(t.id)?"★":"☆"}</button></div>`;
 function bindBkRows(box){box.querySelectorAll("[data-bk]").forEach(b=>b.onclick=()=>openShow(b.dataset.bk));box.querySelectorAll("[data-fav]").forEach(b=>b.onclick=()=>{toggleFav(b.dataset.fav);drawBook()})}
@@ -7651,9 +7683,36 @@ function aiCtxJl(id){
 }
 function aiCtxFree(){
   const kana=[...ALL,...ALL_K].filter(c=>cd(c.k)).length,words=WORDS.filter(w=>wd(w.id)).length;
-  return {title:"무엇이든 물어보기",show:"일본어에 대해 궁금한 것",
-    ctx:`특정 문제 없이 자유롭게 묻는 중이야.\n배우는 사람의 진도: 익힌 가나 ${kana}자, 모은 단어 ${words}개, ${basicDone()?"기초를 마치고 회화·N5 문법·한자를 공부하는 중":"아직 기초(가나·단어·문장)를 공부하는 중"}.\n진도에 맞춰 쉽게 설명해. 퀴즈를 내 달라고 하면 한 번에 한 문제씩 내고, 답을 들은 뒤 채점해.`,
-    chips:["は와 が는 뭐가 달라요?","일본 식당에서 쓰는 말 알려 주세요","제 진도에 맞는 퀴즈 내 주세요","카타카나는 언제 써요?"]};
+  return {title:"무엇이든 물어보기",show:"일본어에 대해 궁금한 것",rules:ASK_RULES,
+    ctx:`특정 문제 없이 자유롭게 묻는 중이야.\n배우는 사람의 진도: 익힌 가나 ${kana}자, 모은 단어 ${words}개, ${basicDone()?"기초를 마치고 회화·N5 문법·한자를 공부하는 중":"아직 기초(가나·단어·문장)를 공부하는 중"}.\n진도에 맞춰 쉽게 설명해.`,
+    chips:["は와 が의 차이를 알려 줘","に와 で는 뭐가 달라요?","です와 ます는 언제 써요?","제 진도에 맞는 퀴즈 내 주세요"]};
+}
+const ASK_RULES=`너는 일본어 학습 앱 '하루카나'의 튜터 '하루쌤'이야. 배우는 사람은 일본어를 막 시작한 한국인이야.
+답은 꼭 이 모양으로 써:
+1) 첫 줄: 질문에 대한 핵심 답 한두 문장. 인사·자기소개 없이 바로.
+2) 그 아래 '- '로 시작하는 줄 2~4개. 비교하는 질문이면 '- 표현 : 설명' 모양으로 하나씩 써 (예: '- は : 문장의 주제나 이미 알고 있는 대상').
+3) 그 다음 줄에 '예문' 한 단어만 쓰고, 그 아래 '- '로 시작하는 예문 2~3개. 예문 모양: '- 일본어 (히라가나 읽기) — 한국어 뜻'. 예문에 한자가 없으면 읽기 괄호는 빼. 비교 질문이면 같은 문장에서 한 곳만 바꿔 차이가 보이게 해.
+4) 도움이 되면 마지막에 '포인트' 한 단어 줄과 그 아래 '- ' 한 줄로 외우는 요령.
+규칙:
+- 한국어 해요체로, 쉽게. 어려운 문법 용어는 쉬운 말로 풀어.
+- 일본어는 N5 수준의 쉬운 말로. 한자를 쓰면 괄호 안에 히라가나 읽기를 같이 적어.
+- 확실하지 않으면 모른다고 말해. 지어내지 마.
+- 일본어 공부와 상관없는 부탁은 정중히 거절하고 공부 얘기로 돌아와.
+- 퀴즈를 내 달라고 하면 위 모양 대신 한 번에 한 문제씩 내고, 답을 들은 뒤 채점해.
+- 표·코드 블록·# 제목은 쓰지 마. 강조는 **굵게**만.
+지금 보고 있는 내용:
+`;
+function aiFmtRich(text){
+  let h="",ul=false;const inl=s=>esc(s).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>"),close=()=>{if(ul){h+="</ul>";ul=false}};
+  for(const raw of String(text||"").split("\n")){
+    const t=raw.trim();if(!t){close();continue}
+    const li=t.match(/^(?:[-•・*]|\d+[.)])\s+(.*)$/);
+    if(li){if(!ul){h+='<ul class="ai-ul">';ul=true}const m=li[1].match(/^([^:：]{1,14}?)\s+[:：]\s+(.+)$/);h+=`<li>${m?`<b>${inl(m[1])}</b> : ${inl(m[2])}`:inl(li[1])}</li>`;continue}
+    close();
+    if(/^(예문|포인트|정리|비교|주의|요령|예)\s*[:：]?$/.test(t)){h+=`<b class="ai-sec">${esc(t.replace(/\s*[:：]$/,""))}</b>`;continue}
+    h+=`<span class="ai-line">${inl(t)}</span>`;
+  }
+  close();return h;
 }
 function aiCtxTv(id){
   const t=TRAVEL_BY[id];if(!t)return null;
@@ -7687,28 +7746,29 @@ function openAiTutor(kind,id){
       <div class="navrow"><button type="button" class="ghost" id="ai-no">닫기</button><button type="button" class="next" data-goclaude>claude.ai 버전 열기</button></div>`;
     $("ai-x").onclick=$("ai-no").onclick=()=>d.close();if(!d.open)d.showModal();return;
   }
-  const turns=[];
+  const turns=c.prev?c.prev.slice():[];
   d.innerHTML=top+`<div class="ai-log" id="ai-log" aria-live="polite"><p class="ai-hello">${esc(c.hello||"무엇이 궁금해요? 아래에서 고르거나 직접 적어 보세요.")}</p></div>
     <div class="ai-chips" id="ai-chips">${c.chips.map(t=>`<button type="button" class="ghost">${esc(t)}</button>`).join("")}</div>
     <form class="ai-form" id="ai-form"><input id="ai-in" maxlength="300" placeholder="${esc(c.ph||"궁금한 것을 적어요 (한국어로)")}" aria-label="AI에게 질문" autocomplete="off"><button class="next" id="ai-send">묻기</button></form>
     <p class="ai-note">${IN_CLAUDE?"답은 보는 사람의 Claude 계정으로 만들어져요(처음 한 번 허락을 물어요).":"답은 Google Gemini로 만들어져요. 대화 내용은 하루카나에 저장하지 않아요."} AI도 틀릴 수 있어요.</p>`;
   const log=$("ai-log"),inp=$("ai-in"),send=$("ai-send");
+  const fmt0=t=>c.role?aiFmtRole(t):aiFmtRich(t);if(c.prev)c.prev.filter(t=>!t.h).slice(-6).forEach(t=>log.insertAdjacentHTML("beforeend",t.role==="user"?`<p class="ai-me">${esc(t.content)}</p>`:`<div class="ai-bot">${fmt0(t.content)}</div>`)); // 지난 대화 몇 줄
   const busy=on=>{d.querySelectorAll("#ai-chips button").forEach(b=>b.disabled=on);send.textContent=on?"멈추기":"묻기";send.dataset.busy=on?"1":""};
-  const fmt=t=>c.role?aiFmtRole(t):esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\n/g,"<br>");
+  const fmt=t=>c.role?aiFmtRole(t):aiFmtRich(t);
   async function ask(text,hidden){
     text=String(text||"").trim().slice(0,300);if(!text||aiCtl)return;
     const sample=await aiGet();
     if(!sample){log.insertAdjacentHTML("beforeend",`<p class="ai-err">${AI_DOWN()}</p>`);return}
     if(!hidden){const hi=log.querySelector(".ai-hello");if(hi)hi.remove();
     log.insertAdjacentHTML("beforeend",`<p class="ai-me">${esc(text)}</p>`)}
-    const out=document.createElement("p");out.className="ai-bot thinking";out.textContent="하루가 생각하고 있어요…";log.appendChild(out);out.scrollIntoView({block:"nearest"});
-    turns.push({role:"user",content:text});
+    const out=document.createElement("div");out.className="ai-bot thinking";out.textContent="하루쌤이 생각하고 있어요…";log.appendChild(out);out.scrollIntoView({block:"nearest"});
+    turns.push(hidden?{role:"user",content:text,h:1}:{role:"user",content:text});
     aiCtl=new AbortController();busy(true);
     try{
-      const recent=turns.slice(-8);if(recent[0].role!=="user")recent.shift();
+      const recent=turns.slice(-8).map(t=>({role:t.role,content:t.content}));if(recent[0].role!=="user")recent.shift();
       const r=await sample([{role:"user",content:(c.rules||AI_RULES)+c.ctx},...recent],{cache:false,modelTier:"quick",signal:aiCtl.signal,onText:({text})=>{out.classList.remove("thinking");out.innerHTML=fmt(text)}});
       out.classList.remove("thinking");out.innerHTML=fmt(r.text)+(r.truncated?'<br><small>(답이 길어서 중간에 끊겼어요)</small>':"");
-      turns.push({role:"assistant",content:r.text});
+      turns.push({role:"assistant",content:r.text});if(c.roleId){S.roleLog=S.roleLog||{};S.roleLog[c.roleId]={at:Date.now(),turns:turns.slice(-12)};save()} // 다음에 이어서 하도록
     }catch(e){
       out.classList.remove("thinking");const code=e&&e.code;
       if(code==="cancelled"){out.innerHTML=e.text?fmt(e.text)+"<br><small>(멈췄어요)</small>":"<small>멈췄어요</small>";if(e.text)turns.push({role:"assistant",content:e.text})}
@@ -7720,7 +7780,7 @@ function openAiTutor(kind,id){
     }finally{aiCtl=null;busy(false);inp.focus()}
   }
   $("ai-x").onclick=()=>d.close();if($("ai-back"))$("ai-back").onclick=openRoleWin;
-  d.querySelectorAll("#ai-chips button").forEach(b=>b.onclick=()=>ask(b.textContent));
+  d.querySelectorAll("#ai-chips button").forEach(b=>b.onclick=()=>{if(b.textContent==="처음부터 다시"&&c.roleId){if(S.roleLog)delete S.roleLog[c.roleId];save();return openAiTutor("role",c.roleId)}ask(b.textContent)});
   $("ai-form").onsubmit=e=>{e.preventDefault();if(send.dataset.busy){if(aiCtl)aiCtl.abort();return}const v=inp.value;inp.value="";ask(v)};
   if(!d.open)d.showModal();
   if(c.start)ask(c.start,true);
@@ -7728,34 +7788,47 @@ function openAiTutor(kind,id){
 const aiBtnW=(kind,id)=>`<button type="button" class="ai-ask" data-ai="${kind}:${esc(id)}"><span aria-hidden="true">✦</span> 왜 틀렸을까? AI에게 묻기</button>`;
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-ai]");if(!b)return;e.preventDefault();e.stopPropagation();const i=b.dataset.ai.indexOf(":"),k=b.dataset.ai.slice(0,i);if(k==="free")return goAiTab("ask");openAiTutor(k,b.dataset.ai.slice(i+1))},true);
 const GOALS={travel:["✈️","여행"],exam:["📝","시험(N5)"],anime:["🎬","애니·드라마"],hobby:["🌱","취미"]};
+const ROLE_ME={trav:["✈️","여행객"],stu:["🎒","유학생"],work:["💼","직장인"]};
+const roleMe=()=>ROLE_ME[S.roleMe]?S.roleMe:"trav";
 const ROLE_SITS=[
-  {id:"cafe",ic:"☕",t:"카페 주문",d:"음료를 고르고 주문해요",role:"카페 점원",scene:"손님이 카페에서 음료를 주문하는 상황",goal:["travel","hobby"]},
-  {id:"food",ic:"🍜",t:"식당",d:"몇 명인지 말하고 메뉴를 시켜요",role:"라멘집 점원",scene:"손님이 식당에 들어와 자리를 안내받고 주문하는 상황",goal:["travel"]},
-  {id:"konbini",ic:"🏪",t:"편의점",d:"봉투·데우기·계산",role:"편의점 점원",scene:"손님이 편의점에서 도시락과 음료를 계산하는 상황",goal:["travel"]},
-  {id:"hotel",ic:"🏨",t:"호텔 체크인",d:"예약 확인, 이름 말하기",role:"호텔 프런트 직원",scene:"손님이 호텔에 체크인하는 상황",goal:["travel"]},
-  {id:"road",ic:"🗺️",t:"길 묻기",d:"역이 어디인지 물어봐요",role:"길을 가던 친절한 일본 사람",scene:"여행자가 역까지 가는 길을 묻는 상황",goal:["travel"]},
-  {id:"shop",ic:"🛍️",t:"옷 가게",d:"사이즈·색·가격 묻기",role:"옷 가게 점원",scene:"손님이 옷을 고르고 입어 보고 사는 상황",goal:["travel","hobby"]},
-  {id:"friend",ic:"🙋",t:"처음 만난 친구",d:"이름·나라·취미 소개",role:"처음 만난 일본인 대학생 친구 '유키'",scene:"서로 자기소개를 하고 취미를 묻는 상황",goal:["hobby","exam","anime"]},
-  {id:"anime",ic:"🎬",t:"애니·드라마 수다",d:"좋아하는 작품 이야기",role:"애니와 드라마를 좋아하는 일본인 친구 '하루토'",scene:"좋아하는 애니·드라마·노래에 대해 이야기하는 상황 (실제 작품의 대사나 가사는 인용하지 말 것)",goal:["anime","hobby"]},
-  {id:"teacher",ic:"🏫",t:"선생님과 면담",d:"공부·시험 이야기",role:"일본어 학교 선생님",scene:"학생이 선생님과 일본어 공부와 N5 시험 준비에 대해 이야기하는 상황",goal:["exam"]},
+  {id:"cafe",ic:"☕",t:"카페 주문",d:"음료를 고르고 주문해요",role:"카페 점원",scene:"손님이 카페에서 음료를 주문하는 상황",flow:["주문 받기","따뜻한 것·차가운 것과 크기","가게에서 먹을지 가져갈지","계산","감사 인사"],me:["trav","stu","work"],goal:["travel","hobby"]},
+  {id:"food",ic:"🍜",t:"식당",d:"몇 명인지 말하고 메뉴를 시켜요",role:"라멘집 점원",scene:"손님이 식당에 들어와 자리를 안내받고 주문하는 상황",flow:["인원 확인과 자리 안내","메뉴 주문","음료 주문","계산","나가며 인사"],me:["trav","stu","work"],goal:["travel"]},
+  {id:"konbini",ic:"🏪",t:"편의점",d:"데우기·봉투·계산",role:"편의점 점원",scene:"손님이 편의점에서 도시락과 음료를 계산하는 상황",flow:["도시락 데우기","젓가락과 봉투","포인트 카드","결제 방법"],me:["trav","stu","work"],goal:["travel"]},
+  {id:"station",ic:"🚉",t:"역에서 표 사기",d:"가는 곳 말하고 표 사기",role:"역 창구 직원",scene:"여행자가 역 창구에서 표를 사고 타는 곳을 묻는 상황",flow:["가는 곳 말하기","표 종류와 장수","값 내기","몇 번 타는 곳인지","출발 시간 확인"],me:["trav"],goal:["travel"]},
+  {id:"hotel",ic:"🏨",t:"호텔 체크인",d:"예약 확인, 이름 말하기",role:"호텔 프런트 직원",scene:"손님이 호텔에 체크인하는 상황",flow:["예약 확인","이름과 여권","방과 아침 식사 안내","짐 맡기기"],me:["trav"],goal:["travel"]},
+  {id:"road",ic:"🗺️",t:"길 묻기",d:"역이 어디인지 물어봐요",role:"길을 가던 친절한 일본 사람",scene:"배우는 사람이 역까지 가는 길을 묻는 상황",flow:["말 걸기","가는 길 듣기","다시 확인하기","감사 인사"],me:["trav","stu"],goal:["travel"]},
+  {id:"shop",ic:"🛍️",t:"옷 가게",d:"사이즈·색·가격 묻기",role:"옷 가게 점원",scene:"손님이 옷을 고르고 입어 보고 사는 상황",flow:["찾는 옷 말하기","크기와 색","입어 보기","값 묻고 계산"],me:["trav","stu","work"],goal:["travel","hobby"]},
+  {id:"friend",ic:"🙋",t:"처음 만난 사람",d:"이름·나라·하는 일·취미 소개",greet:1,who:{trav:"여행 중에 게스트하우스에서 만난 일본인 대학생 '유키'",stu:"같은 반이 된 일본인 친구 '유키'",work:"새로 같은 팀이 된 회사 동료 '야마다 씨'"},role:"처음 만난 일본인 '유키'",scene:"처음 만나 서로 자기소개를 하는 상황",flow:["인사와 이름","어디에서 왔는지","하는 일이나 공부","취미","다음에 또 만나자는 인사"],me:["trav","stu","work"],goal:["hobby","exam","anime"]},
+  {id:"office",ic:"🏢",t:"회사에서",d:"아침 인사 · 할 일 · 점심 약속",greet:1,role:"회사 선배 '사토 씨'",scene:"일본 회사에서 선배와 하루를 보내는 상황",flow:["아침 인사","오늘 할 일 이야기","점심 같이 먹자고 하기","퇴근 인사"],me:["work"],goal:["hobby"]},
+  {id:"teacher",ic:"🏫",t:"학교에서",d:"선생님과 숙제·시험 이야기",greet:1,role:"일본어 학교 선생님",scene:"학생이 선생님과 숙제와 N5 시험 준비에 대해 이야기하는 상황",flow:["인사","숙제 이야기","모르는 것 질문하기","시험 이야기","인사하고 나가기"],me:["stu"],goal:["exam"]},
+  {id:"anime",ic:"🎬",t:"애니·드라마 수다",d:"좋아하는 작품 이야기",role:"애니와 드라마를 좋아하는 일본인 친구 '하루토'",scene:"좋아하는 애니·드라마·노래에 대해 이야기하는 상황 (실제 작품의 대사나 가사는 인용하지 말 것)",flow:["좋아하는 작품","좋아하는 인물","언제 보는지","서로 추천하기"],me:["trav","stu","work"],goal:["anime","hobby"]},
 ];
 const ROLE_BY={};ROLE_SITS.forEach(r=>ROLE_BY[r.id]=r);
-const roleRules=r=>`너는 일본어 학습 앱 '하루카나'의 대화 연습 상대야. 배우는 사람은 일본어를 막 시작한 한국인이야.
-지금 너는 ${r.role}이고, 상황은 ${r.scene}이야.
+const roleWho=r=>r.who&&r.who[roleMe()]||r.role;
+const roleRules=r=>`너는 일본어 학습 앱 '하루카나'의 대화 연습 상대 '하루쌤'이야. 배우는 사람은 일본어를 막 시작한 한국인이고, 이 대화에서 '${ROLE_ME[roleMe()][1]}' 역할이야.
+지금 너는 ${roleWho(r)}이고, 상황은 ${r.scene}이야.
+대화 흐름: ${r.flow.join(" → ")}
+배우는 사람이 한 단계를 해내면 네가 다음 단계로 자연스럽게 넘어가. 마지막 단계가 끝나면 상황에 맞게 대화를 마무리하고, 이어서 해 볼 만한 다음 상황을 한국어 한 줄로 권해.
 규칙:
-- 매번 짧은 일본어 한두 문장으로 네 역할을 해. 히라가나·가타카나만 쓰고 한자는 쓰지 마. N5 수준의 쉬운 말만 써.
-- 일본어 문장은 한 줄에 하나씩 쓰고, 그 아래 줄에 '뜻: (한국어)'를 적어.
-- 배우는 사람이 일본어로 답하면: 맞으면 마지막 줄에 '👍 좋아요!'만, 틀리거나 어색하면 마지막 줄에 '✏️ 이렇게 말하면 자연스러워요: (고친 일본어) — (짧은 이유)'를 적어.
-- 배우는 사람이 한국어로 쓰면, 그 말을 일본어로 어떻게 하는지 한 줄로 알려 주고 따라 써 보라고 해.
-- '힌트'를 부탁하면 대답에 쓸 수 있는 일본어 2개를 뜻과 함께 알려 줘.
+- ${r.greet?"자연스러운 첫인사로 시작해도 돼.":"인사나 자기소개부터 시작하지 말고, 상황 한가운데에서 바로 첫 단계 말을 걸어."}
+- 네 역할의 일본어는 매번 짧게 한두 문장. 히라가나·가타카나만 써. 한자는 한 글자도 쓰지 마 (注文 → ちゅうもん, 何 → なに). N5 수준의 쉬운 말.
+- 일본어 문장은 한 줄에 하나씩 쓰고, 바로 아래 줄에 '뜻: (한국어)'를 적어.
+- 배우는 사람이 흐름에 없는 말이나 다른 질문을 해도 그 말에 자연스럽게 반응하고, 그다음 흐름으로 부드럽게 돌아와.
+- 배우는 사람이 일본어로 말하면, 네 대답 맨 아래 줄에 배우는 사람이 방금 쓴 그 문장에 대한 피드백만 한 줄 붙여 (쓰지 않은 말은 지어내지 마). 자연스러우면 '👍 (잘한 점 짧게)', 틀리거나 어색하면 '✏️ (더 자연스러운 일본어) — (짧은 이유)'. 피드백을 해도 대화는 끊지 말고 이어 가.
+- 배우는 사람이 한국어로 쓰면, 맨 아래 줄에 '💬 (그 말을 일본어로) — (뜻)'을 알려 주고 대화는 이어 가.
+- '힌트'를 부탁하면 지금 단계에서 쓸 수 있는 일본어 2개를 뜻과 함께 알려 줘.
 - '피드백'을 부탁하면 대화를 끝내고 잘한 점 1개, 고칠 점 2개, 외울 표현 3개를 한국어로 짧게 정리해.
+- '(앱 안내)'로 시작하는 말은 배우는 사람의 말이 아니라 앱의 안내야. 그 말에는 피드백을 붙이지 마.
 - 위험하거나 공부와 상관없는 부탁은 정중히 거절하고 대화로 돌아와.
 - 제목·표·코드 블록 없이 써.
 `;
 function aiCtxRole(id){const r=ROLE_BY[id];if(!r)return null;
-  return {title:`AI 대화 · ${r.t}`,show:r.d,rules:roleRules(r),ctx:`(대화 시작)`,role:1,start:"대화를 시작해 줘. 네가 먼저 첫마디를 해.",
-    ph:"일본어로 답해 보세요 (모르면 한국어로)",hello:`${r.ic} ${josa(r.role,"과","와")} 이야기해요. 하루가 먼저 말을 걸어요.`,
-    chips:["힌트 주세요","한 번 더 천천히 말해 주세요","이 말은 무슨 뜻이에요?","대화 끝내고 피드백 주세요"]};
+  const L=S.roleLog&&S.roleLog[id],prev=L&&Array.isArray(L.turns)&&L.turns.filter(t=>!t.h).length>=2?L.turns.slice(-12):null,me=ROLE_ME[roleMe()];
+  return {title:`AI 대화 · ${r.t} · 초급 N5`,show:`${me[0]} 나: ${me[1]} · 상대: ${roleWho(r).replace(/'/g,"")}`,rules:roleRules(r),ctx:`(대화)`,role:1,roleId:id,prev,
+    start:prev?"(앱 안내) 지난번 대화에 이어서, 아직 하지 않은 다음 단계부터 자연스럽게 다시 말을 걸어 줘. 인사부터 다시 하지 마.":"(앱 안내) 대화를 시작해 줘. 네가 먼저 첫마디를 해.",
+    ph:"일본어로 답해 보세요 (모르면 한국어로)",
+    hello:prev?`${r.ic} 지난 대화에 이어서 해요. 처음부터 하고 싶으면 '처음부터 다시'를 눌러요.`:`${r.ic} 대화 흐름: ${r.flow.join(" → ")}. 하루쌤이 먼저 말을 걸어요.`,
+    chips:["힌트 주세요","한 번 더 천천히 말해 주세요","이 말은 무슨 뜻이에요?","대화 끝내고 피드백 주세요",...(prev?["처음부터 다시"]:[])]};
 }
 function aiCtxW(id){const w=WBY[id];if(!w)return null;
   return {title:"틀린 단어",show:w.kana,ctx:`배우는 사람이 단어 퀴즈에서 틀린 단어\n일본어: ${w.kana}\n발음: ${w.hangul}\n뜻: ${w.meaning}${w.ex?`\n예문: ${w.ex.ja} (${w.ex.ko})`:""}`,
@@ -7769,6 +7842,7 @@ const aiJaLine=t=>/^[\sぁ-ゖァ-ヺー、。！？!?「」〜…・]+$/.test(t
 function aiFmtRole(text){
   return String(text||"").split("\n").map(l=>{const t=l.trim();if(!t)return "";
     if(aiJaLine(t))return `<span class="ai-ja" lang="ja">${esc(t)} <button type="button" class="ai-say" data-say="${esc(t)}" aria-label="듣기">🔊</button></span><span class="ai-jhg">${esc(jaHangul(t))}</span>`;
+    if(/^(👍|✏️|✏)/.test(t))return `<b>하루쌤 피드백</b> ${esc(t)}`;if(/^💬/.test(t))return `<b>이렇게 말해요</b> ${esc(t)}`;
     return esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>")}).filter(Boolean).join("<br>");
 }
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".ai-say");if(b){e.preventDefault();speak(b.dataset.say)}});
@@ -7844,7 +7918,15 @@ let aiDrillCtl=null;
 function renderAiDrill(){const el=$("ai-drill");if(el)el.innerHTML=""}
 function weakDrill(){
   const pool=drillPool();if(pool.length<4){notifyText("단어를 조금 더 공부하면 약점 문제를 만들 수 있어요.");return}
-  const qs=pool.slice(0,5).map((w,i)=>drillQ(w,i%2?"가나":"뜻","","",pool)).filter(q=>q.length===6);
+  const wrong=pool.slice(0,2),used=new Set(wrong.map(w=>w.id)),sim=[];
+  wrong.forEach(w=>{if(sim.length>=2)return;const c=WORDS.filter(x=>x.category===w.category&&!used.has(x.id));const pick=c.find(x=>wd(x.id))||shuffle(c.slice())[0];if(pick){sim.push(pick);used.add(pick.id)}});
+  for(const x of pool){if(sim.length>=2)break;if(!used.has(x.id)){sim.push(x);used.add(x.id)}}
+  const learned=WORDS.filter(w=>wd(w.id)&&!used.has(w.id)&&!(S.w&&S.w[w.id]&&Number(S.w[w.id].w)>0));
+  const rev=learned.length?learned[Math.floor(Math.random()*Math.min(learned.length,40))]:pool.find(x=>!used.has(x.id));
+  const inEx=(w,dir)=>{const e=w.ex;if(!e||!e.ja||!e.ko)return "";const f=w.meaning.split(/[,/·(（]/)[0].trim();
+    return dir==="뜻"?(e.ja.replace(/\s/g,"").includes(w.kana)?`예문 「${e.ja}」에서 「${w.kana}」의 뜻은?`:""):`'${e.ko}' — 여기서 '${f}'을(를) 일본어로 하면?`};
+  const qs=[...wrong.map((w,i)=>[w,i?"가나":"뜻","가장 많이 틀린 것",""]),...sim.map((w,i)=>{const dir=i?"가나":"뜻";return [w,dir,"비슷한 유형 응용",inEx(w,dir)]}),...(rev?[[rev,"뜻","예전에 배운 것 복습",""]]:[])]
+    .map(([w,dir,tag,qt])=>{const q=drillQ(w,dir,qt,"",pool);q.push(tag);return q}).filter(q=>q.length===7);
   if(qs.length)openDrill(qs);
 }
 function drillPool(){
@@ -7904,12 +7986,12 @@ function openDrill(qs){
   let d=$("drill-dlg");if(!d){d=document.createElement("dialog");d.id="drill-dlg";d.className="set-dlg ai-dlg";document.body.appendChild(d)}
   let i=0,right=0;
   const draw=()=>{
-    if(i>=qs.length){d.innerHTML=`<div class="set-top"><h3>✎ 약점 문제</h3><button class="set-x" id="dr-x" aria-label="닫기">×</button></div><h2 style="text-align:center">${qs.length}문제 중 ${right}개 맞혔어요</h2><p class="guide-p" style="text-align:center">${right===qs.length?"약점이 강점이 되고 있어요! 🦊":"틀린 문제는 해설을 한 번 더 읽어 봐요."}</p><div class="navrow"><button class="next" id="dr-end">닫기</button></div>`;
+    if(i>=qs.length){d.innerHTML=`<div class="set-top"><h3>✎ ${qs[0][6]==="사진 속 낱말"?"사진 낱말 복습":"약점 문제"}</h3><button class="set-x" id="dr-x" aria-label="닫기">×</button></div><h2 style="text-align:center">${qs.length}문제 중 ${right}개 맞혔어요</h2><p class="guide-p" style="text-align:center">${right===qs.length?"약점이 강점이 되고 있어요! 🦊":"틀린 문제는 해설을 한 번 더 읽어 봐요."}</p><div class="navrow"><button class="next" id="dr-end">닫기</button></div>`;
       $("dr-x").onclick=$("dr-end").onclick=()=>d.close();return}
     const q=qs[i],opts=shuffle(q.slice(1,5));
-    d.innerHTML=`<div class="set-top"><h3>✎ 약점 문제 <small>${i+1} / ${qs.length}</small></h3><button class="set-x" id="dr-x" aria-label="닫기">×</button></div>
-      <p class="dr-q">${esc(q[0])}</p><div class="dr-ch">${opts.map(o=>`<button type="button" class="ghost" lang="ja">${esc(o)}</button>`).join("")}</div><p class="dr-fb" id="dr-fb" aria-live="polite"></p>
-      <div class="navrow"><button class="next" id="dr-next" hidden>${i+1<qs.length?"다음":"결과 보기"}</button></div><p class="ai-note">오답노트와 틀린 단어로 만든 문제예요.</p>`;
+    d.innerHTML=`<div class="set-top"><h3>✎ ${q[6]==="사진 속 낱말"?"사진 낱말 복습":"약점 문제"} <small>${i+1} / ${qs.length}</small></h3><button class="set-x" id="dr-x" aria-label="닫기">×</button></div>
+      ${q[6]?`<span class="pill">${esc(q[6])}</span>`:""}<p class="dr-q">${esc(q[0])}</p><div class="dr-ch">${opts.map(o=>`<button type="button" class="ghost" lang="ja">${esc(o)}</button>`).join("")}</div><p class="dr-fb" id="dr-fb" aria-live="polite"></p>
+      <div class="navrow"><button class="next" id="dr-next" hidden>${i+1<qs.length?"다음":"결과 보기"}</button></div><p class="ai-note">${q[6]==="사진 속 낱말"?"사진에서 찾은 낱말로 만든 문제예요.":"오답노트와 틀린 단어로 만든 문제예요."}</p>`;
     $("dr-x").onclick=()=>d.close();
     d.querySelectorAll(".dr-ch button").forEach(b=>b.onclick=()=>{const ok=b.textContent===q[1];if(ok)right++;recordPractice();
       d.querySelectorAll(".dr-ch button").forEach(x=>{x.disabled=true;if(x.textContent===q[1])x.classList.add("right")});if(!ok)b.classList.add("wrong");
@@ -7936,6 +8018,7 @@ function aiGoList(){
   return g;
 }
 function aiGo(k){
+  if(k==="drill")return weakDrill();if(k.startsWith("hub:")){const f=HUB_GO[k.slice(4)];return f?f():show(10)}
   if(k==="kana")return show(1);if(k==="words"||k==="book"){wv={view:"list"};return show(3)}if(k==="sents"||k==="grammar"){wv={view:"slist",sg:"p"};return show(3)}if(k.startsWith("role:"))return openAiTutor("role",k.slice(5));
   if(k==="review"){show(4);return}
   if(k==="note"){show(4);setTimeout(()=>{const n=$("note");if(n)n.scrollIntoView({block:"start"})},80);return}
@@ -7965,57 +8048,111 @@ function renderRepEntry(){
 }
 function renderAiReport(){
   renderRepEntry();const el=$("ai-report");if(!el)return;
-  const st=studyStats(),rows=st.areas.filter(([,a])=>a.n>=5);
+  const st=studyStats(),rows=st.areas.filter(([,a])=>a.n>=5),total=st.areas.reduce((s,[,a])=>s+(a.n||0),0);
   const worst=rows.slice().sort((a,b)=>a[1].p-b[1].p)[0];
   const bar=p=>`<span class="bar"><i style="width:${p}%"></i></span>`;
   const mine=rows.length?`<div class="ar-grid">${rows.map(([n,a])=>`<div class="ar-row${worst&&n===worst[0]&&a.p<85?" weak":""}"><span>${n}</span>${bar(a.p)}<b>${a.p}%</b><small>${a.n}문제</small></div>`).join("")}</div>`
     :`<p class="rk-note">문제를 조금 더 풀면 영역별 정답률이 보여요. (영역마다 5문제 이상)</p>`;
-  const top=st.notes.slice(0,5);
+  const top=st.notes.slice(0,5),W=findWeak(st),P=todayPlan(st),T=P.T,mins=P.items.reduce((s,x)=>s+x.min,0);
   const R=S.aiRep&&S.aiRep.r;
   const aiPart=!AI_ON
-    ?`<div class="ar-ai off"><span class="ar-ai-ic" aria-hidden="true">✦</span><div><b>AI 약점 진단</b><small>AI가 내 기록을 읽고 약점과 3~5일 공부 계획을 만들어 줘요. claude.ai에서 여는 하루카나에서 쓸 수 있어요.</small></div><button type="button" class="ghost" data-goclaude>claude.ai 버전</button></div>`
-    :aiRepBusy?`<div class="ar-ai"><span class="ar-ai-ic thinking" aria-hidden="true">✦</span><div><b>하루가 기록을 읽고 있어요…</b><small>${esc(aiRepBusy)}</small></div><button class="ghost" id="ar-stop">멈추기</button></div>`
-    :`<div class="ar-ai"><span class="ar-ai-ic" aria-hidden="true">✦</span><div><b>AI 약점 진단</b><small>${R?`마지막 분석: ${agoText(S.aiRep.at)}`:"AI가 내 기록을 읽고 약점과 3~5일 공부 계획을 만들어 줘요"}</small></div><button class="next" id="ar-run">${R?"다시 분석":"분석 받기"}</button></div>`;
-  const go=k=>{const g=aiGoList();return g[k]?`<button type="button" class="ar-go" data-argo="${esc(k)}">${esc(g[k])} ›</button>`:""};
+    ?`<div class="ar-ai off"><span class="ar-ai-ic" aria-hidden="true">✦</span><div><b>하루쌤 AI 진단</b><small>AI가 내 기록을 읽고 왜 틀리는지와 고치는 요령을 알려 줘요. claude.ai에서 여는 하루카나에서 쓸 수 있어요.</small></div><button type="button" class="ghost" data-goclaude>claude.ai 버전</button></div>`
+    :aiRepBusy?`<div class="ar-ai"><span class="ar-ai-ic thinking" aria-hidden="true">✦</span><div><b>하루쌤이 기록을 읽고 있어요…</b><small>${esc(aiRepBusy)}</small></div><button class="ghost" id="ar-stop">멈추기</button></div>`
+    :`<div class="ar-ai"><span class="ar-ai-ic" aria-hidden="true">✦</span><div><b>하루쌤 AI 진단</b><small>${R?`마지막 분석: ${agoText(S.aiRep.at)}`:"AI가 내 기록을 읽고 왜 틀리는지와 고치는 요령을 알려 줘요"}</small></div><button class="next" id="ar-run">${R?"다시 분석":"분석 받기"}</button></div>`;
+  const go=(k,label)=>{const g=aiGoList();return g[k]?`<button type="button" class="ar-go" data-argo="${esc(k)}">${esc(label||g[k])} ›</button>`:""};
   const rep=R?`<div class="ar-result">
       <p class="ar-sum">${esc(R.summary)}</p>
       ${R.strengths&&R.strengths.length?`<p class="ar-good"><b>잘하고 있어요</b> ${R.strengths.map(esc).join(" · ")}</p>`:""}
       ${R.weak.map(w=>`<div class="ar-weak"><b>${esc(w.title)}</b><p>${esc(w.why)}</p><p class="ar-tip">💡 ${esc(w.tip)}</p>${go(w.go)}</div>`).join("")}
-      ${R.plan.length?`<h4 class="ar-h">공부 계획</h4><ol class="ar-plan">${R.plan.map(p=>`<li><span class="ar-day">${esc(p.day)}</span><span class="ar-task">${esc(p.task)}</span>${go(p.go)}</li>`).join("")}</ol>`:""}
       ${R.cheer?`<p class="ar-cheer">🦊 ${esc(R.cheer)}</p>`:""}
       <p class="ai-note">AI가 만든 분석이라 틀릴 수 있어요.</p></div>`:"";
-
-  el.innerHTML=`<details class="ar" open><summary><span class="ar-title"><b>약점 리포트</b><small>${worst&&worst[1].p<85?`가장 약한 곳: ${worst[0]} ${worst[1].p}%`:"영역별 정답률과 자주 틀린 것"}</small></span></summary>
+  const few=total<30?`<p class="rk-note">아직 기록이 적어요 (지금까지 ${total}문제). 30문제쯤 풀면 약점과 계획이 더 정확해져요. 지금은 진도에 맞춘 기본 계획이에요.</p>`:"";
+  el.innerHTML=`<details class="ar" open><summary><span class="ar-title"><b>나의 학습 분석</b><small>최근 학습 기록을 바탕으로 찾은 나의 학습 상태예요</small></span></summary>
+    ${few}
+    <h4 class="ar-h">발견한 약점</h4>
+    ${W.length?W.map((w,i)=>`<div class="ar-weak"><b>${esc(w.t)}</b>${i===0?' <span class="pill">집중 학습</span>':""}<p>${esc(w.why)}</p>${go(w.go,"추천: "+(/[AC00-D7A3]$/.test(w.gl)&&(w.gl.charCodeAt(w.gl.length-1)-0xAC00)%28===8?w.gl+"로":josa(w.gl,"으로","로"))+" 이동")}</div>`).join("")
+      :`<p class="rk-note">${total<30?"기록이 더 쌓이면 약점을 찾아 줘요.":"지금은 뚜렷한 약점이 없어요. 새 단계를 이어 가요!"}</p>`}
+    <h4 class="ar-h">하루쌤 추천 공부 계획</h4>
+    <p class="at-q">오늘 공부할 수 있는 시간</p><div class="at-goals" role="group" aria-label="공부 시간">${PLAN_T.map(m=>`<button type="button" data-plt="${m}" class="${m===T?"on":""}" aria-pressed="${m===T}">${m}분</button>`).join("")}</div>
+    <p class="ar-sum">${mins}분 · ${P.items.length}가지</p>
+    <ol class="ar-plan">${P.items.map((x,i)=>{const done=P.done.includes(x.k);return `<li><span class="ar-day">${done?"✓":i+1}</span><span class="ar-task"><b>${esc(x.t)}</b><br><small>${esc(x.sub)}</small></span><small>${x.min}분</small>${done?'<span class="pill ok">완료</span>':""}<button type="button" class="ar-go" data-plan="${i}">${done?"다시":"이동"} ›</button></li>`}).join("")}</ol>
+    <div class="ar-drill"><button type="button" class="next" id="ar-start">${P.items.every(x=>P.done.includes(x.k))?"오늘 계획을 다 했어요 ✓":"오늘의 공부 시작하기"}</button><small>시간·약점·복습할 것·진도로 앱이 짠 계획이에요. 누른 항목은 완료로 표시돼요.</small></div>
     <h4 class="ar-h">내 기록 한눈에</h4>${mine}
     ${top.length?`<h4 class="ar-h">자주 틀린 것</h4><ul class="ar-top">${top.map(it=>`<li><span lang="ja">${it.jp}</span> <small>${esc(aiPlain(it.mean))} · ${S.n[it.key].wr}번</small></li>`).join("")}</ul>`:""}
-    ${aiPart}${rep}<div class="ar-drill"><button type="button" class="next" id="ar-drill">✎ 약점 문제 5개 풀기</button><small>틀린 단어 위주로 바로 만들어요 · 몇 번이든 풀 수 있어요</small></div></details>`;
+    ${aiPart}${rep}<div class="ar-drill"><button type="button" class="next" id="ar-drill">✎ 약점 문제 5개 풀기</button><small>많이 틀린 것 2 · 비슷한 유형 응용 2 · 예전에 배운 것 복습 1</small></div></details>`;
   el.querySelectorAll("[data-argo]").forEach(b=>b.onclick=()=>{const d=$("rep-dlg");if(d&&d.open)d.close();aiGo(b.dataset.argo)}); // 바로 가기를 누르면 창을 닫고 그 화면으로
+  el.querySelectorAll("[data-plt]").forEach(b=>b.onclick=()=>{S.plan={d:dayKey(),T:+b.dataset.plt,done:P.done};save();renderAiReport()});
+  const doStep=x=>{if(!x)return;if(!P.done.includes(x.k)){P.done.push(x.k);S.plan={d:dayKey(),T,done:P.done};save()}const d=$("rep-dlg");if(d&&d.open)d.close();aiGo(x.go)};
+  el.querySelectorAll("[data-plan]").forEach(b=>b.onclick=()=>doStep(P.items[+b.dataset.plan]));
+  $("ar-start").onclick=()=>{const x=P.items.find(i=>!P.done.includes(i.k));if(x)doStep(x);else notifyText("오늘 계획을 모두 했어요. 잘했어요!")};
   if($("ar-run"))$("ar-run").onclick=runAiReport;
   if($("ar-drill"))$("ar-drill").onclick=weakDrill;
   if($("ar-stop"))$("ar-stop").onclick=()=>{if(aiRepCtl)aiRepCtl.abort()};
+}
+const PLAN_T=[10,20,30];
+function lastStudyGap(){for(let i=0;i<60;i++){const d=new Date();d.setDate(d.getDate()-i);if(S.daily&&S.daily[keyOf(d)])return i}return null}
+const AREA_GO={"글자(가나)":"kana","단어":"words","문장·문법":"sents","여행 표현":"travel:talk","N5 한자":"kanji"};
+const areaGo=n=>AREA_GO[n]||(n.startsWith("N5 ")?"jl:"+(Object.keys(JL_AREAS).find(a=>"N5 "+JL_AREAS[a]===n)||"x"):"");
+function findWeak(st){
+  const out=[],g=aiGoList(),rows=st.areas.filter(([,a])=>a.n>=5).sort((a,b)=>a[1].p-b[1].p);
+  const of=c=>st.notes.filter(it=>it.key[0]===c),kn=of("c"),wn=of("w"),sn=of("s");
+  if(kn.length>=2)out.push({t:"모양·소리가 비슷한 가나 혼동",why:`${kn.slice(0,4).map(it=>aiPlain(it.jp)).join(" · ")} 등 ${kn.length}글자에서 오답이 반복됐어요.`,go:"kana",gl:"가나 퀴즈"});
+  rows.filter(([,a])=>a.p<80).slice(0,2).forEach(([n,a])=>{const k=areaGo(n);if(k&&g[k]&&!out.some(o=>o.go===k))out.push({t:`${n} 정답률이 낮아요`,why:`${a.n}문제 중 정답률 ${a.p}%예요. 다른 영역보다 많이 틀렸어요.`,go:k,gl:g[k],p:a.p})});
+  if(wn.length>=3)out.push({t:"자주 틀리는 단어",why:`${wn.slice(0,3).map(it=>aiPlain(it.jp)).join(" · ")} 등 ${wn.length}개를 여러 번 틀렸어요.`,go:"note",gl:"오답노트"});
+  if(sn.length>=2&&!out.some(o=>o.go==="sents"))out.push({t:"문장 속 조사·표현 헷갈림",why:`문장 ${sn.length}개를 틀렸어요. 조사나 끝맺는 말을 다시 볼 때예요.`,go:"sents",gl:"문법 연습"});
+  const gap=lastStudyGap();
+  if(gap!==null&&gap>=3)out.push({t:"공부 습관이 끊김",why:`마지막 공부가 ${gap}일 전이에요. 간격이 길어지면 배운 것을 잊기 쉬워요.`,go:"review",gl:"오늘의 복습"});
+  else if(st.due>=10)out.push({t:"복습이 밀려 있어요",why:`다시 볼 때가 된 문제가 ${st.due}개예요. 잊기 전에 보면 오래 기억해요.`,go:"review",gl:"오늘의 복습"});
+  return out.slice(0,3);
+}
+function todayPlan(st){
+  const P=S.plan&&S.plan.d===dayKey()?S.plan:{d:dayKey(),T:(S.plan&&S.plan.T)||20,done:[]};
+  const T=PLAN_T.includes(P.T)?P.T:20,done=Array.isArray(P.done)?P.done.slice():[];
+  const W=findWeak(st),rows=st.areas.filter(([,a])=>a.n>=5),strong=rows.length>=2&&rows.every(([,a])=>a.p>=85),gap=lastStudyGap();
+  const hs=hubSteps(),ci=hs.findIndex(s=>s.n/s.all<s.need),cur=hs[ci<0?hs.length-1:ci];
+  const list=[],add=(k,t,sub,min,go)=>{if(!list.some(x=>x.k===k))list.push({k,t,sub,min,go})};
+  const next=()=>add("next",`${cur.L} 이어 하기`,strong?"정답률이 높아서 새 내용으로 한 단계 올려요":`${cur.t} 새로 배우기`,5,"hub:"+cur.k);
+  if(st.due||(gap!==null&&gap>=2))add("review","오늘의 복습",st.due?`다시 볼 때가 된 ${Math.min(st.due,20)}문제`:"쉬는 동안 잊었을 것 다시 보기",5,"review");
+  if(strong)next();
+  W.forEach(w=>{
+    if(w.go==="review")return;
+    if(w.go==="kana")add("kana","가나 구별 퀴즈","비슷한 글자 10문제",5,"kana");
+    else if(w.go==="note")add("note","오답노트 복습",`틀린 것 ${st.notes.length}개 다시 확인`,5,"note");
+    else add(w.go,`${w.gl}`,w.p!=null&&w.p<60?"가장 약한 곳 · 20문제":"약한 곳 10문제",w.p!=null&&w.p<60&&T>=20?10:5,w.go);
+  });
+  if(st.notes.length||drillPool().length>=4)add("drill","약점 문제 풀기","맞춤 5문제 (많이 틀린 2 · 비슷한 유형 2 · 복습 1)",5,"drill");
+  if(!strong)next();
+  if(st.notes.length)add("note","오답노트 복습",`틀린 것 ${st.notes.length}개 다시 확인`,5,"note");
+  add("words","단어 퀴즈","익힌 단어 10문제",5,"words");
+  add("sents","문법 연습","문장 5개",5,"sents");
+  add("review","오늘의 복습","배운 것 골고루 다시 보기",5,"review");
+  const items=[];let m=0;for(const x of list){if(m+x.min>T)continue;items.push(x);m+=x.min}
+  return {T,done,items};
 }
 let aiRepCtl=null;
 async function runAiReport(){
   const sample=await aiGet();
   if(!sample){notifyText(AI_DOWN());return}
-  const st=studyStats(),goList=aiGoList();
+  const st=studyStats(),goList=aiGoList(),total=st.areas.reduce((s,[,a])=>s+(a.n||0),0),W=findWeak(st),gap=lastStudyGap();
   const data=[
     `진도: 익힌 가나 ${[...ALL,...ALL_K].filter(c=>cd(c.k)).length}/${ALL.length+ALL_K.length}자, 모은 단어 ${WORDS.filter(w=>wd(w.id)).length}/${WORDS.length}개, ${basicDone()?"기초 수료(여행·N5 코스 공부 중)":"기초(가나·단어·문장) 공부 중"}`,
-    `연속 공부 ${st.streak}일, 최근 14일 하루 공부 횟수: ${st.days.join(",")}, 오늘 복습할 문제 ${st.due}개`,
+    `지금까지 푼 문제 ${total}개, 마지막 공부 ${gap===null?"기록 없음":gap===0?"오늘":gap+"일 전"}, 연속 공부 ${st.streak}일, 최근 14일 하루 공부 횟수: ${st.days.join(",")}, 오늘 복습할 문제 ${st.due}개`,
     `영역별 정답률: ${st.areas.filter(([,a])=>a.n).map(([n,a])=>`${n} ${a.p}%(${a.n}문제)`).join(", ")||"아직 기록 적음"}`,
-    st.X.n?`N5 모의시험: ${st.X.n}번 봄, 최고 ${st.X.best}점/180, 합격선 ${st.X.pass?"넘음":"아직"}, 실전 세트 ${JSON.stringify(st.X.sets||{})}`:"",
+    W.length?`앱이 찾은 약점: ${W.map(w=>w.t+" — "+w.why).join(" / ")}`:"",
+    st.X.n?`N5 모의시험: ${st.X.n}번 봄, 최고 ${st.X.best}점/180, 합격선 ${st.X.pass?"넘음":"아직"}`:"",
     st.notes.length?`오답노트에서 자주 틀린 것:\n${st.notes.slice(0,15).map(st.noteTxt).join("\n")}`:"",
     st.jw.length?`N5에서 마지막에 틀린 문제:\n${st.jw.join("\n")}`:""].filter(Boolean).join("\n");
-  const prompt=`너는 일본어 학습 앱 '하루카나'의 튜터 여우 '하루'야. 아래는 한국인 초보 학습자의 실제 학습 기록이야.
-기록을 보고 약점을 진단하고 앞으로 며칠 공부 계획을 세워 줘.
+  const prompt=`너는 일본어 학습 앱 '하루카나'의 튜터 여우 '하루쌤'이야. 아래는 한국인 초보 학습자의 실제 학습 기록이야.
+기록을 보고 왜 틀리는지 진단하고 고치는 요령을 알려 줘. (오늘의 공부 계획은 앱이 따로 짜니까 만들지 마)
 규칙:
-- 한국어로, 짧고 구체적으로. 기록에 있는 것만 근거로 삼고 지어내지 마. 기록이 적으면 적다고 말해.
+- 한국어로, 짧고 구체적으로. 기록에 있는 것만 근거로 삼고 지어내지 마.
+- 푼 문제가 30개보다 적으면 summary 첫 문장에 "아직 기록이 적어서"라고 밝히고, 확실한 것만 말해.
 - 틀린 것들의 공통점(예: 비슷한 글자, 특정 조사, 탁음, 장음)을 찾아 설명해.
 - go에는 아래 바로 가기 키 중 하나만 써: ${Object.keys(goList).join(", ")}
 - 일본어를 쓸 때는 읽는 법(히라가나)을 같이 적어.
 JSON 하나로만 답해:
-{"summary":"전체 진단 1~2문장","strengths":["잘하는 점 최대 2개"],"weak":[{"title":"약점 이름","why":"기록에서 보이는 근거","tip":"고치는 요령 한두 문장","go":"바로 가기 키"}],"plan":[{"day":"1일째","task":"할 일 한 문장","go":"바로 가기 키"}],"cheer":"응원 한 문장"}
-weak는 1~3개, plan은 3~5개.
+{"summary":"전체 진단 1~2문장","strengths":["잘하는 점 최대 2개"],"weak":[{"title":"약점 이름","why":"기록에서 보이는 근거","tip":"고치는 요령 한두 문장","go":"바로 가기 키"}],"cheer":"응원 한 문장"}
+weak는 1~3개.
 
 학습 기록:
 ${data}`;
@@ -8025,7 +8162,6 @@ ${data}`;
     const s=(x,n)=>String(x||"").slice(0,n),okGo=k=>goList[k]?k:"";
     const clean={summary:s(r&&r.summary,300),strengths:(Array.isArray(r&&r.strengths)?r.strengths:[]).slice(0,2).map(x=>s(x,80)),
       weak:(Array.isArray(r&&r.weak)?r.weak:[]).slice(0,3).map(w=>({title:s(w.title,40),why:s(w.why,200),tip:s(w.tip,200),go:okGo(w.go)})).filter(w=>w.title),
-      plan:(Array.isArray(r&&r.plan)?r.plan:[]).slice(0,5).map(p=>({day:s(p.day,12),task:s(p.task,120),go:okGo(p.go)})).filter(p=>p.task),
       cheer:s(r&&r.cheer,120)};
     if(!clean.summary&&!clean.weak.length)throw{code:"invalid_json"};
     S.aiRep={at:Date.now(),r:clean};save();
@@ -8264,22 +8400,31 @@ function aiFullDlg(){
   d.classList.add("ai-full");return d;
 }
 function openRoleWin(){
-  if(!AI_ON)return aiOnlyNotice("AI 대화","하루(AI)가 점원이나 친구가 되어 일본어로 말을 걸어요.");
-  const d=aiFullDlg(),g=goalOf(),sits=ROLE_SITS.slice().sort((a,b)=>(b.goal.includes(g)?1:0)-(a.goal.includes(g)?1:0));
-  d.innerHTML=`<div class="set-top"><h3 id="ai-title"><span class="ai-mark" aria-hidden="true">会</span> AI 대화 <small class="rep-sub">상황을 고르면 하루가 점원이나 친구가 되어 일본어로 말을 걸어요. 모르면 한국어로 써도 돼요.</small></h3><button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
-    <div class="cats compact">${sits.map(r=>`<button class="catcard role-card" data-role="${r.id}"><div class="cat-top"><b>${r.ic} ${r.t}</b>${g&&r.goal.includes(g)?'<span class="pill">목표 추천</span>':""}</div><div class="desc">${r.d}</div></button>`).join("")}</div>`;
+  if(!AI_ON)return aiOnlyNotice("AI 대화","하루쌤(AI)이 점원이나 친구가 되어 일본어로 말을 걸어요.");
+  const d=aiFullDlg(),me=roleMe(),sits=ROLE_SITS.slice().sort((a,b)=>(b.me.includes(me)?1:0)-(a.me.includes(me)?1:0)),log=S.roleLog||{};
+  d.innerHTML=`<div class="set-top"><h3 id="ai-title"><span class="ai-mark" aria-hidden="true">会</span> AI 대화 <small class="rep-sub">상황을 고르면 하루쌤이 점원이나 친구가 되어 일본어로 말을 걸어요. 대화 중에 다른 말을 해도 자연스럽게 받아 주고, 틀린 표현은 바로 고쳐 줘요.</small></h3><button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
+    <p class="at-q">나는 어떤 역할로 말해 볼까요?</p><div class="at-goals" role="group" aria-label="내 역할">${Object.entries(ROLE_ME).map(([k,[ic,t]])=>`<button type="button" data-me="${k}" class="${k===me?"on":""}" aria-pressed="${k===me}">${ic} ${t}</button>`).join("")}</div>
+    <div class="cats compact">${sits.map(r=>`<button class="catcard role-card" data-role="${r.id}"><div class="cat-top"><b>${r.ic} ${r.t}</b>${log[r.id]?'<span class="pill ok">이어서</span>':r.me.includes(me)?'<span class="pill">추천</span>':""}</div><div class="desc">${r.d}</div><div class="meta">${r.flow.length}단계 · 초급 N5</div></button>`).join("")}</div>`;
   $("ai-x").onclick=()=>d.close();
+  d.querySelectorAll("[data-me]").forEach(b=>b.onclick=()=>{S.roleMe=b.dataset.me;save();aiPaneHost()?renderAiPane():openRoleWin()});
   d.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>openAiTutor("role",b.dataset.role));
   if(!d.open)d.showModal();d.scrollTop=0;
 }
 function openPhotoWin(){
   if(!AI_ON)return aiOnlyNotice("사진으로 읽기",PHOTO_NOTE);
-  const d=aiFullDlg();
-  d.innerHTML=`<div class="set-top"><h3 id="ai-title"><span class="ai-mark" aria-hidden="true">📷</span> 사진 읽기 <small class="rep-sub">메뉴·간판·안내문 사진 속 일본어의 읽는 법과 뜻을 알려 줘요. 손글씨나 흐린 글자는 추측해서 (?) 표시를 붙여요.</small></h3><button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
+  const d=aiFullDlg(),sv=phSaved();
+  d.innerHTML=`<div class="set-top"><h3 id="ai-title"><span class="ai-mark" aria-hidden="true">📷</span> 사진 읽기 <small class="rep-sub">메뉴·간판·안내문 사진 속 일본어를 문장별로 읽는 법과 뜻으로 풀어 줘요. 낱말을 누르면 뜻과 문법이 나오고, 흐린 글자는 (?)로 표시해요.</small></h3><button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
     <div class="ph-start"><button type="button" class="ph-pick" id="phw-gal">🖼️ 사진 고르기</button><button type="button" class="ph-pick" id="phw-cam">📷 카메라로 찍기</button></div>
-    <p class="guide-p s-note">컴퓨터에서는 캡처한 사진을 Ctrl+V로 붙여 넣어도 돼요. 사진은 저장하지 않아요.</p>`;
+    <p class="guide-p s-note">컴퓨터에서는 캡처한 사진을 Ctrl+V로 붙여 넣어도 돼요. 사진은 저장하지 않아요.</p>
+    <h4 class="ar-h">내 사진 단어장 <small>${sv.length}개</small></h4>
+    ${sv.length?`<ul class="ph-list">${sv.slice().reverse().map(w=>`<li><div><b lang="ja" class="ja-font">${esc(w.ja)}</b> <small class="hgx">${esc(w.yomi)}</small></div><div class="ph-ko">${esc(w.ko)}${w.note?` · <small>${esc(w.note)}</small>`:""} <button type="button" class="link" data-phdel="${esc(w.ja)}">빼기</button></div><button type="button" class="ph-say" data-say="${esc(w.yomi||w.ja)}" aria-label="소리 듣기">🔊</button></li>`).join("")}</ul>
+      ${sv.length>=2?`<div class="ar-drill"><button type="button" class="next" id="phw-quiz">✎ 저장한 단어로 복습 문제</button><small>내 사진 단어장에서 5문제</small></div>`:""}`
+      :`<p class="rk-note">사진을 읽은 뒤 모르는 낱말을 눌러 ☆ 저장하면 여기에 모여요.</p>`}`;
   $("ai-x").onclick=()=>d.close();
   $("phw-gal").onclick=()=>openPhotoReader("gallery");$("phw-cam").onclick=()=>openPhotoReader("camera");
+  d.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak(b.dataset.say));
+  d.querySelectorAll("[data-phdel]").forEach(b=>b.onclick=()=>{S.phw=phSaved().filter(w=>w.ja!==b.dataset.phdel);save();aiPaneHost()?renderAiPane():openPhotoWin()});
+  if($("phw-quiz"))$("phw-quiz").onclick=()=>phQuiz(phSaved());
   d.onpaste=e=>{const it=[...(e.clipboardData&&e.clipboardData.items||[])].find(x=>/^image\//.test(x.type));if(it){e.preventDefault();photoFile(it.getAsFile())}};
   if(!d.open)d.showModal();
 }
