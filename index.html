@@ -150,7 +150,7 @@
 .fr-add input:focus{outline:2px solid var(--accent);outline-offset:1px}.fr-add .ghost{min-height:44px}
 @media(max-width:520px){.fr-stats{align-items:flex-start;text-align:left;flex-basis:100%;padding-left:42px}}
 .ar{margin-top:18px;border:1px solid var(--line);border-bottom:4px solid var(--panel-shadow);border-radius:18px;background:var(--card);padding:0 18px}
-.ai-report-big{margin:0 0 22px;padding:20px 22px;border:1px solid var(--accent);border-radius:20px;background:var(--card)}.ai-report-big .ar>summary{display:none}.arb-h{margin:0 0 6px;font-size:19px}.arb-h small{display:block;margin-top:3px;font-size:13px;font-weight:400;color:var(--sub)}@media(max-width:520px){.ai-report-big{padding:16px}}.ar-entry{display:flex;align-items:center;gap:12px;width:100%;margin:14px 0;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:inherit;text-align:left;cursor:pointer}.ar-entry:hover{border-color:var(--accent)}.ar-entry>span:nth-child(2){flex:1;display:grid;gap:2px}.ar-entry small{color:var(--sub)}
+.set-dlg.rep-dlg{width:min(920px,calc(100vw - 32px));max-width:none;max-height:92vh;padding:24px 28px}.rep-dlg .ar>summary{display:none}.rep-dlg .set-top h3{font-size:22px}.rep-sub{display:block;margin-top:4px;font-size:13px;font-weight:400;color:var(--sub)}.rep-dlg .ar-sum{font-size:17px}.rep-dlg .ar-weak b{font-size:16px}.ai-rep-card{border-color:var(--accent);background:linear-gradient(120deg,var(--accent-soft),var(--card) 85%)}@media(max-width:600px){.set-dlg.rep-dlg{width:100vw;height:100dvh;max-height:100dvh;margin:0;border-radius:0;padding:18px 16px}}.ar-entry{display:flex;align-items:center;gap:12px;width:100%;margin:14px 0;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:inherit;text-align:left;cursor:pointer}.ar-entry:hover{border-color:var(--accent)}.ar-entry>span:nth-child(2){flex:1;display:grid;gap:2px}.ar-entry small{color:var(--sub)}
 .ar>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:16px 0}
 .ar>summary::-webkit-details-marker{display:none}
 .ar>summary::before{content:"析";flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:var(--accent-soft);color:var(--accent-dark);font-size:22px;font-weight:800}
@@ -823,8 +823,8 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 <section id="v9" class="ai-home-view" hidden>
  <div class="section-intro"><div><p class="section-kicker">AI TUTOR / HARU</p><h2>AI 선생님 하루</h2><p class="section-copy">모르는 문법부터 틀린 문제까지, 내 학습 기록에 맞춰 한국어로 쉽게 설명해 줘요.</p></div><div class="section-mark" aria-hidden="true">✦</div></div>
  <div class="hub-feature"><div class="hub-feature-mark" aria-hidden="true">✦</div><div><span class="hub-kicker">YOUR JAPANESE PARTNER</span><h3>무엇이든 물어봐요</h3><p>N5 수준에 맞춰 쉽게 설명하고, 일본어 대화도 함께 연습해요.</p></div><button class="next" type="button" data-ai-go="chat">하루에게 질문하기</button></div>
- <section class="ai-report-big" aria-labelledby="arb-title"><h3 class="arb-h" id="arb-title"><span aria-hidden="true">◫</span> 약점 분석 <small>내 기록으로 약점을 찾고, 공부 계획과 약점 문제까지</small></h3><div id="ai-report"></div></section>
  <div class="hub-grid">
+  <button type="button" class="hub-card ai-rep-card" data-ai-go="report"><span class="hub-mark" aria-hidden="true">◫</span><b>약점 분석</b><small>내 약점 찾기 · 공부 계획 · 약점 문제 풀기</small><i>크게 열어 보기 →</i></button>
   
 
   <button type="button" class="hub-card" data-ai-go="role"><span class="hub-mark" aria-hidden="true">会</span><b>AI 대화</b><small>카페 · 식당 · 편의점에서 일본어로 말해 보기</small><i>아래에서 상황 고르기 ↓</i></button>
@@ -8810,8 +8810,11 @@ function aiGo(k){
 }
 let aiRepBusy=null;
 function openReport(run){
-  if(tab!==9)show(9);else renderAiReport();
-  const el=$("ai-report");if(el)el.closest("section").scrollIntoView({block:"start",behavior:"smooth"});
+  let d=$("rep-dlg");
+  if(!d){d=document.createElement("dialog");d.id="rep-dlg";d.className="set-dlg ai-dlg rep-dlg";d.setAttribute("aria-labelledby","rep-title");
+    d.innerHTML=`<div class="set-top"><h3 id="rep-title"><span class="ai-mark" aria-hidden="true">◫</span> 약점 분석 <small class="rep-sub">내 기록으로 약점을 찾고, 공부 계획과 약점 문제까지</small></h3><button class="set-x" id="rep-x" aria-label="닫기">×</button></div><div id="ai-report"></div>`;
+    document.body.appendChild(d);$("rep-x").onclick=()=>d.close()}
+  renderAiReport();if(!d.open)d.showModal();
   if(run&&AI_ON&&!aiRepCtl&&!(S.aiRep&&S.aiRep.r))runAiReport(); // 처음이면 바로 분석을 시작한다
 }
 function renderRepEntry(){
@@ -8846,7 +8849,7 @@ function renderAiReport(){
     <h4 class="ar-h">내 기록 한눈에</h4>${mine}
     ${top.length?`<h4 class="ar-h">자주 틀린 것</h4><ul class="ar-top">${top.map(it=>`<li><span lang="ja">${it.jp}</span> <small>${esc(aiPlain(it.mean))} · ${S.n[it.key].wr}번</small></li>`).join("")}</ul>`:""}
     ${aiPart}${rep}<div class="ar-drill"><button type="button" class="next" id="ar-drill">✎ 약점 문제 5개 풀기</button><small>틀린 단어 위주로 바로 만들어요 · 몇 번이든 풀 수 있어요</small></div></details>`;
-  el.querySelectorAll("[data-argo]").forEach(b=>b.onclick=()=>aiGo(b.dataset.argo));
+  el.querySelectorAll("[data-argo]").forEach(b=>b.onclick=()=>{const d=$("rep-dlg");if(d&&d.open)d.close();aiGo(b.dataset.argo)}); // 바로 가기를 누르면 창을 닫고 그 화면으로
   if($("ar-run"))$("ar-run").onclick=runAiReport;
   if($("ar-drill"))$("ar-drill").onclick=weakDrill;
   if($("ar-stop"))$("ar-stop").onclick=()=>{if(aiRepCtl)aiRepCtl.abort()};
@@ -9139,7 +9142,6 @@ function renderHub(){
 const HUB_GO={kanji:()=>{jlStop();jv={view:"jlist",mode:"kanji",lv:"N5"};jx={view:"kanji"};if(tab===8)renderJlptTab();else show(8)},home:()=>show(0),kana:()=>navGo(1),words:()=>navGo(3),grammar:()=>navGo(7),conversation:()=>navGo(6),jlpt:()=>{if(jx&&jx.view==="kanji")jx={view:"home"};navGo(8)},review:()=>navGo(4)};
 function renderAiHome(){
   const st=$("ai-status"),wh=$("ai-where"),dc=$("ai-disclaimer");if(!st)return;
-  try{renderAiReport()}catch(e){console.warn("약점 분석",e)} // 약점 분석은 이 화면 안에 크게
   const rl=$("ai-roles"),g=goalOf(),sits=ROLE_SITS.slice().sort((a,b)=>(b.goal.includes(g)?1:0)-(a.goal.includes(g)?1:0));
   rl.innerHTML=`<h3 class="jl-h">AI 대화 · 상황 고르기</h3><p class="intro">상황을 고르면 하루(AI)가 점원이나 친구가 되어 일본어로 말을 걸어요. 일본어로 답해 보고, 모르면 한국어로 써도 돼요.</p>
     <div class="cats compact">${sits.map(r=>`<button class="catcard role-card" data-role="${r.id}"><div class="cat-top"><b>${r.ic} ${r.t}</b>${g&&r.goal.includes(g)?'<span class="pill">목표 추천</span>':""}</div><div class="desc">${r.d}</div></button>`).join("")}</div>`;
