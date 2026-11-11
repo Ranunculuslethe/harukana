@@ -721,7 +721,9 @@ body[data-tab]:not([data-tab="0"]) .content-layout{grid-template-columns:minmax(
 .ai-disclaimer{font-size:12px;line-height:1.6;color:var(--sub)}
 @media(max-width:760px){.primary-nav{grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;margin:0}.primary-link{flex-direction:column;justify-content:center;gap:4px;min-height:59px;padding:5px 2px;font-size:13px;text-align:center}.primary-link>span:not(.badge){flex:0 0 26px;width:26px;height:26px;font-size:15px}.hub-feature{flex-wrap:wrap;padding:19px}.hub-feature-mark{display:none}.hub-feature .next{width:100%}.ai-setup{flex-wrap:wrap}}
 @media(max-width:430px){.hub-grid{grid-template-columns:1fr}.hub-card{min-height:0}}
-:root{--ko-font:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;--fs-xs:12px;--fs-sm:14px;--fs-md:15px;--fs-lg:17px;--fs-xl:20px;--fs-2xl:26px}
+@font-face{font-family:"Pretendard";font-weight:400;font-style:normal;font-display:swap;src:url("fonts/Pretendard-Regular.subset.woff2") format("woff2")}
+@font-face{font-family:"Pretendard";font-weight:700;font-style:normal;font-display:swap;src:url("fonts/Pretendard-Bold.subset.woff2") format("woff2")}
+:root{--ko-font:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;--fs-xs:12px;--fs-sm:14px;--fs-md:15px;--fs-lg:17px;--fs-xl:20px;--fs-2xl:26px}
 body{font-family:var(--ko-font);font-size:var(--fs-md);letter-spacing:-.01em}
 button,input,select,textarea{font-family:inherit}
 .section-intro h2{font-size:var(--fs-2xl);letter-spacing:-.03em}
