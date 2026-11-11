@@ -738,6 +738,7 @@ button,input,select,textarea{font-family:inherit}
 .next{font-size:var(--fs-md)}
 .hub-mark,.primary-link>span:not(.badge),.section-mark{font-family:var(--ja-font)}
 p,small,li,.tip,.s-tip,.s-note,.desc,.intro{word-break:keep-all;overflow-wrap:break-word}[lang=ja],[lang=ja] *{word-break:normal}
+.nobr{white-space:nowrap}
 .panel .tip.s-note{text-align:left;max-width:520px;margin:12px auto;padding:12px 14px;border-radius:12px;background:var(--midbg);font-size:var(--fs-sm);line-height:1.75}.panel .tip.s-note>b:first-child{display:block;margin-bottom:3px}
 @media(max-width:520px){:root{--fs-2xl:23px;--fs-xl:18px;--fs-lg:16px}.primary-link{font-size:12px}}
 </style><a class="skip-link" href="#content">학습 내용으로 이동</a><div class="sakura-deco" aria-hidden="true"><svg class="deco-branch tr" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><path d="M230 46q-20 40-60 62M120 96q-10 30-40 46" stroke="var(--trunk)" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="150" y="30" width="100" height="64"/><use href="#hs-bloom" x="60" y="80" width="95" height="61"/><use href="#hs-bloom" x="140" y="96" width="70" height="45"/><use href="#hs-bloom" x="0" y="128" width="70" height="45"/></svg><svg class="deco-branch bl" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="130" y="40" width="100" height="64"/><use href="#hs-bloom" x="30" y="100" width="90" height="58"/></svg><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><svg xmlns="http://www.w3.org/2000/svg" class="svg-library" aria-hidden="true"><defs>
@@ -6107,7 +6108,7 @@ function renderSent(el){
     const ent=s=>`<article class="bk-w${sxd(s.id)?" ok":""}"><div class="bk-ex bk-ex0"><button class="bk-say sm" data-say="${esc(sjPlain(s))}" aria-label="듣기">🔊</button><div><p class="bk-ja s-ja" lang="ja">${sjMark(s)}</p><p class="bk-exhg">${esc(s.hg)}</p><p class="bk-ko">${esc(s.ko)}</p></div>${sxd(s.id)?'<span class="pill ok">맞힘</span>':""}</div></article>`;
     el.innerHTML=seg+(awayT?`<button class="back" id="s-away">← ${awayT} 돌아가기</button>`:"")
       +bookTop(g==="n"?"숫자·가격":"문법",`${p+1}쪽 · ${SGROUPS[g]} · 맞힌 문장 ${u.items.length-todo.length}/${u.items.length}`,bookToc(B.map(x=>x.title),p))
-      +bookPager(p,B.length)+`<div class="bk-unit"><h2>${esc(u.title)} <small class="s-sub">${esc(u.ko)}</small></h2><p class="s-tip"><b>문법 포인트</b> ${esc(u.tip)}</p></div>
+      +bookPager(p,B.length)+`<div class="bk-unit"><h2>${esc(u.title)} <small class="s-sub">${esc(u.ko)}</small></h2><p class="s-tip"><b>문법 포인트</b> ${tipHtml(u.tip)}</p></div>
       <div class="bk-page">${u.items.map(ent).join("")}</div>
       <div class="wact bk-act"><button class="wact-b quiz" id="sgo"><span class="wa-ic" aria-hidden="true">✏️</span><span><b>이 쪽 학습</b><small>${todo.length?`카드로 보고 퀴즈 · 남은 문장 ${todo.length}개`:"다 맞혔어요 · 다시 풀기"}</small></span></button></div>
       <div class="bk-reset">${resetBtn(`sx-${u.id}`,"이 쪽 초기화")}</div>`+bookPager(p,B.length);
@@ -6121,7 +6122,7 @@ function renderSent(el){
     const s=SENT_BY_ID[wv.batch[wv.i]],n=wv.batch.length,last=wv.i===n-1;
     el.innerHTML=`<div class="panel">${exitS}<div class="status">${esc(u.title)} · 문장 ${wv.i+1} / ${n}</div>
       <div class="big sent">${sjMark(s)}</div><div class="hg hgx">${esc(s.hg)}</div><div class="mean">${esc(s.ko)}</div>
-      <p class="tip s-note"><b>문법 포인트</b> ${esc(u.tip)}</p>
+      <p class="tip s-note"><b>문법 포인트</b> ${tipHtml(u.tip)}</p>
       <button class="ghost" id="say">발음 듣기</button><div class="slow-row" style="justify-content:center">${slowToggle()}</div>
       <div class="navrow"><button class="ghost" id="pv" ${wv.i?"":"disabled"}>이전</button><button class="next" id="nx">${last?"확인 퀴즈 시작":"다음"}</button></div>
       <button class="link" id="skip">다 아는 문장이면 바로 퀴즈</button></div>`;
@@ -6207,6 +6208,7 @@ function bindBook(el,key,n,go){
   el.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak(b.dataset.say));
   topActs(el);
 }
+const tipHtml=t=>String(t||"").split(/("[^"]{1,28}")/).map((s,i)=>i%2?`<span class="nobr">${esc(s)}</span>`:esc(s)).join("");
 const sBookUnits=g=>g==="n"?groupUnits(g):[...groupUnits("p"),...groupUnits("v"),...groupUnits("j")]; // 문법 책 한 권: 조사 → 표현 → N5 문법 순서로 이어진다
 const sBookKey=g=>"s-"+(g==="n"?g:"pv");
 function renderKanjiTab(){saveJSess();if(jv.view!=="jlist"||!jv.lv)jv.lv=jv.lv||"N5";
@@ -8771,7 +8773,7 @@ function renderNumList(el,seg,bindMode){
   const todo=u.items.filter(s=>!sxd(s.id));
   const ent=s=>`<article class="bk-w${sxd(s.id)?" ok":""}"><div class="bk-head"><span class="bk-kana tv-bk" lang="ja">${sjMark(s)}</span><button class="bk-say" data-say="${esc(sjPlain(s))}" aria-label="듣기">🔊</button>${sxd(s.id)?'<span class="pill ok">맞힘</span>':""}</div><p class="bk-exhg">${esc(numHg(s))}</p><p class="bk-mean">${esc(s.ko)}</p></article>`;
   el.innerHTML=seg+bookTop(MID_MODES.num,`${p+1}쪽 · ${u.title} · 맞힌 ${u.items.length-todo.length}/${u.items.length}`,bookToc(B.map(x=>x.title),p))
-    +`<p class="intro">가격·시간·개수처럼 여행에서 바로 쓰는 숫자 읽기예요. 💡 ${esc(u.tip)}</p>`+bookPager(p,B.length)
+    +`<p class="intro">가격·시간·개수처럼 여행에서 바로 쓰는 숫자 읽기예요. 💡 ${tipHtml(u.tip)}</p>`+bookPager(p,B.length)
     +`<div class="bk-page">${u.items.map(ent).join("")}</div><div class="wact bk-act"><button class="wact-b quiz" id="jgo"><span class="wa-ic" aria-hidden="true">✏️</span><span><b>이 쪽 학습</b><small>${todo.length?`카드로 보고 퀴즈 · 남은 ${todo.length}개`:"다 맞혔어요 · 다시 풀기"}</small></span></button></div><div class="bk-reset">${resetBtn(`sx-${u.id}`,"이 쪽 초기화")}</div>`+bookPager(p,B.length);
   bindMode();
   bindBook(el,key,B.length,()=>renderKanjiTab());
