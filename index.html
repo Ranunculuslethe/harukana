@@ -7868,7 +7868,6 @@ function renderRank(){
           :nickLeft()?`<button class="link" id="nick-edit">${nickLeft()===2?"이름 정하기":"이름 바꾸기 (1번 남음)"}</button>`
           :`<small class="nick-help">이름은 더 바꿀 수 없어요</small>`}</div>`}
       <div class="me-steps">${hubSteps().map((s,i)=>{const pct=Math.round(s.n/s.all*100);return `<div class="me-step"><span>${i+1}. ${s.t}</span><span class="bar"><i style="width:${pct}%"></i></span><small>${s.n.toLocaleString()} / ${s.all.toLocaleString()}${s.unit}</small></div>`}).join("")}</div>
-      <button type="button" class="ghost me-set" id="me-set">⚙ 설정 · 소리 · 기록 초기화</button>
     </div></div>
     ${pickingAv?`<div class="av-pick" role="group" aria-label="프로필 사진 고르기">${AVATARS.map(a=>`<button class="av-opt${a.id===avatarOf(S.avatar).id?" on":""}" data-av="${a.id}" aria-pressed="${a.id===avatarOf(S.avatar).id}"><span class="av-c">${avatarSvg(a.id)}</span><small>${a.name}</small></button>`).join("")}</div>`:""}`;
   if($("pf-nick"))$("pf-nick").textContent=nickName();
