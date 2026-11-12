@@ -638,6 +638,11 @@ p,small,li,.tip,.s-tip,.s-note,.desc,.intro{word-break:keep-all;overflow-wrap:br
 .primary-link.active{color:var(--accent-dark)}.primary-link.active>span.nav-ic{color:var(--accent);background:none}
 @media(max-width:760px){.primary-link>span.nav-ic{flex:0 0 24px;width:24px;height:24px}.primary-link{font-size:12px}.primary-link.active{background:none}}
 .ai-log>div.ai-bot{margin:0;padding:10px 13px;border-radius:14px;line-height:1.65;font-size:15px;overflow-wrap:anywhere}.ai-bot .ai-ul{margin:4px 0 6px;padding-left:20px}.ai-bot .ai-ul li{margin:2px 0}.ai-bot .ai-sec{display:block;margin-top:8px}.ai-bot .ai-line{display:block}
+.ai-form{flex-wrap:wrap}.ai-form>.kb-host{flex:1 1 100%}.kb-btn{flex:none;min-width:44px;min-height:44px;padding:0 10px;font-family:var(--ja-font);font-size:17px}.kb-btn.on{border-color:var(--accent);color:var(--accent-dark)}
+.kb{max-width:560px;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}.kb-grid{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px}.kb-ctl{display:flex;gap:4px;margin-top:6px}
+.kb-k{min-width:0;height:40px;padding:0;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font-family:var(--ja-font);font-size:18px;cursor:pointer;touch-action:manipulation}.kb-k:active{background:color-mix(in srgb,var(--accent) 18%,var(--card))}
+.kb-ctl .kb-k{flex:1}.kb-ctl .kb-w{flex:2.2;font-family:inherit;font-size:13px}.kb-ctl [aria-pressed=true]{border-color:var(--accent);color:var(--accent-dark)}.kb-tip{margin:6px 0 0;font-size:12px;color:var(--sub)}
+@media(max-width:520px){.ai-form>.kb-host{margin:0 -12px}.kb{padding:5px}.kb-grid,.kb-ctl{gap:3px}.kb-k{height:42px}.kb-ctl .kb-w{font-size:12px}}
 </style><a class="skip-link" href="#content">학습 내용으로 이동</a><div class="sakura-deco" aria-hidden="true"><svg class="deco-branch tr" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><path d="M230 46q-20 40-60 62M120 96q-10 30-40 46" stroke="var(--trunk)" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="150" y="30" width="100" height="64"/><use href="#hs-bloom" x="60" y="80" width="95" height="61"/><use href="#hs-bloom" x="140" y="96" width="70" height="45"/><use href="#hs-bloom" x="0" y="128" width="70" height="45"/></svg><svg class="deco-branch bl" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="130" y="40" width="100" height="64"/><use href="#hs-bloom" x="30" y="100" width="90" height="58"/></svg><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><svg xmlns="http://www.w3.org/2000/svg" class="svg-library" aria-hidden="true"><defs>
 <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></symbol>
 <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5C9 3 5 3 3 4v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1v15"/></symbol>
@@ -6782,9 +6787,19 @@ function geminiSample(){
     }
     let r,late=false;const ac=new AbortController(),tm=setTimeout(()=>{late=true;ac.abort()},40000);
     if(o.signal){if(o.signal.aborted)ac.abort();else o.signal.addEventListener("abort",()=>ac.abort(),{once:true})}
-    try{r=await fetch(AI_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages,image,json:!!asJson}),signal:ac.signal})}
+    try{r=await fetch(AI_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages,image,json:!!asJson,stream:!!(o.onText&&!asJson&&!image),temp:o.temp,max:o.max}),signal:ac.signal})}
     catch(e){const er=new Error("network");er.code=late?"network":e&&e.name==="AbortError"?"cancelled":"network";throw er}
     finally{clearTimeout(tm)}
+    if(r.ok&&/event-stream/.test(r.headers.get("content-type")||"")&&r.body){
+      const rd=r.body.getReader(),dec=new TextDecoder(),tm2=setTimeout(()=>ac.abort(),60000);let buf="",text="",trunc=false,err="";
+      try{for(;;){const {done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});let i;
+        while((i=buf.indexOf("\n\n"))>=0){const line=buf.slice(0,i).trim();buf=buf.slice(i+2);if(!line.startsWith("data:"))continue;let j;try{j=JSON.parse(line.slice(5))}catch(e){continue}
+          if(j.t){text+=j.t;o.onText({text})}if(j.done)trunc=!!j.truncated;if(j.error)err=j.error}}}
+      catch(e){const er=new Error("network");er.code=o.signal&&o.signal.aborted?"cancelled":"network";er.text=text;throw er}
+      finally{clearTimeout(tm2)}
+      if(!text){const er=new Error(err||"server");er.code=err==="refused"||err==="rate_limited"?err:"server_error";throw er}
+      return {text,truncated:trunc};
+    }
     const d=await r.json().catch(()=>({}));
     if(!r.ok){const c=d.error||"";const er=new Error(c||"server");er.code=c==="rate_limited"||c==="refused"?c:c==="too_large"?"image_rejected":"server_error";throw er}
     const text=String(d.text||"");if(o.onText)o.onText({text});return {text,truncated:!!d.truncated};
@@ -7687,6 +7702,70 @@ function aiCtxJl(id){
     ctx:`JLPT N5 ${JL_AREAS[q.a]} 연습 문제 (하루카나가 직접 만든 문제)\n${body}\n보기: ${ch.join(" / ")}\n정답: ${ans}\n앱의 해설: ${aiPlain(q.ex)}`,
     chips:["왜 이게 정답이에요?","다른 보기는 왜 틀려요?","비슷한 예문 3개 보여 주세요","더 쉽게 설명해 주세요"]};
 }
+const AI_TONE="- 한국어 문장은 모두 '~요'로 끝나는 해요체로 써. 반말(~야, ~해, ~거든, ~란다, ~지)은 한 문장도 쓰지 마.\n- 일본어의 한글 발음(예: 와타시와)과 로마자(watashi)는 절대 쓰지 마. 발음은 앱이 규칙대로 붙여. 읽는 법은 히라가나로만 적어.\n- 확실하지 않은 읽기·뜻·문법은 지어내지 말고 '확실하지 않아요'라고 말해.\n";
+const KANA_RUN="[ぁ-ゖァ-ヺー][ぁ-ゖァ-ヺー\\s、。？！]*";
+const hgSim=(a,b)=>{a=a.replace(/[\s,.\-~]/g,"");b=b.replace(/[\s,.\-~]/g,"");if(!a||!b)return 0;const m={};for(const c of b)m[c]=(m[c]||0)+1;let n=0;for(const c of a)if(m[c]>0){m[c]--;n++}return n/Math.max(a.length,b.length)};
+function aiFixHangul(text,drop){
+  return String(text||"").replace(new RegExp("("+KANA_RUN+")\\s*[（(]([가-힣][가-힣\\s,.\\-~]*)[）)]","g"),(m,ja,hg)=>{
+    const run=ja.trim();if(run.length<2)return m;let app="";try{app=jaHangul(run)}catch(e){}
+    if(!app||app.includes("?")||hgSim(hg,app)<.5)return m;
+    return drop?ja:`${ja}(${app})`});
+}
+let KJ_READ=null;
+function aiFixReading(text){
+  if(!KJ_READ){KJ_READ={};try{KANJI.forEach(j=>j.ex.forEach(e=>{if(e[0]&&e[1])KJ_READ[e[0]]=e[1]}))}catch(e){}}
+  return String(text||"").replace(/([一-龯々]+[ぁ-ゖ]*)\s*[（(]([ぁ-ゖー]+)[）)]/g,(m,w,rd)=>KJ_READ[w]&&KJ_READ[w]!==rd?`${w}(${KJ_READ[w]})`:m);
+}
+const aiFix=t=>aiFixReading(aiFixHangul(t));
+function aiGround(q){
+  q=String(q||"");const out=[];
+  const ws=WORDS.filter(w=>w.kana.length>=2&&q.includes(w.kana)).sort((a,b)=>b.kana.length-a.kana.length).slice(0,6);
+  ws.forEach(w=>out.push(`낱말 ${w.kana} = ${w.meaning}${w.ex?` (예문: ${w.ex.ja} = ${w.ex.ko})`:""}`));
+  try{KANJI.filter(j=>q.includes(j.k)).slice(0,4).forEach(j=>out.push(`한자 ${j.k} (${j.hun}) 음독 ${j.on||"-"} · 훈독 ${j.kun||"-"} · 예: ${j.ex.map(e=>`${e[0]}(${e[1]}) ${e[2]}`).join(", ")}`))}catch(e){}
+  const toks=[...new Set((q.match(/[ぁ-ゖァ-ヺー一-龯々]+/g)||[]))].filter(t=>t.length<=6);
+  if(toks.length)SENT_UNITS.filter(u=>toks.some(t=>u.title.replace(/[~\s・/]/g," ").split(" ").includes(t))).slice(0,3).forEach(u=>out.push(`문법 ${u.title} (${u.ko}): ${aiPlain(u.tip)}`));
+  return out.length?`\n앱에 있는 자료 (이 내용과 다르게 말하지 마. 여기 없는 것은 확실할 때만 말해):\n${out.join("\n")}`:"";
+}
+const jaNorm=s=>String(s||"").replace(/[^ぁ-ゖァ-ヺー一-龯々]/g,"");
+function roleClean(text,user,hidden){
+  const u=jaNorm(user),noJa=hidden||!u;
+  return aiFixReading(String(text||"").split("\n").map(l=>{const t=l.trim();
+    if(/^(✏️|✏)/.test(t)){if(noJa)return "";const m=t.split(/[—–]/)[0];if(jaNorm(m)===u)return "👍 좋아요! 자연스럽게 말했어요."}
+    if(/^👍/.test(t)&&noJa)return "";
+    return l}).filter((l,i,a)=>l!==""||a[i-1]!=="").join("\n").trim());
+}
+const KB_ROWS=["あかさたなはまやらわ","いきしちにひみ りを","うくすつぬふむゆるん","えけせてねへめ れー","おこそとのほもよろ、"];
+const KB_DAK={か:"が",き:"ぎ",く:"ぐ",け:"げ",こ:"ご",さ:"ざ",し:"じ",す:"ず",せ:"ぜ",そ:"ぞ",た:"だ",ち:"ぢ",つ:"づ",て:"で",と:"ど",は:"ば",ひ:"び",ふ:"ぶ",へ:"べ",ほ:"ぼ",う:"ゔ"};
+const KB_HAN={は:"ぱ",ひ:"ぴ",ふ:"ぷ",へ:"ぺ",ほ:"ぽ"},KB_SML={あ:"ぁ",い:"ぃ",う:"ぅ",え:"ぇ",お:"ぉ",つ:"っ",や:"ゃ",ゆ:"ゅ",よ:"ょ",わ:"ゎ"};
+const kbKata=s=>s.replace(/[ぁ-ゖ]/g,c=>String.fromCharCode(c.charCodeAt(0)+96)),kbHira=s=>s.replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-96));
+function kbMod(ch,map){
+  const kata=/[ァ-ヶ]/.test(ch),h=kbHira(ch),inv=Object.keys(map).find(k=>map[k]===h);let r=null;
+  if(map[h])r=map[h];else if(inv)r=inv;
+  else{const base=[KB_DAK,KB_HAN,KB_SML].map(M=>Object.keys(M).find(k=>M[k]===h)).find(Boolean);if(base&&map[base])r=map[base]}
+  return r?(kata?kbKata(r):r):null;
+}
+function kanaPad(host,inp){
+  let kata=false;
+  const draw=()=>{host.innerHTML=`<div class="kb" role="group" aria-label="일본어 자판">
+    <div class="kb-grid">${KB_ROWS.map(r=>[...r].map(c=>c===" "?"<span></span>":`<button type="button" class="kb-k" data-k="${kata?kbKata(c):c}" lang="ja">${kata?kbKata(c):c}</button>`).join("")).join("")}</div>
+    <div class="kb-ctl"><button type="button" class="kb-k" data-m="dak" aria-label="탁음 (점 두 개)">゛</button><button type="button" class="kb-k" data-m="han" aria-label="반탁음 (동그라미)">゜</button><button type="button" class="kb-k" data-m="sml" aria-label="작은 글자">小</button><button type="button" class="kb-k kb-w" data-m="kata" aria-pressed="${kata}">${kata?"かな":"カナ"}</button><button type="button" class="kb-k kb-w" data-k=" " aria-label="띄어쓰기">띄어쓰기</button><button type="button" class="kb-k" data-k="。" lang="ja">。</button><button type="button" class="kb-k" data-k="？" lang="ja">？</button><button type="button" class="kb-k" data-m="del" aria-label="지우기">⌫</button></div>
+    <p class="kb-tip">゛゜小: 방금 친 글자 바꾸기 (か→が · は→ぱ · つ→っ) · カナ: 가타카나</p></div>`};
+  const put=s=>{const a=inp.selectionStart??inp.value.length,b=inp.selectionEnd??a;if(inp.maxLength>0&&inp.value.length-(b-a)+s.length>inp.maxLength)return;inp.setRangeText(s,a,b,"end");inp.dispatchEvent(new Event("input",{bubbles:true}))};
+  const prev=()=>{const a=inp.selectionStart??inp.value.length;return a>0?[a-1,inp.value[a-1]]:null};
+  host.onpointerdown=e=>{if(e.target.closest(".kb-k"))e.preventDefault()}; // 누를 때 입력 칸의 커서를 잃지 않게
+  host.onclick=e=>{const b=e.target.closest(".kb-k");if(!b)return;const m=b.dataset.m;
+    if(b.dataset.k!=null)put(b.dataset.k);
+    else if(m==="kata"){kata=!kata;draw()}
+    else if(m==="del"){const a=inp.selectionStart??inp.value.length,z=inp.selectionEnd??a;if(a!==z)inp.setRangeText("",a,z,"end");else if(a>0)inp.setRangeText("",a-1,a,"end");inp.dispatchEvent(new Event("input",{bubbles:true}))}
+    else{const p=prev();if(!p)return;const r=kbMod(p[1],m==="dak"?KB_DAK:m==="han"?KB_HAN:KB_SML);if(r){inp.setRangeText(r,p[0],p[0]+1,"end");inp.dispatchEvent(new Event("input",{bubbles:true}))}}
+    inp.focus({preventScroll:true})};
+  draw();
+}
+function kanaPadToggle(btn,host,inp){
+  const set=(on,keep)=>{host.hidden=!on;btn.setAttribute("aria-pressed",on);btn.classList.toggle("on",on);if(on){inp.setAttribute("inputmode","none");if(!host.firstChild)kanaPad(host,inp)}else inp.removeAttribute("inputmode");if(keep)try{localStorage.setItem("harukana-kb",on?"1":"0")}catch(e){}};
+  btn.onclick=()=>{set(host.hidden,true);inp.blur();inp.focus({preventScroll:true})};
+  return set;
+}
 const FIX_TOPICS={free:["✏️","자유 문장","아무 문장","생각나는 문장을 일본어로 써 보세요.","예시 문장 하나 보여 주세요"],
   intro:["🙋","자기소개","이름·나라·하는 일·취미","자기소개를 2~3문장으로 써 보세요.","자기소개 예시를 보여 주세요"],
   diary:["📔","짧은 일기","오늘 한 일","오늘 한 일을 2~3문장으로 써 보세요.","짧은 일기 예시를 보여 주세요"],
@@ -7700,7 +7779,7 @@ const FIX_RULES=`너는 일본어 학습 앱 '하루카나'의 작문 선생님 
 4) '다른 표현' 한 단어 줄, 그 아래 '- ' 한두 줄. 여러 표현이 가능하면 하나만 정답처럼 말하지 마.
 5) '다시 써 보기' 한 단어 줄, 그 아래 '- ' 한 줄로 비슷한 문장을 직접 만들어 보는 과제 (한국어 뜻을 주고 일본어로 쓰게).
 규칙:
-- 한국어 해요체로, 쉽게.
+${AI_TONE}- 한국어 해요체로, 쉽게.
 - 배우는 사람이 과제의 답을 보내면 같은 모양으로 채점해.
 - 배우는 사람이 일본어 대신 한국어를 쓰면, 그 말을 일본어로 어떻게 쓰는지 알려 주고 따라 써 보게 해.
 - 예시를 부탁하면 주제에 맞는 쉬운 예시 2~3문장을 '- 일본어 — 뜻' 모양으로 보여 줘.
@@ -7739,7 +7818,7 @@ const ASK_RULES=`너는 일본어 학습 앱 '하루카나'의 튜터 '하루쌤
 4) 도움이 되면 '포인트' 한 단어 줄과 그 아래 '- ' 한 줄로 외우는 요령.
 5) 답에 일본어 낱말이 나오면 맨 마지막 줄에 '단어: 낱말=히라가나 읽기=뜻=품사' 를 ; 로 나눠 최대 5개 써 (품사는 명사·동사·い형용사·な형용사·부사·조사·표현 중 하나). 낱말을 설명할 때는 품사와 쓰는 상황도 짧게 말해.
 규칙:
-- 한국어 해요체로, 쉽게. 어려운 문법 용어는 쉬운 말로 풀어.
+${AI_TONE}- 한국어 해요체로, 쉽게. 어려운 문법 용어는 쉬운 말로 풀어.
 - 일본어는 N5 수준의 쉬운 말로. 한자를 쓰면 괄호 안에 히라가나 읽기를 같이 적어.
 - 확실하지 않으면 모른다고 말해. 지어내지 마.
 - 일본어 공부와 상관없는 부탁은 정중히 거절하고 공부 얘기로 돌아와.
@@ -7752,7 +7831,12 @@ function aiFmtRich(text){
   for(const raw of String(text||"").split("\n")){
     const t=raw.trim();if(!t){close();continue}
     const li=t.match(/^(?:[-•・*]|\d+[.)])\s+(.*)$/);
-    if(li){if(!ul){h+='<ul class="ai-ul">';ul=true}const m=li[1].match(/^([^:：]{1,40}?)\s+[:：]\s+(.+)$/);h+=`<li>${m?`<b>${inl(m[1])}</b> : ${inl(m[2])}`:inl(li[1])}</li>`;continue}
+    if(li){if(!ul){h+='<ul class="ai-ul">';ul=true}const ex=li[1].match(/^(.+?)\s*[—–]\s*(.+)$/);
+      if(ex&&/[ぁ-ゖァ-ヺ]/.test(ex[1])&&!/[가-힣]/.test(aiFixHangul(ex[1],true).replace(/[（(][^）)]*[）)]/g,""))){
+        const jaP=aiFixHangul(ex[1],true).replace(/\*\*/g,""),rd=(jaP.match(/[（(]([ぁ-ゖァ-ヺー\s、。？！]+)[）)]\s*$/)||[])[1],plain=jaP.replace(/[（(][^）)]*[）)]/g,"").trim(),kana=rd||(/[一-龯々]/.test(plain)?"":plain);
+        let hg="";try{hg=kana?jaHangul(kana):""}catch(e){}if(hg.includes("?"))hg="";
+        h+=`<li><span lang="ja">${inl(aiFixHangul(ex[1],true))}</span> <button type="button" class="ai-say" data-say="${esc(plain)}" aria-label="듣기">🔊</button> — ${inl(ex[2])}${hg?`<span class="ai-jhg">${esc(hg)}</span>`:""}</li>`;continue}
+      const m=li[1].match(/^([^:：]{1,40}?)\s+[:：]\s+(.+)$/);h+=`<li>${m?`<b>${inl(m[1])}</b> : ${inl(m[2])}`:inl(li[1])}</li>`;continue}
     close();
     if(/^단어\s*[:：]/.test(t)&&/=/.test(t)){h+=aiWordBtns(t);continue}
     if(/^(예문|포인트|정리|비교|주의|요령|예|고친 문장|바뀐 곳|다른 표현|다시 써 보기)\s*[:：]?$/.test(t)){h+=`<b class="ai-sec">${esc(t.replace(/\s*[:：]$/,""))}</b>`;continue}
@@ -7767,7 +7851,7 @@ function aiCtxTv(id){
 }
 const AI_RULES=`너는 일본어 학습 앱 '하루카나'의 튜터 여우 '하루'야. 배우는 사람은 일본어를 막 시작한 한국인이야.
 규칙:
-- 한국어 해요체로, 친절하고 짧게 답해 (보통 3~6줄). 어려운 문법 용어는 쉬운 말로 풀어.
+${AI_TONE}- 한국어 해요체로, 친절하고 짧게 답해 (보통 3~6줄). 어려운 문법 용어는 쉬운 말로 풀어.
 - 인사나 자기소개("안녕! 나는 하루야" 같은 말), 진도 이야기로 시작하지 마. 첫 줄에서 바로 질문에 답해. 끝에 "더 궁금한 게 있으면" 같은 맺음말도 붙이지 마.
 - 일본어를 쓸 때는 히라가나 읽기와 한국어 뜻을 같이 적어. 예: 駅(えき, 역)
 - N5 수준을 넘는 말은 되도록 쓰지 말고, 쓰면 짧게 설명해.
@@ -7789,6 +7873,7 @@ function openAiTutor(kind,id){
   if(!d)d=$("ai-dlg");
   if(!d){d=document.createElement("dialog");d.id="ai-dlg";d.className="set-dlg ai-dlg";d.setAttribute("aria-labelledby","ai-title");document.body.appendChild(d);
     d.addEventListener("close",()=>{if(aiCtl)aiCtl.abort()})}
+  if(d.tagName==="DIALOG"&&tab!==9){const p0=$("ai-pane");if(p0)p0.innerHTML=""} // 하루쌤 화면에 남은 입력 칸과 id가 겹치지 않게 비운다
   if(d.tagName==="DIALOG")d.classList.toggle("ai-full",kind==="role"||kind==="free"); // AI 대화·하루에게 질문하기는 화면 가득, 오답 설명 같은 짧은 질문은 작은 창
   const top=`<div class="set-top"><h3 id="ai-title"><span class="ai-mark" aria-hidden="true">✦</span> ${kind==="role"?"AI 대화":kind==="free"?"하루에게 질문하기":kind==="fix"?"문장 교정":"하루쌤"}</h3>${kind==="role"?`<button type="button" class="link" id="ai-back">← 상황 고르기</button>`:""}<button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
     <p class="ai-about"><span class="pill">${esc(c.title)}</span> <span lang="ja">${esc(c.show)}</span></p>${c.pre||""}`;
@@ -7801,12 +7886,12 @@ function openAiTutor(kind,id){
   const turns=c.prev?c.prev.slice():[];
   d.innerHTML=top+`<div class="ai-log" id="ai-log" aria-live="polite"><p class="ai-hello">${esc(c.hello||"무엇이 궁금해요? 아래에서 고르거나 직접 적어 보세요.")}</p></div>
     <div class="ai-chips" id="ai-chips">${c.chips.map(t=>`<button type="button" class="ghost">${esc(t)}</button>`).join("")}</div>${simRow}
-    <form class="ai-form" id="ai-form"><input id="ai-in" maxlength="300" placeholder="${esc(c.ph||"궁금한 것을 적어요 (한국어로)")}" aria-label="AI에게 질문" autocomplete="off"><button class="next" id="ai-send">묻기</button></form>
+    <form class="ai-form" id="ai-form"><button type="button" class="ghost kb-btn" id="ai-kb" aria-pressed="false" aria-label="일본어 자판 열기" title="일본어 자판" lang="ja">あ</button><input id="ai-in" maxlength="300" placeholder="${esc(c.ph||"궁금한 것을 적어요 (한국어로)")}" aria-label="AI에게 질문" autocomplete="off"><button class="next" id="ai-send">묻기</button><div class="kb-host" id="ai-kbd" hidden></div></form>
     <p class="ai-note">${IN_CLAUDE?"답은 보는 사람의 Claude 계정으로 만들어져요(처음 한 번 허락을 물어요).":"답은 Google Gemini로 만들어져요. 대화 내용은 하루카나에 저장하지 않아요."} AI도 틀릴 수 있어요.</p>`;
   const log=$("ai-log"),inp=$("ai-in"),send=$("ai-send");
   const fmt0=t=>c.role?aiFmtRole(t):aiFmtRich(t);if(c.prev)c.prev.filter(t=>!t.h).slice(-6).forEach(t=>log.insertAdjacentHTML("beforeend",t.role==="user"?`<p class="ai-me">${esc(t.content)}</p>`:`<div class="ai-bot">${fmt0(t.content)}</div>`)); // 지난 대화 몇 줄
   const busy=on=>{d.querySelectorAll("#ai-chips button").forEach(b=>b.disabled=on);send.textContent=on?"멈추기":"묻기";send.dataset.busy=on?"1":""};
-  const fmt=t=>c.role?aiFmtRole(t):aiFmtRich(t);
+  let lastU="",lastH=false;const tidy=t=>c.role?roleClean(t,lastU,lastH):aiFix(t),fmt=t=>c.role?aiFmtRole(tidy(t)):aiFmtRich(tidy(t));
   async function ask(text,hidden){
     text=String(text||"").trim().slice(0,300);if(!text||aiCtl)return;
     const sample=await aiGet();
@@ -7814,13 +7899,13 @@ function openAiTutor(kind,id){
     if(!hidden){const hi=log.querySelector(".ai-hello");if(hi)hi.remove();
     log.insertAdjacentHTML("beforeend",`<p class="ai-me">${esc(text)}</p>`)}
     const out=document.createElement("div");out.className="ai-bot thinking";out.textContent="하루쌤이 생각하고 있어요…";log.appendChild(out);out.scrollIntoView({block:"nearest"});
-    turns.push(hidden?{role:"user",content:text,h:1}:{role:"user",content:text});
+    turns.push(hidden?{role:"user",content:text,h:1}:{role:"user",content:text});lastU=text;lastH=!!hidden;
     aiCtl=new AbortController();busy(true);
     try{
       const recent=turns.slice(-8).map(t=>({role:t.role,content:t.content}));if(recent[0].role!=="user")recent.shift();
-      const r=await sample([{role:"user",content:(typeof c.rules==="function"?c.rules():c.rules||AI_RULES)+c.ctx},...recent],{cache:false,modelTier:"quick",signal:aiCtl.signal,onText:({text})=>{out.classList.remove("thinking");out.innerHTML=fmt(text)}});
+      const r=await sample([{role:"user",content:(typeof c.rules==="function"?c.rules():c.rules||AI_RULES)+c.ctx+(c.role||hidden?"":aiGround(text))},...recent],{cache:false,modelTier:"quick",temp:.2,max:c.role?500:900,signal:aiCtl.signal,onText:({text})=>{out.classList.remove("thinking");out.innerHTML=fmt(text);out.scrollIntoView({block:"nearest"})}});
       out.classList.remove("thinking");out.innerHTML=fmt(r.text)+(r.truncated?'<br><small>(답이 길어서 중간에 끊겼어요)</small>':"");
-      turns.push({role:"assistant",content:r.text});if(c.roleId){S.roleLog=S.roleLog||{};S.roleLog[c.roleId]={at:Date.now(),turns:turns.slice(-12)};save()} // 다음에 이어서 하도록
+      turns.push({role:"assistant",content:tidy(r.text)});if(c.roleId){S.roleLog=S.roleLog||{};S.roleLog[c.roleId]={at:Date.now(),turns:turns.slice(-12)};save()} // 다음에 이어서 하도록
     }catch(e){
       out.classList.remove("thinking");const code=e&&e.code;
       if(code==="cancelled"){out.innerHTML=e.text?fmt(e.text)+"<br><small>(멈췄어요)</small>":"<small>멈췄어요</small>";if(e.text)turns.push({role:"assistant",content:e.text})}
@@ -7840,6 +7925,7 @@ function openAiTutor(kind,id){
       return ask(lv>1?`(앱 안내) 지금부터 난이도를 ${ROLE_LV[lv-1][0]}으로 낮춰. 방금 한 말을 더 쉽게 다시 말해 줘.`:"(앱 안내) 가장 쉬운 단계예요. 방금 한 말을 더 짧고 쉽게 다시 말해 줘.",true)}
     ask(tx)});
   if(c.bind)c.bind(d);
+  {const setKb=kanaPadToggle($("ai-kb"),$("ai-kbd"),inp);let pref=null;try{pref=localStorage.getItem("harukana-kb")}catch(e){}if(pref==="1"||(pref===null&&(c.role||c.fix)))setKb(true)} // AI 대화·문장 교정은 처음부터 자판을 펴 둔다
   $("ai-form").onsubmit=e=>{e.preventDefault();if(send.dataset.busy){if(aiCtl)aiCtl.abort();return}const v=inp.value;inp.value="";ask(v)};
   if(!d.open)d.showModal();
   if(c.start)ask(c.start,true);
@@ -7871,7 +7957,7 @@ const roleRules=r=>`너는 일본어 학습 앱 '하루카나'의 대화 연습 
 대화 흐름: ${r.flow.join(" → ")}
 배우는 사람이 한 단계를 해내면 네가 다음 단계로 자연스럽게 넘어가. 마지막 단계가 끝나면 상황에 맞게 대화를 마무리하고, 이어서 해 볼 만한 다음 상황을 한국어 한 줄로 권해.
 규칙:
-- ${r.greet?"자연스러운 첫인사로 시작해도 돼.":"인사나 자기소개부터 시작하지 말고, 상황 한가운데에서 바로 첫 단계 말을 걸어."}
+${AI_TONE}- ${r.greet?"자연스러운 첫인사로 시작해도 돼.":"인사나 자기소개부터 시작하지 말고, 상황 한가운데에서 바로 첫 단계 말을 걸어."}
 - 난이도 ${ROLE_LV[roleLv()][0]}: ${ROLE_LV[roleLv()][1]}
 - 일본어 문장은 한 줄에 하나씩 쓰고, 바로 아래 줄에 '뜻: (한국어)'를 적어.
 - 배우는 사람이 흐름에 없는 말이나 다른 질문을 해도 그 말에 자연스럽게 반응하고, 그다음 흐름으로 부드럽게 돌아와.
@@ -8291,7 +8377,7 @@ async function runAiReport(){
   const prompt=`너는 일본어 학습 앱 '하루카나'의 튜터 여우 '하루쌤'이야. 아래는 한국인 초보 학습자의 실제 학습 기록이야.
 기록을 보고 왜 틀리는지 진단하고 고치는 요령을 알려 줘. (오늘의 공부 계획은 앱이 따로 짜니까 만들지 마)
 규칙:
-- 한국어로, 짧고 구체적으로. 기록에 있는 것만 근거로 삼고 지어내지 마.
+- 한국어 해요체(~요)로, 짧고 구체적으로. 반말은 쓰지 마. 기록에 있는 것만 근거로 삼고 지어내지 마.
 - 푼 문제가 30개보다 적으면 summary 첫 문장에 "아직 기록이 적어서"라고 밝히고, 확실한 것만 말해.
 - 틀린 것들의 공통점(예: 비슷한 글자, 특정 조사, 탁음, 장음)을 찾아 설명해.
 - go에는 아래 바로 가기 키 중 하나만 써: ${Object.keys(goList).join(", ")}
