@@ -6776,7 +6776,7 @@ const IN_CLAUDE=!!(window.claude&&typeof claude.use==="function");
 const GEMINI_URL="https://harukana-ai.dkdlsp25.workers.dev";
 const AI_URL=IN_CLAUDE?"":(()=>{try{return localStorage.getItem("harukana-ai-endpoint")||GEMINI_URL}catch(e){return GEMINI_URL}})();
 const AI_ON=IN_CLAUDE||!!AI_URL;
-const AI_SLOW=IN_CLAUDE?"":"무료 AI 서버라 답이 10~30초 걸릴 수 있어요.";
+const AI_SLOW=IN_CLAUDE?"":"무료 AI 서버라 붐빌 때는 답이 느릴 수 있어요.";
 const AI_DOWN=()=>IN_CLAUDE?"지금은 AI를 쓸 수 없어요. claude.ai에 로그인한 상태로 열었는지 확인해 주세요.":"지금은 AI 서버에 연결할 수 없어요. 잠시 뒤 다시 해 주세요.";
 function geminiSample(){
   const f=async(prompt,o={},asJson)=>{
@@ -6788,14 +6788,14 @@ function geminiSample(){
     }
     let r,late=false;const ac=new AbortController(),tm=setTimeout(()=>{late=true;ac.abort()},60000);
     if(o.signal){if(o.signal.aborted)ac.abort();else o.signal.addEventListener("abort",()=>ac.abort(),{once:true})}
-    try{r=await fetch(AI_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages,image,json:!!asJson,stream:!!(o.onText&&!asJson&&!image),temp:o.temp,max:o.max}),signal:ac.signal})}
+    try{r=await fetch(AI_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages,image,json:false,stream:true,pick:"lite",temp:o.temp,max:o.max}),signal:ac.signal})}
     catch(e){const er=new Error("network");er.code=late?"network":e&&e.name==="AbortError"?"cancelled":"network";throw er}
     finally{clearTimeout(tm)}
     if(r.ok&&/event-stream/.test(r.headers.get("content-type")||"")&&r.body){
       const rd=r.body.getReader(),dec=new TextDecoder(),tm2=setTimeout(()=>ac.abort(),90000);let buf="",text="",trunc=false,err="";
       try{for(;;){const {done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});let i;
         while((i=buf.indexOf("\n\n"))>=0){const line=buf.slice(0,i).trim();buf=buf.slice(i+2);if(!line.startsWith("data:"))continue;let j;try{j=JSON.parse(line.slice(5))}catch(e){continue}
-          if(j.t){text+=j.t;o.onText({text})}if(j.done)trunc=!!j.truncated;if(j.error)err=j.error}}}
+          if(j.t){text+=j.t;if(o.onText)o.onText({text})}if(j.done)trunc=!!j.truncated;if(j.error)err=j.error}}}
       catch(e){const er=new Error("network");er.code=o.signal&&o.signal.aborted?"cancelled":"network";er.text=text;throw er}
       finally{clearTimeout(tm2)}
       if(!text){const er=new Error(err||"server");er.code=err==="refused"||err==="rate_limited"?err:"server_error";throw er}
@@ -7888,7 +7888,7 @@ function openAiTutor(kind,id){
   d.innerHTML=top+`<div class="ai-log" id="ai-log" aria-live="polite"><p class="ai-hello">${esc(c.hello||"무엇이 궁금해요? 아래에서 고르거나 직접 적어 보세요.")}</p></div>
     <div class="ai-chips" id="ai-chips">${c.chips.map(t=>`<button type="button" class="ghost">${esc(t)}</button>`).join("")}</div>${simRow}
     <form class="ai-form" id="ai-form"><button type="button" class="ghost kb-btn" id="ai-kb" aria-pressed="false" aria-label="일본어 자판 열기" title="일본어 자판" lang="ja">あ</button><input id="ai-in" maxlength="300" placeholder="${esc(c.ph||"궁금한 것을 적어요 (한국어로)")}" aria-label="AI에게 질문" autocomplete="off"><button class="next" id="ai-send">묻기</button><div class="kb-host" id="ai-kbd" hidden></div></form>
-    <p class="ai-note">${IN_CLAUDE?"답은 보는 사람의 Claude 계정으로 만들어져요(처음 한 번 허락을 물어요).":"답은 Google Gemini로 만들어져요. 무료 서버라 10~30초 걸릴 수 있어요. 대화 내용은 하루카나에 저장하지 않아요."} AI도 틀릴 수 있어요.</p>`;
+    <p class="ai-note">${IN_CLAUDE?"답은 보는 사람의 Claude 계정으로 만들어져요(처음 한 번 허락을 물어요).":"답은 Google Gemini로 만들어져요. 무료 서버라 붐빌 때는 느릴 수 있어요. 대화 내용은 하루카나에 저장하지 않아요."} AI도 틀릴 수 있어요.</p>`;
   const log=$("ai-log"),inp=$("ai-in"),send=$("ai-send");
   const fmt0=t=>c.role?aiFmtRole(t):aiFmtRich(t);if(c.prev)c.prev.filter(t=>!t.h).slice(-6).forEach(t=>log.insertAdjacentHTML("beforeend",t.role==="user"?`<p class="ai-me">${esc(t.content)}</p>`:`<div class="ai-bot">${fmt0(t.content)}</div>`)); // 지난 대화 몇 줄
   const busy=on=>{d.querySelectorAll("#ai-chips button").forEach(b=>b.disabled=on);send.textContent=on?"멈추기":"묻기";send.dataset.busy=on?"1":""};
@@ -8679,7 +8679,7 @@ function renderAiPane(){
   p.innerHTML="";p.classList.remove("ai-full");
   if(!aiTab){ // 첫 화면: 학습 화면처럼 네모 카드
     seg.hidden=true;seg.innerHTML="";
-    kk.textContent="AI TUTOR / HARU";h2.textContent="하루쌤";cp.textContent="모르는 문법부터 틀린 문제까지, 내 학습 기록에 맞춰 한국어로 쉽게 설명해 줘요."+(AI_SLOW?" 무료 AI 서버를 써서 답이 10~30초 걸릴 수 있어요.":"");
+    kk.textContent="AI TUTOR / HARU";h2.textContent="하루쌤";cp.textContent="모르는 문법부터 틀린 문제까지, 내 학습 기록에 맞춰 한국어로 쉽게 설명해 줘요."+(AI_SLOW?" 무료 AI 서버를 써서 붐빌 때는 답이 느릴 수 있어요.":"");
     p.innerHTML=`<div class="hub-grid">${AI_TABS.map(([k])=>{const c=AI_CARDS[k];return `<button type="button" class="hub-card" data-aitab="${k}"><span class="hub-mark" aria-hidden="true">${c[0]}</span><b>${c[1]}</b><small>${c[2]}</small><i>열기 →</i></button>`}).join("")}</div>`;
     p.querySelectorAll("[data-aitab]").forEach(b=>b.onclick=()=>{aiTab=b.dataset.aitab;renderAiPane();window.scrollTo({top:0,behavior:"instant"})});
     return;
