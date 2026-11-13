@@ -8606,7 +8606,8 @@ const tabNames=['홈','가나 도감','가나 퀴즈','단어','복습','마이�
 const TABS=[0,1,2,3,6,8,4,5,9,10]; // 화면에 보이는 순서 (6 한자는 중급부터, 8 N5 도전은 고급일 때만 보임)
 const TAB_SLUG=["home","chart","quiz","words","notes","profile","kanji","","jlpt","ai","learn"];
 const LOAD_ID=Math.random().toString(36).slice(2); // 이번에 사이트를 연 회차
-let histTab=null,navPop=false,histSeq=0;
+let histTab=null,navPop=false,histSeq=0,histAi=null;
+const aiHist=()=>{if(navPop||tab!==9||aiTab===histAi)return;histAi=aiTab;histPush({tab:9,ai:aiTab})};
 const nextSeq=()=>{let n=0;try{n=Number(sessionStorage.getItem("harukana-hseq"))||0;sessionStorage.setItem("harukana-hseq",++n)}catch(e){n=Date.now()}return n};
 function histPush(st,replace){
   if(IN_CLAUDE)return; // claude.ai 안에서는 바깥 화면의 뒤로 가기와 섞이지 않게 기록하지 않는다
@@ -8630,6 +8631,7 @@ window.addEventListener("popstate",e=>{
       if(!(["scard","squiz","sdone"].includes(wv.view)&&wv.unit===st.unit))wv=st.unit&&SENT_UNITS.some(u=>u.id===st.unit)?{view:"sunit",unit:st.unit}:{view:"slist",sg:st.sg};
     }else if(st.tab===3&&st.w&&!((wv.view==="card"||wv.view==="quiz")&&st.w==="cat"&&wv.cat===st.cat))
       wv=st.w==="cat"&&catOf(st.cat)&&catOpen(catOf(st.cat))?{view:"cat",cat:st.cat}:{view:"list",script:st.s||"h"};
+    if(st.tab===9){const a=AI_CARDS[st.ai]?st.ai:null;if(a!==aiTab){if(aiCtl)aiCtl.abort();if(photoCtl)photoCtl.abort();aiTab=a}if(tab===9)renderAiPane()}
     show(st.tab);
     if(st.tab===3)renderWords();
     if(st.tab===8&&isAdv())renderJlptTab();
@@ -8639,7 +8641,8 @@ window.addEventListener("popstate",e=>{
 function show(n){
   if((n===6&&!isMid())||(n===8&&!isAdv())){n=0;if(navPop)histPush({tab:0},true)} // 한자 칸은 중급부터, N5 도전은 고급일 때만 (뒤로 가기로 와도 주소를 홈으로 바꿈)
   if(n!==8)jlStop(); // 청해 소리가 다른 화면까지 따라오지 않게
-  if(!navPop&&n!==histTab)histPush(n===3?wordsState():n===6?kanjiState():{tab:n},histTab===null);
+  if(!navPop&&(n!==histTab||(n===9&&aiTab!==histAi)))histPush(n===3?wordsState():n===6?kanjiState():n===9?{tab:9,ai:aiTab}:{tab:n},histTab===null);
+  histAi=n===9?aiTab:null;
   histTab=n;
   tab=n;document.body.dataset.tab=n;if(n===1||n===2)kanaSub=n;TABS.forEach(i=>{$("v"+i).hidden=i!==n});
   navMark();
@@ -8726,16 +8729,16 @@ function renderAiPane(){
     seg.hidden=true;seg.innerHTML="";
     kk.textContent="AI TUTOR / HARU";h2.textContent="하루쌤";cp.textContent="모르는 문법부터 틀린 문제까지, 내 학습 기록에 맞춰 한국어로 쉽게 설명해 줘요."+(AI_SLOW?" 무료 AI 서버를 써서 붐빌 때는 답이 느릴 수 있어요.":"");
     p.innerHTML=`<div class="hub-grid">${AI_TABS.map(([k])=>{const c=AI_CARDS[k];return `<button type="button" class="hub-card" data-aitab="${k}"><span class="hub-mark" aria-hidden="true">${c[0]}</span><b>${c[1]}</b><small>${c[2]}</small><i>열기 →</i></button>`}).join("")}</div>`;
-    p.querySelectorAll("[data-aitab]").forEach(b=>b.onclick=()=>{aiTab=b.dataset.aitab;renderAiPane();window.scrollTo({top:0,behavior:"instant"})});
+    p.querySelectorAll("[data-aitab]").forEach(b=>b.onclick=()=>{aiTab=b.dataset.aitab;aiHist();renderAiPane();window.scrollTo({top:0,behavior:"instant"})});
     return;
   }
   seg.hidden=true;seg.innerHTML="";
   const c=AI_CARDS[aiTab];kk.textContent="AI TUTOR / "+c[1];h2.textContent=c[1];cp.textContent=c[3];
   if(aiTab==="ask")openAiTutor("free","");else if(aiTab==="fix")openAiTutor("fix",S.fixTopic||"free");else if(aiTab==="report")openReport(false);else if(aiTab==="role")openRoleWin();else openPhotoWin();
   p.insertAdjacentHTML("afterbegin",`<button type="button" class="back ai-home-back" id="ai-home-back">← 하루쌤</button>`);
-  $("ai-home-back").onclick=()=>{if(aiCtl)aiCtl.abort();if(photoCtl)photoCtl.abort();aiTab=null;renderAiPane()};
+  $("ai-home-back").onclick=()=>{if(aiCtl)aiCtl.abort();if(photoCtl)photoCtl.abort();aiTab=null;aiHist();renderAiPane()};
 }
-function goAiTab(k){aiTab=k;if(tab!==9)show(9);else renderAiPane()}
+function goAiTab(k){aiTab=k;if(tab!==9)show(9);else{aiHist();renderAiPane()}}
 function markPrimary(){
   const k=tab===0?"home":tab===9?"ai":tab===5?"me":"learn";
   document.querySelectorAll("[data-primary]").forEach(b=>{const v=b.dataset.primary===k;b.classList.toggle("active",v);if(v)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
@@ -8786,7 +8789,7 @@ document.addEventListener("click",e=>{
 });
 document.addEventListener("click",e=>{
   const t=e.target.closest&&e.target.closest("[data-primary],[data-hub-go],[data-ai-go]");if(!t)return;
-  if(t.dataset.primary){const k=t.dataset.primary;if(k==="ai"){if(aiCtl)aiCtl.abort();aiTab=null}show(k==="home"?0:k==="learn"?10:k==="ai"?9:5);return}
+  if(t.dataset.primary){const k=t.dataset.primary;if(k==="ai"){if(aiCtl)aiCtl.abort();aiTab=null;if(tab===9){aiHist();renderAiPane();return}}show(k==="home"?0:k==="learn"?10:k==="ai"?9:5);return}
   if(t.dataset.hubGo){const f=HUB_GO[t.dataset.hubGo];if(f)f();return}
   const f=AI_GO[t.dataset.aiGo];if(f)f();
 });
