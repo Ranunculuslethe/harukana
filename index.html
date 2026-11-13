@@ -658,6 +658,9 @@ p,small,li,.tip,.s-tip,.s-note,.desc,.intro{word-break:keep-all;overflow-wrap:br
 .mc-legend{display:inline-flex;align-items:center;gap:4px}.mc-legend i.mc-day{width:14px;height:14px;border-radius:4px;cursor:default;display:inline-block}
 .av-pick.av-pop{margin-top:0;padding:0;border:0}
 @media(max-width:760px){.me-cal{padding:14px}.mc-grid{gap:4px}}
+.home-plan{margin-top:14px;padding:18px 20px;border:1px solid var(--line);border-bottom:4px solid var(--panel-shadow);border-radius:18px;background:var(--card)}
+.hp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}.hp-head>div{display:flex;flex-direction:column;gap:2px}.hp-head b{font-size:var(--fs-lg,17px)}.hp-head small{font-size:13px;color:var(--sub)}.hp-head .link{flex:none;white-space:nowrap}
+.hp-more{margin:8px 0 0;font-size:13px;color:var(--sub)}@media(max-width:760px){.home-plan{padding:14px}}
 </style><a class="skip-link" href="#content">학습 내용으로 이동</a><div class="sakura-deco" aria-hidden="true"><svg class="deco-branch tr" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><path d="M230 46q-20 40-60 62M120 96q-10 30-40 46" stroke="var(--trunk)" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="150" y="30" width="100" height="64"/><use href="#hs-bloom" x="60" y="80" width="95" height="61"/><use href="#hs-bloom" x="140" y="96" width="70" height="45"/><use href="#hs-bloom" x="0" y="128" width="70" height="45"/></svg><svg class="deco-branch bl" viewBox="0 0 340 220"><path d="M345 18q-90 6-170 46T20 150" stroke="var(--trunk)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/><use href="#hs-bloom" x="230" y="-10" width="120" height="77"/><use href="#hs-bloom" x="130" y="40" width="100" height="64"/><use href="#hs-bloom" x="30" y="100" width="90" height="58"/></svg><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><svg xmlns="http://www.w3.org/2000/svg" class="svg-library" aria-hidden="true"><defs>
 <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></symbol>
 <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5C9 3 5 3 3 4v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1v15"/></symbol>
@@ -688,7 +691,7 @@ p,small,li,.tip,.s-tip,.s-note,.desc,.intro{word-break:keep-all;overflow-wrap:br
 <aside class="sidebar"><a class="brand" href="#" aria-label="하루카나 홈" id="brand-home"><span class="brand-fox"><svg viewBox="0 0 180 190" class="fox " aria-hidden="true"><use href="#fox"/></svg></span><span>하루카나<small>harukana</small></span></a><p class="nav-label">나의 일본어 여행</p><nav class="primary-nav" aria-label="주요 메뉴"><button type="button" class="primary-link active" data-primary="home" aria-current="page"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v11h4.5v-6h4v6h4.5V9"/></svg></span>홈</button><button type="button" class="primary-link" data-primary="learn"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10 5 7 4.5 3.5 5v13.5c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5c-3.5-.5-6.5 0-8.5 1.5z"/><path d="M12 6.5V20"/></svg></span>학습<span class="badge" id="nbadge2" hidden></span></button><button type="button" class="primary-link" data-primary="ai"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.4 7.5L3.5 20.5l1.5-4.4a8.5 8.5 0 1 1 15.5-4.6z"/></svg></span>하루쌤</button><button type="button" class="primary-link" data-primary="me"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c0-4 3.4-6.5 7.5-6.5s7.5 2.5 7.5 6.5"/></svg></span>마이</button></nav><nav class="tabs" role="tablist" aria-label="학습 메뉴" aria-orientation="vertical"><button class="tab on" id="t0" role="tab" aria-selected="true" aria-controls="v0" tabindex="0"><svg class="icon " aria-hidden="true"><use href="#i-home"/></svg><span data-s="홈">홈</span></button><button class="tab" id="t1" role="tab" aria-selected="false" aria-controls="v1" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-book"/></svg><span data-s="가나">가나</span></button><button class="tab" id="t2" role="tab" aria-selected="false" aria-controls="v2" tabindex="-1" hidden><svg class="icon " aria-hidden="true"><use href="#i-spark"/></svg><span data-s="퀴즈">글자 퀴즈</span></button><button class="tab" id="t3" role="tab" aria-selected="false" aria-controls="v3" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-cards"/></svg><span data-s="단어">단어</span></button><button class="tab" id="t7" role="tab" aria-selected="false" aria-controls="v3" tabindex="-1"><span class="icon tab-glyph" aria-hidden="true">文</span><span data-s="문법">문법</span></button><button class="tab" id="t6" role="tab" aria-selected="false" aria-controls="v6" tabindex="-1" hidden><span class="icon tab-glyph" aria-hidden="true">旅</span><span data-s="회화">회화</span></button><button class="tab" id="t8" role="tab" aria-selected="false" aria-controls="v8" tabindex="-1" hidden><span class="icon tab-glyph" aria-hidden="true">試</span><span data-s="시험">시험</span></button><button class="tab" id="t4" role="tab" aria-selected="false" aria-controls="v4" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-note"/></svg><span data-s="복습">복습</span><span class="badge" id="nbadge" hidden></span></button><button class="tab" id="t5" role="tab" aria-selected="false" aria-controls="v5" tabindex="-1"><svg class="icon " aria-hidden="true"><use href="#i-trophy"/></svg><span data-s="프로필">프로필</span></button></nav><div class="sidebar-bottom"><div class="little-note"><svg class="icon " aria-hidden="true"><use href="#i-flower"/></svg><p>작은 한 걸음이<br>새로운 세상을 열어요.</p><span>一日、一歩。</span></div><button class="utility" id="theme"><svg class="icon " aria-hidden="true"><use href="#i-moon"/></svg><span>밤 모드</span></button><button class="utility" id="reset"><svg class="icon " aria-hidden="true"><use href="#i-gear"/></svg><span>설정</span></button></div></aside>
 <div class="workspace"><header class="topbar"><div class="breadcrumb">나의 배움 <span>/</span> <b id="page-label">학습 길</b></div><div class="top-meta"><span class="language"><i class="japan-flag"></i> 일본어 <button type="button" class="lvl-btn" id="level-label" title="설정">기초</button></span><span class="top-divider"></span><button type="button" class="top-count" id="top-count" title="지금까지 익힌 가나 수 · 누르면 가나 도감으로"><svg class="icon " aria-hidden="true"><use href="#i-flower"/></svg><span>익힌 가나</span> <b id="header-count">0</b></button><button type="button" class="avatar" id="top-avatar" aria-label="마이페이지 열기" title="마이페이지">하</button></div></header>
 <div class="content-layout"><main id="content" tabindex="-1">
-<section id="v0" role="tabpanel" aria-labelledby="t0"><div class="welcome"><p class="eyebrow">조금씩, 매일 더 가까이</p><h1>오늘도, 일본어 한 걸음<span class="heading-flower" aria-hidden="true">✿</span></h1><p>내 기록을 아는 하루쌤가 오늘 할 공부를 골라 주고, 틀린 이유를 설명해 줘요.</p></div>
+<section id="v0" role="tabpanel" aria-labelledby="t0"><div class="welcome"><p class="eyebrow">조금씩, 매일 더 가까이</p><h1>오늘도, 일본어 한 걸음<span class="heading-flower" aria-hidden="true">✿</span></h1><p>내 기록을 아는 하루쌤이 오늘 할 공부를 골라 주고, 틀린 이유를 설명해 줘요.</p></div>
 <div class="hero"><svg class="hero-scene" viewBox="0 0 800 300" preserveAspectRatio="xMaxYMax slice" role="img" aria-label="벚꽃이 핀 강가와 후지산, 오층탑이 보이는 풍경에서 반기는 여우 하루">
 <defs>
 <linearGradient id="hs-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sky1)"/><stop offset="1" stop-color="var(--sky2)"/></linearGradient>
@@ -727,9 +730,7 @@ p,small,li,.tip,.s-tip,.s-note,.desc,.intro{word-break:keep-all;overflow-wrap:br
 </svg><div class="hero-content"><span class="hero-tag">나의 작은 일본어 여행</span><h2 id="hero-title">처음 만나는 일본어,<br>설레는 시작!</h2><p id="hero-sub">あ부터 차근차근.<br>오늘의 한 걸음을 함께해요.</p><button class="next hero-cta" id="continue">학습 시작하기 <svg class="icon " aria-hidden="true"><use href="#i-arrow"/></svg></button></div></div>
 
 <div class="home-today" id="home-today" aria-label="오늘의 학습량"></div>
-<div class="ai-today" id="ai-today" aria-label="오늘의 학습"></div>
-<div class="home-ask" id="home-ask" aria-label="하루에게 물어보기"><b><span aria-hidden="true">✦</span> 하루에게 바로 물어보기</b><div class="ai-chips"><button type="button" class="ghost" data-askq="は와 が는 뭐가 달라요?">は와 が는 뭐가 달라요?</button><button type="button" class="ghost" data-askq="일본 식당에서 주문할 때 쓰는 말 알려 주세요">식당에서 주문하는 말</button><button type="button" class="ghost" data-askq="제 진도에 맞는 퀴즈 하나 내 주세요">내 진도에 맞는 퀴즈</button><button type="button" class="ghost" data-askq="">직접 물어보기 ›</button></div></div>
-<div class="doors" id="home-doors" role="group" aria-label="공부 입구"></div>
+<div class="home-plan" id="home-plan" aria-label="오늘의 계획"></div>
 <div class="goal-card home-goal" id="home-goal" aria-label="오늘의 작은 목표"></div>
 <p class="path-footer">한 글자씩 쌓이는 나의 일본어 <span>·</span> 一日、一歩。</p></section>
 <section id="v1" role="tabpanel" aria-labelledby="t1" hidden>
@@ -3684,7 +3685,7 @@ function refreshSummary(){
   $("nbadge").hidden=!nn;$("nbadge").textContent=nn;
   $("nbadge2").hidden=!nn;$("nbadge2").textContent=nn;$("nbadge2").title=nn?`복습할 것 ${nn}개`:""; // 새 메뉴의 '학습' 칸에도 복습 개수
   renderMissions();
-  try{renderScene();renderFoxSay();renderPhrase()}catch(e){}try{renderHomeToday()}catch(e){} // 홈 장식 (처음 그릴 때 아직 준비 안 된 것이 있으면 다음 번에)
+  try{renderScene();renderFoxSay();renderPhrase()}catch(e){}try{renderHomeToday();renderHomePlan()}catch(e){} // 홈 장식 (처음 그릴 때 아직 준비 안 된 것이 있으면 다음 번에)
   $("continue").innerHTML=(S.last||mc?'이어서 학습하기':'학습 시작하기')+' <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>';
   $("continue").title=lastPlace();
   applyLevel(); // 상단 초급·중급 표시와 한자 칸
@@ -8828,7 +8829,7 @@ NAV.forEach(i=>{$("t"+i).onclick=()=>navGo(i);$("t"+i).onkeydown=e=>{const vis=N
 document.querySelectorAll("[data-kv]").forEach(b=>b.onclick=()=>show(+b.dataset.kv));
 function openLesson(stage,script){qScript=script;startStage(stage);renderStageBar();renderCharQuiz();show(2);$("content").focus({preventScroll:true});fitQuiz($("quiz"))}
 function renderHome(){
-  if(!rv)renderReview();
+  if(!rv)renderReview();try{renderHomePlan()}catch(e){}
   $("continue").title=lastPlace();
   renderRoad();renderAiToday();
 }
@@ -8917,6 +8918,18 @@ function lastPlace(){const L=S.last;if(!L)return"";
 function renderHomeToday(){const el=$("home-today");if(!el)return;const n=+(S.daily[keyOf(new Date())]||0),st=streak(),hs=hubSteps(),ci=hs.findIndex(s=>s.n/s.all<s.need),i=ci<0?hs.length-1:ci,h=hs[i],pct=Math.round(h.n/h.all*100);
   el.innerHTML=`<div class="ht-stats"><div><b>${n}</b><small>오늘 푼 문제</small></div><div><b>${st}일</b><small>연속 학습</small></div><div><b>${i+1}단계 ${h.t}</b><small>진도 ${pct}%</small></div></div><button type="button" class="next ht-go" id="ht-go">${S.last?"이어서 학습하기":"학습 시작하기"} →</button>`;
   $("ht-go").onclick=continueStudy}
+function renderHomePlan(){
+  const el=$("home-plan");if(!el)return;
+  let V=null;try{if(!S.pl||!Array.isArray(S.pl.plan))plMake();V=plView()}catch(e){}
+  const ok=V&&!V.ended,items=ok?V.days[0]:[],st=(S.pl&&S.pl.st)||{},mins=items.reduce((s,x)=>s+x.min,0),nDone=items.filter(x=>st[x.k]==="done").length;
+  el.innerHTML=`<div class="hp-head"><div><b>오늘의 계획</b><small>${ok?`${PL_GOALS[V.P.goal]} · ${V.N}일 중 ${V.ti+1}일째 · ${mins}분${nDone?` · ${nDone}/${items.length} 완료`:""}`:"하루쌤 약점 분석에서 계획을 짜요"}</small></div><button type="button" class="link" id="hp-all">전체 계획 보기 ›</button></div>
+    ${!V?`<p class="rk-note">계획을 불러오지 못했어요. 전체 계획 보기를 눌러 주세요.</p>`
+     :V.ended?`<p class="rk-note">${V.N}일 계획을 마쳤어요. 전체 계획 보기에서 새 계획을 짜 보세요.</p>`
+     :`<ol class="ar-plan">${items.slice(0,3).map((x,i)=>{const s=st[x.k];return `<li><span class="ar-day">${s==="done"?"✓":i+1}</span><span class="ar-task"><b>${esc(x.t)}</b><br><small>${esc(x.sub)} · ${x.min}분</small></span>${s==="done"?'<span class="pill ok">완료</span>':s==="doing"?'<span class="pill">하는 중</span>':""}<button type="button" class="ar-go" data-hpgo="${esc(x.k)}">${s==="done"?"다시":"시작"} ›</button></li>`}).join("")}</ol>
+      ${items.length>3?`<p class="hp-more">그 밖에 ${items.length-3}가지가 더 있어요.</p>`:""}`}`;
+  $("hp-all").onclick=()=>goAiTab("report");
+  el.querySelectorAll("[data-hpgo]").forEach(b=>b.onclick=()=>{const x=plFind(b.dataset.hpgo);if(!x)return;const P=S.pl;P.st=P.st||{};if(P.st[x.k]!=="done")P.st[x.k]="doing";save();aiGo(x.go)});
+}
 function continueStudy(){
   const L=S.last;
   if(L&&L.t==="note"){show(4);return}
