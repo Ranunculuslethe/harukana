@@ -3561,7 +3561,7 @@ function speakFile(id,t,rate){
   const p=a.play();if(p&&p.catch)p.catch(e=>{if(!e||e.name!=="AbortError")fall()});
 }
 const SND_IDS=()=>[...new Set(Object.values(WORD_SND))];
-async function sndCount(){try{const ks=await (await caches.open("harukana-v1")).keys();return ks.filter(r=>/\/audio\/w\//.test(r.url)).length}catch(e){return 0}}
+async function sndCount(){try{const ks=await (await caches.open("harukana-v1")).keys();return new Set(ks.map(r=>r.url).filter(u=>u.includes("/audio/w/")&&u.endsWith(`?v=${SND_V}`))).size}catch(e){return 0}}
 let sndDling=false;
 async function sndDownload(){
   if(sndDling)return;sndDling=true;const b=$("snd-dl"),st=$("snd-dl-st"),ids=SND_IDS();let done=0,fail=0;const all=ids.length;if(b)b.disabled=true;
