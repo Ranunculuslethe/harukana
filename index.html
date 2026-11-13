@@ -3553,23 +3553,29 @@ const WORD_SND={};WORDS.forEach(w=>{if(!WORD_SND[w.kana])WORD_SND[w.kana]=w.id})
 const SND_V="1",SND_CREDIT="VOICEVOX:玄野武宏",fileVoiceOn=()=>S.fileVoice!==0;
 let fileAudio=null;
 let SND_PACK=null;
-async function packUrl(id){
-  if(SND_PACK===false)return null;
-  try{
-    if(!SND_PACK){const [ix,bin]=await Promise.all([fetch("audio/words.json").then(r=>{if(!r.ok)throw 0;return r.json()}),fetch("audio/words.mp3").then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()})]);SND_PACK={ix,bin,urls:{}}}
-    const e=SND_PACK.ix[id];if(!e)return null;
-    return SND_PACK.urls[id]||(SND_PACK.urls[id]=URL.createObjectURL(new Blob([SND_PACK.bin.slice(e[0],e[0]+e[1])],{type:"audio/mpeg"})));
-  }catch(e){SND_PACK=false;return null}
+async function packBytes(id){
+  if(!SND_PACK){const [ix,bin]=await Promise.all([fetch("audio/words.json").then(r=>{if(!r.ok)throw 0;return r.json()}),fetch("audio/words.mp3").then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()})]);SND_PACK={ix,bin}}
+  const e=SND_PACK.ix[id];if(!e)throw 0;return SND_PACK.bin.slice(e[0],e[0]+e[1]);
 }
+let sndCtx=null;const sndBuf=new Map();
+function sndAC(){try{if(!sndCtx){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;sndCtx=new C()}if(sndCtx.state==="suspended")sndCtx.resume().catch(()=>{});return sndCtx}catch(e){return null}}
+function stopFile(){if(fileAudio&&fileAudio.stop)try{fileAudio.stop()}catch(e){}fileAudio=null}
 function speakFile(id,t,rate){
   try{speechSynthesis.cancel()}catch(e){}
-  if(fileAudio){try{fileAudio.pause()}catch(e){}}
-  if(IN_CLAUDE){const tk=fileAudio={};packUrl(id).then(u=>{if(fileAudio!==tk)return;if(!u){fileAudio=null;return speakTTS(t,rate)}const a=new Audio(u);a.volume=sndVol()/100;a.playbackRate=rate||(S.slow?0.75:1);fileAudio=a;a.onerror=()=>{if(fileAudio===a){fileAudio=null;speakTTS(t,rate)}};const p=a.play();if(p&&p.catch)p.catch(e=>{if(fileAudio===a&&(!e||e.name!=="AbortError")){fileAudio=null;speakTTS(t,rate)}})});return}
-  const a=new Audio(`audio/w/${id}.mp3?v=${SND_V}`);let fell=false;
-  const fall=()=>{if(fell||fileAudio!==a)return;fell=true;fileAudio=null;speakTTS(t,rate)};
-  a.volume=sndVol()/100;a.playbackRate=rate||(S.slow?0.75:1);fileAudio=a;a.onerror=fall;
-  const p=a.play();if(p&&p.catch)p.catch(e=>{if(!e||e.name!=="AbortError")fall()});
+  stopFile();
+  const ac=sndAC();if(!ac)return speakTTS(t,rate);
+  const tk={stop(){}};fileAudio=tk;let fell=false;
+  const fall=()=>{if(fell||fileAudio!==tk)return;fell=true;fileAudio=null;speakTTS(t,rate)};
+  const timer=setTimeout(fall,1500);
+  const getBuf=sndBuf.has(id)?Promise.resolve(sndBuf.get(id)):(IN_CLAUDE?packBytes(id):fetch(`audio/w/${id}.mp3?v=${SND_V}`).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}))
+    .then(b=>new Promise((ok,no)=>ac.decodeAudioData(b,ok,no))).then(buf=>{sndBuf.set(id,buf);if(sndBuf.size>80)sndBuf.delete(sndBuf.keys().next().value);return buf});
+  getBuf.then(buf=>{
+    if(fell||fileAudio!==tk)return;clearTimeout(timer);
+    const s=ac.createBufferSource(),g=ac.createGain();s.buffer=buf;s.playbackRate.value=rate&&rate<1?Math.max(.8,rate):(S.slow?0.85:1);g.gain.value=sndVol()/100;
+    s.connect(g);g.connect(ac.destination);s.start();fileAudio={stop(){try{s.stop()}catch(e){}}};s.onended=()=>{if(fileAudio&&fileAudio.stop&&sndSrcIs(s))fileAudio=null};
+  }).catch(()=>{clearTimeout(timer);fall()});
 }
+const sndSrcIs=()=>true;
 const SND_IDS=()=>[...new Set(Object.values(WORD_SND))];
 async function sndCount(){try{const ks=await (await caches.open("harukana-v1")).keys();return new Set(ks.map(r=>r.url).filter(u=>u.includes("/audio/w/")&&u.endsWith(`?v=${SND_V}`))).size}catch(e){return 0}}
 let sndDling=false;
@@ -3583,7 +3589,7 @@ async function sndDownload(){
 }
 const speak=(t,rate,on)=>{
   const id=!on&&fileVoiceOn()&&WORD_SND[String(t||"").trim()];if(id)return speakFile(id,t,rate);
-  if(fileAudio){try{fileAudio.pause()}catch(e){}fileAudio=null}
+  stopFile();
   return speakTTS(t,rate,on);
 };
 const speakTTS=(t,rate,on)=>{try{
