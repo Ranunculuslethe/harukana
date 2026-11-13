@@ -7040,7 +7040,7 @@ function renderSettings(force){
     ${appInstallHtml()}
     <h4 class="set-h">학습 기록</h4>
     <div class="rec-etc">
-      <div><b>기록 파일로 저장 · 불러오기</b><small>기록은 이 브라우저에만 있어요. 다른 기기·브라우저에서 이어 하거나 백업하려면 파일로 저장해 두고, 그쪽에서 불러와요. 불러오면 그 브라우저의 지금 기록은 파일의 기록으로 바뀌어요.</small><span class="rec-btns"><button type="button" class="rec-reset" id="rec-save">파일로 저장</button> <button type="button" class="rec-reset" id="rec-load">불러오기</button></span><span class="set-note" id="rec-load-st" aria-live="polite"></span></div>
+      <div><b>기록 파일로 저장 · 불러오기</b><small>기록은 이 브라우저에만 있어요. 다른 기기·브라우저에서 이어 하거나 백업하려면 파일로 저장해 두고, 그쪽에서 불러와요. 불러오면 그 브라우저의 지금 기록은 파일의 기록으로 바뀌어요.</small><span class="rec-btns">${IN_CLAUDE?"":`<button type="button" class="rec-reset" id="rec-save">파일로 저장</button> `}<button type="button" class="rec-reset" id="rec-load">불러오기</button></span>${IN_CLAUDE?`<span class="set-note">claude.ai 버전에서는 파일로 저장할 수 없어요. 사이트에서 저장한 파일을 불러올 수는 있어요.</span>`:""}<span class="set-note" id="rec-load-st" aria-live="polite"></span></div>
       <div><b>모든 학습 기록</b><small>글자·단어·문장·한자·오답노트를 처음부터 다시 해요. 목표 코스도 다시 기초부터 열려요. 프로필(이름·사진)은 남아요.</small>${resetBtn("all","모두 초기화")}</div>
     </div>${TEST_MODE?`<h4 class="set-h">테스트 도구 <small>(테스트 주소에서만 보여요)</small></h4>
     <div class="set-sound test-tools"><div class="test-btns"><button type="button" class="rec-reset" data-clear="beg">기초 클리어</button><button type="button" class="rec-reset" data-clear="mid">코스 열기 (여행 클리어)</button></div>
