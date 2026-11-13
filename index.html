@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#FAF0EF" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#221A1D" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="하루카나">
 <title>하루카나</title>
@@ -3722,7 +3722,7 @@ function mc(el,o){
     LAST_PICK=ok?null:{q:aiPlain(String(o.big||"")).slice(0,120),pick:aiPlain(String(o.choices[i])).slice(0,80),ans:aiPlain(String(o.choices[o.correct])).slice(0,80),at:Date.now()};
     bs.forEach((x,j)=>{x.disabled=true;if(j===o.correct)x.classList.add("right");else if(j===i)x.classList.add("wrong")});
     el.querySelector(".fb").classList.add(ok?"feedback-correct":"feedback-wrong");
-    el.querySelector(".fb").innerHTML=(ok?`<strong>✓ 잘했어요! +${XP_RIGHT} XP</strong> `:"<strong>다시 배우는 기회예요.</strong> ")+o.onPick(ok,i).replace(/^(정답!|아쉬워요\.) /,"");
+    el.querySelector(".fb").innerHTML=(ok?`<strong>✓ 잘했어요!</strong> `:"<strong>다시 배우는 기회예요.</strong> ")+o.onPick(ok,i).replace(/^(정답!|아쉬워요\.) /,"");
     afterAnswer(ok,o);
     const nb=document.createElement("button");nb.className="next";nb.textContent=o.nextLabel||"다음 문제";nb.onclick=()=>{o.onNext();fitQuiz(curMc&&curMc.el)};
     el.querySelector(".nx").appendChild(nb);nb.focus();
@@ -3744,7 +3744,7 @@ function buildMc(el,o){
     LAST_PICK=ok?null:{q:aiPlain(String(o.big||"")).slice(0,120),pick:picked.map(i=>o.tiles[i]).join(""),ans:ans.join(""),at:Date.now()};
     slots.classList.add(ok?"right":"wrong");draw();$("bd-undo").disabled=true;
     const fb=el.querySelector(".fb");fb.classList.add(ok?"feedback-correct":"feedback-wrong");
-    fb.innerHTML=(ok?`<strong>✓ 잘했어요! +${XP_RIGHT} XP</strong> `:"<strong>다시 배우는 기회예요.</strong> ")+o.onPick(ok).replace(/^(정답!|아쉬워요\.) /,"");
+    fb.innerHTML=(ok?`<strong>✓ 잘했어요!</strong> `:"<strong>다시 배우는 기회예요.</strong> ")+o.onPick(ok).replace(/^(정답!|아쉬워요\.) /,"");
     afterAnswer(ok,o);
     const nb=document.createElement("button");nb.className="next";nb.textContent=o.nextLabel||"다음 문제";nb.onclick=()=>{o.onNext();fitQuiz(curMc&&curMc.el)};
     el.querySelector(".nx").appendChild(nb);nb.focus();
@@ -6746,17 +6746,14 @@ async function makeMoveCode(){
   const z=await zipText(json);
   return MOVE_TAG+(z?"z":"j")+b64(z||new TextEncoder().encode(json));
 }
-let goCode=null;
 function openClaudeGo(){
   document.querySelectorAll("dialog[open]").forEach(x=>x.close());
   let d=$("go-dlg");if(!d){d=document.createElement("dialog");d.id="go-dlg";d.className="set-dlg";d.setAttribute("aria-labelledby","go-title");document.body.appendChild(d)}
-  goCode=null;makeMoveCode().then(c=>goCode=c).catch(()=>{});
   d.innerHTML=`<div class="set-top"><h3 id="go-title">✦ claude.ai 버전으로 가기</h3><button class="set-x" id="go-x" aria-label="닫기">×</button></div>
-    <p class="guide-p" style="text-align:left;max-width:none">AI 기능은 claude.ai에서 여는 하루카나에서 써요. 그런데 <b>이 사이트와 claude.ai 버전은 학습 기록이 따로 저장돼요.</b> 지금까지 한 공부를 이어 가려면 <b>먼저 기록을 복사해 가세요.</b></p>
-    ${goSteps("go",ARTIFACT_URL,"claude.ai로 가서 로그인하기")}
-    <ol class="go-steps"><li>①을 눌러 기록을 복사해요</li><li>②를 눌러 claude.ai로 가서 <b>로그인</b>해요 (처음 한 번)</li><li>열린 하루카나에서 <b>설정 → 기록 옮기기</b> → 붙여 넣기 → <b>기록 합치기</b></li></ol>`;
-  $("go-x").onclick=()=>d.close();
-  bindGoSteps("go",()=>goCode);
+    <p class="guide-p" style="text-align:left;max-width:none">claude.ai에서 여는 하루카나는 Claude가 하루쌤의 답을 만들어요. claude.ai 계정으로 로그인해야 열려요.</p>
+    <p class="guide-p" style="text-align:left;max-width:none"><b>이 사이트와 claude.ai 버전은 학습 기록이 따로 저장돼요.</b> 이어서 하려면 이 사이트의 <b>설정 → 학습 기록 → 파일로 저장</b>을 누른 뒤, claude.ai 버전의 같은 곳에서 <b>불러오기</b>로 그 파일을 고르면 돼요.</p>
+    <div class="navrow"><button type="button" class="ghost" id="go-save">기록 파일로 저장</button><a class="next" href="${ARTIFACT_URL}" target="_blank" rel="noopener">claude.ai 버전 열기 ›</a></div>`;
+  $("go-x").onclick=()=>d.close();$("go-save").onclick=recExport;
   if(!d.open)d.showModal();
 }
 function goSteps(p,url,label){
@@ -7008,6 +7005,31 @@ function openGrad(){
   $("grad-go").focus();
 }
 function checkGrad(){if(S.flags.grad||!roadDone())return;S.flags.grad=1;save();setTimeout(()=>{if(!document.querySelector("dialog[open]"))openGrad()},900)}
+function recExport(){
+  try{const d=new Date(),p=n=>String(n).padStart(2,"0"),name=`harukana-record-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}.json`;
+    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify({app:"harukana",v:1,at:d.toISOString(),S})],{type:"application/json"}));a.download=name;
+    document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);notifyText(`기록을 ${name} 파일로 저장했어요. 다운로드 폴더를 확인해 주세요.`)}
+  catch(e){notifyText("기록 파일을 저장하지 못했어요.")}
+}
+function recImport(){
+  const inp=document.createElement("input");inp.type="file";inp.accept=".json,application/json";inp.style.cssText="position:fixed;left:-9999px;opacity:0";document.body.appendChild(inp);
+  inp.onchange=async()=>{const f=inp.files&&inp.files[0];inp.remove();const st=$("rec-load-st");if(!f)return;
+    try{const o=JSON.parse(await f.text()),s=o&&o.app==="harukana"&&o.S;if(!s||typeof s!=="object"||typeof s.c!=="object"||typeof s.daily!=="object")throw 0;
+      const days=Object.keys(s.daily).length,when=o.at?new Date(o.at).toLocaleDateString("ko-KR"):"";
+      if(st){st.innerHTML=`${esc(f.name)} · ${when?when+"에 저장 · ":""}공부한 날 ${days}일 <button type="button" class="rec-reset" id="rec-apply">이 기록으로 바꾸기</button>`;
+        $("rec-apply").onclick=()=>{try{S=s;save();localStorage.setItem(KEY,JSON.stringify(s));location.reload()}catch(e){notifyText("기록을 바꾸지 못했어요.")}}}
+    }catch(e){if(st)st.textContent="하루카나 기록 파일이 아니거나 읽을 수 없어요.";else notifyText("하루카나 기록 파일이 아니거나 읽을 수 없어요.")}};
+  inp.click();
+}
+let installEvt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;try{renderSettings()}catch(x){}});
+function appInstallHtml(){
+  if(IN_CLAUDE)return "";
+  const standalone=window.matchMedia&&matchMedia("(display-mode: standalone)").matches||navigator.standalone;
+  const ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
+  return `<h4 class="set-h">앱으로 설치</h4><div class="set-sound"><p class="set-note" style="margin-top:0">${standalone?"지금 앱으로 열려 있어요.":"홈 화면에 하루카나 아이콘을 만들어 앱처럼 열 수 있어요. 한 번 열어 둔 화면은 인터넷이 없어도 열려요."}</p>
+    ${standalone?"":installEvt?`<button type="button" class="rec-reset" id="app-install">앱으로 설치하기</button>`:`<p class="set-note">${ios?"사파리 아래쪽의 공유 버튼 → '홈 화면에 추가'를 눌러요.":"브라우저 메뉴(⋮)의 '앱 설치' 또는 '홈 화면에 추가'를 눌러요."}</p>`}</div>`;
+}
 function renderSettings(force){
   const d=$("set-dlg");if(!d||(!force&&!d.open))return;
   const nb=Object.keys(S.badges).length;
@@ -7015,8 +7037,10 @@ function renderSettings(force){
     <h4 class="set-h">소리</h4><div class="set-sound" id="snd-box"></div>
     <h4 class="set-h">보기</h4><div class="set-sound"><label class="slow-tg"><input type="checkbox" id="hide-hg" ${hideHg()?"checked":""}>한글 발음 가리기</label><p class="set-note">가나를 다 배웠다면 켜 보세요. 단어·문장의 한글 발음이 흐리게 가려지고, 누르면 보여요. 가나 퀴즈의 발음은 그대로예요.</p></div>
     <h4 class="set-h">도움말</h4><div class="set-sound"><p class="set-note" style="margin-top:0">하루카나를 어떻게 쓰는지 처음 안내를 다시 볼 수 있어요.</p><button type="button" class="rec-reset" id="guide-open">처음 안내 다시 보기</button>${S.flags.grad?' <button type="button" class="rec-reset" id="grad-open">기초 수료 다시 보기</button>':""}</div>
+    ${appInstallHtml()}
     <h4 class="set-h">학습 기록</h4>
     <div class="rec-etc">
+      <div><b>기록 파일로 저장 · 불러오기</b><small>기록은 이 브라우저에만 있어요. 다른 기기·브라우저에서 이어 하거나 백업하려면 파일로 저장해 두고, 그쪽에서 불러와요. 불러오면 그 브라우저의 지금 기록은 파일의 기록으로 바뀌어요.</small><span class="rec-btns"><button type="button" class="rec-reset" id="rec-save">파일로 저장</button> <button type="button" class="rec-reset" id="rec-load">불러오기</button></span><span class="set-note" id="rec-load-st" aria-live="polite"></span></div>
       <div><b>모든 학습 기록</b><small>글자·단어·문장·한자·오답노트를 처음부터 다시 해요. 목표 코스도 다시 기초부터 열려요. 프로필(이름·사진)은 남아요.</small>${resetBtn("all","모두 초기화")}</div>
     </div>${TEST_MODE?`<h4 class="set-h">테스트 도구 <small>(테스트 주소에서만 보여요)</small></h4>
     <div class="set-sound test-tools"><div class="test-btns"><button type="button" class="rec-reset" data-clear="beg">기초 클리어</button><button type="button" class="rec-reset" data-clear="mid">코스 열기 (여행 클리어)</button></div>
@@ -7024,6 +7048,8 @@ function renderSettings(force){
       <div class="test-btns" style="margin-top:12px"><button type="button" class="rec-reset" id="data-check">데이터 검사</button></div><div id="data-check-out" class="set-note" aria-live="polite"></div></div>`:""}`;
   if($("data-check"))$("data-check").onclick=()=>{const r=runDataCheck();$("data-check-out").innerHTML=r.ok?`✿ 문제없어요 · ${r.sum}`:`<b>${r.bad.length}개 확인 필요</b> · ${r.sum}<br>${r.bad.slice(0,30).map(esc).join("<br>")}`};
   $("set-close").onclick=()=>d.close();
+  if($("rec-save"))$("rec-save").onclick=recExport;if($("rec-load"))$("rec-load").onclick=recImport;
+  if($("app-install"))$("app-install").onclick=async()=>{if(!installEvt)return;installEvt.prompt();try{await installEvt.userChoice}catch(e){}installEvt=null;renderSettings()};
   d.querySelectorAll("[data-clear]").forEach(b=>b.onclick=()=>testClear(b.dataset.clear));
   $("guide-open").onclick=()=>{d.close();openGuide()};
   $("hide-hg").onchange=e=>setHideHg(e.target.checked);
@@ -7937,7 +7963,7 @@ function openAiTutor(kind,id){
     d.addEventListener("close",()=>{if(aiCtl)aiCtl.abort()})}
   if(d.tagName==="DIALOG"&&tab!==9){const p0=$("ai-pane");if(p0)p0.innerHTML=""} // 하루쌤 화면에 남은 입력 칸과 id가 겹치지 않게 비운다
   if(d.tagName==="DIALOG")d.classList.toggle("ai-full",kind==="role"||kind==="free"); // AI 대화·하루에게 질문하기는 화면 가득, 오답 설명 같은 짧은 질문은 작은 창
-  const top=`<div class="set-top"><h3 id="ai-title"><span class="ai-mark" aria-hidden="true">✦</span> ${kind==="role"?"AI 대화":kind==="free"?"하루에게 질문하기":kind==="fix"?"문장 교정":"하루쌤"}</h3>${kind==="role"?`<button type="button" class="link" id="ai-back">← 상황 고르기</button>`:""}<button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
+  const top=`<div class="set-top"><h3 id="ai-title"><span class="ai-mark" aria-hidden="true">✦</span> ${kind==="role"?"AI 대화":kind==="free"?"하루쌤에게 질문하기":kind==="fix"?"문장 교정":"하루쌤"}</h3>${kind==="role"?`<button type="button" class="link" id="ai-back">← 상황 고르기</button>`:""}<button class="set-x" id="ai-x" aria-label="닫기">×</button></div>
     <p class="ai-about"><span class="pill">${esc(c.title)}</span> <span lang="ja">${esc(c.show)}</span></p>${c.pre||""}`;
   if(!AI_ON){
     d.innerHTML=top+`<p class="guide-p">하루쌤는 <b>claude.ai에서 여는 하루카나</b>에서만 쓸 수 있어요. 질문은 보는 사람의 Claude 계정으로 보내져서, 하루카나는 따로 돈이 들지 않고 대화 내용도 저장하지 않아요.</p>
@@ -8273,7 +8299,7 @@ function openReport(run){
 function renderRepEntry(){
   const el=$("ai-report-entry");if(!el)return;
   const st=studyStats(),rows=st.areas.filter(([,a])=>a.n>=5),worst=rows.slice().sort((a,b)=>a[1].p-b[1].p)[0],R=S.aiRep&&S.aiRep.r;
-  el.innerHTML=`<button type="button" class="ar-entry" id="ar-open"><span class="ar-ai-ic" aria-hidden="true">◫</span><span><b>약점 분석</b><small>${aiRepBusy?"하루가 기록을 읽고 있어요…":worst&&worst[1].p<85?`가장 약한 곳: ${worst[0]} ${worst[1].p}%`:R?`마지막 분석: ${agoText(S.aiRep.at)}`:"내 약점 찾기 · 공부 계획 · 약점 문제 풀기"}</small></span><span class="door-go" aria-hidden="true">›</span></button>`;
+  el.innerHTML=`<button type="button" class="ar-entry" id="ar-open"><span class="ar-ai-ic" aria-hidden="true">◫</span><span><b>약점 분석</b><small>${aiRepBusy?"하루쌤이 기록을 읽고 있어요…":worst&&worst[1].p<85?`가장 약한 곳: ${worst[0]} ${worst[1].p}%`:R?`마지막 분석: ${agoText(S.aiRep.at)}`:"내 약점 찾기 · 공부 계획 · 약점 문제 풀기"}</small></span><span class="door-go" aria-hidden="true">›</span></button>`;
   $("ar-open").onclick=()=>openReport(false);
 }
 let plEdit=false; // 계획 설정 칸을 펼쳤는지
@@ -8733,7 +8759,7 @@ let aiTab=null; // null = 하루쌤 첫 화면(카드 4개). 카드를 누르면
 const AI_TABS=[["ask","질문하기"],["report","약점 분석"],["role","AI 대화"],["fix","문장 교정"],["photo","사진 읽기"]];
 const AI_CARDS={ask:["?","질문하기","모르는 문법·단어를 한국어로 물어봐요","N5 수준에 맞춰 쉽게 설명해요. 예시 질문을 눌러도 돼요."],
   report:["◫","약점 분석","내 기록으로 약점 찾기 · 공부 계획 · 약점 문제","AI가 내 기록을 읽고 약점과 공부 계획을 만들어 줘요. 약점 문제는 바로 풀 수 있어요."],
-  role:["会","AI 대화","카페 · 식당 · 친구와 일본어로 말해 보기","상황을 고르면 하루가 점원이나 친구가 되어 일본어로 말을 걸어요."],
+  role:["会","AI 대화","카페 · 식당 · 친구와 일본어로 말해 보기","상황을 고르면 하루쌤이 점원이나 친구가 되어 일본어로 말을 걸어요."],
   fix:["✎","문장 교정","내가 쓴 일본어 문장 고치기","자기소개·일기·여행 후기를 일본어로 써 보면 고친 문장과 이유를 알려 줘요."],
   photo:["▧","사진 읽기","메뉴 · 간판 속 일본어의 읽는 법과 뜻","사진 속 일본어를 읽는 법과 뜻으로 풀어 줘요. 손글씨는 추측해서 (?)를 붙여요."]};
 function aiPaneHost(){const p=$("ai-pane");if(!p||tab!==9||!aiTab)return null;if(!p.showModal){p.showModal=()=>{};p.close=()=>{}}return p}
@@ -8781,7 +8807,7 @@ const HUB_GO={kanji:()=>{jlStop();jv={view:"jlist",mode:"kanji",lv:"N5"};jx={vie
 function renderAiHome(){
   const st=$("ai-status"),wh=$("ai-where"),dc=$("ai-disclaimer");if(!st)return;
   const rl=$("ai-roles");if(rl){const g=goalOf(),sits=ROLE_SITS.slice().sort((a,b)=>(b.goal.includes(g)?1:0)-(a.goal.includes(g)?1:0));
-  rl.innerHTML=`<h3 class="jl-h">AI 대화 · 상황 고르기</h3><p class="intro">상황을 고르면 하루(AI)가 점원이나 친구가 되어 일본어로 말을 걸어요. 일본어로 답해 보고, 모르면 한국어로 써도 돼요.</p>
+  rl.innerHTML=`<h3 class="jl-h">AI 대화 · 상황 고르기</h3><p class="intro">상황을 고르면 하루쌤이 점원이나 친구가 되어 일본어로 말을 걸어요. 일본어로 답해 보고, 모르면 한국어로 써도 돼요.</p>
     <div class="cats compact">${sits.map(r=>`<button class="catcard role-card" data-role="${r.id}"><div class="cat-top"><b>${r.ic} ${r.t}</b>${g&&r.goal.includes(g)?'<span class="pill">목표 추천</span>':""}</div><div class="desc">${r.d}</div></button>`).join("")}</div>`;
   rl.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>openAiTutor("role",b.dataset.role))}
   st.classList.toggle("ok",AI_ON);
