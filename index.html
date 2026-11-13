@@ -646,7 +646,11 @@ p,small,li,.tip,.s-tip,.s-note,.desc,.intro{word-break:keep-all;overflow-wrap:br
 @media(min-width:761px){.kb{max-width:760px;padding:12px}.kb-grid,.kb-ctl{gap:6px}.kb-k{height:52px;font-size:22px;border-radius:10px}.kb-ctl .kb-w{font-size:15px}.kb-tip{font-size:13px}.kb-btn{min-width:52px;font-size:19px}}
 .me-cal{margin-top:14px;padding:18px 20px;border:1px solid var(--line);border-bottom:4px solid var(--panel-shadow);border-radius:18px;background:var(--card)}
 .mc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.mc-head>b{font-size:var(--fs-lg,17px)}.mc-nav{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700}.mc-nav .ghost{min-width:36px;min-height:36px;padding:0;font-size:18px}
-.mc-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;max-width:420px;margin:0 auto}.mc-week{margin-bottom:6px}.mc-week span{text-align:center;font-size:12px;color:var(--sub)}
+.mc-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.mc-grid>span{aspect-ratio:1;min-height:44px}
+.mc-body{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}.mc-side{display:flex;flex-direction:column;gap:12px}.mc-side .mc-info{margin:0;min-height:88px}
+.mc-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mc-stats>b{grid-column:1/-1;font-size:14px}.mc-stats>div{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.mc-stats span{font-size:12px;color:var(--sub)}.mc-stats div b{font-size:17px}.mc-stats small{font-size:12px;color:var(--sub)}
+@media(min-width:761px){.mc-body{grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}.mc-cal{max-width:470px}}.mc-week{margin-bottom:6px}.mc-week span{text-align:center;font-size:12px;color:var(--sub)}
 .mc-day{aspect-ratio:1;min-width:0;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:13px;cursor:pointer}
 .mc-day.l1{background:color-mix(in srgb,var(--accent) 22%,var(--card))}.mc-day.l2{background:color-mix(in srgb,var(--accent) 45%,var(--card))}.mc-day.l3{background:color-mix(in srgb,var(--accent) 70%,var(--card));color:#fff}.mc-day.l4{background:var(--accent);color:#fff}
 .mc-day.today{font-weight:800;border-color:var(--accent)}.mc-day.sel{outline:2px solid var(--ink);outline-offset:1px}.mc-day:disabled{opacity:.35;cursor:default}
@@ -7044,20 +7048,32 @@ function renderMeCal(){
   const now=new Date(),ty=now.getFullYear(),tm=now.getMonth();
   if(!mcYM)mcYM=[ty,tm];if(!mcSel)mcSel=keyOf(now);
   const [y,m]=mcYM,first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),isNow=y===ty&&m===tm;
-  let cells="",sum=0,nd=0;
+  let cells="",sum=0,nd=0,best=0,bestD=0;
   for(let i=0;i<first;i++)cells+="<span></span>";
   for(let d=1;d<=days;d++){
     const k=y+"-"+(m+1)+"-"+d,n=+(S.daily&&S.daily[k]||0),fut=new Date(y,m,d)>now,today=isNow&&d===now.getDate();
-    if(n){sum+=n;nd++}
+    if(n){sum+=n;nd++;if(n>best){best=n;bestD=d}}
     cells+=`<button type="button" class="mc-day l${mcLv(n)}${today?" today":""}${k===mcSel?" sel":""}" data-mc="${k}" ${fut?"disabled":""} aria-pressed="${k===mcSel}" aria-label="${m+1}월 ${d}일, ${n?`${n}문제`:"기록 없음"}">${d}</button>`;
   }
+  for(let i=first+days;i<42;i++)cells+="<span></span>"; // 늘 6줄
   const [sy,sm,sd]=mcSel.split("-").map(Number),sn=+(S.daily&&S.daily[mcSel]||0),sDate=new Date(sy,sm-1,sd),isToday=mcSel===keyOf(now);
   const info=`<b>${sm}월 ${sd}일 (${"일월화수목금토"[sDate.getDay()]})${isToday?" · 오늘":""}</b> ${sn?`문제 <b>${sn}개</b>를 풀었어요${sn>=60?" · 정말 많이 했어요!":sn>=30?" · 열심히 했어요!":""}`:isToday?"아직 푼 문제가 없어요. 한 문제만 풀어도 색이 칠해져요.":"공부 기록이 없어요."}`;
+  const elapsed=isNow?now.getDate():days,avg=nd?Math.round(sum/nd):0,rate=Math.round(nd/elapsed*100);
   el.innerHTML=`<div class="mc-head"><b>학습 달력</b><span class="mc-nav"><button type="button" class="ghost" id="mc-prev" aria-label="이전 달">‹</button><span>${y}년 ${m+1}월</span><button type="button" class="ghost" id="mc-next" aria-label="다음 달" ${isNow?"disabled":""}>›</button></span></div>
-    <div class="mc-grid mc-week" aria-hidden="true">${[..."일월화수목금토"].map(w=>`<span>${w}</span>`).join("")}</div>
-    <div class="mc-grid">${cells}</div>
-    <p class="mc-info" aria-live="polite">${info}</p>
-    <div class="mc-foot"><small>${m+1}월에 ${nd}일 공부 · ${sum.toLocaleString()}문제</small><span class="mc-legend" aria-hidden="true"><small>적게</small>${[0,1,2,3,4].map(l=>`<i class="mc-day l${l}"></i>`).join("")}<small>많이</small></span></div>`;
+    <div class="mc-body"><div class="mc-cal">
+      <div class="mc-grid mc-week" aria-hidden="true">${[..."일월화수목금토"].map(w=>`<span>${w}</span>`).join("")}</div>
+      <div class="mc-grid">${cells}</div>
+      <div class="mc-foot"><span class="mc-legend" aria-hidden="true"><small>적게</small>${[0,1,2,3,4].map(l=>`<i class="mc-day l${l}"></i>`).join("")}<small>많이</small></span></div>
+    </div><div class="mc-side">
+      <p class="mc-info" aria-live="polite">${info}</p>
+      <div class="mc-stats"><b>${m+1}월 기록</b>
+        <div><span>공부한 날</span><b>${nd}일</b><small>${elapsed}일 중 ${rate}%</small></div>
+        <div><span>푼 문제</span><b>${sum.toLocaleString()}개</b><small>공부한 날 평균 ${avg}개</small></div>
+        <div><span>가장 많이 한 날</span><b>${best?`${m+1}월 ${bestD}일`:"-"}</b><small>${best?`${best}문제`:"아직 없어요"}</small></div>
+        <div><span>연속 학습</span><b>${streak()}일</b><small>오늘까지 이어진 날</small></div>
+      </div>
+    </div></div>`;
+
   $("mc-prev").onclick=()=>{mcYM=m?[y,m-1]:[y-1,11];renderMeCal()};
   $("mc-next").onclick=()=>{if(isNow)return;mcYM=m===11?[y+1,0]:[y,m+1];renderMeCal()};
   el.querySelectorAll("[data-mc]").forEach(b=>b.onclick=()=>{mcSel=b.dataset.mc;renderMeCal()});
