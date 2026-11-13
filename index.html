@@ -7088,7 +7088,6 @@ function renderRank(){
         ?`<div class="pf-edit"><input id="nick-in" maxlength="12" value="${esc(S.nick||"")}" placeholder="한글·영어·숫자 2~12자" aria-label="닉네임"><button class="next" id="nick-save">저장</button><button class="link" id="nick-cancel">취소</button></div>
           <p class="nick-help" id="nick-msg"></p>`
         :`<div class="pf-name"><b id="pf-nick"></b><button class="link" id="nick-edit">닉네임 바꾸기</button></div>`}
-      <div class="me-rec"><div><b>${streak()}일</b><small>연속 학습</small></div><div><b>${Object.keys(S.daily||{}).length}일</b><small>공부한 날</small></div><div><b>${+(S.daily[keyOf(new Date())]||0)}</b><small>오늘 푼 문제</small></div></div>
       <div class="me-steps">${hubSteps().map((s,i)=>{const pct=Math.round(s.n/s.all*100);return `<div class="me-step"><span>${i+1}. ${s.t}</span><span class="bar"><i style="width:${pct}%"></i></span><small>${s.n.toLocaleString()} / ${s.all.toLocaleString()}${s.unit}</small></div>`}).join("")}</div>
     </div></div>
     <div class="me-cal" id="me-cal"></div>`;
