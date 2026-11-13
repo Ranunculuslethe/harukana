@@ -3552,9 +3552,19 @@ function soundHelp(why){
 const WORD_SND={};WORDS.forEach(w=>{if(!WORD_SND[w.kana])WORD_SND[w.kana]=w.id});
 const SND_V="1",SND_CREDIT="VOICEVOX:玄野武宏",fileVoiceOn=()=>S.fileVoice!==0;
 let fileAudio=null;
+let SND_PACK=null;
+async function packUrl(id){
+  if(SND_PACK===false)return null;
+  try{
+    if(!SND_PACK){const [ix,bin]=await Promise.all([fetch("audio/words.json").then(r=>{if(!r.ok)throw 0;return r.json()}),fetch("audio/words.mp3").then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()})]);SND_PACK={ix,bin,urls:{}}}
+    const e=SND_PACK.ix[id];if(!e)return null;
+    return SND_PACK.urls[id]||(SND_PACK.urls[id]=URL.createObjectURL(new Blob([SND_PACK.bin.slice(e[0],e[0]+e[1])],{type:"audio/mpeg"})));
+  }catch(e){SND_PACK=false;return null}
+}
 function speakFile(id,t,rate){
   try{speechSynthesis.cancel()}catch(e){}
   if(fileAudio){try{fileAudio.pause()}catch(e){}}
+  if(IN_CLAUDE){const tk=fileAudio={};packUrl(id).then(u=>{if(fileAudio!==tk)return;if(!u){fileAudio=null;return speakTTS(t,rate)}const a=new Audio(u);a.volume=sndVol()/100;a.playbackRate=rate||(S.slow?0.75:1);fileAudio=a;a.onerror=()=>{if(fileAudio===a){fileAudio=null;speakTTS(t,rate)}};const p=a.play();if(p&&p.catch)p.catch(e=>{if(fileAudio===a&&(!e||e.name!=="AbortError")){fileAudio=null;speakTTS(t,rate)}})});return}
   const a=new Audio(`audio/w/${id}.mp3?v=${SND_V}`);let fell=false;
   const fall=()=>{if(fell||fileAudio!==a)return;fell=true;fileAudio=null;speakTTS(t,rate)};
   a.volume=sndVol()/100;a.playbackRate=rate||(S.slow?0.75:1);fileAudio=a;a.onerror=fall;
