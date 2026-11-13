@@ -732,7 +732,7 @@ p,small,li,.tip,.s-tip,.s-note,.desc,.intro{word-break:keep-all;overflow-wrap:br
 <div class="home-today" id="home-today" aria-label="오늘의 학습량"></div>
 <div class="home-plan" id="home-plan" aria-label="오늘의 계획"></div>
 <div class="goal-card home-goal" id="home-goal" aria-label="오늘의 작은 목표"></div>
-<p class="path-footer">한 글자씩 쌓이는 나의 일본어 <span>·</span> 一日、一歩。</p></section>
+<p class="path-footer">한 글자씩 쌓이는 나의 일본어 <span>·</span> 一日、一歩。<br><small>단어 음성: VOICEVOX:玄野武宏</small></p></section>
 <section id="v1" role="tabpanel" aria-labelledby="t1" hidden>
   <div class="seg kana-sub top-tabs" role="group" aria-label="가나 공부 방법"><button data-kv="1" class="on" aria-pressed="true">도감</button><button data-kv="2" aria-pressed="false">퀴즈</button></div>
   <div class="section-intro"><div><p class="section-kicker">KANA / 01</p><h2>가나 도감</h2><p class="section-copy">히라가나와 가타카나를 합쳐 '가나'라고 해요. 글자를 눌러 발음을 듣고, 색으로 익힌 정도를 확인해요.</p></div><div class="section-mark" aria-hidden="true">あ</div></div>
@@ -3549,7 +3549,23 @@ function soundHelp(why){
   if($("snd-set"))$("snd-set").onclick=()=>{d.close();openSettings()};
   if(!document.querySelector("dialog[open]"))d.showModal();else sndHelpShown=false; // 다른 창이 열려 있으면 다음 기회에
 }
-const speak=(t,rate,on)=>{try{
+const WORD_SND={};WORDS.forEach(w=>{if(!WORD_SND[w.kana])WORD_SND[w.kana]=w.id});
+const SND_V="1",SND_CREDIT="VOICEVOX:玄野武宏",fileVoiceOn=()=>S.fileVoice!==0;
+let fileAudio=null;
+function speakFile(id,t,rate){
+  try{speechSynthesis.cancel()}catch(e){}
+  if(fileAudio){try{fileAudio.pause()}catch(e){}}
+  const a=new Audio(`audio/w/${id}.mp3?v=${SND_V}`);let fell=false;
+  const fall=()=>{if(fell||fileAudio!==a)return;fell=true;fileAudio=null;speakTTS(t,rate)};
+  a.volume=sndVol()/100;a.playbackRate=rate||(S.slow?0.75:1);fileAudio=a;a.onerror=fall;
+  const p=a.play();if(p&&p.catch)p.catch(e=>{if(!e||e.name!=="AbortError")fall()});
+}
+const speak=(t,rate,on)=>{
+  const id=!on&&fileVoiceOn()&&WORD_SND[String(t||"").trim()];if(id)return speakFile(id,t,rate);
+  if(fileAudio){try{fileAudio.pause()}catch(e){}fileAudio=null}
+  return speakTTS(t,rate,on);
+};
+const speakTTS=(t,rate,on)=>{try{
   if(!("speechSynthesis" in window)){soundHelp("none");on&&on("error","unsupported");return}
   const ss=speechSynthesis,u=new SpeechSynthesisUtterance(t);
   u.lang="ja-JP";u.rate=rate||(S.slow?0.6:1);u.volume=sndVol()/100;
@@ -3585,6 +3601,8 @@ function soundSettings(){
 function renderSoundSettings(){
   const box=$("snd-box");if(!box)return;
   box.innerHTML=soundSettings();
+  box.insertAdjacentHTML("beforeend",`<label class="slow-tg"><input type="checkbox" id="snd-file" ${fileVoiceOn()?"checked":""}>단어는 녹음된 목소리로 듣기</label><p class="set-note">단어 소리: ${SND_CREDIT} · 끄면 기기의 일본어 음성으로 읽어요.</p>`);
+  $("snd-file").onchange=e=>{S.fileVoice=e.target.checked?1:0;save();if(e.target.checked)speak("ありがとう")};
   const sel=$("snd-voice");
   if(sel){
     sel.onchange=()=>{try{localStorage.setItem(VOICE_KEY,sel.value)}catch(e){}pickJaVoice();$("snd-test").click()};
