@@ -3560,6 +3560,17 @@ function speakFile(id,t,rate){
   a.volume=sndVol()/100;a.playbackRate=rate||(S.slow?0.75:1);fileAudio=a;a.onerror=fall;
   const p=a.play();if(p&&p.catch)p.catch(e=>{if(!e||e.name!=="AbortError")fall()});
 }
+const SND_IDS=()=>[...new Set(Object.values(WORD_SND))];
+async function sndCount(){try{const ks=await (await caches.open("harukana-v1")).keys();return ks.filter(r=>/\/audio\/w\//.test(r.url)).length}catch(e){return 0}}
+let sndDling=false;
+async function sndDownload(){
+  if(sndDling)return;sndDling=true;const b=$("snd-dl"),st=$("snd-dl-st"),ids=SND_IDS();let done=0,fail=0;if(b)b.disabled=true;
+  const show=()=>{const s=$("snd-dl-st");if(s)s.textContent=`받는 중… ${done.toLocaleString()} / ${ids.length.toLocaleString()}개${fail?` (실패 ${fail})`:""}`};show();
+  const next=async()=>{while(ids.length&&sndDling){const id=ids.shift();try{const r=await fetch(`audio/w/${id}.mp3?v=${SND_V}`);if(!r.ok)throw 0;await r.arrayBuffer()}catch(e){fail++}done++;if(done%20===0)show()}};
+  const total=ids.length;await Promise.all([next(),next(),next(),next()]);
+  sndDling=false;const n=await sndCount();const s=$("snd-dl-st"),bb=$("snd-dl");if(bb)bb.disabled=false;
+  if(s)s.textContent=fail?`${(total-fail).toLocaleString()}개를 받았어요. ${fail}개는 받지 못했어요 (인터넷을 확인하고 다시 눌러 주세요).`:`단어 소리 ${n.toLocaleString()}개를 모두 받아 두었어요. 이제 인터넷이 없어도 들려요.`;
+}
 const speak=(t,rate,on)=>{
   const id=!on&&fileVoiceOn()&&WORD_SND[String(t||"").trim()];if(id)return speakFile(id,t,rate);
   if(fileAudio){try{fileAudio.pause()}catch(e){}fileAudio=null}
@@ -3603,6 +3614,9 @@ function renderSoundSettings(){
   box.innerHTML=soundSettings();
   box.insertAdjacentHTML("beforeend",`<label class="slow-tg"><input type="checkbox" id="snd-file" ${fileVoiceOn()?"checked":""}>단어는 녹음된 목소리로 듣기</label><p class="set-note">단어 소리: ${SND_CREDIT} · 끄면 기기의 일본어 음성으로 읽어요.</p>`);
   $("snd-file").onchange=e=>{S.fileVoice=e.target.checked?1:0;save();if(e.target.checked)speak("ありがとう")};
+  if("caches" in window&&navigator.serviceWorker&&navigator.serviceWorker.controller){box.insertAdjacentHTML("beforeend",`<div class="set-row"><button type="button" class="rec-reset" id="snd-dl">단어 소리 모두 받아 두기 (약 6.5MB)</button></div><p class="set-note" id="snd-dl-st">한 번 들은 단어는 저절로 저장돼요. 미리 모두 받아 두면 인터넷이 없어도 모든 단어 소리를 들을 수 있어요.</p>`);
+    sndCount().then(n=>{const st=$("snd-dl-st");if(st&&n)st.textContent=`받아 둔 단어 소리 ${n.toLocaleString()} / ${SND_IDS().length.toLocaleString()}개`});
+    $("snd-dl").onclick=sndDownload}
   const sel=$("snd-voice");
   if(sel){
     sel.onchange=()=>{try{localStorage.setItem(VOICE_KEY,sel.value)}catch(e){}pickJaVoice();$("snd-test").click()};
@@ -6972,13 +6986,13 @@ const GUIDE=[
    p:"위에서부터 차례로 올라가요. 모든 단계는 열려 있어서 원하는 곳부터 해도 돼요. 학습 화면에서 '지금 여기'를 따라가면 돼요.",
    list:[["1","가나","히라가나·가타카나"],["2","단어","단어장 책과 예문"],["3","문법","조사 → 표현 → N5 문법"],["4","한자","N5 한자"],["5","실전","기본 회화·상황 대화·알아듣기·표지판·숫자"]]},
   {mark:"✦",t:"모르면 하루쌤에게",
-   p:"하루는 내 학습 기록을 알고 있는 하루쌤이에요. 메뉴의 '하루쌤'에서 만날 수 있어요.",
-   list:[["?","질문하기","모르는 문법·단어를 한국어로"],["◫","약점 분석","내 기록으로 약점과 공부 계획"],["会","AI 대화","카페·식당에서 일본어로 말해 보기"],["▧","사진 읽기","메뉴·간판 사진 속 일본어 해석"]]},
+   p:"하루쌤은 내 학습 기록을 아는 AI 선생님이에요. 메뉴의 '하루쌤'에서 만날 수 있어요. 무료 AI라 붐빌 때는 답이 느릴 수 있고, 가끔 틀릴 수도 있어요.",
+   list:[["?","질문하기","모르는 문법·단어를 한국어로"],["◫","약점 분석","내 약점을 찾고 날짜별 공부 계획 짜기"],["会","AI 대화","카페·식당·친구와 일본어로 말해 보기"],["✎","문장 교정","내가 쓴 일본어 문장 고치기"],["▧","사진 읽기","메뉴·간판 사진 속 일본어 해석"]]},
   {mark:"学",t:"이렇게 공부해요",
    p:"한 번에 조금씩, 보고 → 풀고 → 다시 보는 순서예요.",
-   list:[["1","새 글자 만나기","글자를 누르면 소리가 나요"],["2","퀴즈로 확인","4개 중에 골라요"],["3","틀려도 괜찮아요","외우는 요령이 나오고 '복습' 칸에 모여요"],["4","소리는 버튼으로","'천천히 듣기'도 켤 수 있어요"]]},
+   list:[["1","새 글자 만나기","글자를 누르면 소리가 나요"],["2","퀴즈로 확인","4개 중에 골라요"],["3","틀려도 괜찮아요","외우는 요령이 나오고 '복습' 칸에 모여요"],["4","소리는 🔊 버튼으로","단어는 녹음된 목소리로 들려줘요. '천천히 듣기'도 켤 수 있어요"],["あ","일본어 자판","하루쌤에 일본어를 쓸 때는 あ 버튼으로 자판을 열어요"]]},
   {mark:"日",t:"매일 조금씩 쌓여요",
-   p:"오늘의 작은 목표를 채우면 XP를 받고, 공부한 날은 학습 잔디에 쌓여요. 기록은 이 브라우저에 저장돼요. 다른 기기에서 이어 하려면 설정에서 로그인하면 돼요."}
+   p:"홈의 '오늘의 계획'을 따라 하면 돼요. 공부한 만큼 마이페이지의 학습 달력에 색이 칠해져요. 기록은 회원가입 없이 이 브라우저에만 저장돼요. 그래서 브라우저 기록을 지우거나 다른 기기에서 열면 처음부터 시작해요."}
 ];
 let guideAt=0;
 function openGuide(){
